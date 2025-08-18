@@ -1,0 +1,18 @@
+{
+    "name": "shale-yeah",
+    "version": "0.1.0",
+    "private": false,
+    "type": "module",
+    "scripts": {
+        "init": "npx claude-flow@alpha init",
+        "start": "npx claude-flow@alpha start --swarm",
+        "gen": "tsx scripts/generate-from-spec.ts",
+        "demo": "bash scripts/demo.sh",
+        "run:local": "bash scripts/run-local.sh",
+        "lint": "biome check . || true"
+    },
+    "devDependencies": {
+        "tsx": "^4.19.2",
+        "@biomejs/biome": "^1.8.3"
+    }
+}

@@ -1,0 +1,33 @@
+# Demo Access Database Placeholder
+
+This file represents a demo Access database that would contain:
+
+## Tables:
+
+### wells
+- well_id: W001, W002, W003
+- well_name: Demo Well #1, Demo Well #2, Demo Well #3
+- operator: XTO Energy, EOG Resources, Pioneer Natural
+- latitude: 32.7767, 32.7800, 32.7850
+- longitude: -96.7970, -96.8000, -96.8050
+- spud_date: 2024-01-15, 2024-02-20, 2024-03-10
+- status: ACTIVE, DRILLING, COMPLETED
+
+### formations
+- formation_id: F001, F002, F003
+- formation_name: Barnett Shale, Woodford Shale, Eagle Ford
+- top_depth: 6800, 7200, 8500
+- bottom_depth: 7200, 7600, 9200
+- lithology: Shale, Shale, Shale
+
+### production
+- well_id: W001, W001, W002
+- month: 2024-01, 2024-02, 2024-01
+- oil_bbl: 1250, 1180, 980
+- gas_mcf: 8500, 8200, 6700
+- water_bbl: 350, 420, 280
+
+Note: In a real implementation, the access-ingest.ts tool would read 
+the actual .accdb file and export these tables as CSV files.
+
+Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0

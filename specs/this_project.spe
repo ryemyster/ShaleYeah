@@ -1,0 +1,222 @@
+## Why This Project
+
+The oil & gas industry still runs on fragmented data and siloed vendor tools.  
+Most solutions are slow to evolve because they’re tied to big teams and heavy processes.  
+
+SHALE YEAH is proof that:
+- A small, modular agent system can replace large, siloed workflows.
+- Open-source guardrails make it safe, secure, and community-driven.
+- With the right scaffolding, one person can stand up what used to take 200.
+
+This project exists to demonstrate speed, transparency, and interoperability in action.
+
+Claude Build Spec — “SHALE YEAH”
+
+Role
+You are an execution‑first repo builder. Produce working code with minimal placeholders. Prefer simple, readable implementations.
+
+Objective
+Create an OSS repo called shale-yeah that ships a runnable multi‑agent Claude‑Flow project for oil and gas data work: ingest LAS and Access, fit curves with QC, export reports, include GIS and mineral modeling hooks, plus a research agent that forges new agents from short RFCs.
+
+Why
+O&G teams wrestle with messy formats and slow manual workflows. We want an open template that anyone can run and extend without a large team.
+
+⸻
+
+Deliverables
+	1.	Repo scaffold exactly as defined under “Directory layout.”
+	2.	Working agents: geowiz, curve-smith, reporter, research-hub, agent-forge.
+	3.	Tools: access-ingest.ts, las-parse.ts, curve-fit.ts, curve-qc.py, web-fetch.ts.
+	4.	Integrations directories with minimal working stubs for SIEM, GIS, mineral modeling.
+	5.	Pipelines: pipelines/shale.yaml runs end‑to‑end.
+	6.	OSS & credit: Apache‑2.0 LICENSE, NOTICE, CITATION.cff, SECURITY.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md.
+	7.	CI: CodeQL, Gitleaks, Dependabot, SLSA provenance, Cosign signing.
+	8.	Docs: README with quick start, demo commands, agent add flow.
+	9.	Branding check: scripts/verify-branding.sh ensures credit footer and NOTICE exist.
+
+⸻
+
+Directory layout
+
+shale-yeah/
+  LICENSE
+  NOTICE
+  CITATION.cff
+  SECURITY.md
+  CODE_OF_CONDUCT.md
+  CONTRIBUTING.md
+  README.md
+  package.json
+  .gitleaks.toml
+  .github/
+    dependabot.yml
+    workflows/
+      codeql.yml
+      gitleaks.yml
+      release-sign-cosign.yml
+      slsa-provenance.yml
+  .claude-flow/
+    CLAUDE.md                  # will be supplied separately by owner
+    agents/
+      geowiz.yaml
+      curve-smith.yaml
+      reporter.yaml
+      research-hub.yaml
+      agent-forge.yaml
+    tools/
+      access-ingest.ts
+      las-parse.ts
+      curve-fit.ts
+      curve-qc.py
+      web-fetch.ts
+  integrations/
+    siem/      splunk.ts  sentinel.ts  qradar.ts  elastic.ts  cortex-xsoar.ts
+    gis/       arcgis.ts  qgis.py  mapinfo_gdal.py  geomedia_wfs.py  globalmapper.py
+    mining/    leapfrog_omf.py  surpac_io.py  vulcan_sdk.py  datamine_io.py  micromine_io.py
+  pipelines/
+    shale.yaml
+  specs/
+    geowiz.spec.md
+    curve-smith.spec.md
+  scripts/
+    generate-from-spec.ts
+    verify-branding.sh
+    demo.sh
+    run-local.sh
+  data/
+    samples/   # put tiny demo.las and demo.accdb placeholders
+    outputs/   # created at runtime
+
+
+⸻
+
+Implementation rules
+	•	Language: TypeScript for CLIs and HTTP hooks, Python where scientific libs are simpler.
+	•	Keep all tools runnable from CLI. Print clear errors. No giant dependencies.
+	•	Always write artifacts to data/outputs/${RUN_ID}.
+	•	Include the footer string in human outputs:
+Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+	•	No secrets in code. Read tokens from env.
+	•	Prefer open formats: CSV, GeoJSON, OMF, LAS.
+
+⸻
+
+Agents
+
+geowiz.yaml
+	•	Inputs: data/samples/**/*.*
+	•	Outputs: geology_summary.md, zones.geojson
+	•	Task: scan LAS and shapefile‑like inputs, summarize formations, list data gaps, produce depth intervals.
+	•	Gate: zones must declare depth units.
+
+curve-smith.yaml
+	•	Inputs: LAS and zones.geojson
+	•	Outputs: curves/*.csv, qc_report.md
+	•	Task: parse LAS, fit missing curves with a simple baseline, compute RMSE and NRMSE.
+	•	Gate: qc_report lists per curve stats.
+
+reporter.yaml
+	•	Inputs: previous outputs
+	•	Output: SHALE_YEAH_REPORT.md
+	•	Task: concise report with executive summary, provenance, table of curves with stats and file links, next steps.
+
+research-hub.yaml
+	•	Tools: web-fetch.ts
+	•	Output: research/rfcs/*.md
+	•	Task: given a product name, gather URLs, note API or format, auth, minimal example, license notes, quick PoC plan.
+	•	Gate: two or more citations per RFC.
+
+agent-forge.yaml
+	•	Inputs: RFCs
+	•	Output: .claude-flow/agents/generated/*.yaml or integrations/* stubs
+	•	Task: convert one RFC into a minimal agent or tool stub that compiles.
+
+⸻
+
+Tools
+	•	access-ingest.ts: read .mdb or .accdb with mdb-reader, emit CSV per table to outputs/${RUN_ID}/access.
+	•	las-parse.ts: tiny LAS metadata reader.
+	•	curve-fit.ts: trivial fitter that adds <target>_fit column to CSV input.
+	•	curve-qc.py: read LAS with lasio, compute RMSE and NRMSE for a given curve.
+	•	web-fetch.ts: fetch URL, strip text, return JSON {url,text} for research agent.
+
+⸻
+
+Integrations (stubs that run)
+	•	SIEM: Splunk HEC, Sentinel Logs Ingestion, QRadar LEEF over TCP, Elastic Bulk API, Cortex XSOAR incident POST.
+	•	GIS: ArcGIS Feature Service query and add, QGIS headless call example, MapInfo via GDAL, GeoMedia via WFS, Global Mapper script example.
+	•	Mining: OMF read/write helper plus stub files for Leapfrog, Surpac, Vulcan, Datamine, Micromine that document expected paths.
+
+⸻
+
+Pipeline
+
+pipelines/shale.yaml
+Stages:
+	1.	geowiz
+	2.	run access-ingest.ts on data/samples/demo.accdb
+	3.	run curve-qc.py on data/samples/demo.las CURVE=GR
+	4.	curve-smith
+	5.	reporter
+Artifacts save to data/outputs/${RUN_ID}
+
+⸻
+
+CI and security
+	•	CodeQL workflow for JS/TS.
+	•	Gitleaks workflow with .gitleaks.toml.
+	•	Dependabot weekly.
+	•	Cosign release signing and SLSA provenance workflow.
+	•	scripts/verify-branding.sh fails if footer or NOTICE missing in outputs.
+
+⸻
+
+Docs
+
+README must include: quick start, demo run, adding an agent via specs/*.spec.md + scripts/generate-from-spec.ts, how to run research pipeline.
+
+CONTRIBUTING: small PRs, keep outputs readable, no proprietary data, branding rule.
+
+SECURITY: report email, 72‑hour triage target, no secrets in repo.
+
+⸻
+
+Commands to support
+	•	npm run init → npx claude-flow@alpha init
+	•	npm run start → start swarm
+	•	npm run gen → generate agents from specs/*.spec.md
+	•	bash scripts/demo.sh → full pipeline run
+	•	bash scripts/run-local.sh → run a single agent locally
+
+⸻
+
+Definition of done
+	•	bash scripts/demo.sh runs clean and produces SHALE_YEAH_REPORT.md with footer.
+	•	curve-smith emits curves/*.csv and qc_report.md with RMSE and NRMSE.
+	•	research-hub can generate at least one RFC with two citations.
+	•	agent-forge creates a syntactically valid agent YAML from that RFC.
+	•	CI passes on first run.
+	•	No secrets committed.
+	•	README instructions work on a clean machine.
+
+⸻
+
+If something is unclear
+	•	Pick the simplest safe default.
+	•	Add the assumption to the top of the generated file as a comment Assumption:.
+	•	Do not pause for confirmation. Ship a working draft.
+
+⸻
+
+Output format for this task
+	1.	Print the folder tree.
+	2.	For each file, print a fenced block with full contents.
+	3.	End with a “Runbook” section that lists exact shell commands to run the demo and verify outputs.
+
+⸻
+
+Owner inputs
+	•	Project: shale-yeah
+	•	Owner: Ryan McDonald / Ascendvent LLC
+	•	License: Apache‑2.0
+	•	Footer: Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
