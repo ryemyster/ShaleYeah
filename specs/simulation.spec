@@ -1,5 +1,5 @@
 Here’s a brutally clear end-to-end simulation that shows how SHALE YEAH — running as open, modular agents — can outperform, outscale, 
-and outmaneuver a legacy, closed oil & gas data shops
+and outmaneuver a legacy, closed oil & gas data shop
 
 This is what puts them out of business:
 
