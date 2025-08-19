@@ -10,29 +10,30 @@ import os
 import sys
 import json
 import argparse
-import logging
 from pathlib import Path
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 import glob
 
-class ReporterAgent:
+from shared import BaseAgent, DemoDataGenerator
+
+class ReporterAgent(BaseAgent):
     """Executive reporting and data provenance specialist"""
     
     def __init__(self, input_dir: str, run_id: str):
-        self.input_dir = Path(input_dir)
-        self.run_id = run_id
-        
-        # Setup logging
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
-        
-        # Expected output
-        self.report_file = self.input_dir / "SHALE_YEAH_REPORT.md"
+        # For reporter, input_dir is the output_dir 
+        super().__init__(input_dir, run_id, 'reporter')
         
         # Initialize discovered data
         self.discovered_files = {}
         self.agent_outputs = {}
+    
+    def _initialize_agent(self):
+        """Initialize reporter-specific attributes"""
+        # Expected outputs
+        self.expected_outputs = {
+            'SHALE_YEAH_REPORT.md': self.output_dir / "SHALE_YEAH_REPORT.md"
+        }
         
     def discover_outputs(self) -> Dict[str, List[str]]:
         """Discover all generated outputs and categorize them"""
@@ -397,7 +398,9 @@ Based on the analysis completed, the following actions are recommended:
         """Generate complete SHALE YEAH report"""
         self.logger.info("Generating comprehensive SHALE YEAH report")
         
-        # Discover all outputs
+        # Discover all outputs  
+        # Use input_dir for discovery but it's actually our output_dir
+        self.input_dir = self.output_dir
         self.discover_outputs()
         
         # Extract insights
@@ -460,11 +463,20 @@ See `qc_report.md` for detailed quality control metrics.
 **Data Sources:** Analysis incorporates regional geological knowledge, well log interpretation, and industry-standard statistical methods. Results are validated against established quality control criteria.
 
 **Recommended Actions:** Proceed with development planning while addressing any data quality concerns identified in individual agent reports.
-
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
 """
         
+        report = self._add_shale_yeah_footer(report)
+        
         return report
+    
+    def _get_demo_data(self, data_type: str) -> Dict:
+        """Get demo data for reporter agent"""
+        demo_generator = DemoDataGenerator()
+        return super()._get_demo_data(data_type)
+    
+    def run_analysis(self, **kwargs) -> bool:
+        """Run reporter analysis - alias for run_reporting"""
+        return self.run_reporting()
     
     def run_reporting(self) -> bool:
         """Run complete reporting analysis"""
@@ -473,20 +485,16 @@ Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
         try:
             # Generate comprehensive report
             report_content = self.generate_report()
+            self._save_output_file(report_content, 'SHALE_YEAH_REPORT.md', 'md')
             
-            # Write report
-            with open(self.report_file, 'w') as f:
-                f.write(report_content)
-            
-            self.logger.info(f"Generated executive report: {self.report_file}")
-            
-            # Validate output
-            if not self.report_file.exists():
-                self.logger.error("Failed to generate SHALE_YEAH_REPORT.md")
+            # Validate outputs using shared method
+            required_files = list(self.expected_outputs.keys())
+            if not self._validate_outputs(required_files):
                 return False
             
             # Check for required attribution
-            with open(self.report_file, 'r') as f:
+            report_file = self.expected_outputs['SHALE_YEAH_REPORT.md']
+            with open(report_file, 'r') as f:
                 content = f.read()
                 if 'SHALE YEAH' not in content or 'Apache-2.0' not in content:
                     self.logger.error("Report missing required attribution")
@@ -516,7 +524,7 @@ def main():
     
     # Override output file if specified
     if args.output_file:
-        agent.report_file = Path(args.output_file)
+        agent.expected_outputs['SHALE_YEAH_REPORT.md'] = Path(args.output_file)
     
     # Run reporting
     success = agent.run_reporting()

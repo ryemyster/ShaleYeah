@@ -10,29 +10,26 @@ import os
 import sys
 import json
 import argparse
-import logging
 import subprocess
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
-class GeoWizAgent:
+from shared import BaseAgent, DemoDataGenerator
+
+class GeoWizAgent(BaseAgent):
     """Geology analysis and well-log interpretation specialist"""
     
     def __init__(self, output_dir: str, run_id: str):
-        self.output_dir = Path(output_dir)
-        self.run_id = run_id
-        
-        # Setup logging
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
-        
-        # Ensure output directory exists
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        
+        super().__init__(output_dir, run_id, 'geowiz')
+    
+    def _initialize_agent(self):
+        """Initialize geowiz-specific attributes"""
         # Expected outputs
-        self.geology_summary_file = self.output_dir / "geology_summary.md"
-        self.zones_geojson_file = self.output_dir / "zones.geojson"
+        self.expected_outputs = {
+            'geology_summary.md': self.output_dir / "geology_summary.md",
+            'zones.geojson': self.output_dir / "zones.geojson"
+        }
     
     def parse_las_files(self, las_files: str) -> Dict:
         """Parse LAS files using las-parse.ts tool"""
@@ -291,13 +288,20 @@ Overall formation quality appears {'favorable' if len(formations) >= 3 else 'mar
 This analysis used regional geological knowledge for {region} combined with available well log data.
 Formation boundaries were interpreted based on typical regional stratigraphy and log character.
 Confidence levels reflect data quality and geological certainty.
-
----
-
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
 """
         
+        summary = self._add_shale_yeah_footer(summary)
+        
         return summary
+    
+    def _get_demo_data(self, data_type: str) -> Dict:
+        """Get demo data for geowiz agent"""
+        demo_generator = DemoDataGenerator()
+        
+        if data_type == 'geological_data':
+            return demo_generator._create_demo_geological_data()
+        else:
+            return super()._get_demo_data(data_type)
     
     def run_analysis(self, shapefile: str, region: str, las_files: str = None) -> bool:
         """Run complete geological analysis"""
@@ -320,27 +324,15 @@ Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
             
             # Step 3: Generate zones.geojson
             zones_geojson = self.generate_zones_geojson(formations, shapefile)
-            
-            with open(self.zones_geojson_file, 'w') as f:
-                json.dump(zones_geojson, f, indent=2)
-            
-            self.logger.info(f"Generated zones.geojson: {self.zones_geojson_file}")
+            self._save_output_file(zones_geojson, 'zones.geojson', 'json')
             
             # Step 4: Generate geology summary
             geology_summary = self.generate_geology_summary(formations, las_metadata, region)
+            self._save_output_file(geology_summary, 'geology_summary.md', 'md')
             
-            with open(self.geology_summary_file, 'w') as f:
-                f.write(geology_summary)
-            
-            self.logger.info(f"Generated geology summary: {self.geology_summary_file}")
-            
-            # Validate outputs
-            if not self.zones_geojson_file.exists():
-                self.logger.error("Failed to generate zones.geojson")
-                return False
-                
-            if not self.geology_summary_file.exists():
-                self.logger.error("Failed to generate geology_summary.md")
+            # Validate outputs using shared method
+            required_files = list(self.expected_outputs.keys())
+            if not self._validate_outputs(required_files):
                 return False
             
             self.logger.info("Geological analysis completed successfully")

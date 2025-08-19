@@ -10,7 +10,6 @@ import os
 import sys
 import json
 import argparse
-import logging
 import subprocess
 import numpy as np
 import pandas as pd
@@ -18,24 +17,24 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
-class CurveSmithAgent:
+from shared import BaseAgent, DemoDataGenerator
+
+class CurveSmithAgent(BaseAgent):
     """Curve fitting and quality control specialist"""
     
     def __init__(self, output_dir: str, run_id: str):
-        self.output_dir = Path(output_dir)
-        self.run_id = run_id
-        
-        # Setup logging
-        logging.basicConfig(level=logging.INFO)
-        self.logger = logging.getLogger(__name__)
-        
-        # Ensure output directories exist
-        self.output_dir.mkdir(parents=True, exist_ok=True)
+        super().__init__(output_dir, run_id, 'curve-smith')
+    
+    def _initialize_agent(self):
+        """Initialize curve-smith-specific attributes"""
+        # Ensure curves directory exists
         self.curves_dir = self.output_dir / "curves"
         self.curves_dir.mkdir(parents=True, exist_ok=True)
         
         # Expected outputs
-        self.qc_report_file = self.output_dir / "qc_report.md"
+        self.expected_outputs = {
+            'qc_report.md': self.output_dir / "qc_report.md"
+        }
         
         # Quality thresholds from YAML config
         self.rmse_targets = {
@@ -72,6 +71,15 @@ class CurveSmithAgent:
         except Exception as e:
             self.logger.error(f"Error parsing LAS files: {e}")
             return self._create_demo_las_data()
+    
+    def _get_demo_data(self, data_type: str) -> Dict:
+        """Get demo data for curve-smith agent"""
+        demo_generator = DemoDataGenerator()
+        
+        if data_type == 'las_data':
+            return self._create_demo_las_data()
+        else:
+            return super()._get_demo_data(data_type)
     
     def _create_demo_las_data(self) -> Dict:
         """Create synthetic demo LAS data for testing"""
@@ -374,11 +382,7 @@ Enables comparison across different curve types and units.
             file_name = Path(file_path).name
             report += f"- `{file_name}`\n"
         
-        report += """
----
-
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
-"""
+        report = self._add_shale_yeah_footer(report)
         
         return report
     
@@ -409,15 +413,11 @@ Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
             
             # Step 5: Generate QC report
             qc_report = self.generate_qc_report(qc_metrics, curves_data, exported_files)
+            self._save_output_file(qc_report, 'qc_report.md', 'md')
             
-            with open(self.qc_report_file, 'w') as f:
-                f.write(qc_report)
-            
-            self.logger.info(f"Generated QC report: {self.qc_report_file}")
-            
-            # Validate outputs
-            if not self.qc_report_file.exists():
-                self.logger.error("Failed to generate qc_report.md")
+            # Validate outputs using shared method
+            required_files = list(self.expected_outputs.keys())
+            if not self._validate_outputs(required_files):
                 return False
                 
             if not exported_files:

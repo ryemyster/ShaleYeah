@@ -168,6 +168,25 @@ class MCPController:
         for arg in args:
             processed_arg = arg.replace('${RUN_ID}', self.run_id)
             processed_arg = processed_arg.replace('${OUT_DIR}', str(self.out_dir))
+            
+            # Handle input variable replacements
+            if inputs and '${input.' in processed_arg:
+                for input_name, input_value in inputs.items():
+                    placeholder = f'${{input.{input_name}}}'
+                    if placeholder in processed_arg:
+                        processed_arg = processed_arg.replace(placeholder, str(input_value))
+            
+            # Set default values for missing inputs
+            if '${input.' in processed_arg:
+                # Extract input name from placeholder
+                import re
+                input_matches = re.findall(r'\$\{input\.([^}]+)\}', processed_arg)
+                for input_name in input_matches:
+                    placeholder = f'${{input.{input_name}}}'
+                    # Use demo defaults or agent-appropriate values
+                    default_value = self._get_default_input_value(agent_name, input_name)
+                    processed_arg = processed_arg.replace(placeholder, default_value)
+            
             processed_args.append(processed_arg)
         
         # Build command
@@ -230,6 +249,45 @@ class MCPController:
         finally:
             self.state['current_agent'] = None
             self._save_state()
+    
+    def _get_default_input_value(self, agent_name: str, input_name: str) -> str:
+        """Get default input value for agent when not provided"""
+        # Default input mappings for demo/test mode
+        default_inputs = {
+            'geowiz': {
+                'shapefile': 'data/samples/tract.shp.txt',
+                'region': 'Permian',
+                'las_files': 'data/samples/demo.las'
+            },
+            'curve-smith': {
+                'las_files': 'data/samples/demo.las',
+                'zones': f'{self.out_dir}/zones.geojson'
+            },
+            'drillcast': {
+                'zones': f'{self.out_dir}/zones.geojson'
+            },
+            'titletracker': {
+                'access_db': 'data/samples/demo.accdb.txt'
+            },
+            'econobot': {
+                'drill_forecast': f'{self.out_dir}/drill_forecast.json',
+                'ownership_data': f'{self.out_dir}/ownership.json'
+            },
+            'riskranger': {
+                'valuation_data': f'{self.out_dir}/valuation.json',
+                'ownership_data': f'{self.out_dir}/ownership.json'
+            },
+            'the-core': {
+                'valuation_data': f'{self.out_dir}/valuation.json',
+                'risk_assessment': f'{self.out_dir}/risk_score.json',
+                'ownership_data': f'{self.out_dir}/ownership.json'
+            },
+            'notarybot': {
+                'investment_decision': f'{self.out_dir}/investment_decision.json'
+            }
+        }
+        
+        return default_inputs.get(agent_name, {}).get(input_name, 'demo_input')
     
     def _record_agent_outputs(self, agent_name: str, agent_config: Dict):
         """Record agent outputs in state"""
