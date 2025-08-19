@@ -1,0 +1,130 @@
+name: titletracker
+description: "Ownership extraction and mineral rights analysis specialist"
+version: "1.0.0"
+
+inputs:
+  required:
+    - ownership_data: "Mineral rights ownership files (PDF, CSV, MDB)"
+  optional:
+    - tract_boundaries: "Property boundaries from shapefile data"
+    - existing_leases: "Current lease agreements and terms"
+    - regulatory_filings: "County records and regulatory submissions"
+
+outputs:
+  - name: ownership.json
+    description: "Structured ownership data with NRI/WI calculations"
+    path: "${OUT_DIR}/ownership.json"
+  - name: ownership_summary.md
+    description: "Ownership analysis with key stakeholders"
+    path: "${OUT_DIR}/ownership_summary.md"
+  - name: lease_analysis.md
+    description: "Lease terms and obligations analysis"
+    path: "${OUT_DIR}/lease_analysis.md"
+
+tools:
+  - pdf_extractor
+  - access_ingest
+  - ownership_calculator
+  - legal_analyzer
+
+workflow:
+  steps:
+    - name: "data_extraction"
+      description: "Extract ownership data from various sources"
+      command: "tsx tools/access-ingest.ts ${input.ownership_data}"
+    - name: "ownership_parsing"
+      description: "Parse and structure ownership information"
+      action: "parse_ownership_data"
+    - name: "interest_calculation"
+      description: "Calculate NRI and WI for each tract"
+      action: "calculate_interests"
+    - name: "lease_analysis"
+      description: "Analyze lease terms and obligations"
+      action: "analyze_lease_terms"
+    - name: "stakeholder_identification"
+      description: "Identify key stakeholders and decision makers"
+      action: "identify_stakeholders"
+
+quality_gates:
+  - check: "Ownership data must include NRI and WI calculations"
+    validation: "grep -q 'NRI\\|WI\\|net_revenue\\|working_interest' ${OUT_DIR}/ownership.json"
+  - check: "Ownership summary must identify key stakeholders"
+    validation: "grep -q 'stakeholder\\|owner\\|operator' ${OUT_DIR}/ownership_summary.md"
+  - check: "Lease analysis must include key terms"
+    validation: "grep -q 'lease\\|royalty\\|term\\|expiration' ${OUT_DIR}/lease_analysis.md"
+
+ownership_calculations:
+  interest_types:
+    - net_revenue_interest: "NRI"
+    - working_interest: "WI"
+    - royalty_interest: "RI"
+    - overriding_royalty: "ORRI"
+  calculation_methods:
+    - decimal_interest: true
+    - percentage_interest: true
+    - fractional_interest: true
+  validation_checks:
+    - total_wi_100_percent: true
+    - nri_wi_correlation: true
+    - lease_term_validation: true
+
+data_sources:
+  supported_formats:
+    - pdf: "Lease agreements and county records"
+    - csv: "Structured ownership data"
+    - mdb: "Access database exports"
+    - xlsx: "Excel ownership schedules"
+  extraction_methods:
+    - text_extraction: true
+    - table_parsing: true
+    - form_recognition: true
+    - coordinate_mapping: true
+
+stakeholder_analysis:
+  categories:
+    - operators: "Working interest operators"
+    - royalty_owners: "Mineral rights owners"
+    - overrides: "Overriding royalty holders"
+    - lessees: "Lease holders and assignees"
+  contact_information:
+    - names_and_entities: true
+    - mailing_addresses: true
+    - percentage_interests: true
+    - contact_roles: true
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_ownership: true
+    - continue_pipeline: true
+  timeout: 300
+  max_retries: 2
+
+success_criteria:
+  - "Extracts complete ownership structure from source documents"
+  - "Calculates accurate NRI and WI for all stakeholders"
+  - "Identifies key decision makers and operators"
+  - "Provides structured data for economic modeling"
+  - "Validates interest calculations for consistency"
+
+next_agents:
+  on_success: ["econobot"]
+  on_failure: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "python agents/titletracker_agent.py"
+  args:
+    - "--ownership-data=${input.ownership_data}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 4
+  category: "ownership_analysis"

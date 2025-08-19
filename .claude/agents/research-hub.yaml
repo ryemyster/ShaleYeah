@@ -1,0 +1,122 @@
+name: research-hub
+description: "Research and integration specification specialist"
+version: "1.0.0"
+
+inputs:
+  required:
+    - product_name: "Target system or technology for integration research"
+  optional:
+    - integration_requirements: "Specific capabilities needed"
+    - industry_standards: "Relevant specifications and protocols"
+
+outputs:
+  - name: rfcs
+    description: "Detailed Request for Comments documents with implementation guidance"
+    path: "${OUT_DIR}/research/rfcs/"
+    type: "directory"
+
+tools:
+  - web-fetch.ts
+  - document_analyzer
+  - api_researcher
+
+workflow:
+  steps:
+    - name: "technology_research"
+      description: "Gather vendor docs and neutral sources"
+      command: "tsx tools/web-fetch.ts ${research_urls}"
+    - name: "api_analysis"
+      description: "Document endpoints, auth, and data formats"
+      action: "analyze_api_documentation"
+    - name: "security_review"
+      description: "Review authentication and compliance"
+      action: "assess_security_requirements"
+    - name: "integration_examples"
+      description: "Create working code examples"
+      action: "generate_examples"
+    - name: "license_compliance"
+      description: "Review licensing and Apache 2.0 compatibility"
+      action: "check_license_compatibility"
+    - name: "poc_planning"
+      description: "Create implementation roadmap"
+      action: "create_poc_plan"
+
+quality_gates:
+  - check: "RFC must include two or more authoritative citations"
+    validation: "grep -o 'https\\?://[^)]*' ${OUT_DIR}/research/rfcs/*.md | wc -l | awk '{if($1>=2) print \"PASS\"; else print \"FAIL\"}'"
+  - check: "RFC must include proof-of-concept plan"
+    validation: "grep -q 'Implementation Plan\\|Proof.*Concept' ${OUT_DIR}/research/rfcs/*.md"
+  - check: "RFC must include API documentation"
+    validation: "grep -q 'API\\|endpoint\\|authentication' ${OUT_DIR}/research/rfcs/*.md"
+
+research_domains:
+  priority_1:
+    - "SIEM/SOAR Platforms"
+    - "GIS Systems" 
+    - "Data Formats"
+  priority_2:
+    - "Cloud APIs"
+    - "Mining Software"
+    - "ML/AI Platforms"
+  priority_3:
+    - "Industry Standards"
+    - "Workflow Automation"
+    - "Economic Modeling"
+
+rfc_structure:
+  sections:
+    - name: "Executive Summary"
+      required: true
+      includes: ["technology_overview", "business_value", "complexity_estimate"]
+    - name: "Technical Specification"
+      required: true
+      includes: ["api_endpoints", "data_formats", "authentication", "rate_limits"]
+    - name: "Integration Approach"
+      required: true
+      includes: ["implementation_strategy", "dependencies", "error_handling"]
+    - name: "Code Examples"
+      required: true
+      includes: ["minimal_examples", "usage_patterns", "testing_approaches"]
+    - name: "Implementation Plan"
+      required: true
+      includes: ["development_roadmap", "validation_criteria", "maintenance"]
+    - name: "References"
+      required: true
+      min_citations: 2
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_research: true
+    - continue_pipeline: true
+  timeout: 900
+  max_retries: 2
+
+success_criteria:
+  - "Produces implementable integration specifications"
+  - "Enables rapid development of new SHALE YEAH capabilities"
+  - "Maintains high technical accuracy and completeness"
+  - "Supports both technical and business decision-making"
+  - "Builds comprehensive knowledge base for platform expansion"
+
+next_agents:
+  on_success: ["agent-forge"]
+  on_failure: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "python agents/research_hub_agent.py"
+  args:
+    - "--product=${input.product_name}"
+    - "--output-dir=${OUT_DIR}/research/rfcs"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 7
+  category: "research_expansion"

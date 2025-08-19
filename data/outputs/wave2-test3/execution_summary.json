@@ -1,0 +1,29 @@
+{
+  "goal": "demo",
+  "run_id": "wave2-test3",
+  "timestamp": "2025-08-18T18:37:32.078358",
+  "success": true,
+  "output_directory": "data/outputs/wave2-test3",
+  "generated_files": [
+    {
+      "name": "state.json",
+      "path": "state.json",
+      "size": 785
+    },
+    {
+      "name": "geology_summary.md",
+      "path": "geology_summary.md",
+      "size": 1598
+    },
+    {
+      "name": "zones.geojson",
+      "path": "zones.geojson",
+      "size": 2645
+    },
+    {
+      "name": "SHALE_YEAH_REPORT.md",
+      "path": "SHALE_YEAH_REPORT.md",
+      "size": 3640
+    }
+  ]
+}

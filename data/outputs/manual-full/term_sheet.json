@@ -1,0 +1,81 @@
+{
+  "run_id": "manual-full",
+  "generation_date": "2025-08-18T19:09:46.086490",
+  "transaction_summary": {
+    "transaction_type": "Oil and Gas Interest Acquisition",
+    "structure": "Asset Purchase",
+    "status": "Letter of Intent Stage"
+  },
+  "property_details": {
+    "tract_id": "DEMO_TRACT_001",
+    "legal_description": "Section 15, Township 2 South, Range 3 East, Permian County, Texas",
+    "total_acres": 640,
+    "state": "Texas",
+    "county": "Permian County"
+  },
+  "financial_terms": {
+    "purchase_price": 47656743.0,
+    "price_per_acre": 74464.0,
+    "earnest_money": 476567.0,
+    "earnest_money_percent": 0.01,
+    "development_commitment": 70000000
+  },
+  "interest_structure": {
+    "working_interest": 0.75,
+    "net_revenue_interest": 0.6,
+    "royalty_burden": 0.4,
+    "operator_status": true
+  },
+  "timeline": {
+    "loi_execution": "2025-08-18",
+    "due_diligence_period_days": 45,
+    "due_diligence_expiration": "2025-10-02",
+    "exclusivity_period_days": 60,
+    "exclusivity_expiration": "2025-10-17",
+    "target_closing": "2025-11-16"
+  },
+  "conditions_precedent": [
+    "Satisfactory completion of due diligence",
+    "Execution of definitive purchase and sale agreement",
+    "Title insurance availability",
+    "Regulatory transfer approvals",
+    "No material adverse changes"
+  ],
+  "due_diligence_scope": [
+    "Title examination and clearance",
+    "Environmental assessment",
+    "Geological and engineering review",
+    "Regulatory compliance verification",
+    "Financial and operational audit"
+  ],
+  "development_plan": {
+    "estimated_wells": 4,
+    "development_timeline_months": 24,
+    "total_capex": 70000000,
+    "first_production_target": "2026-08-18"
+  },
+  "investment_basis": {
+    "npv_10_percent": 158855811.0,
+    "decision_score": 86,
+    "confidence_level": "HIGH",
+    "investment_decision": "PROCEED"
+  },
+  "legal_structure": {
+    "governing_law": "Texas",
+    "assignment_rights": true,
+    "confidentiality_period_months": 24,
+    "binding_provisions": [
+      "Confidentiality",
+      "Exclusivity",
+      "Good faith negotiation",
+      "Expense responsibility"
+    ]
+  },
+  "risk_factors": [
+    "Geological and reservoir performance risk",
+    "Commodity price volatility",
+    "Regulatory and environmental compliance",
+    "Development execution risk",
+    "Title and ownership verification"
+  ]
+}

@@ -1,0 +1,83 @@
+name: geowiz
+description: "Geology analysis and well-log interpretation specialist for oil & gas subsurface data"
+version: "1.0.0"
+
+inputs:
+  required:
+    - shapefile: "Shapefile data for tract boundaries"
+    - region: "Geographic region (e.g., Permian, Bakken)"
+  optional:
+    - las_files: "LAS well log files for analysis"
+    - existing_geology: "Previous geological analysis context"
+
+outputs:
+  - name: geology_summary.md
+    description: "Formation analysis with depth intervals and interpretations"
+    path: "${OUT_DIR}/geology_summary.md"
+  - name: zones.geojson
+    description: "Geological zones with proper SRID and depth units"
+    path: "${OUT_DIR}/zones.geojson"
+
+tools:
+  - las-parse.ts
+  - curve-qc.py
+  - web-fetch.ts
+
+workflow:
+  steps:
+    - name: "ingest_and_validate"
+      description: "Parse LAS files and validate data quality"
+      command: "tsx tools/las-parse.ts ${input.las_files}"
+    - name: "geological_interpretation"
+      description: "Apply lithofacies classification and identify formations"
+      action: "analyze_formations"
+    - name: "zone_generation"
+      description: "Create geological zones with confidence levels"
+      action: "generate_zones"
+    - name: "output_generation"
+      description: "Generate zones.geojson and geology_summary.md"
+      action: "create_outputs"
+
+quality_gates:
+  - check: "zones.geojson must declare depth units"
+    validation: "grep -q 'depth_unit' ${OUT_DIR}/zones.geojson"
+  - check: "geology_summary.md must include confidence scores"
+    validation: "grep -q 'confidence' ${OUT_DIR}/geology_summary.md"
+  - check: "SRID must be declared in zones.geojson"
+    validation: "grep -q 'crs' ${OUT_DIR}/zones.geojson"
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_outputs: true
+    - continue_pipeline: false
+  timeout: 300
+  max_retries: 2
+
+success_criteria:
+  - "Zones.geojson contains geological boundaries with depth units"
+  - "Geology summary provides formation analysis"
+  - "All spatial data includes proper coordinate reference system"
+
+next_agents:
+  on_success: ["curve-smith", "drillcast"]
+  on_failure: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "python agents/geowiz_agent.py"
+  args:
+    - "--shapefile=${input.shapefile}"
+    - "--region=${input.region}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 1
+  category: "geological_analysis"

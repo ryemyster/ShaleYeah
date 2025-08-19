@@ -1,0 +1,20 @@
+{
+  "run_id": "wave2-test",
+  "start_time": 1755563796.323413,
+  "agents_completed": [
+    {
+      "name": "geowiz",
+      "execution_time": 0.03550910949707031,
+      "timestamp": 1755563796.4142442
+    }
+  ],
+  "agents_failed": [],
+  "current_agent": null,
+  "outputs": {
+    "geowiz": {
+      "geology_summary.md": "data/outputs/wave2-test/geology_summary.md",
+      "zones.geojson": "data/outputs/wave2-test/zones.geojson"
+    }
+  },
+  "metadata": {}
+}

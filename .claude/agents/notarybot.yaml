@@ -1,0 +1,183 @@
+name: notarybot
+description: "Letter of Intent (LOI) generation and deal structuring specialist"
+version: "1.0.0"
+
+inputs:
+  required:
+    - investment_decision: "Approved investment recommendation from the-core"
+    - valuation_data: "Financial terms and valuations from econobot"
+    - ownership_data: "Stakeholder information from titletracker"
+  optional:
+    - market_comparables: "Recent comparable transactions"
+    - legal_templates: "Standard LOI templates and terms"
+    - negotiation_parameters: "Acceptable terms and flexibility ranges"
+
+outputs:
+  - name: loi.pdf
+    description: "Formal Letter of Intent ready for signature"
+    path: "${OUT_DIR}/loi.pdf"
+  - name: deal_summary.md
+    description: "Deal structure and key terms summary"
+    path: "${OUT_DIR}/deal_summary.md"
+  - name: negotiation_guidelines.md
+    description: "Negotiation strategy and acceptable terms"
+    path: "${OUT_DIR}/negotiation_guidelines.md"
+
+tools:
+  - document_generator
+  - legal_formatter
+  - deal_structurer
+
+workflow:
+  steps:
+    - name: "deal_structure_design"
+      description: "Design optimal deal structure based on analysis"
+      action: "design_deal_structure"
+    - name: "terms_calculation"
+      description: "Calculate offer terms based on valuation and risk"
+      action: "calculate_offer_terms"
+    - name: "stakeholder_identification"
+      description: "Identify key stakeholders and decision makers"
+      action: "identify_key_stakeholders"
+    - name: "document_generation"
+      description: "Generate formal LOI document"
+      action: "generate_loi_document"
+    - name: "negotiation_preparation"
+      description: "Prepare negotiation strategy and guidelines"
+      action: "prepare_negotiation_strategy"
+
+quality_gates:
+  - check: "LOI must include all essential commercial terms"
+    validation: "grep -q 'price\\|consideration\\|terms\\|conditions' ${OUT_DIR}/loi.pdf"
+  - check: "Deal summary must include key financial metrics"
+    validation: "grep -q 'npv\\|irr\\|roi\\|investment' ${OUT_DIR}/deal_summary.md"
+  - check: "Negotiation guidelines must include acceptable ranges"
+    validation: "grep -q 'minimum\\|maximum\\|acceptable\\|flexibility' ${OUT_DIR}/negotiation_guidelines.md"
+
+deal_structure:
+  transaction_types:
+    - mineral_acquisition: "Purchase of mineral rights"
+    - lease_acquisition: "Assignment of existing leases"
+    - joint_venture: "Working interest partnership"
+    - farmout_agreement: "Earn-in drilling arrangement"
+    
+  consideration_methods:
+    - cash_purchase: "Upfront cash payment"
+    - drilling_carry: "Carried interest in drilling costs"
+    - overriding_royalty: "Retained royalty interest"
+    - combination: "Mix of cash and future interests"
+
+offer_calculation:
+  base_offer: "70% of NPV as starting point"
+  
+  adjustments:
+    risk_discount:
+      low_risk: 0.90      # 10% discount for low risk
+      medium_risk: 0.80   # 20% discount for medium risk
+      high_risk: 0.70     # 30% discount for high risk
+      
+    title_clarity:
+      perfect_title: 1.00   # No discount
+      minor_issues: 0.95    # 5% discount
+      moderate_issues: 0.90 # 10% discount
+      
+    strategic_value:
+      high_strategic: 1.10  # 10% premium
+      medium_strategic: 1.00 # No adjustment
+      low_strategic: 0.95   # 5% discount
+
+loi_terms:
+  essential_terms:
+    - parties: "Buyer (SHALE YEAH) and Seller identification"
+    - property_description: "Legal description and tract boundaries"
+    - consideration: "Purchase price and payment terms"
+    - closing_conditions: "Due diligence and title requirements"
+    - timeline: "Due diligence period and closing date"
+    - exclusivity: "Exclusive negotiation period"
+    
+  standard_conditions:
+    - title_review: "30-day title examination period"
+    - environmental_review: "Environmental assessment requirements"
+    - regulatory_approval: "Required permits and approvals"
+    - financing_contingency: "Financing availability conditions"
+    
+  protective_provisions:
+    - due_diligence_out: "Right to terminate during due diligence"
+    - title_defect_threshold: "Acceptable level of title defects"
+    - environmental_liability: "Allocation of environmental risks"
+    - representation_warranties: "Seller representations and warranties"
+
+negotiation_strategy:
+  opening_position:
+    - offer_percentage: 75  # % of calculated value as opening offer
+    - due_diligence_period: 45  # days
+    - exclusivity_period: 30   # days
+    - earnest_money: 25000     # $ earnest money deposit
+    
+  acceptable_ranges:
+    price_flexibility:
+      minimum: 0.85  # 85% of calculated offer
+      maximum: 1.15  # 115% of calculated offer
+      
+    timeline_flexibility:
+      min_due_diligence: 30   # days
+      max_due_diligence: 60   # days
+      
+  deal_breakers:
+    - title_defects_over: 0.10  # 10% of value
+    - environmental_liability: "Unlimited historical liability"
+    - unreasonable_warranties: "Excessive seller protection"
+
+document_formatting:
+  template_sections:
+    - header: "Letterhead and formal address"
+    - parties: "Legal entity identification"
+    - property: "Legal description and exhibits"
+    - terms: "Commercial terms and conditions"
+    - timeline: "Key dates and deadlines"
+    - signatures: "Signature blocks and notarization"
+    
+  legal_requirements:
+    - proper_legal_names: true
+    - accurate_legal_descriptions: true
+    - compliant_signature_blocks: true
+    - required_disclosures: true
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_draft_documents: true
+    - continue_pipeline: false  # LOI generation failure is critical
+  timeout: 180
+  max_retries: 2
+
+success_criteria:
+  - "Generates legally compliant LOI ready for execution"
+  - "Includes all essential commercial terms and conditions"
+  - "Provides clear deal structure optimized for value and risk"
+  - "Enables immediate transaction initiation upon approval"
+  - "Supports successful negotiation with structured guidelines"
+
+next_agents:
+  on_success: ["reporter"]
+  final_transaction_agent: true
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "python agents/notarybot_agent.py"
+  args:
+    - "--decision=${input.investment_decision}"
+    - "--valuation=${input.valuation_data}"
+    - "--ownership=${input.ownership_data}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 8
+  category: "transaction_execution"

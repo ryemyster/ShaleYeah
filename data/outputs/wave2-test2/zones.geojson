@@ -1,0 +1,137 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "formation_name": "Wolfcamp A",
+        "lithology": "Shale/Limestone",
+        "top_depth": 0,
+        "bottom_depth": 150,
+        "thickness": 150,
+        "depth_unit": "ft",
+        "confidence": 0.7,
+        "porosity": 0.08,
+        "permeability": 0.0001,
+        "zone_id": "zone_1"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -102.0,
+              32.0
+            ],
+            [
+              -102.0,
+              32.1
+            ],
+            [
+              -101.9,
+              32.1
+            ],
+            [
+              -101.9,
+              32.0
+            ],
+            [
+              -102.0,
+              32.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "formation_name": "Wolfcamp B",
+        "lithology": "Shale/Sandstone",
+        "top_depth": 150,
+        "bottom_depth": 350,
+        "thickness": 200,
+        "depth_unit": "ft",
+        "confidence": 0.7,
+        "porosity": 0.1,
+        "permeability": 0.0002,
+        "zone_id": "zone_2"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -102.0,
+              32.0
+            ],
+            [
+              -102.0,
+              32.1
+            ],
+            [
+              -101.9,
+              32.1
+            ],
+            [
+              -101.9,
+              32.0
+            ],
+            [
+              -102.0,
+              32.0
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "formation_name": "Bone Spring",
+        "lithology": "Limestone/Sandstone",
+        "top_depth": 350,
+        "bottom_depth": 650,
+        "thickness": 300,
+        "depth_unit": "ft",
+        "confidence": 0.7,
+        "porosity": 0.12,
+        "permeability": 0.0005,
+        "zone_id": "zone_3"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -102.0,
+              32.0
+            ],
+            [
+              -102.0,
+              32.1
+            ],
+            [
+              -101.9,
+              32.1
+            ],
+            [
+              -101.9,
+              32.0
+            ],
+            [
+              -102.0,
+              32.0
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,16 +1,13 @@
-SHALE YEAH
-Copyright 2025 Ryan McDonald / Ascendvent LLC
+IP INDEPENDENCE STATEMENT
 
-This product includes software developed by Ryan McDonald and Ascendvent LLC.
+SHALE YEAH was created independently and from first principles. 
+It is not affiliated with, endorsed by or derivative any third-party oil & gas investment firm.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+This project contains no proprietary source code, business logic, trade secrets or confidential material from any other entity. 
+All components — including agents, workflows, data structures and economic models were designed 
+ecifically to support an open-source platform aimed at democratizing access to 
+oil & gas deal evaluation, execution and reporting.
 
-    http://www.apache.org/licenses/LICENSE-2.0
+Where common terms or legacy formats (e.g. .mdb, ARIES, Spotfire) are mentioned they are used in a generic, standards-based context only.
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+This project exists to empower the public to build and operate better upstream workflows using transparent agent-based infrastructure.

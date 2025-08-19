@@ -1,0 +1,141 @@
+name: research-agent
+description: "Advanced research specialist for future technology integration and feature development"
+version: "1.0.0"
+
+inputs:
+  required:
+    - research_topic: "Strategic areas for investigation"
+  optional:
+    - feature_requirements: "Proposed capabilities needing research validation"
+    - market_intelligence_requests: "Competitive landscape analysis needs"
+    - technology_trends: "Emerging technology assessment topics"
+
+outputs:
+  - name: research_reports
+    description: "Comprehensive research reports with strategic insights"
+    path: "${OUT_DIR}/research/reports/"
+    type: "directory"
+  - name: roadmaps
+    description: "Technology roadmaps and implementation timelines"
+    path: "${OUT_DIR}/research/roadmaps/"
+    type: "directory"
+  - name: competitive_analysis
+    description: "Market analysis and competitive intelligence"
+    path: "${OUT_DIR}/research/competitive-analysis/"
+    type: "directory"
+
+tools:
+  - WebSearch
+  - WebFetch
+  - market_analyzer
+  - trend_analyzer
+
+workflow:
+  steps:
+    - name: "research_scope_definition"
+      description: "Clarify objectives and success criteria"
+      action: "define_research_scope"
+    - name: "comprehensive_research"
+      description: "Gather information from authoritative sources"
+      action: "conduct_research"
+    - name: "analysis_synthesis"
+      description: "Synthesize research into strategic insights"
+      action: "analyze_and_synthesize"
+    - name: "feasibility_assessment"
+      description: "Evaluate technical and business viability"
+      action: "assess_feasibility"
+    - name: "strategic_recommendations"
+      description: "Develop implementation recommendations"
+      action: "create_recommendations"
+    - name: "roadmap_documentation"
+      description: "Create prioritized development roadmaps"
+      action: "document_roadmap"
+
+quality_gates:
+  - check: "Minimum 5 authoritative sources per research report"
+    validation: "grep -o 'https\\?://[^)]*' ${OUT_DIR}/research/reports/*.md | wc -l | awk '{if($1>=5) print \"PASS\"; else print \"FAIL\"}'"
+  - check: "Include quantitative analysis where applicable"
+    validation: "grep -q 'data\\|metrics\\|statistics\\|ROI' ${OUT_DIR}/research/reports/*.md"
+  - check: "Comprehensive risk assessment included"
+    validation: "grep -q 'risk\\|mitigation\\|threats' ${OUT_DIR}/research/reports/*.md"
+  - check: "Actionable recommendations with timelines"
+    validation: "grep -q 'recommend\\|timeline\\|implementation' ${OUT_DIR}/research/reports/*.md"
+
+research_domains:
+  - "Emerging Oil & Gas Technologies"
+  - "Data Analytics Applications" 
+  - "Integration Platforms"
+  - "Regulatory Compliance"
+  - "Competitive Intelligence"
+  - "Technology Adoption Trends"
+
+report_structure:
+  sections:
+    - name: "Executive Summary"
+      required: true
+      includes: ["key_findings", "strategic_recommendations", "impact_assessment"]
+    - name: "Research Methodology"
+      required: true
+      includes: ["sources", "approach", "data_collection_methods"]
+    - name: "Market Landscape"
+      required: true
+      includes: ["current_state", "key_players", "competitive_positioning"]
+    - name: "Technology Analysis"
+      required: true
+      includes: ["capabilities", "limitations", "integration_requirements"]
+    - name: "Strategic Assessment"
+      required: true
+      includes: ["business_case", "roi_analysis", "risk_assessment"]
+    - name: "Recommendations"
+      required: true
+      includes: ["prioritized_actions", "timelines", "resource_requirements"]
+    - name: "Implementation Roadmap"
+      required: true
+      includes: ["development_phases", "milestones", "success_metrics"]
+    - name: "References"
+      required: true
+      min_sources: 5
+
+research_priorities:
+  - competitive_disruption: 1
+  - integration_opportunities: 2
+  - emerging_standards: 3
+  - market_gaps: 4
+  - technology_trends: 5
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_research: true
+    - continue_pipeline: true
+  timeout: 1800
+  max_retries: 2
+
+success_criteria:
+  - "Produces strategic insights that inform platform development decisions"
+  - "Identifies high-value opportunities for competitive advantage"
+  - "Provides quantitative analysis supporting business cases"
+  - "Delivers actionable roadmaps with clear implementation paths"
+  - "Maintains strategic alignment with SHALE YEAH disruption mission"
+
+next_agents:
+  on_success: ["agent-forge", "reporter"]
+  on_failure: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "python agents/research_agent.py"
+  args:
+    - "--topic=${input.research_topic}"
+    - "--output-dir=${OUT_DIR}/research"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 6
+  category: "strategic_research"
