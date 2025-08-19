@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """
-SHALE YEAH Multi-Agent Control Plane (MCP)
+SHALE YEAH Multi-Agent Control Plane (MCP) - LLM-Powered Orchestrator
 
-Smart, dynamic coordination between agents. Governs which agents to run, 
-in what order, with what data, and when to stop or escalate.
+**INTELLIGENT ORCHESTRATION:** Like a human team lead managing oil & gas professionals
 
-Based on specs/mcp.spec - replaces rigid workflows with runtime decision logic.
+This MCP uses LLM intelligence to:
+- Decide which agent persona to run next based on data and context
+- Coordinate agent handoffs like a human project manager
+- Escalate complex decisions to humans when confidence is low
+- Generate executive summaries of multi-agent workflows
+
+Replaces 100+ employees with YAML-driven agentic AI flows.
 """
 
 import json
@@ -18,14 +23,49 @@ from pathlib import Path
 from typing import Dict, List, Optional, Any
 import yaml
 
+# Import LLM capabilities
+try:
+    from agents.shared.llm_client import get_llm_client, LLMClient
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+    logging.warning("LLM integration not available - using deterministic orchestration")
+
 class MCPController:
-    """Multi-Agent Control Plane Controller"""
+    """LLM-Powered Multi-Agent Control Plane - Intelligent Team Orchestrator"""
     
     def __init__(self, run_id: str, out_dir: str):
         self.run_id = run_id
         self.out_dir = Path(out_dir)
         self.state_file = self.out_dir / "state.json"
         self.agents_dir = Path(".claude/agents")
+        
+        # Initialize LLM orchestration intelligence
+        self.llm_client = None
+        self.orchestration_persona = {
+            "role": "Senior Oil & Gas Investment Director",
+            "experience_years": 20,
+            "expertise": [
+                "Investment decision making",
+                "Team coordination", 
+                "Risk management",
+                "Strategic analysis"
+            ],
+            "decision_style": "data-driven with human escalation"
+        }
+        
+        # Initialize LLM if available
+        if LLM_AVAILABLE and (os.getenv('ANTHROPIC_API_KEY') or os.getenv('OPENAI_API_KEY')):
+            try:
+                self.llm_client = get_llm_client()
+                self.logger.info("✅ Intelligent orchestration enabled")
+            except Exception as e:
+                self.logger.warning(f"LLM orchestration failed: {e}")
+        else:
+            self.logger.info("📊 Using deterministic orchestration")
+        
+        # Decision confidence threshold
+        self.confidence_threshold = 0.7
         
         # Initialize state
         self.state = {
@@ -305,7 +345,156 @@ class MCPController:
         self.state['outputs'][agent_name] = agent_outputs
     
     def _get_next_agents(self, completed_agent: str, success: bool) -> List[str]:
-        """Determine next agents based on completed agent and success status"""
+        """
+        INTELLIGENT ORCHESTRATION - Like a human project manager deciding next steps
+        
+        Uses LLM reasoning to determine which agent persona should run next based on:
+        - Current project context and data available  
+        - Previous agent outputs and success/failure
+        - Investment decision requirements
+        - Human escalation needs
+        """
+        
+        # Try intelligent orchestration first
+        if self.llm_client and success:
+            intelligent_next = self._intelligent_orchestration_decision(completed_agent)
+            if intelligent_next:
+                return intelligent_next
+        
+        # Fallback to deterministic orchestration
+        return self._deterministic_orchestration(completed_agent, success)
+    
+    def _intelligent_orchestration_decision(self, completed_agent: str) -> List[str]:
+        """LLM-powered orchestration - like a senior director managing the team"""
+        
+        try:
+            # Gather context about current project state
+            project_context = self._gather_project_context()
+            
+            orchestration_prompt = f"""
+            You are a Senior Oil & Gas Investment Director managing a team of specialist agents.
+            
+            PROJECT CONTEXT:
+            - Run ID: {self.run_id}
+            - Just completed: {completed_agent} agent (SUCCESS)
+            - Agents completed so far: {', '.join(self.state.get('agents_completed', []))}
+            - Available outputs: {list(project_context.get('available_outputs', {}).keys())}
+            
+            AVAILABLE AGENT PERSONAS:
+            - geowiz: Senior Petroleum Geologist (geological analysis)
+            - drillcast: Drilling Engineer (development planning)  
+            - titletracker: Landman (ownership analysis)
+            - econobot: Financial Analyst (NPV/DCF modeling)
+            - riskranger: Risk Manager (risk assessment)
+            - the-core: Investment Committee (final decisions)
+            - notarybot: Legal Counsel (LOI generation)
+            - reporter: Executive Assistant (final reporting)
+            
+            As an experienced investment director, decide which agent(s) should run next.
+            Consider:
+            - Logical workflow sequence for investment decisions
+            - Data dependencies between agents
+            - When to escalate to humans vs continue with AI agents
+            - Risk management and due diligence requirements
+            
+            Respond in JSON format:
+            {{
+                "next_agents": ["agent1", "agent2"],
+                "reasoning": "Your professional reasoning as investment director",
+                "confidence": 0.85,
+                "escalate_to_human": false,
+                "escalation_reason": "Optional reason for human involvement"
+            }}
+            
+            Think like a senior director managing a multi-million dollar investment process.
+            """
+            
+            llm_response = self.llm_client.generate_response(
+                orchestration_prompt,
+                context={
+                    "persona": self.orchestration_persona,
+                    "project_context": project_context
+                }
+            )
+            
+            # Parse LLM decision
+            decision = json.loads(llm_response)
+            
+            # Log the reasoning
+            self.logger.info(f"🧠 Investment Director Decision: {decision.get('reasoning', 'No reasoning provided')}")
+            
+            # Check confidence and escalation
+            if decision.get('confidence', 0) < self.confidence_threshold:
+                self.logger.warning(f"⚠️  Low confidence ({decision.get('confidence')}), using deterministic fallback")
+                return []
+            
+            if decision.get('escalate_to_human'):
+                self.logger.warning(f"🚨 ESCALATION: {decision.get('escalation_reason', 'Director recommends human review')}")
+                self._create_escalation_report(completed_agent, decision)
+                return ['reporter']  # Generate report for human review
+            
+            # Return intelligent decision
+            next_agents = decision.get('next_agents', [])
+            self.state['orchestration_reasoning'] = decision.get('reasoning')
+            return [agent for agent in next_agents if agent not in self.state.get('agents_completed', [])]
+            
+        except Exception as e:
+            self.logger.error(f"Intelligent orchestration failed: {e}")
+            return []  # Fall back to deterministic
+    
+    def _gather_project_context(self) -> Dict:
+        """Gather current project context for intelligent orchestration"""
+        
+        # Check what outputs are available
+        available_outputs = {}
+        output_files = [
+            'geology_summary.md', 'zones.geojson',
+            'drill_forecast.json', 'ownership.json', 
+            'valuation.json', 'risk_assessment.json',
+            'investment_decision.json', 'loi.md'
+        ]
+        
+        for output_file in output_files:
+            file_path = self.out_dir / output_file
+            if file_path.exists():
+                try:
+                    if output_file.endswith('.json'):
+                        with open(file_path, 'r') as f:
+                            available_outputs[output_file] = json.load(f)
+                    else:
+                        with open(file_path, 'r') as f:
+                            available_outputs[output_file] = f.read()[:500]  # First 500 chars
+                except Exception:
+                    available_outputs[output_file] = "Available but unreadable"
+        
+        return {
+            'available_outputs': available_outputs,
+            'run_state': self.state,
+            'timestamp': time.time()
+        }
+    
+    def _create_escalation_report(self, completed_agent: str, decision: Dict):
+        """Create escalation report for human review"""
+        
+        escalation_report = {
+            'escalation_timestamp': time.time(),
+            'run_id': self.run_id,
+            'trigger_agent': completed_agent,
+            'director_reasoning': decision.get('reasoning'),
+            'escalation_reason': decision.get('escalation_reason'),
+            'confidence_score': decision.get('confidence'),
+            'project_state': self.state,
+            'recommendation': 'Human review required before proceeding'
+        }
+        
+        escalation_file = self.out_dir / "ESCALATION_REQUIRED.json"
+        with open(escalation_file, 'w') as f:
+            json.dump(escalation_report, f, indent=2)
+        
+        self.logger.warning(f"🚨 Escalation report created: {escalation_file}")
+    
+    def _deterministic_orchestration(self, completed_agent: str, success: bool) -> List[str]:
+        """Fallback deterministic orchestration (original logic)"""
         agent_config = self._get_agent_config(completed_agent)
         if not agent_config:
             return []

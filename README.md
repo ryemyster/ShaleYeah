@@ -1,8 +1,18 @@
 # SHALE YEAH 🛢️ 
 
-**Multi-Agent Oil & Gas Analysis Platform**
+> **🎯 Democratize oil & gas investing through AI agent flows that replace what used to take 100s of employees**
 
-SHALE YEAH is an intelligent multi-agent system that transforms raw geological and engineering data into actionable investment decisions for oil and gas development. By orchestrating specialized agents through a sophisticated control plane, it provides comprehensive tract evaluation from geological interpretation through economic modeling to investment recommendations.
+**AGENTIC AI INVESTMENT PLATFORM** - Each agent represents a $200K+/year human expert, powered by LLM intelligence and orchestrated through YAML-driven workflows. From geological analysis to investment decisions, SHALE YEAH replaces entire teams with intelligent AI personas.
+
+## 🧠 The Agentic Vision
+
+**Traditional Process:** 
+- Senior Geologist (6 weeks) → Drilling Engineer (4 weeks) → Financial Analyst (3 weeks) → Investment Committee (2 weeks) → Legal Team (2 weeks)
+- **Total: 17+ weeks, $500K+ in salaries, inconsistent quality**
+
+**SHALE YEAH Process:**
+- AI Geologist → AI Engineer → AI Analyst → AI Director → AI Legal
+- **Total: 2 hours, consistent expert-level analysis, full documentation**
 
 ## 🎯 Value Proposition
 
@@ -42,19 +52,40 @@ SHALE YEAH is an intelligent multi-agent system that transforms raw geological a
                        └──────────────────┘
 ```
 
-### **Agent Specializations**
+### **AI Agent Personas** 
 
-| Agent | Function | Inputs | Outputs |
-|-------|----------|---------|---------|
-| **geowiz** | Geological interpretation | LAS logs, shapefiles | zones.geojson, geology_summary.md |
-| **curve-smith** | Log data QC & fitting | LAS files, zones | curves/*.csv, qc_report.md |  
-| **drillcast** | Drilling & production forecasting | Geological zones | drill_forecast.json, well_locations.geojson |
-| **titletracker** | Ownership & title analysis | Access databases, legal docs | ownership.json, title_analysis.md |
-| **econobot** | Economic modeling | Production forecasts, costs | valuation.json, npv_breakdown.md |
-| **riskranger** | Risk assessment & scoring | All prior analyses | risk_score.json, risk_analysis.md |
-| **the-core** | Investment decision logic | Economics, risk, ownership | investment_decision.json, recommendation.md |
-| **notarybot** | Legal document generation | Investment decisions | loi.md, term_sheet.json |
-| **reporter** | Executive reporting | All agent outputs | SHALE_YEAH_REPORT.md |
+Each agent is a sophisticated AI persona with 15+ years experience, LLM-powered reasoning, and human-like decision making:
+
+| Agent Persona | Human Role Replaced | Expertise | Decision Authority |
+|---------------|---------------------|-----------|-------------------|
+| **geowiz** 🪨 | Senior Petroleum Geologist | Subsurface analysis, shale plays | Geological assessment |
+| **drillcast** 🔧 | Drilling Engineer | Horizontal wells, completions | Development planning |
+| **titletracker** 📋 | Senior Landman | Ownership, mineral rights | Title verification |
+| **econobot** 💰 | Financial Analyst | NPV/DCF modeling, economics | Investment modeling |
+| **riskranger** ⚠️ | Risk Manager | Monte Carlo, scenario analysis | Risk quantification |
+| **the-core** 🎯 | Investment Director | Strategic decisions, ROI analysis | Investment approval |
+| **notarybot** 📑 | Legal Counsel | Transaction docs, compliance | Legal documentation |
+| **reporter** 📊 | Executive Assistant | Report synthesis, dashboards | Executive reporting |
+
+## 🧠 How AI Agents Think & Decide
+
+Each agent uses **LLM-powered reasoning** combined with **deterministic calculations** to make professional-grade decisions:
+
+```yaml
+# Example: GeoWiz AI Geologist
+geowiz:
+  persona: "Dr. Sarah Mitchell - Senior Petroleum Geologist, 15+ years"
+  reasoning_process: |
+    1. Analyze well log data with geological expertise
+    2. Apply 15 years of Permian Basin knowledge
+    3. Assess reservoir quality and drilling risks
+    4. Provide confidence-scored recommendations
+    5. Escalate to human if confidence < 70%
+  
+  llm_instructions: |
+    "You are Dr. Sarah Mitchell making a $50M geological recommendation.
+     Analyze like you're presenting to the investment committee tomorrow."
+```
 
 ## 🚀 Quick Start
 

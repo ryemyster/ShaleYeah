@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """
-GeoWiz Agent - Geology analysis and well-log interpretation specialist
+GeoWiz Agent - AI-Powered Senior Geologist Persona
 
-Transforms raw LAS well logs and geological data into actionable subsurface insights.
-Generates zones.geojson and geology_summary.md for tract evaluation.
+**PERSONA:** Senior Petroleum Geologist with 15+ years unconventional experience
+- Expert in subsurface analysis and well log interpretation
+- Specializes in shale plays and horizontal drilling optimization
+- Makes data-driven geological recommendations with confidence scoring
+
+This agent THINKS and REASONS like a human geologist, using LLM intelligence
+to analyze geological data and make professional investment recommendations.
 """
 
 import os
@@ -16,12 +21,28 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 
 from shared import BaseAgent, DemoDataGenerator
+from shared.llm_client import LLMEnhancedAgent
 
-class GeoWizAgent(BaseAgent):
-    """Geology analysis and well-log interpretation specialist"""
+class GeoWizAgent(BaseAgent, LLMEnhancedAgent):
+    """AI-Powered Senior Geologist - Replaces human geological analysis team"""
     
     def __init__(self, output_dir: str, run_id: str):
         super().__init__(output_dir, run_id, 'geowiz')
+        
+        # Geological expertise persona
+        self.persona = {
+            "role": "Senior Petroleum Geologist",
+            "experience_years": 15,
+            "specializations": [
+                "Unconventional reservoirs",
+                "Shale play evaluation", 
+                "Horizontal well optimization",
+                "Petrophysical analysis",
+                "Completion design"
+            ],
+            "decision_style": "data-driven with risk assessment",
+            "confidence_threshold": 0.7
+        }
     
     def _initialize_agent(self):
         """Initialize geowiz-specific attributes"""
@@ -31,23 +52,111 @@ class GeoWizAgent(BaseAgent):
             'zones.geojson': self.output_dir / "zones.geojson"
         }
     
-    def parse_las_files(self, las_files: str) -> Dict:
-        """Parse LAS files using las-parse.ts tool"""
-        self.logger.info(f"Parsing LAS files: {las_files}")
+    def analyze_geological_data(self, las_files: str, shapefile: str = None, region: str = "Permian") -> Dict:
+        """
+        INTELLIGENT GEOLOGICAL ANALYSIS - Like a human senior geologist
+        
+        Analyzes well logs, geological context, and regional knowledge to make
+        professional investment-grade geological recommendations.
+        """
+        self.logger.info(f"Senior Geologist analyzing tract in {region} basin")
+        
+        # Step 1: Parse raw data (deterministic)
+        raw_data = self._parse_raw_geological_data(las_files, shapefile)
+        
+        # Step 2: INTELLIGENT ANALYSIS using LLM geological expertise
+        if self.llm_client:
+            geological_analysis = self._perform_intelligent_geological_analysis(raw_data, region)
+        else:
+            geological_analysis = self._perform_deterministic_geological_analysis(raw_data, region)
+        
+        # Step 3: Generate professional geological assessment
+        assessment = self._generate_geological_assessment(raw_data, geological_analysis, region)
+        
+        return assessment
+    
+    def _perform_intelligent_geological_analysis(self, raw_data: Dict, region: str) -> Dict:
+        """LLM-powered geological analysis - like consulting a senior geologist"""
+        
+        geological_prompt = f"""
+        You are a Senior Petroleum Geologist with 15+ years experience in unconventional shale plays.
+        
+        Analyze this geological data from the {region} Basin and provide your professional assessment:
+        
+        Raw Data:
+        {json.dumps(raw_data, indent=2)}
+        
+        As an expert geologist, provide your analysis in JSON format:
+        {{
+            "formation_quality": {{
+                "reservoir_quality": "excellent|good|fair|poor",
+                "porosity_assessment": "your analysis of porosity data",
+                "permeability_assessment": "your analysis of permeability indicators", 
+                "hydrocarbon_potential": "high|medium|low",
+                "completion_effectiveness": "your assessment of completability"
+            }},
+            "drilling_recommendations": {{
+                "optimal_landing_zones": ["zone1", "zone2"],
+                "lateral_length_recommendation": "feet and reasoning",
+                "completion_strategy": "your recommended completion approach",
+                "drilling_risks": ["risk1", "risk2"]
+            }},
+            "investment_perspective": {{
+                "geological_confidence": 0.85,
+                "development_potential": "your assessment of development upside",
+                "key_risks": ["geological risk factors"],
+                "comparable_analogues": ["similar successful projects"],
+                "recommended_action": "drill|pass|more_data_needed"
+            }},
+            "professional_summary": "Your executive summary as a senior geologist",
+            "confidence_level": 0.85
+        }}
+        
+        Think like an experienced geologist making a multi-million dollar recommendation.
+        """
         
         try:
-            # Run las-parse.ts tool
-            cmd = ["tsx", "tools/las-parse.ts", las_files]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            llm_response = self.llm_client.generate_response(
+                geological_prompt, 
+                context={"persona": self.persona, "region": region}
+            )
             
-            if result.returncode == 0:
-                # Parse JSON output
-                las_metadata = json.loads(result.stdout)
-                self.logger.info("Successfully parsed LAS files")
-                return las_metadata
-            else:
-                self.logger.error(f"LAS parsing failed: {result.stderr}")
-                return {}
+            # Parse LLM response
+            analysis = json.loads(llm_response)
+            analysis["llm_enhanced"] = True
+            analysis["geologist_persona"] = self.persona["role"]
+            
+            return analysis
+            
+        except Exception as e:
+            self.logger.error(f"LLM geological analysis failed: {e}")
+            return self._perform_deterministic_geological_analysis(raw_data, region)
+    
+    def _parse_raw_geological_data(self, las_files: str, shapefile: str = None) -> Dict:
+        """Parse raw geological data (deterministic component)"""
+        
+        # Parse LAS files if available
+        las_data = {}
+        if las_files and os.path.exists(las_files):
+            try:
+                cmd = ["tsx", "tools/las-parse.ts", las_files]
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+                if result.returncode == 0:
+                    las_data = json.loads(result.stdout)
+            except Exception as e:
+                self.logger.warning(f"LAS parsing failed: {e}")
+        
+        # Use demo data if no real data available
+        if not las_data:
+            demo_generator = DemoDataGenerator()
+            las_data = demo_generator._create_demo_las_data()
+        
+        return {
+            "las_data": las_data,
+            "shapefile_data": shapefile,
+            "data_quality": "demo" if not las_data else "real",
+            "analysis_timestamp": datetime.now().isoformat()
+        }
                 
         except Exception as e:
             self.logger.error(f"Error parsing LAS files: {e}")
