@@ -1,0 +1,191 @@
+name: the-core
+description: "Investment decision logic and 3x ROI threshold enforcement specialist"
+version: "1.0.0"
+
+inputs:
+  required:
+    - valuation_data: "NPV, IRR, and financial metrics from econobot"
+    - risk_assessment: "Risk scores and probability analysis from riskranger"
+    - ownership_data: "Title clarity and operational control from titletracker"
+  optional:
+    - market_conditions: "Current market timing and competitive factors"
+    - portfolio_constraints: "Existing portfolio and diversification requirements"
+    - capital_availability: "Available investment capital and constraints"
+
+outputs:
+  - name: investment_decision.json
+    description: "Go/no-go decision with detailed justification"
+    path: "${OUT_DIR}/investment_decision.json"
+  - name: decision_matrix.md
+    description: "Decision criteria evaluation and scoring"
+    path: "${OUT_DIR}/decision_matrix.md"
+  - name: recommendation.md
+    description: "Investment recommendation with terms and conditions"
+    path: "${OUT_DIR}/recommendation.md"
+
+tools:
+  - decision_engine
+  - threshold_evaluator
+  - portfolio_optimizer
+
+workflow:
+  steps:
+    - name: "criteria_evaluation"
+      description: "Evaluate all investment criteria against thresholds"
+      action: "evaluate_investment_criteria"
+    - name: "risk_threshold_check"
+      description: "Assess risk levels against acceptable limits"
+      action: "check_risk_thresholds"
+    - name: "financial_screening"
+      description: "Apply financial hurdle rates and ROI requirements"
+      action: "screen_financial_metrics"
+    - name: "strategic_assessment"
+      description: "Evaluate strategic fit and portfolio impact"
+      action: "assess_strategic_value"
+    - name: "final_decision"
+      description: "Make go/no-go investment decision"
+      action: "make_investment_decision"
+
+quality_gates:
+  - check: "Investment decision must include clear go/no-go recommendation"
+    validation: "grep -q 'recommendation\\|decision\\|go\\|no-go' ${OUT_DIR}/investment_decision.json"
+  - check: "Decision matrix must show criteria evaluation"
+    validation: "grep -q 'criteria\\|threshold\\|score' ${OUT_DIR}/decision_matrix.md"
+  - check: "Recommendation must include terms and conditions"
+    validation: "grep -q 'terms\\|conditions\\|requirements' ${OUT_DIR}/recommendation.md"
+
+investment_criteria:
+  financial_thresholds:
+    minimum_npv: 300000      # $300K minimum NPV at 10% discount
+    minimum_irr: 0.25        # 25% minimum IRR
+    minimum_roi: 3.0         # 3x minimum return on investment
+    maximum_payback: 14      # 14 months maximum payback period
+    
+  risk_thresholds:
+    maximum_risk_score: 65   # Maximum acceptable risk score (1-100)
+    minimum_success_prob: 0.70  # 70% minimum probability of success
+    maximum_capital_at_risk: 1000000  # $1M maximum single investment
+    
+  operational_requirements:
+    title_clarity: 0.95      # 95% minimum title clarity
+    operator_control: true   # Must have operational control or trusted operator
+    permit_status: "approved_or_pending"  # Regulatory status
+    
+  strategic_criteria:
+    portfolio_fit: true      # Must fit portfolio strategy
+    market_timing: true      # Favorable market conditions
+    risk_diversification: true  # Contributes to portfolio diversification
+
+decision_logic: |
+  if (npv >= minimum_npv AND 
+      irr >= minimum_irr AND 
+      roi >= minimum_roi AND 
+      payback <= maximum_payback AND
+      risk_score <= maximum_risk_score AND
+      title_clarity >= title_clarity_threshold):
+    if strategic_criteria_met:
+      recommendation = "PROCEED"
+      next_agent = "notarybot"
+    else:
+      recommendation = "CONDITIONAL_PROCEED" 
+      next_agent = "reporter"
+  else:
+    recommendation = "NO_GO"
+    next_agent = "reporter"
+
+scoring_matrix:
+  financial_score:
+    weight: 0.40
+    components:
+      npv: 0.30
+      irr: 0.25  
+      roi: 0.25
+      payback: 0.20
+      
+  risk_score:
+    weight: 0.30
+    components:
+      overall_risk: 0.40
+      geological_risk: 0.25
+      operational_risk: 0.20
+      market_risk: 0.15
+      
+  strategic_score:
+    weight: 0.30
+    components:
+      portfolio_fit: 0.30
+      market_timing: 0.25
+      diversification: 0.25
+      growth_potential: 0.20
+
+decision_categories:
+  "PROCEED":
+    description: "Investment meets all criteria, proceed to LOI"
+    next_action: "Execute LOI via notarybot"
+    conditions: "All thresholds met, low risk, strong strategic fit"
+    
+  "CONDITIONAL_PROCEED":
+    description: "Investment meets financial criteria with conditions"
+    next_action: "Proceed with additional due diligence"
+    conditions: "Financial thresholds met, but strategic or operational concerns"
+    
+  "NO_GO":
+    description: "Investment does not meet minimum criteria"
+    next_action: "Reject investment opportunity"
+    conditions: "Financial thresholds not met or unacceptable risk level"
+    
+  "FURTHER_ANALYSIS":
+    description: "Borderline case requiring additional analysis"
+    next_action: "Request additional technical or market analysis"
+    conditions: "Close to thresholds, need more data for confident decision"
+
+sensitivity_analysis:
+  threshold_testing:
+    - npv_sensitivity: "Impact of NPV changes on decision"
+    - risk_tolerance: "Effect of risk score variations"
+    - market_conditions: "Impact of commodity price changes"
+    
+  scenario_analysis:
+    - base_case: "Most likely scenario outcomes"
+    - downside_case: "Conservative scenario with higher risks"
+    - upside_case: "Optimistic scenario with market tailwinds"
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - default_to_no_go: true
+    - continue_pipeline: true
+  timeout: 60
+  max_retries: 1
+
+success_criteria:
+  - "Makes consistent investment decisions based on transparent criteria"
+  - "Enforces 3x ROI and other financial thresholds rigorously"
+  - "Provides clear justification for all investment recommendations"
+  - "Supports risk-adjusted decision making with portfolio considerations"
+  - "Enables automated investment screening at scale"
+
+next_agents:
+  on_proceed: ["notarybot"]
+  on_no_go: ["reporter"]
+  on_conditional: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "npx tsx src/agents/the_core.ts"
+  args:
+    - "--valuation=${input.valuation_data}"
+    - "--risk=${input.risk_assessment}"
+    - "--ownership=${input.ownership_data}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 7
+  category: "investment_decision"

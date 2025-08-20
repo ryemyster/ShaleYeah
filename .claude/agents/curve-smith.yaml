@@ -1,0 +1,99 @@
+name: curve-smith
+description: "Curve fitting and quality control specialist for well log data"
+version: "1.0.0"
+
+inputs:
+  required:
+    - las_files: "Well log data in industry standard LAS format"
+    - zones_geojson: "Geological zones from GeoWiz agent"
+  optional:
+    - existing_curves: "Existing curve data for validation"
+
+outputs:
+  - name: curves
+    description: "Individual curve files (GR.csv, RHOB.csv, NPHI.csv, etc.)"
+    path: "${OUT_DIR}/curves/"
+    type: "directory"
+  - name: qc_report.md
+    description: "Comprehensive statistical quality control report"
+    path: "${OUT_DIR}/qc_report.md"
+
+tools:
+  - las-parse.ts
+  - curve-fit.ts
+  - curve-qc.ts
+
+workflow:
+  steps:
+    - name: "las_processing"
+      description: "Parse LAS files and extract curve data"
+      command: "tsx tools/las-parse.ts ${input.las_files}"
+    - name: "curve_fitting"
+      description: "Apply curve fitting for missing data segments"
+      command: "tsx tools/curve-fit.ts input.csv target=GR order=2"
+    - name: "statistical_analysis"
+      description: "Calculate RMSE and NRMSE for all curves"
+      command: "npx tsx tools/curve-qc.ts ${input.las_files} CURVE=GR"
+    - name: "quality_control"
+      description: "Generate comprehensive QC report"
+      action: "generate_qc_report"
+    - name: "data_export"
+      description: "Export individual curves as CSV files"
+      action: "export_curves"
+
+quality_gates:
+  - check: "qc_report.md must include RMSE and NRMSE for all curves"
+    validation: "grep -q 'RMSE\\|NRMSE' ${OUT_DIR}/qc_report.md"
+  - check: "curves directory must contain CSV files"
+    validation: "ls ${OUT_DIR}/curves/*.csv"
+  - check: "all curves must have metadata headers"
+    validation: "head -n 5 ${OUT_DIR}/curves/*.csv | grep -q 'units'"
+
+statistical_thresholds:
+  rmse_targets:
+    GR: 5.0  # API units
+    RHOB: 0.05  # g/cc
+    NPHI: 0.02  # fraction
+  nrmse_limits:
+    critical_curves: 0.10  # 10%
+    secondary_curves: 0.15  # 15%
+  data_completeness:
+    minimum_valid: 0.80  # 80% valid data per interval
+    max_gap_length: 5.0  # feet
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_outputs: true
+    - continue_pipeline: true
+  timeout: 600
+  max_retries: 2
+
+success_criteria:
+  - "All curves include statistical quality metrics (RMSE, NRMSE)"
+  - "Missing data is properly handled and documented"
+  - "QC report enables confident data usage decisions"
+  - "Output format supports downstream modeling"
+
+next_agents:
+  on_success: ["reporter", "econobot"]
+  on_partial_success: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "npx tsx src/agents/curve_smith.ts"
+  args:
+    - "--las-files=${input.las_files}"
+    - "--zones=${input.zones_geojson}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 2
+  category: "data_processing"

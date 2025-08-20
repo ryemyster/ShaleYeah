@@ -1,0 +1,67 @@
+# SHALE YEAH LLM Integration Configuration
+# Optional LLM enhancement for intelligent analysis
+
+# LLM Provider Selection
+# Options: claude, openai, disabled
+llm_provider: claude  # Set to 'disabled' to use only deterministic analysis
+
+# Model Configuration
+models:
+  claude:
+    default: "claude-3-haiku-20240307"  # Fast, cost-effective
+    advanced: "claude-3-sonnet-20240229"  # Better reasoning
+    premium: "claude-3-opus-20240229"   # Highest quality
+  
+  openai:
+    default: "gpt-4"
+    fast: "gpt-3.5-turbo"
+    advanced: "gpt-4-turbo"
+
+# Agent LLM Enhancement Settings
+agents:
+  geowiz:
+    llm_enabled: true
+    use_case: "geological_interpretation"
+    model_preference: "advanced"  # Geological analysis needs good reasoning
+    
+  econobot:
+    llm_enabled: false  # Keep deterministic for financial calculations
+    use_case: "economic_analysis"
+    
+  riskranger:
+    llm_enabled: true
+    use_case: "risk_analysis" 
+    model_preference: "advanced"  # Risk assessment needs nuanced analysis
+    
+  the-core:
+    llm_enabled: true
+    use_case: "investment_reasoning"
+    model_preference: "premium"  # Investment decisions need highest quality
+    
+  notarybot:
+    llm_enabled: true
+    use_case: "document_generation"
+    model_preference: "default"  # Document generation can use faster model
+    
+  reporter:
+    llm_enabled: true
+    use_case: "report_synthesis"
+    model_preference: "advanced"  # Executive reports need good synthesis
+
+# Cost Controls
+cost_controls:
+  max_monthly_spend: 100.00  # USD
+  max_tokens_per_request: 4000
+  enable_caching: true
+  fallback_to_deterministic: true  # Always fallback if LLM fails
+
+# Quality Controls  
+quality_controls:
+  require_structured_output: true  # Prefer JSON responses
+  validate_responses: true
+  confidence_threshold: 0.7  # Minimum confidence for LLM insights
+  
+# Environment Variables Required
+# ANTHROPIC_API_KEY=your_key_here  (for Claude)
+# OPENAI_API_KEY=your_key_here     (for OpenAI)
+# LLM_PROVIDER=claude              (optional, defaults to claude)

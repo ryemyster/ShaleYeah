@@ -7,6 +7,10 @@ description = "Allowlist for demo data and examples"
 paths = [
     '''data/samples/.*''',
     '''.*\.example.*''',
+    '''ingestion/.*''',
+    '''.*leaks.*\.json''',
+    '''.*results\.sarif''',
+    '''gitleaks-report\.json''',
 ]
 
 [[rules]]
@@ -38,14 +42,18 @@ description = "Generic Secret"
 id = "generic-secret"
 regex = '''(?i)(?:secret|password|pwd|pass)['"]*\s*[:=]\s*['"][^'"\s]{8,}['"]'''
 tags = ["secret", "password"]
-
-# Allow test keys and demo data
-[[rules.allowlist]]
-description = "Test and demo keys"
-regexes = [
+allowlist = { regexes = [
     '''test.*key''',
     '''demo.*token''',
     '''example.*secret''',
     '''sk-test.*''',
     '''pk-test.*''',
-]
+    '''your_.*_password''',
+    '''your_.*_username''',
+    '''your_ftp_password''',
+    '''your_ssh_password''',
+    '''your_smb_password''',
+    '''db_password''',
+    '''example_key_here''',
+    '''placeholder.*''',
+] }

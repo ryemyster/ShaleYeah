@@ -13,7 +13,7 @@
 - [x] Directory structure (.claude-flow, integrations, data, specs)
 - [x] OSS compliance files (NOTICE, SECURITY.md, CONTRIBUTING.md)
 - [x] Agent YAML configurations (6 agents including research-agent)
-- [x] Core tools (access-ingest.ts, las-parse.ts, curve-fit.ts, curve-qc.py, web-fetch.ts)
+- [x] Core tools (access-ingest.ts, las-parse.ts, curve-fit.ts, curve-qc.ts, web-fetch.ts)
 
 ### ✅ Foundation Files (COMPLETED)
 - [x] **CODE_OF_CONDUCT.md** - Standard open source conduct guidelines
@@ -40,7 +40,7 @@
 - [ ] **pipelines/shale.yaml** - Main orchestration pipeline
   - [ ] Stage 1: geowiz agent
   - [ ] Stage 2: access-ingest.ts on demo.accdb
-  - [ ] Stage 3: curve-qc.py on demo.las CURVE=GR
+  - [ ] Stage 3: curve-qc.ts on demo.las CURVE=GR
   - [ ] Stage 4: curve-smith agent
   - [ ] Stage 5: reporter agent
 
@@ -78,17 +78,17 @@
 
 ### 🚧 Integration Stubs (GIS)
 - [ ] **integrations/gis/arcgis.ts** - ArcGIS Feature Service query/add
-- [ ] **integrations/gis/qgis.py** - QGIS headless processing example
-- [ ] **integrations/gis/mapinfo_gdal.py** - MapInfo via GDAL
-- [ ] **integrations/gis/geomedia_wfs.py** - GeoMedia via WFS
-- [ ] **integrations/gis/globalmapper.py** - Global Mapper script example
+- [ ] **integrations/gis/qgis.ts** - QGIS headless processing example
+- [ ] **integrations/gis/mapinfo_gdal.ts** - MapInfo via GDAL
+- [ ] **integrations/gis/geomedia_wfs.ts** - GeoMedia via WFS
+- [ ] **integrations/gis/globalmapper.ts** - Global Mapper script example
 
 ### 🚧 Integration Stubs (Mining)
-- [ ] **integrations/mining/leapfrog_omf.py** - Leapfrog OMF integration
-- [ ] **integrations/mining/surpac_io.py** - Surpac I/O stub
-- [ ] **integrations/mining/vulcan_sdk.py** - Vulcan SDK stub
-- [ ] **integrations/mining/datamine_io.py** - Datamine I/O stub
-- [ ] **integrations/mining/micromine_io.py** - Micromine I/O stub
+- [ ] **integrations/mining/leapfrog_omf.ts** - Leapfrog OMF integration
+- [ ] **integrations/mining/surpac_io.ts** - Surpac I/O stub
+- [ ] **integrations/mining/vulcan_sdk.ts** - Vulcan SDK stub
+- [ ] **integrations/mining/datamine_io.ts** - Datamine I/O stub
+- [ ] **integrations/mining/micromine_io.ts** - Micromine I/O stub
 
 ### 🚧 Research & Self-Expansion
 - [ ] **research-hub agent logic** - Technology research and RFC generation

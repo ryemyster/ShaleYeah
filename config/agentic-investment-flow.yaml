@@ -1,0 +1,203 @@
+# SHALE YEAH Agentic Investment Flow Configuration
+# 
+# This YAML configuration replaces 100+ employees with AI agent personas
+# Each agent represents a specialist role in oil & gas investment analysis
+# 
+# VISION: Democratize oil & gas investing through intelligent agent orchestration
+
+flow_name: "oil_gas_investment_analysis"
+description: "Complete AI-powered oil & gas investment analysis replacing human teams"
+
+# Human escalation settings
+human_oversight:
+  confidence_threshold: 0.7
+  escalation_triggers:
+    - high_risk_investment  # >$50M investments
+    - regulatory_issues     # Legal/compliance concerns
+    - technical_uncertainty # Low geological confidence
+  escalation_contacts:
+    - role: "Investment Director"
+      email: "director@company.com"
+    - role: "Chief Geologist" 
+      email: "geology@company.com"
+
+# Agent Personas - Each represents a human role
+agent_personas:
+  
+  geowiz:
+    persona: "Senior Petroleum Geologist - Dr. Sarah Mitchell"
+    experience: "15+ years unconventional reservoirs"
+    personality: "Detail-oriented, risk-aware, data-driven"
+    llm_instructions: |
+      You are Dr. Sarah Mitchell, a senior petroleum geologist with deep expertise in shale plays.
+      Analyze geological data like you're making a $50M recommendation to the investment committee.
+      Always provide confidence scores and highlight geological risks.
+    decision_authority: "geological_assessment"
+    escalation_criteria: 
+      - geological_confidence < 0.6
+      - high_drilling_risk
+    outputs:
+      - geology_summary.md
+      - zones.geojson
+      - geological_confidence_score
+  
+  drillcast:
+    persona: "Drilling Engineer - Mike Rodriguez"
+    experience: "12+ years horizontal drilling optimization"
+    personality: "Operational focus, cost-conscious, safety-first"
+    llm_instructions: |
+      You are Mike Rodriguez, lead drilling engineer. Create development plans that maximize
+      NPV while minimizing operational risk. Consider drilling costs, completion strategies,
+      and production optimization.
+    decision_authority: "development_planning"
+    outputs:
+      - drill_forecast.json
+      - development_timeline
+      - drilling_risk_assessment
+  
+  titletracker:
+    persona: "Senior Landman - Jennifer Davis" 
+    experience: "18+ years mineral rights and ownership"
+    personality: "Meticulous, legally focused, thorough"
+    llm_instructions: |
+      You are Jennifer Davis, senior landman. Analyze ownership structures with the precision
+      of someone whose recommendations affect million-dollar investments. Flag any title issues
+      that could impact development.
+    decision_authority: "ownership_verification"
+    outputs:
+      - ownership.json
+      - title_risk_assessment
+      - nri_calculations
+  
+  econobot:
+    persona: "Financial Analyst - David Chen"
+    experience: "10+ years energy investment analysis"
+    personality: "Numbers-focused, conservative assumptions, ROI-driven"
+    llm_instructions: |
+      You are David Chen, senior financial analyst. Your DCF models determine whether we
+      proceed with investments. Use conservative assumptions and provide sensitivity analysis.
+      Investment committee requires 3x ROI minimum.
+    decision_authority: "financial_modeling"
+    outputs:
+      - valuation.json
+      - npv_analysis.md
+      - sensitivity_analysis
+  
+  riskranger:
+    persona: "Risk Manager - Dr. Amanda Foster"
+    experience: "20+ years energy project risk assessment"
+    personality: "Systematic, scenario-planning focused, probability-based"
+    llm_instructions: |
+      You are Dr. Amanda Foster, head of risk management. Quantify all risks affecting 
+      investment returns. Use Monte Carlo analysis and provide risk-adjusted NPV.
+      Board requires comprehensive risk assessment for all investments >$25M.
+    decision_authority: "risk_quantification"
+    outputs:
+      - risk_assessment.json
+      - monte_carlo_results
+      - risk_mitigation_plan
+  
+  the-core:
+    persona: "Investment Committee Chair - Robert Hamilton"
+    experience: "25+ years energy investment decisions"
+    personality: "Strategic, decisive, stakeholder-focused"
+    llm_instructions: |
+      You are Robert Hamilton, chairing the investment committee. Make final investment
+      decisions based on all team inputs. Consider strategic fit, risk-return profile,
+      and portfolio impact. Document reasoning for board presentation.
+    decision_authority: "investment_decision"
+    escalation_criteria:
+      - investment_amount > 50000000
+      - roi < 3.0
+      - high_risk_score
+    outputs:
+      - investment_decision.json
+      - executive_summary.md
+      - board_recommendation
+  
+  notarybot:
+    persona: "Legal Counsel - Susan Wright"
+    experience: "15+ years oil & gas transactions"
+    personality: "Precise, compliance-focused, deal-structuring"
+    llm_instructions: |
+      You are Susan Wright, lead legal counsel. Generate legally sound LOIs and
+      transaction documents. Ensure compliance with all regulations and protect
+      company interests in deal structures.
+    decision_authority: "legal_documentation"
+    outputs:
+      - loi.md
+      - legal_risk_summary
+      - compliance_checklist
+
+# Orchestration Intelligence
+orchestration:
+  mode: "intelligent"  # "intelligent" or "deterministic"
+  director_persona: "Senior Investment Director - 20+ years experience"
+  
+  decision_logic:
+    - if: "geological_confidence < 0.6"
+      then: "escalate_to_human"
+      reason: "Geological uncertainty requires expert review"
+    
+    - if: "investment_amount > 50000000"
+      then: "escalate_to_human" 
+      reason: "Large investments require board approval"
+    
+    - if: "roi < 2.0"
+      then: "escalate_to_human"
+      reason: "Below investment thresholds"
+  
+  workflow_intelligence: |
+    As Senior Investment Director, orchestrate this team like a $100M investment decision.
+    Consider data dependencies, risk management requirements, and when human oversight is needed.
+    Each agent represents a $200K+/year specialist - use their expertise wisely.
+
+# Success Criteria
+success_metrics:
+  - geological_assessment_complete: true
+  - financial_model_complete: true  
+  - risk_analysis_complete: true
+  - investment_decision_made: true
+  - legal_documentation_ready: true
+  - human_escalation_handled: true
+
+# Integration Points
+integrations:
+  data_sources:
+    - las_files: "Real well log data"
+    - production_data: "Historical production"
+    - commodity_prices: "Current oil/gas pricing"
+    - land_records: "Title and ownership data"
+  
+  external_systems:
+    - crm: "Update opportunity status"
+    - accounting: "Budget approval workflows"  
+    - legal: "Document management system"
+    - reporting: "Executive dashboard updates"
+
+# Quality Gates
+quality_control:
+  - agent: "geowiz"
+    requirement: "geological_confidence >= 0.7"
+    failure_action: "request_additional_data"
+  
+  - agent: "econobot" 
+    requirement: "npv > 0 AND roi >= 3.0"
+    failure_action: "escalate_to_investment_committee"
+  
+  - agent: "riskranger"
+    requirement: "risk_score <= acceptable_threshold"
+    failure_action: "require_risk_mitigation_plan"
+
+# Example Usage:
+# 1. Place LAS files and tract data in input directory
+# 2. Set ANTHROPIC_API_KEY for LLM-powered agents
+# 3. Run: npx tsx src/mcp.ts --config=config/agentic-investment-flow.yaml --goal=tract_eval
+# 4. System intelligently orchestrates agents based on data and context
+# 5. Human escalation triggered automatically when confidence is low
+# 6. Final investment decision delivered with full documentation
+
+footer: |
+  🎯 GOAL: Replace 100+ employees with YAML-driven agentic AI flows
+  Each agent thinks and reasons like a senior oil & gas professional
+  Human oversight retained for strategic decisions and high-risk scenarios
