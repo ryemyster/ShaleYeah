@@ -15,19 +15,40 @@ interface FetchResult {
 }
 
 function stripHtmlTags(html: string): string {
-  // Basic HTML tag removal for text extraction
-  return html
-    .replace(/<script[^>]*>.*?<\/script>/gis, '')
-    .replace(/<style[^>]*>.*?<\/style>/gis, '')
-    .replace(/<[^>]*>/g, '')
+  // Basic HTML tag removal for text extraction with security fixes
+  let result = html;
+  
+  // Fix #2 & #3: Iterative removal of script/style tags to handle nested/malformed tags
+  // Improved regex to handle malformed script tags like "</script >"
+  let prevLength: number;
+  do {
+    prevLength = result.length;
+    // Handle script tags with optional attributes and whitespace
+    // Use [\s\S] instead of . with 's' flag for ES5 compatibility
+    result = result.replace(/<script[^>]*>[\s\S]*?<\/script\s*>/gi, '');
+    // Handle style tags with optional attributes and whitespace  
+    result = result.replace(/<style[^>]*>[\s\S]*?<\/style\s*>/gi, '');
+  } while (result.length !== prevLength);
+  
+  // Remove remaining HTML tags
+  result = result.replace(/<[^>]*>/g, '');
+  
+  // Fix #1: HTML entity decoding in correct order to prevent double-unescaping
+  // Process specific entities first, then &amp; last to avoid double-unescaping
+  result = result
     .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&'); // Move &amp; replacement to LAST to prevent double-unescaping
+  
+  // Clean up whitespace
+  result = result
     .replace(/\s+/g, ' ')
     .trim();
+    
+  return result;
 }
 
 function fetchUrl(url: string): Promise<FetchResult> {
@@ -123,8 +144,8 @@ async function main() {
   }
 }
 
-// CLI usage - ESM compatible check
-if (import.meta.url === `file://${process.argv[1]}`) {
+// CLI usage - check for direct execution
+if (require.main === module) {
   main();
 }
 
