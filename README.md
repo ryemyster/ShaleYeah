@@ -177,6 +177,18 @@ npm start
 # Lint code
 npm run lint
 
+# Clean build artifacts (compiled TypeScript, outputs, cache)
+npm run clean
+
+# Clean only compiled TypeScript
+npm run clean:dist
+
+# Clean only pipeline outputs
+npm run clean:outputs
+
+# Clean everything for fresh start (including node_modules)
+npm run clean:all && npm install
+
 # Test specific agent
 npx tsx src/agents/geowiz.ts --shapefile data/samples/tract.shp.txt --region Permian --run-id test
 ```
@@ -353,6 +365,9 @@ npm run dev
 
 # Production build
 npm run build && npm start
+
+# Fresh development setup
+npm run clean:all && npm install && npm run dev
 ```
 
 ### **Docker Deployment**
