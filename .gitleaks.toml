@@ -8,6 +8,9 @@ paths = [
     '''data/samples/.*''',
     '''.*\.example.*''',
     '''ingestion/.*''',
+    '''.*leaks.*\.json''',
+    '''.*results\.sarif''',
+    '''gitleaks-report\.json''',
 ]
 
 [[rules]]

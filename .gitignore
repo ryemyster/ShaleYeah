@@ -152,3 +152,9 @@ node_modules
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Gitleaks reports (to prevent false positives)
+leaks.json
+detailed_leaks.json
+results.sarif
+gitleaks-report.json
