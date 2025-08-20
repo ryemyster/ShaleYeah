@@ -56,20 +56,26 @@ export function stripHtmlTags(html: string): string {
     result = removeAll(result, re);
   }
 
-  // 4b) Remove ALL remaining HTML tags by tag name (comprehensive cleanup)
-  const allCommonTags = ["div", "span", "p", "a", "img", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "table", "tr", "td", "th", "b", "i", "strong", "em"];
-  for (const tag of allCommonTags) {
-    const pairedRe = new RegExp(`<\\s*${tag}\\b[^>]*>[\\s\\S]*?<\\s*\\/\\s*${tag}\\s*>`, "gi");
+  // 4b) Extract text content from safe tags, then remove ALL tags
+  const safeTextTags = ["div", "span", "p", "a", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "b", "i", "strong", "em"];
+  for (const tag of safeTextTags) {
+    // Extract text content from paired tags before removal
+    const pairedRe = new RegExp(`<\\s*${tag}\\b[^>]*>([\\s\\S]*?)<\\s*\\/\\s*${tag}\\s*>`, "gi");
+    result = result.replace(pairedRe, "$1 ");
+  }
+  
+  // Remove dangerous self-closing tags completely
+  const dangerousSingleTags = ["img", "input", "meta", "link", "base", "source", "track"];
+  for (const tag of dangerousSingleTags) {
     const singleRe = new RegExp(`<\\s*${tag}\\b[^>]*\\/?>`, "gi");
-    result = removeAll(result, pairedRe);
     result = removeAll(result, singleRe);
   }
 
-  // 5) Nuke ALL dangerous URL schemes and JS execution vectors
-  result = result.replace(/(?:javascript|data|vbscript):/gi, "removed:");
-  // Remove event handlers more comprehensively to prevent attribute injection
-  result = result.replace(/\son\w+\s*=\s*(['"])[\s\S]*?\1/gi, "");
-  result = result.replace(/\son\w+\s*=\s*[^\s'"]+/gi, "");
+  // 5) Nuke ALL dangerous URL schemes and inline JS vectors (CodeQL-hardened)
+  // Use removeAll pattern to prevent multi-character reintroduction vulnerabilities
+  result = removeAll(result, /(?:javascript|data|vbscript):/gi);
+  result = removeAll(result, /\son\w+\s*=\s*(['"])[\s\S]*?\1/gi);
+  result = removeAll(result, /\son\w+\s*=\s*[^\s'">]+/gi);
 
   // 6) Remove any remaining tags comprehensively, then single-char strip
   result = removeAll(result, /<[\s\S]*?>/g);   // Any tag with any content including newlines
