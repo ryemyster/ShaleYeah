@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "SHALE YEAH"
+message: "If you use this software, please cite it."
+authors:
+  - family-names: "McDonald"
+    given-names: "Ryan"
+    affiliation: "Ascendvent LLC"
+license: Apache-2.0
+repository-code: "https://github.com/ascendvent/shale-yeah"
+preferred-citation:
+  type: software
+  title: "SHALE YEAH"
+  authors:
+    - family-names: "McDonald"
+      given-names: "Ryan"
+  year: 2025

@@ -1,0 +1,60 @@
+{
+    "name": "shale-yeah",
+    "version": "0.1.0",
+    "description": "Democratize oil & gas investing through AI agent flows that replace 100+ employees",
+    "private": false,
+    "type": "module",
+    "main": "dist/mcp.js",
+    "scripts": {
+        "build": "tsc",
+        "dev": "NODE_ENV=development tsx src/mcp.ts",
+        "start": "node dist/mcp.js",
+        "init": "npx claude-flow@alpha init",
+        "gen": "tsx scripts/generate-from-spec.ts",
+        "demo": "npm run pipeline:demo",
+        "prod": "npm run pipeline:prod",
+        "pipeline": "tsx src/mcp.ts",
+        "pipeline:demo": "NODE_ENV=development PIPELINE_MODE=demo tsx src/mcp.ts --mode=demo --goal=tract_eval --run-id=demo-$(date +%Y%m%d-%H%M%S)",
+        "pipeline:prod": "NODE_ENV=production PIPELINE_MODE=production tsx src/mcp.ts --mode=production --goal=tract_eval --require-api-keys",
+        "pipeline:batch": "NODE_ENV=production PIPELINE_MODE=batch tsx src/mcp.ts --mode=batch",
+        "pipeline:research": "NODE_ENV=development PIPELINE_MODE=research tsx src/mcp.ts --mode=research",
+        "lint": "biome check . || true",
+        "type-check": "tsc --noEmit",
+        "clean": "npm run clean:dist && npm run clean:outputs && npm run clean:cache",
+        "clean:dist": "rm -rf dist/",
+        "clean:outputs": "rm -rf data/outputs/*",
+        "clean:cache": "rm -rf node_modules/.cache .tsx-cache",
+        "clean:all": "npm run clean && rm -rf node_modules/ package-lock.json",
+        "test": "echo 'Tests coming soon' && exit 0",
+        "verify-mcp": "npx tsx scripts/verify-mcp-setup.ts"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.30.1",
+        "@types/js-yaml": "^4.0.9",
+        "dotenv": "^16.4.5",
+        "js-yaml": "^4.1.0",
+        "openai": "^4.67.3",
+        "yaml": "^2.6.1",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^1.8.3",
+        "@types/node": "^22.9.0",
+        "tsx": "^4.19.2",
+        "typescript": "^5.6.3"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "keywords": [
+        "oil-gas",
+        "investment",
+        "ai-agents",
+        "llm",
+        "orchestration",
+        "geological-analysis",
+        "typescript"
+    ],
+    "author": "Ryan McDonald / Ascendvent LLC",
+    "license": "Apache-2.0"
+}

@@ -1,0 +1,51 @@
+name: shale-yeah-pipeline
+description: "End-to-end SHALE YEAH data processing pipeline"
+
+stages:
+  - name: geowiz
+    agent: geowiz
+    description: "Geology analysis and well-log interpretation"
+    
+  - name: access-ingest
+    type: command
+    command: "tsx .claude-flow/tools/access-ingest.ts data/samples/demo.accdb.txt"
+    description: "Ingest Access database tables to CSV"
+    
+  - name: curve-qc
+    type: command
+    command: "npx tsx .claude-flow/tools/curve-qc.ts data/samples/demo.las CURVE=GR"
+    description: "Quality control analysis on GR curve"
+    
+  - name: curve-smith
+    agent: curve-smith
+    description: "Curve fitting and quality control"
+    
+  - name: reporter
+    agent: reporter
+    description: "Generate executive summary report"
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "./data/outputs/${RUN_ID}"
+
+artifacts:
+  save_to: "data/outputs/${RUN_ID}"
+  preserve:
+    - "*.md"
+    - "*.csv" 
+    - "*.geojson"
+    - "curves/*"
+    - "research/*"
+
+on_failure:
+  retry: 1
+  save_logs: true
+  continue_on_error: false
+
+quality_gates:
+  - stage: geowiz
+    check: "zones.geojson must declare depth units"
+  - stage: curve-smith  
+    check: "qc_report.md must include RMSE and NRMSE per curve"
+  - stage: reporter
+    check: "SHALE_YEAH_REPORT.md must include attribution footer"

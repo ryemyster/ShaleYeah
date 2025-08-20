@@ -1,0 +1,172 @@
+name: riskranger
+description: "Risk scoring and probabilistic analysis specialist"
+version: "1.0.0"
+
+inputs:
+  required:
+    - valuation_data: "NPV and cash flow analysis from econobot"
+    - geological_zones: "Geological analysis with confidence levels"
+    - ownership_data: "Title and ownership complexity analysis"
+  optional:
+    - market_conditions: "Current market risk factors"
+    - regulatory_environment: "Regulatory and environmental risks"
+    - operational_history: "Historical performance data"
+
+outputs:
+  - name: risk_score.json
+    description: "Comprehensive risk assessment with probability distributions"
+    path: "${OUT_DIR}/risk_score.json"
+  - name: risk_analysis.md
+    description: "Detailed risk analysis with mitigation strategies"
+    path: "${OUT_DIR}/risk_analysis.md"
+  - name: probability_distributions.json
+    description: "Monte Carlo simulation results"
+    path: "${OUT_DIR}/probability_distributions.json"
+
+tools:
+  - monte_carlo_simulator
+  - risk_calculator
+  - probability_modeler
+
+workflow:
+  steps:
+    - name: "risk_identification"
+      description: "Identify and catalog all risk factors"
+      action: "identify_risks"
+    - name: "geological_risk_assessment"
+      description: "Assess geological and reservoir risks"
+      action: "assess_geological_risk"
+    - name: "operational_risk_analysis"
+      description: "Evaluate drilling and completion risks"
+      action: "analyze_operational_risk"
+    - name: "market_risk_evaluation"
+      description: "Assess commodity price and market risks"
+      action: "evaluate_market_risk"
+    - name: "title_risk_assessment"
+      description: "Analyze ownership and legal risks"
+      action: "assess_title_risk"
+    - name: "monte_carlo_simulation"
+      description: "Run probabilistic analysis"
+      action: "run_monte_carlo"
+
+quality_gates:
+  - check: "Risk score must include overall risk rating"
+    validation: "grep -q 'risk_score\\|overall_risk\\|risk_rating' ${OUT_DIR}/risk_score.json"
+  - check: "Risk analysis must include mitigation strategies"
+    validation: "grep -q 'mitigation\\|strategy\\|risk_management' ${OUT_DIR}/risk_analysis.md"
+  - check: "Probability distributions must include P10/P50/P90"
+    validation: "grep -q 'p10\\|p50\\|p90' ${OUT_DIR}/probability_distributions.json"
+
+risk_categories:
+  geological:
+    - reservoir_quality: "Porosity, permeability, thickness variations"
+    - structural_complexity: "Faulting, fracturing, stress orientation"
+    - formation_continuity: "Lateral extent and facies changes"
+    - completion_effectiveness: "Fracture stimulation success probability"
+    
+  operational:
+    - drilling_risk: "Mechanical, directional, and completion risks"
+    - facility_risk: "Processing, transportation, and infrastructure"
+    - environmental_risk: "Regulatory compliance and permitting"
+    - timeline_risk: "Development schedule and execution risks"
+    
+  market:
+    - commodity_price: "Oil, gas, and NGL price volatility"
+    - basis_differential: "Local pricing vs benchmark spreads"
+    - market_access: "Transportation and storage availability"
+    - regulatory_changes: "Tax, environmental, and industry regulations"
+    
+  financial:
+    - capital_cost: "Drilling, completion, and facility cost inflation"
+    - operating_cost: "LOE and processing cost escalation"
+    - financing_risk: "Cost of capital and availability"
+    - counterparty_risk: "Operator and service provider creditworthiness"
+    
+  title:
+    - ownership_clarity: "Title defects and ownership disputes"
+    - lease_terms: "Expiration dates and extension requirements"
+    - regulatory_approval: "Permitting and environmental clearances"
+    - surface_rights: "Surface access and usage agreements"
+
+risk_scoring:
+  scale: 1-100  # 1 = very low risk, 100 = very high risk
+  
+  thresholds:
+    very_low: 1-20
+    low: 21-35
+    medium: 36-65
+    high: 66-85
+    very_high: 86-100
+    
+  weighting_factors:
+    geological: 0.30
+    operational: 0.25
+    market: 0.20
+    financial: 0.15
+    title: 0.10
+
+monte_carlo_parameters:
+  iterations: 10000
+  variables:
+    - production_variance: 30%  # +/- 30% from base case
+    - price_variance: 40%       # +/- 40% commodity price variation
+    - cost_variance: 25%        # +/- 25% cost variation
+    - timing_variance: 20%      # +/- 20% development timing
+  
+  distributions:
+    - triangular: "Most variables with min/most likely/max"
+    - normal: "Commodity prices with historical volatility"
+    - lognormal: "Production rates with geological uncertainty"
+
+risk_mitigation:
+  strategies:
+    - diversification: "Portfolio risk reduction through multiple assets"
+    - hedging: "Commodity price protection strategies"
+    - insurance: "Operational and environmental risk transfer"
+    - partnering: "Risk sharing through joint ventures"
+    - staged_development: "Phased approach to reduce exposure"
+  
+  implementation:
+    - identify_highest_risks: true
+    - prioritize_by_impact: true
+    - cost_benefit_analysis: true
+    - monitoring_metrics: true
+
+error_handling:
+  on_failure:
+    - log_error: true
+    - save_partial_risk_analysis: true
+    - continue_pipeline: true
+  timeout: 300
+  max_retries: 2
+
+success_criteria:
+  - "Provides comprehensive risk assessment across all categories"
+  - "Generates probabilistic analysis with confidence intervals"
+  - "Identifies specific mitigation strategies for key risks"
+  - "Supports informed decision-making with quantified uncertainty"
+  - "Enables risk-adjusted valuation and investment decisions"
+
+next_agents:
+  on_success: ["the-core"]
+  on_failure: ["reporter"]
+
+environment:
+  RUN_ID: "${RUN_ID}"
+  OUT_DIR: "${OUT_DIR}"
+
+cli:
+  entrypoint: "npx tsx src/agents/riskranger.ts"
+  args:
+    - "--valuation=${input.valuation_data}"
+    - "--geology=${input.geological_zones}"
+    - "--ownership=${input.ownership_data}"
+    - "--output-dir=${OUT_DIR}"
+    - "--run-id=${RUN_ID}"
+
+metadata:
+  author: "SHALE YEAH Platform"
+  license: "Apache-2.0"
+  created: "2024-08-18"
+  priority: 6
+  category: "risk_analysis"

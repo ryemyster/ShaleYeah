@@ -1,0 +1,20 @@
+Sample Access Database Export - Ownership Data
+=============================================
+
+Table: Owners
+--------------
+Owner_Name                | Working_Interest | Net_Revenue_Interest | Entity_Type | Role
+SHALE YEAH ENERGY LLC     | 0.75            | 0.60                | LLC         | operator
+PERMIAN MINERALS TRUST    | 0.25            | 0.20                | Trust       | working_interest_owner
+
+Table: Leases  
+--------------
+Lease_Name    | Acres | Primary_Term | Royalty_Rate | Lease_Date  | Expiration_Date
+DEMO_LEASE_1  | 640   | 5           | 0.125        | 2023-01-15  | 2028-01-15
+
+Table: Legal_Descriptions
+-------------------------
+Tract_ID        | Description
+DEMO_TRACT_001  | Section 15, Township 2 South, Range 3 East, Permian County, Texas
+
+Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0

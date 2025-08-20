@@ -1,0 +1,9 @@
+name: shale-yeah
+stages:
+  - agent: geowiz
+  - agent: curve-smith
+  - agent: reporter
+artifacts:
+  save_to: data/outputs/${RUN_ID}
+on_failure:
+  retry: 1

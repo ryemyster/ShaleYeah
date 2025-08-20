@@ -1,0 +1,18 @@
+name: CodeQL Security Analysis
+on: [push, pull_request, schedule]
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions: { security-events: write, actions: read, contents: read }
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - uses: github/codeql-action/init@v3
+        with: { languages: javascript-typescript, queries: security-extended }
+      - uses: github/codeql-action/analyze@v3
