@@ -39,17 +39,53 @@ cp .env.example .env
 ### **Basic Usage**
 
 ```bash
-# Run geological analysis pipeline (works immediately)
+# Quick demo with sample data (works immediately)
 npm run demo
 
-# Custom run with specific ID
-npx tsx src/mcp.ts --goal=tract_eval --run-id=my-analysis
+# Production analysis with real data and API keys  
+npm run prod
+
+# Batch processing for multiple tracts
+npm run pipeline:batch
+
+# Research mode for exploring new integrations
+npm run pipeline:research
 
 # View results
 cat ./data/outputs/*/SHALE_YEAH_REPORT.md
 ```
 
-### **With LLM Integration (Optional)**
+## 🎯 Pipeline Modes
+
+SHALE YEAH operates in four distinct modes, each optimized for different use cases:
+
+### **Demo Mode** (`npm run demo`)
+- ✅ **Works immediately** - No API keys required
+- ✅ **Sample data** - Uses demo.las, demo.accdb.txt, tract.shp.txt  
+- ✅ **Mock LLM responses** - Intelligent demo responses when no API keys
+- ✅ **Fast execution** - Reduced agent set for quick turnaround
+- ⚠️ **Not for production** - Results are for demonstration only
+
+### **Production Mode** (`npm run prod`)  
+- 🔒 **Requires API keys** - Real LLM analysis mandatory
+- 📊 **Real data inputs** - Your actual LAS files, databases, shapefiles
+- 🔍 **Full validation** - Strict confidence thresholds and error checking
+- 🚀 **Complete orchestration** - All 8 agent personas fully engaged
+- ✅ **Investment-grade** - Board-ready analysis and reporting
+
+### **Batch Mode** (`npm run pipeline:batch`)
+- 📁 **Multiple tracts** - Process entire folders of geological data
+- 🔄 **Automated processing** - Unattended analysis of large datasets
+- 📈 **Scalable** - Production-grade validation with batch optimization
+- 🎯 **Enterprise-ready** - For operators with 10+ investment opportunities
+
+### **Research Mode** (`npm run pipeline:research`)
+- 🔬 **Integration development** - Test new vendor APIs and data sources
+- 📝 **RFC generation** - Auto-creates technical specifications
+- ⚡ **Fast iteration** - Mock responses for rapid prototyping
+- 🛠️ **Developer-focused** - Perfect for extending the platform
+
+### **With LLM Integration**
 
 ```bash
 # Get API keys from https://console.anthropic.com or https://platform.openai.com
@@ -57,7 +93,8 @@ echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
 echo "LLM_PROVIDER=claude" >> .env
 
 # Run with full LLM reasoning
-npm run demo
+npm run demo  # Still works in demo mode
+npm run prod  # Now uses real LLM analysis
 ```
 
 ## ⚙️ Configuration
@@ -67,21 +104,38 @@ npm run demo
 The system works out-of-the-box with demo data. For full functionality, configure `.env`:
 
 ```bash
-# LLM Integration (Optional - uses intelligent mock responses if not provided)
+# ==========================================
+# Mode Configuration
+# ==========================================
+# Pipeline mode: "demo", "production", "batch", "research" (auto-detected)
+PIPELINE_MODE=demo
+# Node environment: "development", "production", "test"
+NODE_ENV=development
+
+# ==========================================
+# LLM Integration
+# ==========================================
+# Get API keys from https://console.anthropic.com or https://platform.openai.com
 ANTHROPIC_API_KEY=sk-ant-your-key-here
 OPENAI_API_KEY=sk-proj-your-key-here
 LLM_PROVIDER=claude  # or "openai"
 
-# Pipeline Configuration (Auto-generated if not set)
-RUN_ID=custom-run-id
+# ==========================================
+# Pipeline Configuration  
+# ==========================================
+RUN_ID=custom-run-id  # Auto-generated if not set
 OUT_DIR=./data/outputs/${RUN_ID}
 PIPELINE_GOAL=tract_eval
 
+# ==========================================
 # Development Settings
+# ==========================================
 LOG_LEVEL=info  # debug, info, warn, error
-DEV_MODE=false
+DEV_MODE=false  # Auto-enabled for NODE_ENV=development
 
+# ==========================================
 # Optional Integrations
+# ==========================================
 SPLUNK_HEC_TOKEN=your-splunk-token
 SENTINEL_BEARER=your-sentinel-token
 ELASTIC_API_KEY=your-elastic-key
@@ -191,6 +245,32 @@ npm run clean:all && npm install
 
 # Test specific agent
 npx tsx src/agents/geowiz.ts --shapefile data/samples/tract.shp.txt --region Permian --run-id test
+```
+
+### **Mode Comparison**
+
+| Feature | Demo | Production | Batch | Research |
+|---------|------|------------|-------|----------|
+| **API Keys Required** | ❌ No | ✅ Yes | ✅ Yes | ❌ No |
+| **Data Sources** | Sample files | Real data | Real data | Sample/Test |
+| **Agent Count** | Limited (2) | Full (8+) | Full (8+) | Limited (2-3) |
+| **Validation** | Relaxed | Strict | Strict | Relaxed |
+| **Execution Speed** | Fast | Thorough | Batch-optimized | Fast |
+| **LLM Responses** | Mock/Real | Real only | Real only | Mock/Real |
+| **Use Case** | Quick demo | Investment analysis | Bulk processing | Development |
+
+### **Mode Selection Logic**
+
+```bash
+# Automatic mode detection based on NODE_ENV
+NODE_ENV=development  → defaults to "demo" mode
+NODE_ENV=production   → defaults to "production" mode
+
+# Manual override with environment variable
+PIPELINE_MODE=batch
+
+# CLI override (highest priority)
+npx tsx src/mcp.ts --mode=research
 ```
 
 ### **Project Structure**

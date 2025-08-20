@@ -69,8 +69,8 @@ export class GeoWizAgent extends BaseAgent {
     'zones.geojson'
   ];
 
-  constructor(runId: string, outputDir: string) {
-    super(runId, outputDir, 'geowiz', GEOWIZ_PERSONA);
+  constructor(runId: string, outputDir: string, modeOverride?: string) {
+    super(runId, outputDir, 'geowiz', GEOWIZ_PERSONA, modeOverride);
   }
 
   async analyze(inputData: GeowizInputs): Promise<AgentResult> {

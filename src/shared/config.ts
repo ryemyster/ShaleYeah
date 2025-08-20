@@ -6,16 +6,121 @@
 
 import { config } from 'dotenv';
 import path from 'path';
-import type { EnvironmentConfig } from './types.js';
+import type { EnvironmentConfig, NodeEnvironment, PipelineMode, ModeConfig } from './types.js';
 
 // Load environment variables from .env file
 config();
 
 /**
+ * Detect Node environment
+ */
+export function getNodeEnvironment(): NodeEnvironment {
+  const env = process.env.NODE_ENV?.toLowerCase();
+  if (env === 'production') return 'production';
+  if (env === 'test') return 'test';
+  return 'development';
+}
+
+/**
+ * Detect pipeline mode from environment or arguments
+ */
+export function getPipelineMode(override?: string): PipelineMode {
+  // Check CLI override first
+  if (override) {
+    const overrideMode = override.toLowerCase();
+    if (overrideMode === 'production') return 'production';
+    if (overrideMode === 'batch') return 'batch';
+    if (overrideMode === 'research') return 'research';
+    if (overrideMode === 'demo') return 'demo';
+  }
+  
+  // Check environment variable
+  const envMode = process.env.PIPELINE_MODE?.toLowerCase();
+  if (envMode === 'production') return 'production';
+  if (envMode === 'batch') return 'batch';
+  if (envMode === 'research') return 'research';
+  if (envMode === 'demo') return 'demo';
+  
+  // Default based on NODE_ENV, but allow override
+  const nodeEnv = getNodeEnvironment();
+  if (nodeEnv === 'production') {
+    return 'production';
+  } else {
+    // In development, default to demo but can be overridden by CLI
+    return 'demo';
+  }
+}
+
+/**
+ * Get mode-specific configuration
+ */
+export function getModeConfig(mode: PipelineMode, nodeEnv: NodeEnvironment): ModeConfig {
+  const modeConfigs: Record<PipelineMode, ModeConfig> = {
+    demo: {
+      allowMockLlm: true,
+      requireApiKeys: false,
+      strictValidation: false,
+      enableAuditLogging: false,
+      useDemoData: true,
+      fastExecution: true,
+      fullOrchestration: false
+    },
+    production: {
+      allowMockLlm: false,
+      requireApiKeys: true,
+      strictValidation: true,
+      enableAuditLogging: true,
+      useDemoData: false,
+      fastExecution: false,
+      fullOrchestration: true
+    },
+    batch: {
+      allowMockLlm: false,
+      requireApiKeys: true,
+      strictValidation: true,
+      enableAuditLogging: true,
+      useDemoData: false,
+      fastExecution: false,
+      fullOrchestration: true
+    },
+    research: {
+      allowMockLlm: true,
+      requireApiKeys: false,
+      strictValidation: false,
+      enableAuditLogging: false,
+      useDemoData: true,
+      fastExecution: true,
+      fullOrchestration: false
+    }
+  };
+
+  const config = modeConfigs[mode];
+  
+  // Override some settings based on NODE_ENV
+  if (nodeEnv === 'production') {
+    config.allowMockLlm = false;
+    config.requireApiKeys = true;
+    config.strictValidation = true;
+    config.enableAuditLogging = true;
+  }
+  
+  return config;
+}
+
+/**
  * Get environment configuration with defaults
  */
-export function getEnvironmentConfig(): EnvironmentConfig {
+export function getEnvironmentConfig(modeOverride?: string): EnvironmentConfig {
+  const nodeEnv = getNodeEnvironment();
+  const mode = getPipelineMode(modeOverride);
+  const modeConfig = getModeConfig(mode, nodeEnv);
+  
   return {
+    // Core environment
+    nodeEnv,
+    mode,
+    modeConfig,
+    
     // LLM Configuration
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
     openaiApiKey: process.env.OPENAI_API_KEY,
@@ -28,7 +133,7 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     
     // Development Settings
     logLevel: (process.env.LOG_LEVEL as 'debug' | 'info' | 'warn' | 'error') || 'info',
-    devMode: process.env.DEV_MODE === 'true',
+    devMode: process.env.DEV_MODE === 'true' || nodeEnv === 'development',
     
     // Optional SIEM Integrations
     splunkHecToken: process.env.SPLUNK_HEC_TOKEN,
@@ -62,15 +167,22 @@ export function generateRunId(): string {
 }
 
 /**
- * Validate required environment variables
+ * Validate required environment variables based on mode
  */
-export function validateEnvironment(): { valid: boolean; errors: string[] } {
+export function validateEnvironment(): { valid: boolean; errors: string[]; warnings: string[] } {
   const errors: string[] = [];
+  const warnings: string[] = [];
   const config = getEnvironmentConfig();
   
-  // Check if at least one LLM provider is configured
-  if (!config.anthropicApiKey && !config.openaiApiKey) {
-    errors.push('Warning: No LLM API keys configured. Agents will use mock responses.');
+  // Mode-specific validation
+  if (config.modeConfig.requireApiKeys) {
+    if (!config.anthropicApiKey && !config.openaiApiKey) {
+      errors.push(`${config.mode.toUpperCase()} mode requires at least one LLM API key (ANTHROPIC_API_KEY or OPENAI_API_KEY)`);
+    }
+  } else {
+    if (!config.anthropicApiKey && !config.openaiApiKey) {
+      warnings.push(`No LLM API keys configured. ${config.mode.toUpperCase()} mode will use mock responses.`);
+    }
   }
   
   // Validate output directory path
@@ -78,9 +190,26 @@ export function validateEnvironment(): { valid: boolean; errors: string[] } {
     errors.push('OUT_DIR not configured properly');
   }
   
+  // Production-specific validations
+  if (config.nodeEnv === 'production') {
+    if (config.devMode) {
+      warnings.push('DEV_MODE is enabled in production environment');
+    }
+    
+    if (config.logLevel === 'debug') {
+      warnings.push('Debug logging enabled in production - may impact performance');
+    }
+  }
+  
+  // Demo mode warnings
+  if (config.mode === 'demo' && config.modeConfig.useDemoData) {
+    warnings.push('Demo mode using sample data - not suitable for production analysis');
+  }
+  
   return {
     valid: errors.length === 0,
-    errors
+    errors,
+    warnings
   };
 }
 
@@ -152,8 +281,24 @@ export function setupLogging(): void {
   
   // In a more sophisticated setup, you might configure a proper logging library here
   // For now, we'll use console with different levels
+  console.log(`🌍 Environment: ${config.nodeEnv.toUpperCase()}`);
+  console.log(`🎯 Pipeline Mode: ${config.mode.toUpperCase()}`);
+  
   if (config.devMode) {
     console.log('🔧 Development mode enabled');
+  }
+  
+  // Mode-specific logging
+  if (config.modeConfig.useDemoData) {
+    console.log('📋 Using demo/sample data');
+  }
+  
+  if (config.modeConfig.allowMockLlm) {
+    console.log('🎭 Mock LLM responses enabled');
+  }
+  
+  if (config.modeConfig.enableAuditLogging) {
+    console.log('📝 Audit logging enabled');
   }
   
   console.log(`📊 Log level: ${config.logLevel}`);

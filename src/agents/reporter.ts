@@ -68,8 +68,8 @@ export class ReporterAgent extends BaseAgent {
     'SHALE_YEAH_REPORT.md'
   ];
 
-  constructor(runId: string, outputDir: string) {
-    super(runId, outputDir, 'reporter', REPORTER_PERSONA);
+  constructor(runId: string, outputDir: string, modeOverride?: string) {
+    super(runId, outputDir, 'reporter', REPORTER_PERSONA, modeOverride);
   }
 
   async analyze(inputData: ReporterInputs): Promise<AgentResult> {

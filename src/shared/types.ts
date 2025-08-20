@@ -275,13 +275,40 @@ export type ValidatedAgentConfig = z.infer<typeof AgentConfigSchema>;
 // Environment Configuration
 // ==========================================
 
+// ==========================================
+// Mode and Environment Types
+// ==========================================
+
+export type NodeEnvironment = 'development' | 'production' | 'test';
+export type PipelineMode = 'demo' | 'production' | 'batch' | 'research';
+
+export interface ModeConfig {
+  allowMockLlm: boolean;
+  requireApiKeys: boolean;
+  strictValidation: boolean;
+  enableAuditLogging: boolean;
+  useDemoData: boolean;
+  fastExecution: boolean;
+  fullOrchestration: boolean;
+}
+
 export interface EnvironmentConfig {
+  // Core environment
+  nodeEnv: NodeEnvironment;
+  mode: PipelineMode;
+  modeConfig: ModeConfig;
+  
+  // LLM Configuration
   anthropicApiKey?: string;
   openaiApiKey?: string;
   llmProvider: 'claude' | 'openai';
+  
+  // Pipeline Configuration
   runId: string;
   outDir: string;
   pipelineGoal: string;
+  
+  // Development Settings
   logLevel: 'debug' | 'info' | 'warn' | 'error';
   devMode: boolean;
   

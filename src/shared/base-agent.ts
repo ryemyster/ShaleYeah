@@ -26,27 +26,33 @@ export abstract class BaseAgent {
   protected logger: Console;
   protected confidence: number = 0.7;
 
-  constructor(runId: string, outputDir: string, agentName: string, persona: AgentPersona) {
+  constructor(runId: string, outputDir: string, agentName: string, persona: AgentPersona, modeOverride?: string) {
     this.runId = runId;
     this.outputDir = outputDir;
     this.agentName = agentName;
     this.persona = persona;
-    this.config = getEnvironmentConfig();
+    this.config = getEnvironmentConfig(modeOverride);
     this.logger = console;
     
     this.initializeLLMClient();
   }
 
   /**
-   * Initialize LLM client for this agent persona
+   * Initialize LLM client for this agent persona based on mode
    */
   private async initializeLLMClient(): Promise<void> {
-    try {
-      this.llmClient = createLLMClient(this.config.llmProvider);
-      this.logger.info(`🧠 ${this.persona.name} (${this.agentName}) - LLM expertise enabled`);
-    } catch (error) {
-      this.logger.warn(`LLM integration failed for ${this.agentName}:`, error);
-      this.logger.info(`📊 ${this.persona.name} falling back to deterministic analysis`);
+    // Check if LLM is allowed in current mode
+    if (this.config.modeConfig.allowMockLlm || 
+        (this.config.anthropicApiKey || this.config.openaiApiKey)) {
+      try {
+        this.llmClient = createLLMClient(this.config.llmProvider);
+        this.logger.info(`🧠 ${this.persona.name} (${this.agentName}) - ${this.config.mode.toUpperCase()} mode LLM expertise enabled`);
+      } catch (error) {
+        this.logger.warn(`LLM integration failed for ${this.agentName}:`, error);
+        this.logger.info(`📊 ${this.persona.name} falling back to deterministic analysis`);
+      }
+    } else {
+      this.logger.info(`🔧 ${this.persona.name} (${this.agentName}) - ${this.config.mode.toUpperCase()} mode using deterministic analysis`);
     }
   }
 
@@ -101,24 +107,37 @@ export abstract class BaseAgent {
   }
 
   /**
-   * Check if this agent should escalate to human based on confidence and criteria
+   * Check if this agent should escalate to human based on confidence and criteria (mode-aware)
    */
   protected shouldEscalateToHuman(confidence: number, context?: any): { escalate: boolean; reason?: string } {
-    // Check confidence threshold
-    if (confidence < this.persona.confidenceThreshold) {
+    // In demo/research modes, be less strict about escalation
+    const adjustedThreshold = this.config.mode === 'demo' || this.config.mode === 'research' 
+      ? Math.max(0.3, this.persona.confidenceThreshold - 0.2)  // Lower threshold for demos
+      : this.persona.confidenceThreshold;
+    
+    // Production mode has stricter validation
+    if (this.config.modeConfig.strictValidation && confidence < this.persona.confidenceThreshold) {
       return {
         escalate: true,
-        reason: `Confidence ${confidence.toFixed(2)} below threshold ${this.persona.confidenceThreshold}`
+        reason: `${this.config.mode.toUpperCase()} mode: Confidence ${confidence.toFixed(2)} below strict threshold ${this.persona.confidenceThreshold}`
+      };
+    }
+    
+    // Check adjusted confidence threshold
+    if (confidence < adjustedThreshold) {
+      return {
+        escalate: true,
+        reason: `Confidence ${confidence.toFixed(2)} below threshold ${adjustedThreshold.toFixed(2)} (${this.config.mode} mode)`
       };
     }
 
-    // Check persona-specific escalation criteria
-    if (this.persona.escalationCriteria) {
+    // In production mode, check persona-specific escalation criteria
+    if (this.config.modeConfig.strictValidation && this.persona.escalationCriteria) {
       for (const criterion of this.persona.escalationCriteria) {
         if (this.checkEscalationCriterion(criterion, context)) {
           return {
             escalate: true,
-            reason: `Escalation criterion met: ${criterion}`
+            reason: `${this.config.mode.toUpperCase()} mode escalation criterion: ${criterion}`
           };
         }
       }

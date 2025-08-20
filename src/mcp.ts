@@ -76,8 +76,8 @@ export class MCPController {
     ]
   };
 
-  constructor(runId?: string, outDir?: string) {
-    this.config = getEnvironmentConfig();
+  constructor(runId?: string, outDir?: string, modeOverride?: string) {
+    this.config = getEnvironmentConfig(modeOverride);
     this.runId = runId || this.config.runId;
     this.outDir = outDir || getOutputDir(this.runId);
     this.stateFile = path.join(this.outDir, 'state.json');
@@ -125,11 +125,17 @@ export class MCPController {
   }
 
   private async initializeLLMOrchestration(): Promise<void> {
-    try {
-      this.llmClient = createLLMClient(this.config.llmProvider);
-      this.logger.info(`✅ ${this.orchestrationPersona.name} - Intelligent orchestration enabled`);
-    } catch (error) {
-      this.logger.warn('LLM orchestration failed, using deterministic fallback:', error);
+    // Check if LLM orchestration is allowed in current mode
+    if (this.config.modeConfig.allowMockLlm || 
+        (this.config.anthropicApiKey || this.config.openaiApiKey)) {
+      try {
+        this.llmClient = createLLMClient(this.config.llmProvider);
+        this.logger.info(`✅ ${this.orchestrationPersona.name} - Intelligent orchestration enabled`);
+      } catch (error) {
+        this.logger.warn('LLM orchestration failed, using deterministic fallback:', error);
+      }
+    } else {
+      this.logger.info(`🔧 ${this.config.mode.toUpperCase()} mode - Using deterministic orchestration`);
     }
   }
 
@@ -575,14 +581,35 @@ export class MCPController {
   async runPipeline(goal: string = 'tract_eval', initialAgents: string[] = ['geowiz']): Promise<boolean> {
     // Validate environment first
     const validation = validateEnvironment();
+    
+    // Log errors (blocking)
     if (validation.errors.length > 0) {
       for (const error of validation.errors) {
-        this.logger.warn(`⚠️  ${error}`);
+        this.logger.error(`❌ ${error}`);
+      }
+      return false;
+    }
+    
+    // Log warnings (non-blocking)
+    if (validation.warnings.length > 0) {
+      for (const warning of validation.warnings) {
+        this.logger.warn(`⚠️  ${warning}`);
       }
     }
 
-    this.logger.info(`🚀 Starting pipeline for goal: ${goal}`);
+    this.logger.info(`🚀 Starting ${this.config.mode.toUpperCase()} pipeline for goal: ${goal}`);
     this.logger.info(`👥 Initial agents: ${initialAgents.join(', ')}`);
+    
+    // Mode-specific adjustments
+    if (this.config.modeConfig.fastExecution) {
+      this.logger.info(`⚡ Fast execution mode enabled`);
+      // Limit iterations for demo/research modes
+      if (this.config.mode === 'demo' || this.config.mode === 'research') {
+        // Reduce initial agents for faster demo
+        initialAgents = initialAgents.slice(0, 2);
+        this.logger.info(`📋 Reduced agent set for ${this.config.mode} mode: ${initialAgents.join(', ')}`);
+      }
+    }
     
     let success = true;
     let currentAgents = [...initialAgents];
@@ -661,10 +688,38 @@ async function main(): Promise<void> {
   const goal = argMap.goal || 'tract_eval';
   const runId = argMap['run-id'] || undefined;
   const outDir = argMap['out-dir'] || undefined;
+  const mode = argMap.mode || undefined;
   const initialAgents = argMap.agents ? argMap.agents.split(',') : ['geowiz'];
   
+  // Handle help flag
+  if (argMap.help || argMap.h) {
+    console.log(`
+🛢️  SHALE YEAH Multi-Agent Control Plane
+
+USAGE:
+  npm run demo              # Quick demo with sample data
+  npm run prod              # Production pipeline with real data  
+  npm run pipeline:batch    # Batch processing mode
+  npm run pipeline:research # Research and RFC generation
+
+CLI OPTIONS:
+  --mode <mode>        Pipeline mode: demo, production, batch, research
+  --goal <goal>        Pipeline goal (default: tract_eval)
+  --run-id <id>        Unique run identifier
+  --out-dir <dir>      Output directory
+  --agents <agents>    Comma-separated agent list (default: geowiz)
+  --help, -h           Show this help
+
+EXAMPLES:
+  npx tsx src/mcp.ts --mode=demo --goal=tract_eval
+  npx tsx src/mcp.ts --mode=production --goal=tract_eval --require-api-keys
+  npx tsx src/mcp.ts --mode=batch --agents=geowiz,reporter
+    `);
+    process.exit(0);
+  }
+  
   try {
-    const mcp = new MCPController(runId!, outDir);
+    const mcp = new MCPController(runId!, outDir, mode);
     
     // Wait a moment for async initialization
     await new Promise(resolve => setTimeout(resolve, 100));
