@@ -1,106 +1,51 @@
-name: reporter
-description: "Executive reporting and data provenance specialist"
-version: "1.0.0"
-
-inputs:
-  required:
-    - all_outputs: "All generated outputs from pipeline agents"
-  optional:
-    - geology_summary: "Geological analysis from GeoWiz"
-    - qc_report: "Statistical validation from Curve-Smith"
-    - curves_data: "All processed curve data"
-    - zones_geojson: "Geological zones with spatial data"
-
-outputs:
-  - name: SHALE_YEAH_REPORT.md
-    description: "Comprehensive executive report with provenance"
-    path: "${OUT_DIR}/SHALE_YEAH_REPORT.md"
-
-tools:
-  - markdown_generator
-  - file_analyzer
-  - statistics_compiler
-
-workflow:
-  steps:
-    - name: "data_gathering"
-      description: "Read all generated reports and data files"
-      action: "catalog_outputs"
-    - name: "executive_summary"
-      description: "Extract key findings and create business insights"
-      action: "create_executive_summary"
-    - name: "provenance_documentation"
-      description: "Document complete data lineage and processing"
-      action: "document_provenance"
-    - name: "statistics_compilation"
-      description: "Create summary tables with file links"
-      action: "compile_statistics"
-    - name: "recommendations"
-      description: "Generate actionable next steps"
-      action: "create_recommendations"
-
-quality_gates:
-  - check: "SHALE_YEAH_REPORT.md must include attribution footer"
-    validation: "grep -q 'Generated with SHALE YEAH.*Apache-2.0' ${OUT_DIR}/SHALE_YEAH_REPORT.md"
-  - check: "Report must include executive summary"
-    validation: "grep -q 'Executive Summary' ${OUT_DIR}/SHALE_YEAH_REPORT.md"
-  - check: "Report must include data provenance"
-    validation: "grep -q 'Data Provenance' ${OUT_DIR}/SHALE_YEAH_REPORT.md"
-  - check: "Report must include next steps"
-    validation: "grep -q 'Next Steps' ${OUT_DIR}/SHALE_YEAH_REPORT.md"
-
-report_structure:
-  sections:
-    - name: "Executive Summary"
-      required: true
-      max_paragraphs: 2
-    - name: "Data Provenance"
-      required: true
-      includes: ["source_files", "processing_timestamps", "agent_workflow"]
-    - name: "Geological Summary"
-      required: true
-      includes: ["formation_analysis", "confidence_levels"]
-    - name: "Statistical Analysis"
-      required: true
-      includes: ["curve_metrics", "file_links"]
-    - name: "Next Steps"
-      required: true
-      includes: ["recommendations", "priorities"]
-
-error_handling:
-  on_failure:
-    - log_error: true
-    - generate_partial_report: true
-    - continue_pipeline: false
-  timeout: 180
-  max_retries: 1
-
-success_criteria:
-  - "Produces executive-ready insights from technical outputs"
-  - "Enables immediate decision-making with confidence levels"
-  - "Provides complete audit trail for all analyses"
-  - "Connects insights to supporting data files"
-  - "Includes actionable recommendations with clear priorities"
-
-next_agents:
-  always_run: true
-  final_agent: true
-
-environment:
-  RUN_ID: "${RUN_ID}"
-  OUT_DIR: "${OUT_DIR}"
+name: "reporter"
+persona:
+  name: "Sarah Chen"
+  role: "Executive Assistant & Investment Reporter"
+  experience: "8+ years investment committee reporting, 150+ investment summaries"
+  personality: "Detail-oriented, clear communicator, executive-focused, synthesis expert"
+  llmInstructions: |
+    You are Sarah Chen, executive assistant specializing in investment committee reporting.
+    You've prepared 150+ investment summaries for boards and executive committees.
+    
+    Your job is to synthesize complex geological, engineering, and financial analyses into
+    clear, actionable investment recommendations that executives can quickly understand.
+    
+    Create executive-level reports that highlight:
+    - Key investment metrics and risks
+    - Clear go/no-go recommendations
+    - Critical decision factors
+    - Next steps and timeline
+    
+    Write for busy executives who need the essential information quickly and clearly.
+  decisionAuthority: "executive_reporting"
+  confidenceThreshold: 0.8
+  escalationCriteria:
+    - "conflicting_agent_recommendations"
+    - "missing_critical_data"
+    - "high_risk_investment"
 
 cli:
-  entrypoint: "python agents/reporter_agent.py"
+  entrypoint: "npx tsx src/agents/reporter.ts"
   args:
-    - "--input-dir=${OUT_DIR}"
-    - "--output-file=${OUT_DIR}/SHALE_YEAH_REPORT.md"
-    - "--run-id=${RUN_ID}"
+    - "--run-id"
+    - "${RUN_ID}"
+    - "--output-dir"
+    - "${OUT_DIR}"
 
-metadata:
-  author: "SHALE YEAH Platform"
-  license: "Apache-2.0"
-  created: "2024-08-18"
-  priority: 10
-  category: "reporting"
-  always_run: true
+inputs:
+  required: {}
+  optional: {}
+
+outputs:
+  - name: "executive_report"
+    path: "${OUT_DIR}/SHALE_YEAH_REPORT.md"
+    type: "markdown"
+
+nextAgents:
+  onSuccess: []
+  onFailure: []
+
+errorHandling:
+  timeout: 180
+  retries: 1

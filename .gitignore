@@ -1,8 +1,11 @@
-# Dependencies
+# Node.js Dependencies
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Python
 __pycache__/
@@ -29,8 +32,14 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual environments
+# Environment Variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Virtual environments (Python - keeping for legacy)
 .venv
 env/
 venv/
@@ -80,8 +89,10 @@ build/Release
 # Dependency directories
 jspm_packages/
 
-# TypeScript cache
+# TypeScript
+dist/
 *.tsbuildinfo
+*.d.ts.map
 
 # Optional npm cache directory
 .npm

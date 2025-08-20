@@ -1,18 +1,48 @@
 {
     "name": "shale-yeah",
     "version": "0.1.0",
+    "description": "Democratize oil & gas investing through AI agent flows that replace 100+ employees",
     "private": false,
     "type": "module",
+    "main": "dist/mcp.js",
     "scripts": {
+        "build": "tsc",
+        "dev": "tsx src/mcp.ts",
+        "start": "node dist/mcp.js",
         "init": "npx claude-flow@alpha init",
-        "start": "npx claude-flow@alpha start --swarm",
         "gen": "tsx scripts/generate-from-spec.ts",
-        "demo": "bash scripts/demo.sh",
-        "run:local": "bash scripts/run-local.sh",
-        "lint": "biome check . || true"
+        "demo": "tsx src/mcp.ts --goal=tract_eval --run-id=demo-$(date +%Y%m%d-%H%M%S)",
+        "pipeline": "tsx src/mcp.ts",
+        "lint": "biome check . || true",
+        "type-check": "tsc --noEmit",
+        "clean": "rm -rf dist/",
+        "test": "echo 'Tests coming soon' && exit 0"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.30.1",
+        "openai": "^4.67.3",
+        "dotenv": "^16.4.5",
+        "yaml": "^2.6.1",
+        "zod": "^3.23.8"
     },
     "devDependencies": {
         "tsx": "^4.19.2",
-        "@biomejs/biome": "^1.8.3"
-    }
+        "@biomejs/biome": "^1.8.3",
+        "typescript": "^5.6.3",
+        "@types/node": "^22.9.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "keywords": [
+        "oil-gas",
+        "investment",
+        "ai-agents",
+        "llm",
+        "orchestration",
+        "geological-analysis",
+        "typescript"
+    ],
+    "author": "Ryan McDonald / Ascendvent LLC",
+    "license": "Apache-2.0"
 }
