@@ -34,9 +34,13 @@ export function stripHtmlTags(html: string): string {
   result = removeAll(result, /<\?[\s\S]*?\?>/g);
   result = removeAll(result, /<!DOCTYPE[\s\S]*?>/gi);
 
-  // 2) Kill script/style blocks (covers whitespace & malformed closers)
-  result = removeAll(result, /<\s*script\b[\s\S]*?<\s*\/\s*script\s*>/gi);
-  result = removeAll(result, /<\s*style\b[\s\S]*?<\s*\/\s*style\s*>/gi);
+  // 2) Kill script/style blocks (comprehensive malformed tag handling)
+  // Handle all possible malformed closing tags including </script\t\n bar>
+  result = removeAll(result, /<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script[^>]*>/gi);
+  result = removeAll(result, /<\s*style\b[^>]*>[\s\S]*?<\s*\/\s*style[^>]*>/gi);
+  // Also remove any remaining script/style opening tags without proper closing
+  result = removeAll(result, /<\s*script\b[^>]*>/gi);
+  result = removeAll(result, /<\s*style\b[^>]*>/gi);
 
   // 3) Remove high-risk paired tags
   const paired = ["iframe", "object", "embed", "applet", "form", "textarea", "button", "select"];
@@ -45,20 +49,32 @@ export function stripHtmlTags(html: string): string {
     result = removeAll(result, re);
   }
 
-  // 4) Remove risky single/self-closing tags
+  // 4) Remove risky single/self-closing tags AND all remaining tags
   const singles = ["input", "meta", "link", "base", "source", "track"];
   for (const tag of [...paired, ...singles]) {
     const re = new RegExp(`<\\s*${tag}\\b[^>]*\\/?>`, "gi");
     result = removeAll(result, re);
   }
 
-  // 5) Nuke JS execution vectors
-  result = result.replace(/javascript:/gi, "removed:");
-  result = result.replace(/\son\w+\s*=\s*(['"]).*?\1/gi, "");
+  // 4b) Remove ALL remaining HTML tags by tag name (comprehensive cleanup)
+  const allCommonTags = ["div", "span", "p", "a", "img", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "table", "tr", "td", "th", "b", "i", "strong", "em"];
+  for (const tag of allCommonTags) {
+    const pairedRe = new RegExp(`<\\s*${tag}\\b[^>]*>[\\s\\S]*?<\\s*\\/\\s*${tag}\\s*>`, "gi");
+    const singleRe = new RegExp(`<\\s*${tag}\\b[^>]*\\/?>`, "gi");
+    result = removeAll(result, pairedRe);
+    result = removeAll(result, singleRe);
+  }
 
-  // 6) Remove any remaining tags, then single-char strip < and >
-  result = removeAll(result, /<[^>]*>/g);
-  result = result.replace(/[<>]/g, "");
+  // 5) Nuke ALL dangerous URL schemes and JS execution vectors
+  result = result.replace(/(?:javascript|data|vbscript):/gi, "removed:");
+  // Remove event handlers more comprehensively to prevent attribute injection
+  result = result.replace(/\son\w+\s*=\s*(['"])[\s\S]*?\1/gi, "");
+  result = result.replace(/\son\w+\s*=\s*[^\s'"]+/gi, "");
+
+  // 6) Remove any remaining tags comprehensively, then single-char strip
+  result = removeAll(result, /<[\s\S]*?>/g);   // Any tag with any content including newlines
+  result = removeAll(result, /<[^>]*>/g);       // Standard tag removal
+  result = result.replace(/[<>]/g, "");         // Final cleanup of stray brackets
 
   // 7) Decode safe entities (do NOT decode &lt; or &gt;)
   result = result
@@ -143,11 +159,13 @@ async function main() {
     process.exit(1);
   }
 
-  // Validate URL format and scheme
+  // Validate URL format and scheme (comprehensive security check)
   try {
     const u = new URL(url);
-    if (u.protocol !== "http:" && u.protocol !== "https:") {
-      console.error(`Unsupported protocol: ${u.protocol}`);
+    // Only allow http and https - block all dangerous schemes
+    const allowedProtocols = ["http:", "https:"];
+    if (!allowedProtocols.includes(u.protocol)) {
+      console.error(`Unsupported protocol: ${u.protocol}. Only http and https are allowed.`);
       process.exit(1);
     }
   } catch (error) {
