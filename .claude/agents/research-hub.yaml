@@ -108,7 +108,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/research_hub_agent.py"
+  entrypoint: "npx tsx src/agents/research_hub.ts"
   args:
     - "--product=${input.product_name}"
     - "--output-dir=${OUT_DIR}/research/rfcs"

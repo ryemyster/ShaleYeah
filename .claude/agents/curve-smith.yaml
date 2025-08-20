@@ -21,7 +21,7 @@ outputs:
 tools:
   - las-parse.ts
   - curve-fit.ts
-  - curve-qc.py
+  - curve-qc.ts
 
 workflow:
   steps:
@@ -33,7 +33,7 @@ workflow:
       command: "tsx tools/curve-fit.ts input.csv target=GR order=2"
     - name: "statistical_analysis"
       description: "Calculate RMSE and NRMSE for all curves"
-      command: "python tools/curve-qc.py ${input.las_files} CURVE=GR"
+      command: "npx tsx tools/curve-qc.ts ${input.las_files} CURVE=GR"
     - name: "quality_control"
       description: "Generate comprehensive QC report"
       action: "generate_qc_report"
@@ -84,7 +84,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/curve_smith_agent.py"
+  entrypoint: "npx tsx src/agents/curve_smith.ts"
   args:
     - "--las-files=${input.las_files}"
     - "--zones=${input.zones_geojson}"

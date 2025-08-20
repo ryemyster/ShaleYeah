@@ -127,7 +127,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/research_agent.py"
+  entrypoint: "npx tsx src/agents/research.ts"
   args:
     - "--topic=${input.research_topic}"
     - "--output-dir=${OUT_DIR}/research"

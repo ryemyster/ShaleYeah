@@ -10,7 +10,7 @@ SHALE YEAH can operate in two modes: **Deterministic** (algorithmic) or **LLM-En
 export RUN_ID=$(date +%Y%m%d-%H%M%S)
 
 # Run complete tract evaluation
-python mcp.py --goal tract_eval --run-id $RUN_ID
+npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID
 
 # View results
 cat ./data/outputs/${RUN_ID}/SHALE_YEAH_REPORT.md
@@ -19,14 +19,14 @@ cat ./data/outputs/${RUN_ID}/SHALE_YEAH_REPORT.md
 ### Individual Agent Testing
 ```bash
 # Test geological analysis
-python agents/geowiz_agent.py \
+npx tsx src/agents/geowiz.ts \
   --shapefile=data/samples/tract.shp.txt \
   --region=Permian \
   --output-dir=./outputs/test \
   --run-id=test
 
 # Test economic modeling  
-python agents/econobot_agent.py \
+npx tsx src/agents/econobot.ts \
   --drill-forecast=./outputs/test/drill_forecast.json \
   --ownership-data=./outputs/test/ownership.json \
   --output-dir=./outputs/test \
@@ -51,7 +51,7 @@ export LLM_PROVIDER=claude
 ```bash
 # Same command - automatically detects API keys
 export RUN_ID=llm-enhanced-$(date +%Y%m%d-%H%M%S)
-python mcp.py --goal tract_eval --run-id $RUN_ID
+npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID
 
 # Enhanced outputs will include:
 # - Intelligent geological interpretation
@@ -160,7 +160,7 @@ agents:
 # Fast, consistent tract screening
 for tract in tract_list/*.shp; do
   RUN_ID="screen_$(basename $tract .shp)"
-  python mcp.py --goal tract_eval --run-id $RUN_ID --tract=$tract
+  npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID --tract=$tract
 done
 ```
 
@@ -169,18 +169,18 @@ done
 # Detailed analysis for investment decisions
 export ANTHROPIC_API_KEY=your_key
 export RUN_ID="investment_analysis_$(date +%Y%m%d)"
-python mcp.py --goal tract_eval --run-id $RUN_ID --detailed-analysis
+npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID --detailed-analysis
 ```
 
 ### Hybrid Workflow (Best of Both)
 ```bash
 # 1. Fast screening (deterministic)
-python mcp.py --goal tract_eval --run-id screen_$TRACT
+npx tsx src/mcp.ts --goal tract_eval --run-id screen_$TRACT
 
 # 2. Enhanced analysis for promising tracts
 if grep -q "PROCEED" ./outputs/screen_$TRACT/investment_decision.json; then
   export ANTHROPIC_API_KEY=your_key
-  python mcp.py --goal tract_eval --run-id detailed_$TRACT
+  npx tsx src/mcp.ts --goal tract_eval --run-id detailed_$TRACT
 fi
 ```
 
@@ -223,14 +223,14 @@ fi
 ### For Oil & Gas Engineers
 ```bash
 # Start with deterministic mode - fast and reliable
-python mcp.py --goal tract_eval --run-id your_first_run
+npx tsx src/mcp.ts --goal tract_eval --run-id your_first_run
 ```
 
 ### For Investment Teams  
 ```bash
 # Use LLM-enhanced for investment decisions
 export ANTHROPIC_API_KEY=your_key
-python mcp.py --goal tract_eval --run-id investment_analysis
+npx tsx src/mcp.ts --goal tract_eval --run-id investment_analysis
 ```
 
 ### For Operations Teams

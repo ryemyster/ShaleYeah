@@ -44,7 +44,7 @@ workflow:
 
 quality_gates:
   - check: "Generated agent YAML must parse correctly"
-    validation: "python -c 'import yaml; yaml.safe_load(open(\"${OUT_DIR}/agents/generated/*.yaml\"))'"
+    validation: "find ${OUT_DIR}/agents/generated -name '*.yaml' -exec npx tsx -e 'require(\"js-yaml\").load(require(\"fs\").readFileSync(process.argv[1], \"utf8\"))' {} \\;"
   - check: "Generated agents must include required fields"
     validation: "grep -q 'name:\\|description:\\|inputs:\\|outputs:' ${OUT_DIR}/agents/generated/*.yaml"
   - check: "Integration stubs must include proper headers"
@@ -102,7 +102,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/agent_forge_agent.py"
+  entrypoint: "npx tsx src/agents/agent_forge.ts"
   args:
     - "--rfcs=${input.rfc_documents}"
     - "--output-dir=${OUT_DIR}"

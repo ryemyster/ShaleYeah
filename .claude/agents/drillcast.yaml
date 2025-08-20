@@ -96,7 +96,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/drillcast_agent.py"
+  entrypoint: "npx tsx src/agents/drillcast.ts"
   args:
     - "--zones=${input.zones_geojson}"
     - "--las-files=${input.las_files}"

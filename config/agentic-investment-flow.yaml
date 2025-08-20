@@ -192,7 +192,7 @@ quality_control:
 # Example Usage:
 # 1. Place LAS files and tract data in input directory
 # 2. Set ANTHROPIC_API_KEY for LLM-powered agents
-# 3. Run: python mcp.py --config=config/agentic-investment-flow.yaml --goal=tract_eval
+# 3. Run: npx tsx src/mcp.ts --config=config/agentic-investment-flow.yaml --goal=tract_eval
 # 4. System intelligently orchestrates agents based on data and context
 # 5. Human escalation triggered automatically when confidence is low
 # 6. Final investment decision delivered with full documentation

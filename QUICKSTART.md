@@ -1,59 +1,68 @@
 # SHALE YEAH Quick Start Guide
 
-> **🎯 From Raw Data to Investment Decision in 2 Hours**
+> **🎯 From Raw Data to Investment Decision in 2 Minutes**
 
 ## 🚀 Basic Agentic Workflow
 
-### 1. Setup (5 minutes)
+### 1. Setup (30 seconds)
 
 ```bash
 # Clone and install
 git clone https://github.com/your-org/ShaleYeah.git
 cd ShaleYeah
-pip install -r requirements.txt
+npm install
 
-# Set your LLM API key for intelligent agents
-export ANTHROPIC_API_KEY=your_claude_api_key
-# OR export OPENAI_API_KEY=your_openai_key
+# Set your LLM API key for intelligent agents (optional - works without)
+echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
+echo "LLM_PROVIDER=claude" >> .env
+# OR echo "OPENAI_API_KEY=sk-proj-your-key-here" >> .env
 
 # Verify setup
-python mcp.py --help
+npm run demo --help
 ```
 
 ### 2. Run Intelligence-Driven Analysis (30 seconds)
 
 ```bash
-# Basic investment analysis (uses demo data if no real data provided)
-export RUN_ID=$(date +%Y%m%d-%H%M%S)
-python mcp.py --goal tract_eval --run-id $RUN_ID
+# Quick demo with sample data (works immediately)
+npm run demo
 
-# Watch AI agents work
-tail -f ./data/outputs/${RUN_ID}/agent_log.txt
+# Custom production analysis with your data
+npm run prod
+
+# View live results
+export RUN_ID=$(ls -t data/outputs/ | head -1)
+tail -f ./data/outputs/${RUN_ID}/SHALE_YEAH_REPORT.md
 ```
 
-### 3. Review AI Agent Decisions (2 minutes)
+### 3. Review AI Agent Decisions (1 minute)
 
 ```bash
 # View final investment recommendation
-cat ./data/outputs/${RUN_ID}/SHALE_YEAH_REPORT.md
+cat ./data/outputs/*/SHALE_YEAH_REPORT.md
 
-# See AI reasoning from each expert
-cat ./data/outputs/${RUN_ID}/investment_decision.json
+# See detailed geological analysis
+cat ./data/outputs/*/geology_summary.md
+
+# Check spatial data
+ls ./data/outputs/*/zones.geojson
 ```
 
 ## 🧠 What Just Happened?
 
-**The AI Director orchestrated 7 specialist agents:**
+**The TypeScript MCP orchestrated AI specialist personas:**
 
-1. **🪨 GeoWiz** (AI Geologist): *"Based on log analysis, this Wolfcamp A interval shows excellent porosity..."*
-2. **🔧 DrillCast** (AI Engineer): *"Recommend 10,000ft laterals with 60-stage completion..."*
-3. **📋 TitleTracker** (AI Landman): *"Clean title with 75% NRI confirmed..."*
-4. **💰 EconoBot** (AI Analyst): *"NPV of $45M at 10% discount rate, 3.2x ROI..."*
-5. **⚠️ RiskRanger** (AI Risk Manager): *"Medium risk profile, commodity exposure manageable..."*
-6. **🎯 The Core** (AI Director): *"PROCEED - Strong IRR of 28% exceeds 25% threshold..."*
-7. **📑 NotaryBot** (AI Legal): *"LOI drafted with standard terms and conditions..."*
+1. **🪨 Dr. Sarah Mitchell** (Senior Petroleum Geologist): *"Geological analysis shows 2 formations, 400ft total thickness, 82% confidence..."*
+2. **📊 Sarah Chen** (Executive Assistant & Investment Reporter): *"Executive summary compiled from geological analysis with investment recommendations..."*
 
-**Human Escalation:** If any agent has <70% confidence, the Director escalates to human review.
+**Current Demo Mode:** Fast execution with 2 core agents
+**Production Mode:** Full orchestration with 8+ specialist agents including DrillCast, EconoBot, RiskRanger, The Core
+
+**Mode-Aware Intelligence:** 
+- **Demo Mode**: Uses sample data, mock LLM responses, relaxed validation
+- **Production Mode**: Requires API keys, real data, strict validation, full agent orchestration
+
+**Human Escalation:** Confidence scoring with automatic escalation when thresholds not met
 
 ## 📊 Sample Output
 
@@ -86,33 +95,33 @@ cat ./data/outputs/${RUN_ID}/investment_decision.json
 Create your own agentic workflows by modifying YAML configurations:
 
 ```yaml
-# config/custom-investment-flow.yaml
-flow_name: "high_grading_analysis"
+# .claude/agents/geowiz.yaml (example customization)
+name: "geowiz"
+persona:
+  name: "Dr. Sarah Mitchell"
+  role: "Senior Petroleum Geologist"
+  experience: "15+ years unconventional reservoirs"
+  personality: "Detail-oriented, risk-aware, data-driven"
+  confidenceThreshold: 0.75
+  escalationCriteria:
+    - "geological_confidence < 0.6"
+    - "high_drilling_risk"
+    - "insufficient_data_quality"
 
-orchestration:
-  mode: "intelligent"
-  director_persona: "Conservative Investment Director"
-  
-  decision_logic:
-    - if: "geological_confidence < 0.8"
-      then: "escalate_to_human"
-    - if: "roi < 4.0" 
-      then: "escalate_to_human"
-
-agent_personas:
-  geowiz:
-    personality: "Highly conservative, requires exceptional data quality"
-    confidence_threshold: 0.8
-  
-  econobot:
-    personality: "Pessimistic assumptions, stress-test focused"
-    required_roi: 4.0
+cli:
+  entrypoint: "npx tsx src/agents/geowiz.ts"
+  args: ["--shapefile", "${input.shapefile}", "--region", "${input.region}"]
 ```
 
-Run your custom flow:
+Run with custom parameters:
 
 ```bash
-python mcp.py --config config/custom-investment-flow.yaml --run-id custom_analysis
+# Custom analysis with specific parameters
+npx tsx src/mcp.ts --mode=production --goal=tract_eval --run-id=custom_analysis
+
+# Different pipeline modes
+npm run pipeline:batch    # Batch processing mode
+npm run pipeline:research # Research and development mode
 ```
 
 ## 🚨 Human-in-the-Loop Escalation
@@ -143,28 +152,42 @@ Example escalation:
 
 ```bash
 # Use your actual data
-python mcp.py \
-  --las-files ./data/well_logs/*.las \
-  --tract-shapefile ./data/tracts/prospect.shp \
-  --region "Permian" \
-  --run-id real_data_analysis
+npx tsx src/mcp.ts \
+  --mode=production \
+  --goal=tract_eval \
+  --run-id=real_data_analysis
+
+# Place your data files in:
+# data/samples/your_tract.shp.txt
+# data/samples/your_logs.las  
+# data/samples/your_db.accdb.txt
 ```
 
 ### Batch Processing
 
 ```bash
-# Process multiple tracts
-for tract in ./prospects/*.shp; do
-  RUN_ID="batch_$(basename $tract .shp)"
-  python mcp.py --tract-shapefile $tract --run-id $RUN_ID
+# Process multiple tracts with batch mode
+npm run pipeline:batch
+
+# Or process individually
+for tract in ./data/tracts/*.shp.txt; do
+  RUN_ID="batch_$(basename $tract .shp.txt)"
+  npx tsx src/mcp.ts --mode=batch --run-id=$RUN_ID
 done
 ```
 
-### Integration with Existing Systems
+### Development and Testing
 
 ```bash
-# Export results to your CRM/ERP
-python scripts/export_to_crm.py --run-id $RUN_ID
+# Development mode with hot reload
+npm run dev
+
+# Type checking and linting
+npm run type-check
+npm run lint
+
+# Clean build for production
+npm run clean && npm run build
 ```
 
 ---

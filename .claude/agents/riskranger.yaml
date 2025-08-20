@@ -156,7 +156,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/riskranger_agent.py"
+  entrypoint: "npx tsx src/agents/riskranger.ts"
   args:
     - "--valuation=${input.valuation_data}"
     - "--geology=${input.geological_zones}"

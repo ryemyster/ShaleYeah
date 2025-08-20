@@ -26,7 +26,6 @@ outputs:
 
 tools:
   - npm
-  - pip
   - typescript_compiler
   - security_scanner
   - performance_profiler
@@ -35,10 +34,10 @@ workflow:
   steps:
     - name: "pre_build_validation"
       description: "Validate manifests and check for vulnerabilities"
-      command: "npm audit && pip check"
+      command: "npm audit"
     - name: "build_execution"
       description: "Run compilation and syntax checks"
-      command: "npx tsc --noEmit && python -m py_compile tools/*.py"
+      command: "npx tsc --noEmit"
     - name: "integration_testing"
       description: "Execute demo pipeline end-to-end"
       command: "bash scripts/demo.sh"
@@ -57,12 +56,12 @@ quality_gates:
   - check: "Demo pipeline completes in under 5 minutes"
     validation: "timeout 300 bash scripts/demo.sh"
   - check: "All agent specifications are valid"
-    validation: "find .claude/agents -name '*.yaml' -exec python -c 'import yaml; yaml.safe_load(open(\"{}\"))' \\;"
+    validation: "find .claude/agents -name '*.yaml' -exec npx tsx -e 'require(\"js-yaml\").load(require(\"fs\").readFileSync(process.argv[1], \"utf8\"))' {} \\;"
 
 build_checklist:
   code_quality:
     - typescript_strict_mode: true
-    - python_type_hints: true
+    - strict_typing: true
     - linting_passes: true
     - no_hardcoded_secrets: true
   dependencies:
@@ -112,7 +111,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/build_monitor_agent.py"
+  entrypoint: "npx tsx src/agents/build_monitor.ts"
   args:
     - "--source-dir=."
     - "--output-dir=${OUT_DIR}/build"

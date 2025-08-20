@@ -116,7 +116,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/titletracker_agent.py"
+  entrypoint: "npx tsx src/agents/titletracker.ts"
   args:
     - "--ownership-data=${input.ownership_data}"
     - "--output-dir=${OUT_DIR}"

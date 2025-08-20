@@ -175,7 +175,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/the_core_agent.py"
+  entrypoint: "npx tsx src/agents/the_core.ts"
   args:
     - "--valuation=${input.valuation_data}"
     - "--risk=${input.risk_assessment}"

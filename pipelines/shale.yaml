@@ -13,7 +13,7 @@ stages:
     
   - name: curve-qc
     type: command
-    command: "python .claude-flow/tools/curve-qc.py data/samples/demo.las CURVE=GR"
+    command: "npx tsx .claude-flow/tools/curve-qc.ts data/samples/demo.las CURVE=GR"
     description: "Quality control analysis on GR curve"
     
   - name: curve-smith

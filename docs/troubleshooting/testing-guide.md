@@ -21,7 +21,7 @@ cd ShaleYeah
 
 # Install test dependencies
 npm install --include=dev
-pip install -r requirements-dev.txt
+npm install -r requirements-dev.txt
 
 # Setup test environment
 export TEST_ENV=local
@@ -47,13 +47,13 @@ Each agent includes comprehensive unit tests covering:
 
 ```bash
 # Run all agent unit tests
-python -m pytest tests/agents/ -v
+npm test tests/agents/ -v
 
 # Test specific agent
-python -m pytest tests/agents/test_geowiz_agent.py -v
+npm test tests/agents/test_geowiz_agent.py -v
 
 # Test with coverage
-python -m pytest tests/agents/ --cov=agents --cov-report=html
+npm test tests/agents/ --cov=agents --cov-report=html
 ```
 
 ### Test Structure
@@ -83,13 +83,13 @@ class TestEconobotAgent:
 ### Shared Module Testing
 ```bash
 # Test base classes and utilities
-python -m pytest tests/shared/ -v
+npm test tests/shared/ -v
 
 # Test economic calculations
-python -m pytest tests/shared/test_economic_base.py::test_irr_calculation -v
+npm test tests/shared/test_economic_base.py::test_irr_calculation -v
 
 # Test JSON serialization
-python -m pytest tests/shared/test_utils.py::test_json_serializer -v
+npm test tests/shared/test_utils.py::test_json_serializer -v
 ```
 
 ## Integration Testing
@@ -97,37 +97,37 @@ python -m pytest tests/shared/test_utils.py::test_json_serializer -v
 ### Agent Pipeline Testing
 ```bash
 # Test geowiz → curve-smith → reporter pipeline
-python -m pytest tests/integration/test_core_pipeline.py -v
+npm test tests/integration/test_core_pipeline.py -v
 
 # Test full tract evaluation pipeline
-python -m pytest tests/integration/test_tract_eval_pipeline.py -v
+npm test tests/integration/test_tract_eval_pipeline.py -v
 
 # Test error handling and recovery
-python -m pytest tests/integration/test_error_scenarios.py -v
+npm test tests/integration/test_error_scenarios.py -v
 ```
 
 ### MCP (Multi-Agent Control Plane) Testing
 ```bash
 # Test agent orchestration
-python -m pytest tests/integration/test_mcp_controller.py -v
+npm test tests/integration/test_mcp_controller.py -v
 
 # Test dynamic routing
-python -m pytest tests/integration/test_agent_routing.py -v
+npm test tests/integration/test_agent_routing.py -v
 
 # Test state management
-python -m pytest tests/integration/test_state_persistence.py -v
+npm test tests/integration/test_state_persistence.py -v
 ```
 
 ### External Integration Testing
 ```bash
 # Test with mock external systems
 export USE_MOCK_INTEGRATIONS=true
-python -m pytest tests/integration/test_external_integrations.py -v
+npm test tests/integration/test_external_integrations.py -v
 
 # Test with real systems (requires credentials)
 export USE_LIVE_INTEGRATIONS=true
 export SPLUNK_HEC_TOKEN=your-token
-python -m pytest tests/integration/test_live_integrations.py -v
+npm test tests/integration/test_live_integrations.py -v
 ```
 
 ## End-to-End Testing
@@ -136,10 +136,10 @@ python -m pytest tests/integration/test_live_integrations.py -v
 ```bash
 # Run complete tract evaluation
 export RUN_ID=e2e-test-$(date +%Y%m%d-%H%M%S)
-python scripts/test-full-pipeline.sh $RUN_ID
+npx tsx scripts/test-full-pipeline.sh $RUN_ID
 
 # Validate all outputs
-python scripts/validate-pipeline-outputs.py --run-id $RUN_ID
+npx tsx scripts/validate-pipeline-outputs.py --run-id $RUN_ID
 
 # Check quality gates
 bash scripts/quality-gates-check.sh $RUN_ID
@@ -149,31 +149,31 @@ bash scripts/quality-gates-check.sh $RUN_ID
 1. **Successful Tract Evaluation**
    ```bash
    # Run with good synthetic data
-   python mcp.py --goal tract_eval --run-id success-test --data-quality good
+   npx tsx src/mcp.ts --goal tract_eval --run-id success-test --data-quality good
    ```
 
 2. **Marginal Data Quality**
    ```bash
    # Test with limited/poor quality data
-   python mcp.py --goal tract_eval --run-id marginal-test --data-quality poor
+   npx tsx src/mcp.ts --goal tract_eval --run-id marginal-test --data-quality poor
    ```
 
 3. **Investment Rejection Scenario**
    ```bash
    # Test with data that should fail investment criteria
-   python mcp.py --goal tract_eval --run-id reject-test --economics poor
+   npx tsx src/mcp.ts --goal tract_eval --run-id reject-test --economics poor
    ```
 
 ### Output Validation
 ```bash
 # Validate geological outputs
-python scripts/validate-geology.py --zones zones.geojson --summary geology_summary.md
+npx tsx scripts/validate-geology.py --zones zones.geojson --summary geology_summary.md
 
 # Validate economic outputs  
-python scripts/validate-economics.py --valuation valuation.json --npv-threshold 300000
+npx tsx scripts/validate-economics.py --valuation valuation.json --npv-threshold 300000
 
 # Validate investment decision
-python scripts/validate-decision.py --decision investment_decision.json --criteria-file investment_criteria.yaml
+npx tsx scripts/validate-decision.py --decision investment_decision.json --criteria-file investment_criteria.yaml
 ```
 
 ## Performance Testing
@@ -181,25 +181,25 @@ python scripts/validate-decision.py --decision investment_decision.json --criter
 ### Load Testing
 ```bash
 # Test with multiple concurrent runs
-python scripts/load-test.py --concurrent-runs 10 --duration 600
+npx tsx scripts/load-test.py --concurrent-runs 10 --duration 600
 
 # Memory usage testing
-python -m memory_profiler scripts/memory-test.py --tract-count 100
+npm run profile:memory scripts/memory-test.py --tract-count 100
 
 # Processing time benchmarks
-python scripts/benchmark-pipeline.py --iterations 50
+npx tsx scripts/benchmark-pipeline.py --iterations 50
 ```
 
 ### Scalability Testing
 ```bash
 # Test with large datasets
-python scripts/scalability-test.py --data-size large --tract-count 1000
+npx tsx scripts/scalability-test.py --data-size large --tract-count 1000
 
 # Database performance
-python scripts/db-performance-test.py --records 100000
+npx tsx scripts/db-performance-test.py --records 100000
 
 # File I/O performance
-python scripts/io-performance-test.py --file-count 10000
+npx tsx scripts/io-performance-test.py --file-count 10000
 ```
 
 ### Performance Metrics
@@ -226,25 +226,25 @@ gitleaks detect --source . --report-format json --report-path secrets-report.jso
 ### Input Validation Testing
 ```bash
 # Test with malicious inputs
-python tests/security/test_input_validation.py
+npx tsx tests/security/test_input_validation.py
 
 # SQL injection testing (for database inputs)
-python tests/security/test_sql_injection.py
+npx tsx tests/security/test_sql_injection.py
 
 # File path traversal testing
-python tests/security/test_path_traversal.py
+npx tsx tests/security/test_path_traversal.py
 ```
 
 ### Data Privacy Testing
 ```bash
 # PII detection testing
-python tests/security/test_pii_detection.py
+npx tsx tests/security/test_pii_detection.py
 
 # Data redaction validation
-python tests/security/test_data_redaction.py
+npx tsx tests/security/test_data_redaction.py
 
 # Access control testing
-python tests/security/test_access_controls.py
+npx tsx tests/security/test_access_controls.py
 ```
 
 ## Quality Gates
@@ -258,7 +258,7 @@ Each agent and pipeline must pass these quality gates:
 grep -q "confidence.*0\.[789]" ${OUT_DIR}/geology_summary.md || exit 1
 
 # Formation count validation
-python scripts/validate-formations.py --zones ${OUT_DIR}/zones.geojson --min-formations 2
+npx tsx scripts/validate-formations.py --zones ${OUT_DIR}/zones.geojson --min-formations 2
 
 # Depth unit validation
 jq -e '.features[0].properties.depth_unit' ${OUT_DIR}/zones.geojson || exit 1
@@ -270,22 +270,22 @@ jq -e '.features[0].properties.depth_unit' ${OUT_DIR}/zones.geojson || exit 1
 grep -q "RMSE.*NRMSE" ${OUT_DIR}/qc_report.md || exit 1
 
 # Curve completeness check
-python scripts/validate-curves.py --curves-dir ${OUT_DIR}/curves --min-completeness 0.8
+npx tsx scripts/validate-curves.py --curves-dir ${OUT_DIR}/curves --min-completeness 0.8
 
 # Statistical validation
-python scripts/validate-statistics.py --qc-report ${OUT_DIR}/qc_report.md
+npx tsx scripts/validate-statistics.py --qc-report ${OUT_DIR}/qc_report.md
 ```
 
 #### Economic Analysis (econobot)
 ```bash
 # NPV calculation validation
-python scripts/validate-npv.py --valuation ${OUT_DIR}/valuation.json --min-npv 100000
+npx tsx scripts/validate-npv.py --valuation ${OUT_DIR}/valuation.json --min-npv 100000
 
 # IRR reasonableness check
-python scripts/validate-irr.py --valuation ${OUT_DIR}/valuation.json --min-irr 0.15 --max-irr 0.50
+npx tsx scripts/validate-irr.py --valuation ${OUT_DIR}/valuation.json --min-irr 0.15 --max-irr 0.50
 
 # Cash flow validation
-python scripts/validate-cashflow.py --valuation ${OUT_DIR}/valuation.json
+npx tsx scripts/validate-cashflow.py --valuation ${OUT_DIR}/valuation.json
 ```
 
 #### Investment Decision (the-core)
@@ -294,10 +294,10 @@ python scripts/validate-cashflow.py --valuation ${OUT_DIR}/valuation.json
 grep -qE "(PROCEED|NO_GO|CONDITIONAL)" ${OUT_DIR}/investment_decision.json || exit 1
 
 # Threshold compliance
-python scripts/validate-thresholds.py --decision ${OUT_DIR}/investment_decision.json
+npx tsx scripts/validate-thresholds.py --decision ${OUT_DIR}/investment_decision.json
 
 # Decision matrix validation
-python scripts/validate-decision-matrix.py --matrix ${OUT_DIR}/decision_matrix.md
+npx tsx scripts/validate-decision-matrix.py --matrix ${OUT_DIR}/decision_matrix.md
 ```
 
 #### Report Quality (reporter)
@@ -306,10 +306,10 @@ python scripts/validate-decision-matrix.py --matrix ${OUT_DIR}/decision_matrix.m
 grep -q "SHALE YEAH.*Apache-2.0" ${OUT_DIR}/SHALE_YEAH_REPORT.md || exit 1
 
 # Completeness validation
-python scripts/validate-report.py --report ${OUT_DIR}/SHALE_YEAH_REPORT.md
+npx tsx scripts/validate-report.py --report ${OUT_DIR}/SHALE_YEAH_REPORT.md
 
 # Data provenance check
-python scripts/validate-provenance.py --report ${OUT_DIR}/SHALE_YEAH_REPORT.md
+npx tsx scripts/validate-provenance.py --report ${OUT_DIR}/SHALE_YEAH_REPORT.md
 ```
 
 ## Continuous Integration Testing
@@ -332,10 +332,10 @@ jobs:
           python-version: '3.9'
       - name: Install dependencies
         run: |
-          pip install -r requirements-dev.txt
+          npm install -r requirements-dev.txt
       - name: Run unit tests
         run: |
-          python -m pytest tests/agents/ --cov=agents
+          npm test tests/agents/ --cov=agents
   
   integration-tests:
     runs-on: ubuntu-latest
@@ -348,7 +348,7 @@ jobs:
           export USE_MOCK_INTEGRATIONS=true
       - name: Run integration tests
         run: |
-          python -m pytest tests/integration/
+          npm test tests/integration/
   
   e2e-tests:
     runs-on: ubuntu-latest
@@ -363,10 +363,10 @@ jobs:
 ### Test Data Management
 ```bash
 # Generate consistent test data
-python scripts/generate-test-data.py --seed 12345 --output tests/data/
+npx tsx scripts/generate-test-data.py --seed 12345 --output tests/data/
 
 # Validate test data integrity
-python scripts/validate-test-data.py --data-dir tests/data/
+npx tsx scripts/validate-test-data.py --data-dir tests/data/
 
 # Clean up test outputs
 bash scripts/cleanup-test-outputs.sh
@@ -392,10 +392,10 @@ class MockSplunkHEC:
 ### Mock Data Sources
 ```bash
 # Generate mock LAS files
-python tests/mocks/generate-mock-las.py --output tests/data/mock.las
+npx tsx tests/mocks/generate-mock-las.py --output tests/data/mock.las
 
 # Generate mock Access database
-python tests/mocks/generate-mock-access.py --output tests/data/mock.accdb
+npx tsx tests/mocks/generate-mock-access.py --output tests/data/mock.accdb
 ```
 
 ## Test Automation Scripts
@@ -411,16 +411,16 @@ export OUT_DIR=./data/test-outputs/${RUN_ID}
 echo "Running daily regression tests..."
 
 # Run unit tests
-python -m pytest tests/agents/ --junitxml=test-results/unit-tests.xml
+npm test tests/agents/ --junitxml=test-results/unit-tests.xml
 
 # Run integration tests  
-python -m pytest tests/integration/ --junitxml=test-results/integration-tests.xml
+npm test tests/integration/ --junitxml=test-results/integration-tests.xml
 
 # Run full pipeline
-python mcp.py --goal tract_eval --run-id $RUN_ID
+npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID
 
 # Validate outputs
-python scripts/validate-regression-outputs.py --run-id $RUN_ID
+npx tsx scripts/validate-regression-outputs.py --run-id $RUN_ID
 
 echo "Regression tests completed. Results in test-results/"
 ```
@@ -431,10 +431,10 @@ echo "Regression tests completed. Results in test-results/"
 # scripts/performance-regression.sh
 
 # Run performance benchmarks
-python scripts/benchmark-pipeline.py --output benchmark-results.json
+npx tsx scripts/benchmark-pipeline.py --output benchmark-results.json
 
 # Compare with baseline
-python scripts/compare-performance.py \
+npx tsx scripts/compare-performance.py \
   --current benchmark-results.json \
   --baseline performance-baseline.json \
   --threshold 0.1
@@ -451,13 +451,13 @@ fi
 ### Test Failure Analysis
 ```bash
 # Run tests with verbose output
-python -m pytest tests/agents/test_econobot_agent.py -v -s --tb=long
+npm test tests/agents/test_econobot_agent.py -v -s --tb=long
 
 # Debug specific test failure
-python -m pytest tests/agents/test_econobot_agent.py::test_npv_calculation --pdb
+npm test tests/agents/test_econobot_agent.py::test_npv_calculation --pdb
 
 # Generate test report
-python -m pytest tests/ --html=test-report.html --self-contained-html
+npm test tests/ --html=test-report.html --self-contained-html
 ```
 
 ### Log Analysis
@@ -480,7 +480,7 @@ cat logs/integrations/splunk-connector.log | jq '.level == "ERROR"'
 echo $PYTHONPATH
 
 # Install missing dependencies
-pip install -r requirements-dev.txt
+npm install -r requirements-dev.txt
 
 # Fix import paths
 export PYTHONPATH="${PYTHONPATH}:${PWD}"
@@ -493,7 +493,7 @@ md5sum tests/data/* > tests/data/checksums.md5
 md5sum -c tests/data/checksums.md5
 
 # Regenerate test data
-python scripts/regenerate-test-data.py
+npx tsx scripts/regenerate-test-data.py
 ```
 
 #### Environment Issues
@@ -513,19 +513,19 @@ bash scripts/cleanup-test-artifacts.sh
 ### Coverage Reports
 ```bash
 # Generate coverage report
-python -m pytest --cov=agents --cov=shared --cov-report=html --cov-report=term
+npm test --cov=agents --cov=shared --cov-report=html --cov-report=term
 
 # View coverage in browser
 open htmlcov/index.html
 
 # Coverage thresholds
-python -m pytest --cov=agents --cov-fail-under=80
+npm test --cov=agents --cov-fail-under=80
 ```
 
 ### Test Result Reporting
 ```bash
 # Generate JUnit XML reports
-python -m pytest --junitxml=test-results.xml
+npm test --junitxml=test-results.xml
 
 # Convert to other formats
 junit2html test-results.xml test-results.html
@@ -537,13 +537,13 @@ curl -X POST -F "file=@test-results.xml" https://test-service.company.com/api/up
 ### Metrics Collection
 ```bash
 # Test execution time tracking
-python scripts/collect-test-metrics.py --output test-metrics.json
+npx tsx scripts/collect-test-metrics.py --output test-metrics.json
 
 # Agent performance profiling
-python scripts/profile-agent-performance.py --agent econobot --output performance.prof
+npx tsx scripts/profile-agent-performance.py --agent econobot --output performance.prof
 
 # Memory usage analysis
-python scripts/analyze-memory-usage.py --test-run $RUN_ID
+npx tsx scripts/analyze-memory-usage.py --test-run $RUN_ID
 ```
 
 ---

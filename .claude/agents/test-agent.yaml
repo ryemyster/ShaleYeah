@@ -38,7 +38,7 @@ workflow:
       action: "setup_test_environment"
     - name: "unit_test_execution"
       description: "Test individual tools and functions"
-      command: "npm test && python -m pytest tools/"
+      command: "npm test"
     - name: "integration_test_execution"
       description: "Run complete demo pipeline end-to-end"
       command: "npm run test:integration"
@@ -145,7 +145,7 @@ environment:
   OUT_DIR: "${OUT_DIR}"
 
 cli:
-  entrypoint: "python agents/test_agent.py"
+  entrypoint: "npx tsx src/agents/test.ts"
   args:
     - "--source-dir=."
     - "--test-data=data/samples"

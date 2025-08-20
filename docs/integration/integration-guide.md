@@ -34,7 +34,7 @@ export SPLUNK_HEC_TOKEN=your-token-here
 export SPLUNK_HEC_URL=https://splunk.company.com:8088/services/collector
 
 # Usage
-python integrations/siem/splunk_connector.py --run-id $RUN_ID
+npx tsx integrations/siem/splunk_connector.py --run-id $RUN_ID
 ```
 
 **Features:**
@@ -50,7 +50,7 @@ export SENTINEL_BEARER=your-bearer-token
 export SENTINEL_WORKSPACE_ID=your-workspace-id
 
 # Usage
-python integrations/siem/sentinel_connector.py --run-id $RUN_ID
+npx tsx integrations/siem/sentinel_connector.py --run-id $RUN_ID
 ```
 
 **Features:**
@@ -66,7 +66,7 @@ export QRADAR_API_TOKEN=your-api-token
 export QRADAR_HOST=qradar.company.com
 
 # Usage
-python integrations/siem/qradar_connector.py --format LEEF --run-id $RUN_ID
+npx tsx integrations/siem/qradar_connector.py --format LEEF --run-id $RUN_ID
 ```
 
 **Features:**
@@ -84,7 +84,7 @@ export ARCGIS_SERVER_URL=https://gis.company.com/server/rest/services
 export ARCGIS_TOKEN=your-token
 
 # Usage
-python integrations/gis/arcgis_connector.py --feature-service tract_analysis
+npx tsx integrations/gis/arcgis_connector.py --feature-service tract_analysis
 ```
 
 **Features:**
@@ -96,7 +96,7 @@ python integrations/gis/arcgis_connector.py --feature-service tract_analysis
 #### QGIS Processing
 ```bash
 # Usage (requires QGIS installation)
-python integrations/gis/qgis_processor.py --project tract_analysis.qgs --algorithm native:buffer
+npx tsx integrations/gis/qgis_processor.py --project tract_analysis.qgs --algorithm native:buffer
 ```
 
 **Features:**
@@ -108,7 +108,7 @@ python integrations/gis/qgis_processor.py --project tract_analysis.qgs --algorit
 #### MapInfo Professional
 ```bash
 # Usage (requires MapInfo installation)
-python integrations/gis/mapinfo_connector.py --workspace tract_analysis.wor
+npx tsx integrations/gis/mapinfo_connector.py --workspace tract_analysis.wor
 ```
 
 ### Mining Software Integration
@@ -116,7 +116,7 @@ python integrations/gis/mapinfo_connector.py --workspace tract_analysis.wor
 #### Open Mining Format (OMF)
 ```bash
 # Export geological zones to OMF
-python integrations/mining/omf_export.py --zones zones.geojson --output tract.omf
+npx tsx integrations/mining/omf_export.py --zones zones.geojson --output tract.omf
 ```
 
 **Features:**
@@ -131,7 +131,7 @@ python integrations/mining/omf_export.py --zones zones.geojson --output tract.om
 export LEAPFROG_PROJECT_PATH=/path/to/project.lfp
 
 # Usage
-python integrations/mining/leapfrog_connector.py --import-zones zones.geojson
+npx tsx integrations/mining/leapfrog_connector.py --import-zones zones.geojson
 ```
 
 **Features:**
@@ -145,21 +145,21 @@ python integrations/mining/leapfrog_connector.py --import-zones zones.geojson
 ### Unit Testing
 ```bash
 # Test individual connectors
-python -m pytest tests/integration/test_splunk_connector.py
-python -m pytest tests/integration/test_arcgis_connector.py
+npm test tests/integration/test_splunk_connector.py
+npm test tests/integration/test_arcgis_connector.py
 
 # Test integration layer
-python -m pytest tests/integration/test_integration_layer.py
+npm test tests/integration/test_integration_layer.py
 ```
 
 ### Integration Testing
 ```bash
 # End-to-end integration tests (requires actual systems)
 export TEST_INTEGRATION=true
-python -m pytest tests/integration/test_end_to_end_integrations.py
+npm test tests/integration/test_end_to_end_integrations.py
 
 # Mock integration testing (no external dependencies)
-python -m pytest tests/integration/test_mock_integrations.py
+npm test tests/integration/test_mock_integrations.py
 ```
 
 ### Manual Testing Procedures
@@ -173,7 +173,7 @@ python -m pytest tests/integration/test_mock_integrations.py
 
 2. **Run Test Pipeline**
    ```bash
-   python mcp.py --goal tract_eval --run-id $RUN_ID
+   npx tsx src/mcp.ts --goal tract_eval --run-id $RUN_ID
    ```
 
 3. **Verify SIEM Events**
@@ -183,18 +183,18 @@ python -m pytest tests/integration/test_mock_integrations.py
 
 4. **Validate Data Integrity**
    ```bash
-   python scripts/validate-siem-integration.py --run-id $RUN_ID
+   npx tsx scripts/validate-siem-integration.py --run-id $RUN_ID
    ```
 
 #### GIS Integration Testing
 1. **Prepare Test Data**
    ```bash
-   python scripts/generate-test-geospatial-data.py --output test_data.geojson
+   npx tsx scripts/generate-test-geospatial-data.py --output test_data.geojson
    ```
 
 2. **Test Spatial Operations**
    ```bash
-   python integrations/gis/arcgis_connector.py --test-mode --input test_data.geojson
+   npx tsx integrations/gis/arcgis_connector.py --test-mode --input test_data.geojson
    ```
 
 3. **Verify Spatial Results**
@@ -205,12 +205,12 @@ python -m pytest tests/integration/test_mock_integrations.py
 #### Mining Software Testing
 1. **Export Test Data**
    ```bash
-   python integrations/mining/omf_export.py --zones zones.geojson --output test_export.omf
+   npx tsx integrations/mining/omf_export.py --zones zones.geojson --output test_export.omf
    ```
 
 2. **Validate OMF Structure**
    ```bash
-   python scripts/validate-omf-export.py --file test_export.omf
+   npx tsx scripts/validate-omf-export.py --file test_export.omf
    ```
 
 3. **Test Import in Target Software**
@@ -320,7 +320,7 @@ export ENVIRONMENT=production
 source config/env/production.env
 
 # Verify integration configuration
-python scripts/validate-integration-config.py
+npx tsx scripts/validate-integration-config.py
 ```
 
 ## Security Considerations
@@ -356,7 +356,7 @@ python scripts/validate-integration-config.py
 
 2. **Verify Credentials**
    ```bash
-   python scripts/test-credentials.py --system splunk
+   npx tsx scripts/test-credentials.py --system splunk
    ```
 
 3. **Check Firewall Rules**
@@ -368,24 +368,24 @@ python scripts/validate-integration-config.py
 #### Data Format Issues
 1. **Validate JSON Schema**
    ```bash
-   python scripts/validate-json-schema.py --file output.json --schema schemas/geological.json
+   npx tsx scripts/validate-json-schema.py --file output.json --schema schemas/geological.json
    ```
 
 2. **Check Data Types**
    ```bash
-   python scripts/analyze-data-types.py --input zones.geojson
+   npx tsx scripts/analyze-data-types.py --input zones.geojson
    ```
 
 #### Performance Issues
 1. **Monitor Memory Usage**
    ```bash
-   python -m memory_profiler integrations/gis/arcgis_connector.py
+   npm run profile:memory integrations/gis/arcgis_connector.py
    ```
 
 2. **Profile Integration Performance**
    ```bash
-   python -m cProfile -o integration.prof integrations/siem/splunk_connector.py
-   python -c "import pstats; pstats.Stats('integration.prof').sort_stats('time').print_stats(10)"
+   npm run profile:cpu -o integration.prof integrations/siem/splunk_connector.py
+   node --inspect-brk scripts/profile-stats.js integration.prof
    ```
 
 ### Debug Mode
@@ -395,7 +395,7 @@ export SHALE_YEAH_DEBUG=true
 export INTEGRATION_LOG_LEVEL=DEBUG
 
 # Run with verbose output
-python integrations/siem/splunk_connector.py --verbose --run-id $RUN_ID
+npx tsx integrations/siem/splunk_connector.py --verbose --run-id $RUN_ID
 ```
 
 ### Support Resources
