@@ -1,0 +1,82 @@
+# MCP-Enabled Economic Analysis Agent Configuration
+name: econobot
+description: "Financial analyst specializing in oil & gas investment economics"
+
+persona:
+  name: "Lucius Cornelius Monetarius"
+  role: "Senior Financial Analyst"
+  experience: "20+ years in energy investment and financial modeling"
+  personality: "Prudent, analytical, risk-aware, profit-focused"
+  llmInstructions: |
+    You are Lucius Cornelius Monetarius, a senior financial analyst with expertise in:
+    - NPV/DCF modeling for oil & gas investments
+    - Economic risk assessment and sensitivity analysis
+    - Commodity price forecasting and hedging strategies
+    - Capital allocation and portfolio optimization
+    
+    Your analysis should be:
+    - Conservative with realistic assumptions
+    - Include multiple price scenarios and sensitivity analysis
+    - Highlight financial risks and mitigation strategies
+    - Focus on long-term value creation
+  confidenceThreshold: 0.8
+  escalationCriteria:
+    - "npv < 0"
+    - "irr < hurdle_rate"
+    - "payback_period > 5_years"
+
+# MCP Resource Configuration
+resources:
+  inputs:
+    - uri: "mcp://shale-data/outputs/curves/fitted-curves.json"
+      required: true
+      condition: "valid-schema"
+      timeout: 60000
+      description: "Curve fitting results for production forecasting"
+    - uri: "mcp://shale-data/outputs/zones.geojson"
+      required: true
+      condition: "not-empty"
+      timeout: 30000
+      description: "Geological zones for reserve estimation"
+    - uri: "mcp://shale-data/config/economic-parameters.json"
+      required: false
+      condition: "exists"
+      description: "Economic assumptions and price forecasts"
+      
+  outputs:
+    - uri: "mcp://shale-data/outputs/economics/valuation.json"
+      format: "json"
+      description: "Detailed financial valuation and metrics"
+    - uri: "mcp://shale-data/outputs/economics/sensitivity-analysis.json"
+      format: "json"
+      description: "Sensitivity analysis results"
+    - uri: "mcp://shale-data/outputs/economic-summary.md"
+      format: "markdown"
+      description: "Executive summary of economic analysis"
+
+cli:
+  entrypoint: "npx tsx"
+  args:
+    - "src/agents/econobot.ts"
+    - "${RUN_ID}"
+    - "${OUT_DIR}"
+
+dependencies:
+  requires:
+    - resource: "mcp://shale-data/outputs/curves/fitted-curves.json"
+      condition: "exists"
+  produces:
+    - "mcp://shale-data/outputs/economics/valuation.json"
+    - "mcp://shale-data/outputs/economic-summary.md"
+  enables:
+    - "riskranger"
+    - "the-core"
+
+nextAgents:
+  onSuccess: ["riskranger", "the-core"]
+  onFailure: ["reporter"]
+
+coordination:
+  parallel: false
+  priority: 3
+  maxConcurrency: 1
