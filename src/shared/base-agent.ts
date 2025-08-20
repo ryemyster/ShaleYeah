@@ -250,17 +250,45 @@ export abstract class BaseAgent {
   }
 
   /**
+   * DRY logging helpers to eliminate repeated persona logging patterns
+   */
+  protected logStart(action: string): void {
+    this.logger.info(`🎯 ${this.persona.name} starting ${action}...`);
+  }
+
+  protected logSuccess(action: string, duration: number): void {
+    this.logger.info(`✅ ${this.persona.name} ${action} completed in ${duration}ms`);
+  }
+
+  protected logError(action: string, duration: number, error: any): void {
+    this.logger.error(`❌ ${this.persona.name} ${action} failed after ${duration}ms:`, error);
+  }
+
+  protected logInfo(message: string): void {
+    this.logger.info(`ℹ️  ${this.persona.name}: ${message}`);
+  }
+
+  protected logWarning(message: string): void {
+    this.logger.warn(`⚠️  ${this.persona.name}: ${message}`);
+  }
+
+  protected logProgress(step: string, details?: string): void {
+    const msg = details ? `${step} - ${details}` : step;
+    this.logger.info(`📊 ${this.persona.name} progress: ${msg}`);
+  }
+
+  /**
    * Execute the agent with proper error handling and logging
    */
   async execute(inputData: any): Promise<AgentResult> {
     const startTime = Date.now();
-    this.logger.info(`🎯 ${this.persona.name} starting analysis...`);
+    this.logStart('analysis');
 
     try {
       const result = await this.analyze(inputData);
       
       const executionTime = Date.now() - startTime;
-      this.logger.info(`✅ ${this.persona.name} completed in ${executionTime}ms`);
+      this.logSuccess('analysis', executionTime);
 
       return {
         ...result,
@@ -268,7 +296,7 @@ export abstract class BaseAgent {
       };
     } catch (error) {
       const executionTime = Date.now() - startTime;
-      this.logger.error(`❌ ${this.persona.name} failed after ${executionTime}ms:`, error);
+      this.logError('analysis', executionTime, error);
 
       return {
         success: false,

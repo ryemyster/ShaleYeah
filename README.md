@@ -180,39 +180,163 @@ The system includes demo data and works without real inputs for testing.
 | **YAML Configuration** | Agent definitions | Drives workflow logic and persona behavior |
 | **Tools & Utilities** | TypeScript modules | Parse data, perform calculations, generate outputs |
 
-## 🤖 AI Agent Personas
+## 🏗️ Agent Architecture
 
-Each agent represents a human expert with 15+ years experience:
+SHALE YEAH uses a **dual-layer agent architecture** that separates **configuration** from **implementation** for maximum flexibility and maintainability.
 
-| Agent | Persona | Role | Expertise |
-|-------|---------|------|-----------|
-| **geowiz** 🪨 | Dr. Sarah Mitchell | Senior Petroleum Geologist | Subsurface analysis, shale plays, drilling recommendations |
-| **reporter** 📊 | Sarah Chen | Executive Assistant | Investment reporting, data synthesis, board presentations |
-| **drillcast** 🔧 | Mike Rodriguez | Drilling Engineer | Horizontal wells, completion design, cost estimation |
-| **econobot** 💰 | David Chen | Financial Analyst | NPV/DCF modeling, economic evaluation, ROI analysis |
-| **riskranger** ⚠️ | Dr. Amanda Foster | Risk Manager | Monte Carlo analysis, scenario planning, risk mitigation |
-| **the-core** 🎯 | Robert Hamilton | Investment Director | Strategic decisions, portfolio impact, final approval |
-| **titletracker** 📋 | Jennifer Davis | Senior Landman | Ownership analysis, mineral rights, title verification |
-| **notarybot** 📑 | Susan Wright | Legal Counsel | Transaction documents, compliance, deal structuring |
-
-### **How Agents Think & Decide**
-
-Each agent uses **LLM-powered reasoning** with domain expertise:
+### **📋 Dual-Layer Architecture**
 
 ```typescript
-// Example: GeoWiz geological analysis
-const geologicalAnalysis = await this.llmClient.generateResponse(`
-  You are Dr. Sarah Mitchell, a senior petroleum geologist with 15+ years 
-  experience making $50M+ investment recommendations.
-  
-  Analyze this geological data and provide your professional assessment:
-  - Formation quality and hydrocarbon potential  
-  - Drilling risks and development recommendations
-  - Confidence scoring with human escalation criteria
-  
-  Think like you're presenting to the investment committee tomorrow.
-`, { persona: this.persona, data: geologicalData });
+┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
+│   YAML Configs      │    │   MCP Controller    │    │  TypeScript Agents  │
+│  (.claude/agents)   │───▶│   Orchestrator      │───▶│   (src/agents)      │
+│                     │    │                     │    │                     │
+│ • 20 Agent Configs  │    │ • Load YAML configs │    │ • 2 Implementations │
+│ • Roman Personas    │    │ • Resolve deps      │    │ • Execute analysis  │
+│ • Resource deps     │    │ • Trigger execution │    │ • Generate outputs  │
+│ • CLI commands      │    │ • Monitor progress  │    │ • Use LLM reasoning │
+│ • Error handling    │    │ • Event coordination│    │ • Handle edge cases │
+└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
 ```
+
+### **📄 Configuration Layer**: `.claude/agents/` (20 YAML files)
+
+**Purpose**: Agent workflow definitions, personas, and orchestration metadata  
+**Used by**: MCP Controllers, Claude Code, automation systems  
+**Contains**: Roman personas, resource dependencies, CLI commands, error handling rules
+
+#### **Agent Types**
+
+| Type | Pattern | Example | Purpose |
+|------|---------|---------|---------|
+| **Legacy** | `agent.yaml` | `geowiz.yaml` | Simple agent definitions with basic personas |
+| **MCP-Enhanced** | `agent-mcp.yaml` | `geowiz-mcp.yaml` | Modern agents with resource dependencies |
+| **Specialized** | Various | `build-monitor.yaml` | System agents for monitoring and automation |
+
+#### **Roman Personas Migration**
+
+Modern agents use **Roman imperial personas** for consistency and gravitas:
+
+| Agent | Legacy Persona | Modern Roman Persona | Role |
+|-------|----------------|---------------------|------|
+| **geowiz** 🪨 | Dr. Sarah Mitchell | **Marcus Aurelius Geologicus** | Senior Petroleum Geologist |
+| **reporter** 📊 | Sarah Chen | **Cicero Reporticus Maximus** | Executive Scribe & Investment Herald |
+| **econobot** 💰 | David Chen | **Lucius Cornelius Monetarius** | Imperial Financial Strategist |
+| **riskranger** ⚠️ | Dr. Amanda Foster | **Seneca Prudentius Risicus** | Risk Assessment Philosopher |
+| **the-core** 🎯 | Robert Hamilton | **Caesar Augustus Decidicus** | Supreme Investment Commander |
+
+### **💻 Implementation Layer**: `src/agents/` (2 TypeScript files)
+
+**Purpose**: Actual executable agent logic with LLM integration  
+**Used by**: Direct execution, complex analysis workflows  
+**Contains**: Business logic, data processing, AI reasoning, output generation
+
+```typescript
+// src/agents/geowiz.ts - Full implementation
+export class GeoWizAgent extends BaseAgent {
+  private expectedOutputs = ['geology_summary.md', 'zones.geojson'];
+
+  constructor(runId: string, outputDir: string, modeOverride?: string) {
+    super(runId, outputDir, 'geowiz', GEOWIZ_PERSONA, modeOverride);
+  }
+
+  async analyze(inputData: GeowizInputs): Promise<AgentResult> {
+    // Complex geological analysis logic
+    // LLM integration for reasoning  
+    // Data processing and validation
+    // Professional geological assessment
+  }
+}
+```
+
+### **🔄 MCP Resource System**
+
+**Model Context Protocol (MCP)** enables event-driven agent coordination:
+
+```yaml
+# .claude/agents/geowiz-mcp.yaml
+resources:
+  inputs:
+    - uri: "mcp://shale-data/inputs/las-files/**"
+      required: true
+      condition: "not-empty"
+  outputs:
+    - uri: "mcp://shale-data/outputs/geology-summary.md"
+      format: "markdown"
+    - uri: "mcp://shale-data/outputs/zones.geojson" 
+      format: "geojson"
+```
+
+### **⚡ Execution Flow**
+
+1. **MCP Controller** loads all YAML configs from `.claude/agents/`
+2. **Agent Factory** filters for MCP-enabled agents (6 of 20 have `resources`)
+3. **Dependency Resolver** builds execution graph based on resource URIs  
+4. **Event Coordinator** triggers agents when dependencies are satisfied
+5. **CLI Execution** invokes TypeScript implementations via YAML commands
+6. **TypeScript Agents** perform actual analysis and generate outputs
+7. **Resource Events** trigger downstream agents automatically
+
+### **📊 Current Agent Inventory**
+
+From system analysis:
+- **📄 20 YAML configuration files** in `.claude/agents/`
+- **⚡ 6 MCP-enabled agents** with resource configurations
+- **📚 14 legacy agents** without MCP resources  
+- **💻 2 TypeScript implementations** (geowiz, reporter)
+- **🏛️ Roman personas** implemented for 5 core agents
+
+### **🏭 Agent Factory Integration**
+
+The **Unified Agent Factory** bridges YAML configurations and TypeScript implementations:
+
+```typescript
+// Dynamic agent creation from YAML
+const agentConfigs = await YAMLConfigLoader.loadAgentConfigs('.claude/agents');
+const agents = AgentFactory.createAgentsFromRegistry(agentConfigs, config);
+
+// Direct TypeScript instantiation
+const geowiz = AgentFactoryHelpers.createGeowizAgent(config);
+const reporter = AgentFactoryHelpers.createReporterAgent(config);
+```
+
+### **🔧 Creating New Agents**
+
+1. **Create YAML Configuration** in `.claude/agents/my-agent.yaml`:
+```yaml
+name: my-agent
+persona:
+  name: "Maximus My-Expertus"
+  role: "Domain Expert"
+resources:
+  inputs: [...]
+  outputs: [...]
+cli:
+  entrypoint: "npx tsx src/agents/my-agent.ts"
+```
+
+2. **Implement TypeScript Logic** in `src/agents/my-agent.ts`:
+```typescript
+export class MyAgent extends BaseAgent {
+  async analyze(input: MyInputs): Promise<AgentResult> {
+    // Your domain-specific logic here
+  }
+}
+```
+
+3. **Register with Factory** (optional):
+```typescript
+AgentFactoryHelpers.createMyAgent = (config) => { /* ... */ };
+```
+
+### **🎯 Why This Architecture?**
+
+- **🔧 Flexibility**: YAML configs allow rapid agent definition without code changes
+- **⚡ Performance**: TypeScript implementations provide full computational power
+- **🎭 Personas**: Roman characters add gravitas and consistency to AI interactions
+- **🔄 Event-Driven**: MCP resources enable intelligent workflow coordination
+- **📈 Scalability**: Add new agents by creating YAML files, no code compilation
+- **🧪 Testing**: Mock agents via YAML without touching implementation logic
 
 ## 🛠️ Development
 

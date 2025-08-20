@@ -14,15 +14,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import YAML from 'yaml';
 import type {
   AgentConfig,
-  PipelineState,
   MCPAgentResourceConfig,
   EnvironmentConfig
 } from './shared/types.js';
+import { PipelineState } from './shared/mcp-types.js';
 import { FileSystemMCPResourceServer } from './shared/mcp-resource-server.js';
 import { MCPPipelineStateManager } from './shared/mcp-pipeline-state.js';
+import { YAMLConfigLoader } from './shared/yaml-config-loader.js';
 import { 
   getEnvironmentConfig, 
   getOutputDir,
@@ -85,26 +85,24 @@ export class MCPControllerV2 {
 
   private async loadMCPAgentRegistry(): Promise<void> {
     try {
-      const yamlFiles = await fs.readdir(this.agentsDir);
+      // Use unified YAML config loader with validation
+      const agentConfigs = await YAMLConfigLoader.loadAgentConfigs(this.agentsDir, {
+        allowPartial: true, // Allow agents with missing optional fields
+        throwOnError: false // Log errors but continue loading other agents
+      });
       
-      for (const file of yamlFiles) {
-        if (!file.endsWith('.yaml') && !file.endsWith('.yml')) continue;
-        
-        try {
-          const filePath = path.join(this.agentsDir, file);
-          const content = await fs.readFile(filePath, 'utf8');
-          const agentConfig = YAML.parse(content) as AgentConfig & MCPAgentResourceConfig;
-          
-          if (agentConfig.name && agentConfig.resources) {
-            this.agentRegistry.set(agentConfig.name, agentConfig);
-            this.logger.info(`📋 Loaded MCP agent: ${agentConfig.name} (${agentConfig.resources.inputs.length} inputs, ${agentConfig.resources.outputs.length} outputs)`);
-          } else if (agentConfig.name) {
-            this.logger.warn(`⚠️  Agent ${agentConfig.name} missing MCP resource configuration`);
-          }
-        } catch (error) {
-          this.logger.error(`❌ Failed to load agent ${file}:`, error);
+      for (const [agentName, agentConfig] of agentConfigs) {
+        if (agentConfig.name && agentConfig.resources) {
+          this.agentRegistry.set(agentConfig.name, agentConfig);
+          this.logger.info(`📋 Loaded MCP agent: ${agentConfig.name} (${agentConfig.resources.inputs?.length || 0} inputs, ${agentConfig.resources.outputs?.length || 0} outputs)`);
+        } else if (agentConfig.name) {
+          this.logger.warn(`⚠️  Agent ${agentConfig.name} missing MCP resource configuration`);
+        } else {
+          this.logger.warn(`⚠️  Agent configuration in ${agentName} missing required 'name' field`);
         }
       }
+      
+      this.logger.info(`🔄 YAML Config Loader: ${agentConfigs.size} agent files processed, ${this.agentRegistry.size} valid MCP agents loaded`);
     } catch (error) {
       this.logger.error('❌ Failed to load MCP agent registry:', error);
       throw error;
@@ -292,7 +290,7 @@ export class MCPControllerV2 {
   }
 
   /**
-   * Run the MCP-based pipeline with proper resource coordination
+   * Run pure event-driven MCP pipeline - no sequential iteration
    */
   async runMCPPipeline(goal: string = 'tract_eval', inputDataDir?: string): Promise<boolean> {
     // Validate environment
@@ -304,7 +302,7 @@ export class MCPControllerV2 {
       return false;
     }
 
-    this.logger.info(`🚀 Starting MCP v2 pipeline for goal: ${goal}`);
+    this.logger.info(`⚡ Starting PURE EVENT-DRIVEN MCP pipeline for goal: ${goal}`);
     
     // Setup initial resources
     if (inputDataDir) {
@@ -313,60 +311,80 @@ export class MCPControllerV2 {
 
     await this.stateManager.setState(PipelineState.AGENTS_READY);
 
-    let iteration = 0;
-    const maxIterations = 20;
-    let hasProgress = true;
+    // Pure event-driven: Set up resource watchers and let events drive execution
+    return new Promise((resolve) => {
+      this.setupEventDrivenCoordination(resolve);
+    });
+  }
 
-    while (hasProgress && iteration < maxIterations) {
-      iteration++;
-      this.logger.info(`📈 MCP Pipeline iteration ${iteration}`);
-      
-      // Get agents that are ready to execute
-      const readyAgents = await this.getReadyAgents();
-      
-      if (readyAgents.length === 0) {
-        // Check if we're done or stuck
-        const completedAgents = await this.getCompletedAgents();
-        if (completedAgents.length === this.agentRegistry.size) {
-          this.logger.info('🏁 All agents completed');
-          break;
-        } else {
-          this.logger.warn('⚠️  No agents ready and not all completed - pipeline may be stuck');
-          hasProgress = false;
-          break;
+  /**
+   * Pure event-driven coordination - agents execute based on resource events only
+   */
+  private setupEventDrivenCoordination(resolveCallback: (success: boolean) => void): void {
+    this.logger.info('⚡ Setting up pure event-driven coordination...');
+    
+    let completedAgents = 0;
+    const totalAgents = this.agentRegistry.size;
+    let pipelineTimeout: NodeJS.Timeout;
+    
+    // Set overall pipeline timeout (30 minutes)
+    pipelineTimeout = setTimeout(() => {
+      this.logger.warn('⏰ Pipeline timeout - resolving with partial completion');
+      resolveCallback(completedAgents > 0);
+    }, 30 * 60 * 1000);
+
+    // Listen for resource events and trigger agent execution
+    this.mcpServer.on('resource-updated', async (event) => {
+      try {
+        this.logger.info(`⚡ Resource event: ${event.uri} - evaluating ready agents`);
+        
+        // Get agents that became ready due to this resource change
+        const readyAgents = await this.getReadyAgents();
+        
+        if (readyAgents.length > 0) {
+          this.logger.info(`🚀 Event triggered ${readyAgents.length} agents: ${readyAgents.join(', ')}`);
+          
+          // Execute all ready agents in parallel (pure event-driven)
+          const executions = readyAgents.map(async (agentName) => {
+            const success = await this.executeAgent(agentName);
+            if (success) {
+              completedAgents++;
+              this.logger.info(`✅ Agent completed: ${agentName} (${completedAgents}/${totalAgents})`);
+              
+              // Check if all agents are done
+              if (completedAgents >= totalAgents) {
+                clearTimeout(pipelineTimeout);
+                await this.stateManager.setState(PipelineState.COMPLETED);
+                this.logger.info('🎉 All agents completed via pure event-driven coordination!');
+                resolveCallback(true);
+              }
+            }
+            return success;
+          });
+          
+          // Don't await - let them run in parallel and trigger more events
+          Promise.allSettled(executions);
         }
+      } catch (error) {
+        this.logger.error('⚡ Event-driven coordination error:', error);
       }
+    });
 
-      await this.stateManager.setState(PipelineState.PROCESSING);
-
-      // Execute ready agents in parallel
-      const agentPromises = readyAgents.map(agentName => this.executeAgent(agentName));
-      const results = await Promise.allSettled(agentPromises);
-      
-      // Check if any agent succeeded (indicating progress)
-      const successes = results.filter(result => 
-        result.status === 'fulfilled' && result.value === true
-      );
-
-      if (successes.length === 0) {
-        this.logger.warn('⚠️  No agents succeeded in this iteration');
-        hasProgress = false;
+    // Trigger initial evaluation in case some agents are already ready
+    setTimeout(async () => {
+      const initialReady = await this.getReadyAgents();
+      if (initialReady.length > 0) {
+        this.logger.info(`🚀 Initial ready agents: ${initialReady.join(', ')}`);
+        // Simulate resource event to trigger initial execution
+        this.mcpServer.emit('resource-updated', {
+          type: 'updated',
+          uri: 'mcp://shale-data/state/initial-trigger',
+          timestamp: Date.now()
+        });
+      } else {
+        this.logger.warn('⚠️  No agents ready at startup - waiting for resource events...');
       }
-
-      // Small delay between iterations to allow resource propagation
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-
-    // Final state
-    const completedAgents = await this.getCompletedAgents();
-    const success = completedAgents.length > 0;
-    
-    await this.stateManager.setState(success ? PipelineState.COMPLETED : PipelineState.FAILED);
-    
-    this.logger.info(`🏁 MCP Pipeline completed. Success: ${success}`);
-    this.logger.info(`✅ Agents completed: ${completedAgents.length}/${this.agentRegistry.size}`);
-    
-    return success;
+    }, 100);
   }
 
   /**

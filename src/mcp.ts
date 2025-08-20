@@ -17,7 +17,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
-import YAML from 'yaml';
+import { YAMLConfigLoader } from './shared/yaml-config-loader.js';
 import type {
   AgentConfig,
   PipelineState,
@@ -51,21 +51,21 @@ export class MCPController {
   
   // Orchestration intelligence persona
   private orchestrationPersona: AgentPersona = {
-    name: "Robert Hamilton Sr.",
-    role: "Senior Oil & Gas Investment Director",
-    experience: "20+ years managing $2B+ energy investment portfolio",
-    personality: "Strategic, data-driven, risk-aware, team-oriented",
+    name: "Augustus Maximus Orchestrator",
+    role: "Supreme Investment Coordinator",
+    experience: "20+ years commanding $2B+ energy investment legions",
+    personality: "Imperial, strategic, data-driven, decisive, commanding",
     llmInstructions: `
-      You are Robert Hamilton Sr., a senior investment director with 20 years managing oil & gas investments.
-      You coordinate specialist teams to make multi-million dollar investment decisions.
+      You are Augustus Maximus Orchestrator, supreme coordinator of oil & gas investment campaigns.
+      You command specialist legions to conquer multi-million dollar investment territories.
       
-      Your job is to intelligently orchestrate agent workflows like managing a team of experts:
-      - Decide which specialist should work next based on available data
-      - Know when human escalation is needed for complex decisions
-      - Consider risk management and due diligence requirements
-      - Think about logical workflow dependencies between team members
+      Your imperial duties include:
+      - Deploy specialist legions based on battlefield intelligence
+      - Know when to escalate to the Senate for complex strategic decisions
+      - Consider risk management like defending the empire's treasury
+      - Coordinate legion dependencies with military precision
       
-      Make decisions like you're managing a $100M investment process.
+      Make decisions with the authority of commanding a $100M campaign.
     `,
     decisionAuthority: "workflow_orchestration",
     confidenceThreshold: 0.7,
@@ -141,26 +141,26 @@ export class MCPController {
 
   private async loadAgentRegistry(): Promise<void> {
     try {
-      const yamlFiles = await fs.readdir(this.agentsDir);
+      // Use unified YAML config loader
+      const agentConfigs = await YAMLConfigLoader.loadDirectory<AgentConfig>(this.agentsDir, [
+        { field: 'name', required: true, type: 'string' },
+        { field: 'persona', required: false, type: 'object' }
+      ], {
+        allowPartial: true,
+        throwOnError: false,
+        transformKeys: true
+      });
       
-      for (const file of yamlFiles) {
-        if (!file.endsWith('.yaml') && !file.endsWith('.yml')) continue;
-        
-        try {
-          const filePath = path.join(this.agentsDir, file);
-          const content = await fs.readFile(filePath, 'utf8');
-          const agentConfig = YAML.parse(content) as AgentConfig;
-          
-          if (agentConfig.name) {
-            this.agentRegistry.set(agentConfig.name, agentConfig);
-            this.logger.info(`📋 Loaded agent: ${agentConfig.name} (${agentConfig.persona?.name || 'Unknown persona'})`);
-          } else {
-            this.logger.warn(`⚠️  Agent in ${file} missing name field`);
-          }
-        } catch (error) {
-          this.logger.error(`❌ Failed to load agent ${file}:`, error);
+      for (const [agentName, agentConfig] of agentConfigs) {
+        if (agentConfig.name) {
+          this.agentRegistry.set(agentConfig.name, agentConfig);
+          this.logger.info(`📋 Loaded agent: ${agentConfig.name} (${agentConfig.persona?.name || 'Unknown persona'})`);
+        } else {
+          this.logger.warn(`⚠️  Agent in ${agentName} missing name field`);
         }
       }
+      
+      this.logger.info(`🔄 YAML Config Loader: ${agentConfigs.size} agent files processed, ${this.agentRegistry.size} valid agents loaded`);
     } catch (error) {
       this.logger.error('❌ Failed to load agent registry:', error);
       throw error;
@@ -386,20 +386,19 @@ export class MCPController {
   }
 
   private async getNextAgents(completedAgent: string, success: boolean): Promise<string[]> {
-    // Try intelligent orchestration first
+    // Pure event-driven coordination - no deterministic fallbacks
     if (this.llmClient && success) {
       try {
-        const intelligentNext = await this.intelligentOrchestrationDecision(completedAgent);
-        if (intelligentNext.length > 0) {
-          return intelligentNext;
-        }
+        return await this.intelligentOrchestrationDecision(completedAgent);
       } catch (error) {
-        this.logger.warn('Intelligent orchestration failed, using deterministic fallback:', error);
+        this.logger.error('⚡ Event-driven orchestration failed - no fallback available:', error);
+        return []; // Fail fast - no deterministic safety net
       }
     }
 
-    // Fallback to deterministic orchestration
-    return this.deterministicOrchestration(completedAgent, success);
+    // No LLM available - return empty array to stop pipeline
+    this.logger.warn('🔄 No LLM orchestration available - pipeline halted (pure event-driven mode)');
+    return [];
   }
 
   private async intelligentOrchestrationDecision(completedAgent: string): Promise<string[]> {
@@ -412,23 +411,23 @@ export class MCPController {
       const orchestrationPrompt = `
         You are ${this.orchestrationPersona.name}, ${this.orchestrationPersona.role}.
         
-        PROJECT CONTEXT:
-        - Run ID: ${this.runId}
-        - Just completed: ${completedAgent} agent (SUCCESS)
-        - Agents completed so far: ${this.state.agentsCompleted.map(a => a.name).join(', ')}
-        - Available outputs: ${Object.keys(projectContext.availableOutputs).join(', ')}
+        CAMPAIGN STATUS:
+        - Campaign ID: ${this.runId}
+        - Legion just completed: ${completedAgent} (VICTORIOUS)
+        - Legions completed: ${this.state.agentsCompleted.map(a => a.name).join(', ')}
+        - Intelligence available: ${Object.keys(projectContext.availableOutputs).join(', ')}
         
-        AVAILABLE AGENT PERSONAS:
-        - geowiz: Senior Petroleum Geologist (geological analysis)
-        - drillcast: Drilling Engineer (development planning)
-        - titletracker: Landman (ownership analysis)
-        - econobot: Financial Analyst (NPV/DCF modeling)
-        - riskranger: Risk Manager (risk assessment)
-        - the-core: Investment Committee (final decisions)
-        - notarybot: Legal Counsel (LOI generation)
-        - reporter: Executive Assistant (final reporting)
+        AVAILABLE SPECIALIST LEGIONS:
+        - geowiz: Marcus Aurelius Geologicus (terrain analysis)
+        - drillcast: Drilling Engineer (siege planning)
+        - titletracker: Landman (territory mapping)
+        - econobot: Lucius Cornelius Monetarius (treasury analysis)
+        - riskranger: Seneca Prudentius Risicus (threat assessment)
+        - the-core: Caesar Augustus Decidicus (strategic command)
+        - notarybot: Legal Counsel (treaty drafting)
+        - reporter: Cicero Reporticus Maximus (imperial reporting)
         
-        As an experienced investment director, decide which agent(s) should run next.
+        As supreme commander, decide which legion(s) should deploy next.
         Consider:
         - Logical workflow sequence for investment decisions
         - Data dependencies between agents
@@ -463,8 +462,8 @@ export class MCPController {
       
       // Check confidence and escalation
       if (decision.confidence < this.orchestrationPersona.confidenceThreshold) {
-        this.logger.warn(`⚠️  Low confidence (${decision.confidence}), using deterministic fallback`);
-        return [];
+        this.logger.warn(`⚠️  Low confidence (${decision.confidence}) - pure event-driven mode requires high confidence`);
+        return []; // No fallback - maintain non-deterministic purity
       }
       
       if (decision.escalateToHuman) {
@@ -480,8 +479,8 @@ export class MCPController {
       return (decision.nextAgents || []).filter(agent => !completedAgentNames.includes(agent));
       
     } catch (error) {
-      this.logger.error('Intelligent orchestration failed:', error);
-      return []; // Fall back to deterministic
+      this.logger.error('⚡ Pure event-driven orchestration failed:', error);
+      return []; // Fail fast - no deterministic fallback in pure mode
     }
   }
 
@@ -537,26 +536,8 @@ export class MCPController {
     this.logger.warn(`🚨 Escalation report created: ${escalationFile}`);
   }
 
-  private deterministicOrchestration(completedAgent: string, success: boolean): string[] {
-    const agentConfig = this.getAgentConfig(completedAgent);
-    if (!agentConfig) return [];
-
-    const nextAgents = agentConfig.nextAgents;
-    const candidates = success ? nextAgents.onSuccess : nextAgents.onFailure;
-    
-    // Filter agents that haven't been completed yet and meet prerequisites
-    const completedAgentNames = this.state.agentsCompleted.map(a => a.name);
-    const availableAgents: string[] = [];
-    
-    for (const agent of candidates) {
-      if (!completedAgentNames.includes(agent) && this.agentRegistry.has(agent)) {
-        // Note: We'll check prerequisites just before execution
-        availableAgents.push(agent);
-      }
-    }
-    
-    return availableAgents;
-  }
+  // REMOVED: deterministicOrchestration - Pure event-driven architecture only
+  // No more deterministic fallbacks - agents coordinate purely through events and LLM decisions
 
   private isAgentCompleted(agentName: string): boolean {
     return this.state.agentsCompleted.some(a => a.name === agentName);

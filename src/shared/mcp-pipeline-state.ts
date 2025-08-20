@@ -67,6 +67,10 @@ export class MCPPipelineStateManager implements PipelineStateManager {
   async markAgentCompleted(agentName: string): Promise<void> {
     const agentStatus = await this.getAgentStatus();
     
+    // Ensure arrays exist
+    agentStatus.ready = agentStatus.ready || [];
+    agentStatus.completed = agentStatus.completed || [];
+    
     // Move from ready to completed
     agentStatus.ready = agentStatus.ready.filter(name => name !== agentName);
     
@@ -146,7 +150,29 @@ export class MCPPipelineStateManager implements PipelineStateManager {
 
   private async getAgentStatus(): Promise<any> {
     try {
-      return await this.server.getResource(this.agentStatusUri);
+      const data = await this.server.getResource(this.agentStatusUri);
+      // Ensure we have a proper object, not a string representation
+      if (typeof data === 'string') {
+        try {
+          return JSON.parse(data);
+        } catch {
+          // If parsing fails, return default structure
+          return {
+            ready: [],
+            completed: [],
+            failed: [],
+            lastUpdated: Date.now()
+          };
+        }
+      }
+      // Ensure arrays exist even if data is an object
+      return {
+        ready: [],
+        completed: [],
+        failed: [],
+        lastUpdated: Date.now(),
+        ...data
+      };
     } catch {
       return {
         ready: [],
