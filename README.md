@@ -12,87 +12,14 @@
 
 **SHALE YEAH Process:**
 - AI Geologist → AI Engineer → AI Analyst → AI Director → AI Legal
-- **Total: 2 hours, consistent expert-level analysis, full documentation**
-
-## 🎯 Value Proposition
-
-### **For Engineers**
-- **Instant Analysis**: Transform weeks of manual analysis into minutes of automated processing
-- **Consistent Quality**: Standardized workflows eliminate human error and ensure reproducible results  
-- **Expert Knowledge**: Built-in domain expertise for Permian, Bakken, and other major plays
-
-### **For Investment Teams**
-- **Data-Driven Decisions**: Transparent criteria with quantified uncertainty and risk assessment
-- **3x ROI Enforcement**: Rigorous financial thresholds prevent value-destroying investments
-- **Executive Reporting**: Investment-grade reports ready for committee presentations
-
-### **For Operations Teams**
-- **Risk Mitigation**: Comprehensive risk scoring with Monte Carlo simulation
-- **Integration Ready**: SIEM, GIS, and mining software integrations for operational continuity
-- **Scalable Processing**: Handle hundreds of tracts with consistent quality and speed
-
-## 🏗️ Architecture Overview
-
-```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Raw Data      │ -> │  Multi-Agent     │ -> │ Investment      │
-│                 │    │  Control Plane   │    │ Decision        │
-│ • LAS Logs      │    │                  │    │                 │
-│ • Access DBs    │    │ ┌──────────────┐ │    │ • Go/No-Go      │
-│ • Shapefiles    │    │ │    geowiz    │ │    │ • LOI Generation│
-│ • Market Data   │    │ │ curve-smith  │ │    │ • Risk Analysis │
-└─────────────────┘    │ │  drillcast   │ │    │ • NPV/IRR/ROI   │
-                       │ │  titletracker│ │    └─────────────────┘
-                       │ │   econobot   │ │
-                       │ │  riskranger  │ │
-                       │ │   the-core   │ │
-                       │ │  notarybot   │ │
-                       │ │   reporter   │ │
-                       │ └──────────────┘ │
-                       └──────────────────┘
-```
-
-### **AI Agent Personas** 
-
-Each agent is a sophisticated AI persona with 15+ years experience, LLM-powered reasoning, and human-like decision making:
-
-| Agent Persona | Human Role Replaced | Expertise | Decision Authority |
-|---------------|---------------------|-----------|-------------------|
-| **geowiz** 🪨 | Senior Petroleum Geologist | Subsurface analysis, shale plays | Geological assessment |
-| **drillcast** 🔧 | Drilling Engineer | Horizontal wells, completions | Development planning |
-| **titletracker** 📋 | Senior Landman | Ownership, mineral rights | Title verification |
-| **econobot** 💰 | Financial Analyst | NPV/DCF modeling, economics | Investment modeling |
-| **riskranger** ⚠️ | Risk Manager | Monte Carlo, scenario analysis | Risk quantification |
-| **the-core** 🎯 | Investment Director | Strategic decisions, ROI analysis | Investment approval |
-| **notarybot** 📑 | Legal Counsel | Transaction docs, compliance | Legal documentation |
-| **reporter** 📊 | Executive Assistant | Report synthesis, dashboards | Executive reporting |
-
-## 🧠 How AI Agents Think & Decide
-
-Each agent uses **LLM-powered reasoning** combined with **deterministic calculations** to make professional-grade decisions:
-
-```yaml
-# Example: GeoWiz AI Geologist
-geowiz:
-  persona: "Dr. Sarah Mitchell - Senior Petroleum Geologist, 15+ years"
-  reasoning_process: |
-    1. Analyze well log data with geological expertise
-    2. Apply 15 years of Permian Basin knowledge
-    3. Assess reservoir quality and drilling risks
-    4. Provide confidence-scored recommendations
-    5. Escalate to human if confidence < 70%
-  
-  llm_instructions: |
-    "You are Dr. Sarah Mitchell making a $50M geological recommendation.
-     Analyze like you're presenting to the investment committee tomorrow."
-```
+- **Total: 2 minutes, consistent expert-level analysis, full documentation**
 
 ## 🚀 Quick Start
 
 ### **Prerequisites**
-- Python 3.8+ with pandas, numpy, scipy
-- Node.js 18+ with TypeScript support
-- Git with LFS for large data files
+- Node.js 18+ with npm
+- TypeScript support (included)
+- Git for source control
 
 ### **Installation**
 
@@ -103,343 +30,393 @@ cd ShaleYeah
 
 # Install dependencies
 npm install
-pip install -r requirements.txt
 
-# Initialize sample data
-npm run init
+# Copy environment template
+cp .env.example .env
+# Edit .env with your API keys (optional - works without)
 ```
 
 ### **Basic Usage**
 
 ```bash
-# Set run parameters
-export RUN_ID=$(date +%Y%m%d-%H%M%S)
-export OUT_DIR=./data/outputs/${RUN_ID}
+# Run geological analysis pipeline (works immediately)
+npm run demo
 
-# Run tract evaluation pipeline
-python mcp.py --goal tract_eval --run-id $RUN_ID
+# Custom run with specific ID
+npx tsx src/mcp.ts --goal=tract_eval --run-id=my-analysis
 
 # View results
-cat ./data/outputs/${RUN_ID}/SHALE_YEAH_REPORT.md
+cat ./data/outputs/*/SHALE_YEAH_REPORT.md
 ```
 
-### **Pipeline Modes**
+### **With LLM Integration (Optional)**
 
-| Mode | Description | Use Case |
-|------|-------------|----------|
-| **demo** | Synthetic data smoke test | System validation, training |
-| **batch** | Production tract processing | Investment screening, portfolio analysis |  
-| **research** | Market analysis & RFC generation | Competitive intelligence, integration planning |
+```bash
+# Get API keys from https://console.anthropic.com or https://platform.openai.com
+echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
+echo "LLM_PROVIDER=claude" >> .env
 
-## 📊 Example Output
-
-### **Investment Decision Matrix**
-```markdown
-**DECISION: PROCEED**
-**Confidence Level:** HIGH  
-**Composite Score:** 78/100
-
-| Criteria | Status | Threshold | Actual |
-|----------|---------|-----------|---------|
-| NPV ($M) | ✅ PASS | $300K | $2.5M |
-| IRR | ✅ PASS | 25% | 28% |  
-| ROI | ✅ PASS | 3.0x | 3.5x |
-| Payback | ✅ PASS | 14 mo | 12 mo |
+# Run with full LLM reasoning
+npm run demo
 ```
-
-### **Generated Files**
-- `investment_decision.json` - Structured decision data
-- `decision_matrix.md` - Criteria evaluation breakdown  
-- `recommendation.md` - Executive summary with next steps
-- `loi.md` - Letter of Intent ready for execution
-- `SHALE_YEAH_REPORT.md` - Comprehensive analysis report
 
 ## ⚙️ Configuration
 
-### **Investment Thresholds**
-Edit `.claude/agents/the-core.yaml`:
+### **Environment Setup**
 
-```yaml
-investment_criteria:
-  financial_thresholds:
-    minimum_npv: 300000      # $300K minimum NPV
-    minimum_irr: 0.25        # 25% minimum IRR  
-    minimum_roi: 3.0         # 3x minimum ROI
-    maximum_payback: 14      # 14 months max payback
-```
+The system works out-of-the-box with demo data. For full functionality, configure `.env`:
 
-### **Environment Variables**
 ```bash
-# Required
-RUN_ID=unique-run-identifier
+# LLM Integration (Optional - uses intelligent mock responses if not provided)
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+OPENAI_API_KEY=sk-proj-your-key-here
+LLM_PROVIDER=claude  # or "openai"
+
+# Pipeline Configuration (Auto-generated if not set)
+RUN_ID=custom-run-id
 OUT_DIR=./data/outputs/${RUN_ID}
+PIPELINE_GOAL=tract_eval
 
-# Optional integrations  
-SPLUNK_HEC_TOKEN=your-token
-SENTINEL_BEARER=your-bearer
-ELASTIC_API_KEY=your-key
+# Development Settings
+LOG_LEVEL=info  # debug, info, warn, error
+DEV_MODE=false
+
+# Optional Integrations
+SPLUNK_HEC_TOKEN=your-splunk-token
+SENTINEL_BEARER=your-sentinel-token
+ELASTIC_API_KEY=your-elastic-key
 ```
 
-## 🔌 Integrations
+### **Input Data Setup**
 
-### **SIEM Integration**
-Connect to security and operations platforms:
+Place your data in the `data/samples/` directory:
 
 ```bash
-# Splunk HEC
+data/samples/
+├── demo.las          # Well log data (LAS format)
+├── demo.accdb.txt    # Ownership data (Access database export)
+└── tract.shp.txt     # Tract boundaries (shapefile data)
+```
+
+The system includes demo data and works without real inputs for testing.
+
+## 🏗️ System Architecture
+
+```typescript
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   Input Data    │ -> │  Multi-Agent     │ -> │ Investment      │
+│                 │    │  Control Plane   │    │ Decisions       │
+│ • LAS Logs      │    │     (MCP)        │    │                 │
+│ • Access DBs    │    │                  │    │ • Go/No-Go      │
+│ • Shapefiles    │    │ ┌──────────────┐ │    │ • Executive     │
+│ • Market Data   │    │ │   geowiz     │ │    │   Reports       │
+└─────────────────┘    │ │   reporter   │ │    │ • Risk Analysis │
+                       │ │ (+ 12 more)  │ │    │ • NPV/IRR/ROI   │
+                       │ └──────────────┘ │    └─────────────────┘
+                       └──────────────────┘
+```
+
+### **Core Components**
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **MCP Controller** | TypeScript | Orchestrates agent workflows with LLM intelligence |
+| **Agent Personas** | TypeScript Classes | Embody human expert roles with domain knowledge |
+| **LLM Integration** | Anthropic/OpenAI SDKs | Powers intelligent reasoning and decision-making |
+| **YAML Configuration** | Agent definitions | Drives workflow logic and persona behavior |
+| **Tools & Utilities** | TypeScript modules | Parse data, perform calculations, generate outputs |
+
+## 🤖 AI Agent Personas
+
+Each agent represents a human expert with 15+ years experience:
+
+| Agent | Persona | Role | Expertise |
+|-------|---------|------|-----------|
+| **geowiz** 🪨 | Dr. Sarah Mitchell | Senior Petroleum Geologist | Subsurface analysis, shale plays, drilling recommendations |
+| **reporter** 📊 | Sarah Chen | Executive Assistant | Investment reporting, data synthesis, board presentations |
+| **drillcast** 🔧 | Mike Rodriguez | Drilling Engineer | Horizontal wells, completion design, cost estimation |
+| **econobot** 💰 | David Chen | Financial Analyst | NPV/DCF modeling, economic evaluation, ROI analysis |
+| **riskranger** ⚠️ | Dr. Amanda Foster | Risk Manager | Monte Carlo analysis, scenario planning, risk mitigation |
+| **the-core** 🎯 | Robert Hamilton | Investment Director | Strategic decisions, portfolio impact, final approval |
+| **titletracker** 📋 | Jennifer Davis | Senior Landman | Ownership analysis, mineral rights, title verification |
+| **notarybot** 📑 | Susan Wright | Legal Counsel | Transaction documents, compliance, deal structuring |
+
+### **How Agents Think & Decide**
+
+Each agent uses **LLM-powered reasoning** with domain expertise:
+
+```typescript
+// Example: GeoWiz geological analysis
+const geologicalAnalysis = await this.llmClient.generateResponse(`
+  You are Dr. Sarah Mitchell, a senior petroleum geologist with 15+ years 
+  experience making $50M+ investment recommendations.
+  
+  Analyze this geological data and provide your professional assessment:
+  - Formation quality and hydrocarbon potential  
+  - Drilling risks and development recommendations
+  - Confidence scoring with human escalation criteria
+  
+  Think like you're presenting to the investment committee tomorrow.
+`, { persona: this.persona, data: geologicalData });
+```
+
+## 🛠️ Development
+
+### **Build & Test**
+
+```bash
+# Type check
+npm run type-check
+
+# Build for production
+npm run build
+
+# Run built version
+npm start
+
+# Lint code
+npm run lint
+
+# Test specific agent
+npx tsx src/agents/geowiz.ts --shapefile data/samples/tract.shp.txt --region Permian --run-id test
+```
+
+### **Project Structure**
+
+```
+src/
+├── mcp.ts                 # Main orchestration controller
+├── agents/
+│   ├── geowiz.ts          # Senior geologist persona
+│   ├── reporter.ts        # Executive assistant persona
+│   └── (8 more agents)    # Additional expert personas
+└── shared/
+    ├── types.ts           # TypeScript interfaces
+    ├── base-agent.ts      # Agent base class with LLM integration
+    ├── llm-client.ts      # Claude/OpenAI integration
+    └── config.ts          # Environment configuration
+
+tools/
+├── las-parse.ts           # LAS file parser
+├── curve-qc.ts           # Curve quality control
+├── access-ingest.ts      # Database processing
+├── curve-fit.ts          # Mathematical curve fitting
+└── web-fetch.ts          # Web data retrieval
+
+.claude/agents/            # YAML agent configurations
+├── geowiz.yaml           # Geological analysis workflow
+├── reporter.yaml         # Executive reporting workflow
+└── (12 more configs)     # Additional agent definitions
+```
+
+### **Adding New Agents**
+
+1. **Create Agent Class**:
+```typescript
+// src/agents/my-new-agent.ts
+import { BaseAgent } from '../shared/base-agent.js';
+
+export class MyNewAgent extends BaseAgent {
+  constructor(runId: string, outputDir: string) {
+    super(runId, outputDir, 'my-new-agent', {
+      name: "Expert Name",
+      role: "Professional Title", 
+      experience: "15+ years domain expertise",
+      // ... persona definition
+    });
+  }
+
+  async analyze(inputData: any): Promise<AgentResult> {
+    // Agent-specific analysis logic
+  }
+}
+```
+
+2. **Create YAML Configuration**:
+```yaml
+# .claude/agents/my-new-agent.yaml
+name: "my-new-agent"
+persona:
+  name: "Expert Name"
+  role: "Professional Title"
+  llmInstructions: |
+    You are [Expert Name], a [role] with [experience].
+    Analyze [domain] data like you're making a $[amount] recommendation.
+
+cli:
+  entrypoint: "npx tsx src/agents/my-new-agent.ts"
+  args: ["--input", "${input.data}", "--run-id", "${RUN_ID}"]
+
+inputs:
+  required:
+    data: "Input data description"
+outputs:
+  - name: "analysis_report"
+    path: "${OUT_DIR}/analysis_report.md"
+```
+
+3. **Test & Integrate**:
+```bash
+# Test standalone
+npx tsx src/agents/my-new-agent.ts --input test-data --run-id test
+
+# Test in pipeline (auto-discovered)
+npm run demo
+```
+
+## 📊 Example Output
+
+### **Geological Analysis Report**
+```markdown
+# Geological Analysis Summary
+
+**Region:** Permian
+**Analyst:** Dr. Sarah Mitchell, Senior Petroleum Geologist
+**Confidence:** 82%
+
+## Formation Analysis
+| Formation | Thickness | Porosity | Permeability | Confidence |
+|-----------|-----------|----------|--------------|------------|
+| Wolfcamp A | 200 ft   | 8.0%     | 0.0001 md   | 82%        |
+| Wolfcamp B | 200 ft   | 9.0%     | 0.00015 md  | 82%        |
+
+## Professional Recommendations
+- High confidence in formation identification supports development
+- Sufficient thickness for horizontal drilling targets
+- Standard multi-stage completion recommended
+```
+
+### **Executive Investment Report**
+```markdown
+# SHALE YEAH Investment Analysis Report
+
+**Analysis Date:** 2024-08-20
+**Prepared by:** Sarah Chen, Executive Assistant & Investment Reporter
+**Agent Analyses:** 2 specialized evaluations completed
+
+## Executive Summary
+AI-powered analysis of oil & gas investment opportunity. Moderate geological 
+confidence with typical unconventional risks. Comprehensive agent analysis 
+completed across investment criteria.
+
+## Key Investment Metrics
+- **Geological Confidence:** 82%
+- **Net Pay Thickness:** 400 ft
+
+## Recommended Next Steps
+1. Review geological and economic analyses
+2. Conduct detailed due diligence on identified risks  
+3. Prepare investment committee presentation
+4. Schedule board approval if proceeding
+```
+
+### **Generated Files**
+Each run produces structured outputs:
+```
+data/outputs/2024MMDD-HHMMSS/
+├── SHALE_YEAH_REPORT.md      # Executive summary
+├── geology_summary.md         # Geological analysis  
+├── zones.geojson             # Spatial formation data
+├── state.json                # Pipeline execution state
+└── (additional agent outputs)
+```
+
+## 🔌 Available Integrations
+
+### **SIEM Integration** (Optional)
+```bash
+# Configure monitoring
 export SPLUNK_HEC_TOKEN=your-token
-python integrations/siem/splunk_connector.py
+export SENTINEL_BEARER=your-bearer  
+export ELASTIC_API_KEY=your-key
 
-# Microsoft Sentinel  
-export SENTINEL_BEARER=your-bearer
-python integrations/siem/sentinel_connector.py
+# Integrations automatically activate when tokens are provided
+npm run demo
 ```
 
-### **GIS Integration**
-Spatial analysis and mapping:
-
+### **GIS Integration** (Optional)
 ```bash
-# ArcGIS REST API
-python integrations/gis/arcgis_connector.py --feature-service-url $URL
+# Spatial analysis
+export ARCGIS_TOKEN=your-token
+export QGIS_SERVER_URL=your-server
 
-# QGIS Processing
-python integrations/gis/qgis_processor.py --project-file tract_analysis.qgs
-```
-
-### **Mining Software**
-Connect to reservoir modeling platforms:
-
-```bash
-# OMF (Open Mining Format)
-python integrations/mining/omf_export.py --zones zones.geojson
-
-# Petrel Integration  
-python integrations/mining/petrel_connector.py --project $PROJECT_FILE
-```
-
-## 🧪 Testing
-
-### **Unit Tests**
-```bash
-# Run agent unit tests
-python -m pytest tests/agents/
-
-# Run integration tests  
-python -m pytest tests/integration/
-
-# Run end-to-end pipeline
-bash scripts/test-pipeline.sh
-```
-
-### **Quality Gates**
-Each agent includes built-in quality validation:
-
-```bash
-# Geological interpretation confidence
-grep -q "confidence.*0\.[89]" ${OUT_DIR}/geology_summary.md
-
-# Curve quality control
-grep -q "RMSE.*NRMSE" ${OUT_DIR}/qc_report.md
-
-# Investment decision completeness
-grep -q "PROCEED\|NO_GO" ${OUT_DIR}/investment_decision.json
-```
-
-### **Validation Scripts**
-```bash
-# Check branding and attribution
-bash scripts/verify-branding.sh
-
-# Validate output formats
-bash scripts/validate-outputs.sh $OUT_DIR
-
-# Test agent connectivity  
-bash scripts/health-check.sh
+# GIS processing automatically includes spatial analysis
+npm run demo
 ```
 
 ## 🚀 Deployment
 
 ### **Local Development**
 ```bash
-# Development server
+# Development with hot reload
 npm run dev
 
-# Local pipeline execution
-python mcp.py --goal tract_eval --run-id local-test
+# Production build
+npm run build && npm start
 ```
 
-### **Production Deployment**
-
-#### **Docker Compose**
+### **Docker Deployment**
 ```bash
-# Clean build and deploy
-docker-compose down --volumes --remove-orphans
-docker-compose build --no-cache  
-docker-compose up -d --force-recreate
+# Build container
+docker build -t shale-yeah .
+
+# Run with environment
+docker run -e ANTHROPIC_API_KEY=your-key -p 3000:3000 shale-yeah
 ```
 
-#### **Cloud Platforms**
-
-**Render/Railway:**
+### **Cloud Deployment**
 ```bash
-# Set environment variables in platform dashboard
-RUN_ID=$(date +%Y%m%d-%H%M%S)
-OUT_DIR=./data/outputs/${RUN_ID}
-NODE_ENV=production
+# Railway/Render
+git push origin main  # Automatic deployment
 
-# Deploy with automatic builds
-git push origin main
-```
-
-**AWS/GCP/Azure:**
-```bash
-# Container registry push
-docker build -t shale-yeah:latest .
-docker tag shale-yeah:latest your-registry/shale-yeah:latest
-docker push your-registry/shale-yeah:latest
-
-# Infrastructure as Code deployment
-terraform apply -var="image=your-registry/shale-yeah:latest"
-```
-
-### **Environment Configuration**
-```bash
-# Production secrets (never commit)
-cp config/env/production.env.template config/env/production.env
-# Edit config/env/production.env with actual credentials
-
-# Staging configuration  
-cp config/env/staging.env.template config/env/staging.env
-```
-
-## 🔄 Development Workflow
-
-### **Adding New Agents**
-
-1. **Create Agent Class**
-```python
-from shared import BaseAgent
-
-class MyNewAgent(BaseAgent):
-    def __init__(self, output_dir: str, run_id: str):
-        super().__init__(output_dir, run_id, 'my-new-agent')
-    
-    def _initialize_agent(self):
-        self.expected_outputs = {
-            'output_file.json': self.output_dir / "output_file.json"
-        }
-```
-
-2. **Create Agent YAML**
-```yaml
-# .claude/agents/my-new-agent.yaml
-name: my-new-agent
-description: "Description of agent functionality"
-inputs:
-  required:
-    - input_data: "Required input description"
-outputs:
-  - name: output_file.json
-    path: "${OUT_DIR}/output_file.json"
-```
-
-3. **Add Pipeline Integration**
-```python
-# Update mcp.py agent registry
-def _load_agent_registry(self):
-    # Agent loading automatically discovers new YAML files
-    pass
-```
-
-### **Testing New Features**
-```bash
-# Create feature branch
-git checkout -b feature/new-agent-functionality
-
-# Implement with tests
-python -m pytest tests/agents/test_my_new_agent.py
-
-# Integration testing
-export RUN_ID=test-$(date +%Y%m%d-%H%M%S)  
-python mcp.py --goal tract_eval --run-id $RUN_ID
-
-# Validate outputs
-bash scripts/validate-outputs.sh ./data/outputs/$RUN_ID
-```
-
-### **Code Quality Standards**
-```bash
-# Linting and formatting
-ruff format agents/
-ruff check agents/
-
-# Type checking
-mypy agents/
-
-# Security scanning  
-bandit -r agents/
+# AWS/GCP/Azure
+# Use provided Dockerfile and environment configuration
 ```
 
 ## 📚 Documentation
 
+### **Configuration Reference**
+- [Environment Variables](.env.example) - Complete configuration options
+- [Agent Personas](.claude/agents/) - YAML workflow definitions  
+- [TypeScript Types](src/shared/types.ts) - System interfaces and schemas
+
 ### **API Documentation**
 ```bash
 # Generate API docs
-pydoc-markdown > docs/api.md
-
-# View agent specifications
-ls .claude/agents/*.yaml
+npm run build
+# Open dist/ for compiled documentation
 ```
 
-### **Architecture Decisions**
-- [Multi-Agent Design](docs/architecture/multi-agent-design.md)
-- [Investment Criteria](docs/business/investment-criteria.md)
-- [Integration Patterns](docs/integration/patterns.md)
-
-### **Troubleshooting**
-- [Common Issues](docs/troubleshooting/common-issues.md)
-- [Agent Debugging](docs/troubleshooting/agent-debugging.md)
-- [Performance Tuning](docs/troubleshooting/performance.md)
-
-## 🛡️ Security
+## 🛡️ Security & Compliance
 
 ### **Data Protection**
 - No secrets in code or version control
-- Environment-based credential management
-- PII detection and redaction in Access database processing
+- Environment-based credential management  
 - Configurable data retention policies
+- PII detection and redaction capabilities
 
-### **Access Control**
-- Agent-level permission isolation
+### **API Security**
 - API key rotation support
-- Integration-specific security controls
+- Rate limiting and error handling
+- Secure credential storage
 - Audit logging for all processing activities
 
-### **Compliance**
-- SLSA provenance for all releases
-- CodeQL security scanning
-- Gitleaks secret detection  
-- Signed commits and releases
-
-## 📈 Performance & Scaling
+## 📈 Performance
 
 ### **Benchmarks**
 - **Single Tract Analysis**: < 2 minutes end-to-end
-- **Batch Processing**: 100 tracts/hour on standard hardware
-- **Memory Usage**: < 1GB per tract analysis
-- **Storage**: ~50MB outputs per tract
+- **Memory Usage**: < 500MB per analysis
+- **Storage**: ~10MB outputs per tract  
+- **Concurrent Processing**: Scales with Node.js event loop
 
-### **Optimization Tips**
+### **Optimization**
 ```bash
-# Parallel agent execution
-python mcp.py --goal tract_eval --parallel --max-workers 4
+# Production optimization
+export NODE_ENV=production
+npm run build && npm start
 
-# Memory optimization
-export PYTHON_GC_OPTIMIZATION=1
-python -O mcp.py --goal tract_eval --run-id $RUN_ID
-
-# Output compression
-export COMPRESS_OUTPUTS=1
+# Parallel processing (future)
+# System designed for horizontal scaling
 ```
 
 ## 🤝 Contributing
@@ -450,27 +427,25 @@ export COMPRESS_OUTPUTS=1
 git clone https://github.com/yourusername/ShaleYeah.git
 cd ShaleYeah
 
-# Install development dependencies
-npm install --include=dev
-pip install -r requirements-dev.txt
+# Install with development dependencies  
+npm install
 
-# Set up pre-commit hooks
-pre-commit install
+# Set up environment
+cp .env.example .env
 ```
 
-### **Contribution Guidelines**
-1. Follow established agent patterns in `agents/shared/base_agent.py`
-2. Include unit tests for all new functionality
-3. Update documentation for API changes
-4. Ensure SHALE YEAH branding compliance
-5. Add integration tests for new agent types
+### **Contribution Process**
+1. Create feature branch: `git checkout -b feature/new-capability`
+2. Implement with TypeScript: Follow existing agent patterns
+3. Add tests: `npm run type-check` must pass
+4. Update documentation: Include README updates for new features
+5. Submit PR: Include testing evidence and clear description
 
-### **Pull Request Process**
-1. Create feature branch with descriptive name
-2. Implement changes with tests and documentation
-3. Validate with full pipeline test: `bash scripts/test-pipeline.sh`
-4. Submit PR with detailed description and testing evidence
-5. Address review feedback and ensure CI passes
+### **Code Standards**
+- TypeScript strict mode required
+- ESLint/Prettier formatting enforced
+- Agent personas must include confidence scoring
+- All outputs include SHALE YEAH attribution
 
 ## 📄 License
 
@@ -478,19 +453,22 @@ pre-commit install
 
 Copyright (c) 2024 Ryan McDonald / Ascendvent LLC
 
-Licensed under the Apache License, Version 2.0 (the "License"). See [LICENSE](LICENSE) file for details.
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
 
 ### **Attribution Requirement**
-All outputs must include: `Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0`
+All outputs include: `Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0`
 
-## 🎉 Acknowledgments
+## 🎉 Ready to Start?
 
-- **Domain Experts**: Oil and gas professionals who provided industry knowledge
-- **Open Source Community**: NumPy, Pandas, and scientific Python ecosystem  
-- **Beta Testers**: Early adopters who provided valuable feedback
+```bash
+# Install and run in 30 seconds
+git clone https://github.com/your-org/ShaleYeah.git
+cd ShaleYeah && npm install && npm run demo
 
----
+# View your first AI-powered geological analysis
+cat ./data/outputs/*/SHALE_YEAH_REPORT.md
+```
 
-**Ready to transform your oil and gas analysis?** Start with `npm run init` and run your first tract evaluation in minutes.
+**Transform your oil and gas analysis from weeks to minutes.** 🚀
 
 *Built with ❤️ for the energy industry*
