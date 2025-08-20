@@ -1,0 +1,94 @@
+[
+ {
+  "RuleID": "generic-secret",
+  "Description": "Generic Secret",
+  "StartLine": 205,
+  "EndLine": 205,
+  "StartColumn": 11,
+  "EndColumn": 40,
+  "Match": "REDACTED",
+  "Secret": "REDACTED",
+  "File": "ingestion/credential_manager.py",
+  "SymlinkFile": "",
+  "Commit": "9636b1dd93a9d5e9a5f06c98652835ae4102b022",
+  "Entropy": 3.7395723,
+  "Author": "ryemyster",
+  "Email": "ryan.mcdonald.us@gmail.com",
+  "Date": "2025-08-19T18:25:49Z",
+  "Message": "more code rework and cleanup - still broken by design",
+  "Tags": [
+   "secret",
+   "password"
+  ],
+  "Fingerprint": "9636b1dd93a9d5e9a5f06c98652835ae4102b022:ingestion/credential_manager.py:generic-secret:205"
+ },
+ {
+  "RuleID": "generic-secret",
+  "Description": "Generic Secret",
+  "StartLine": 209,
+  "EndLine": 209,
+  "StartColumn": 11,
+  "EndColumn": 40,
+  "Match": "REDACTED",
+  "Secret": "REDACTED",
+  "File": "ingestion/credential_manager.py",
+  "SymlinkFile": "",
+  "Commit": "9636b1dd93a9d5e9a5f06c98652835ae4102b022",
+  "Entropy": 3.581076,
+  "Author": "ryemyster",
+  "Email": "ryan.mcdonald.us@gmail.com",
+  "Date": "2025-08-19T18:25:49Z",
+  "Message": "more code rework and cleanup - still broken by design",
+  "Tags": [
+   "secret",
+   "password"
+  ],
+  "Fingerprint": "9636b1dd93a9d5e9a5f06c98652835ae4102b022:ingestion/credential_manager.py:generic-secret:209"
+ },
+ {
+  "RuleID": "generic-secret",
+  "Description": "Generic Secret",
+  "StartLine": 214,
+  "EndLine": 214,
+  "StartColumn": 11,
+  "EndColumn": 40,
+  "Match": "REDACTED",
+  "Secret": "REDACTED",
+  "File": "ingestion/credential_manager.py",
+  "SymlinkFile": "",
+  "Commit": "9636b1dd93a9d5e9a5f06c98652835ae4102b022",
+  "Entropy": 3.7110806,
+  "Author": "ryemyster",
+  "Email": "ryan.mcdonald.us@gmail.com",
+  "Date": "2025-08-19T18:25:49Z",
+  "Message": "more code rework and cleanup - still broken by design",
+  "Tags": [
+   "secret",
+   "password"
+  ],
+  "Fingerprint": "9636b1dd93a9d5e9a5f06c98652835ae4102b022:ingestion/credential_manager.py:generic-secret:214"
+ },
+ {
+  "RuleID": "generic-secret",
+  "Description": "Generic Secret",
+  "StartLine": 219,
+  "EndLine": 219,
+  "StartColumn": 11,
+  "EndColumn": 34,
+  "Match": "REDACTED",
+  "Secret": "REDACTED",
+  "File": "ingestion/credential_manager.py",
+  "SymlinkFile": "",
+  "Commit": "9636b1dd93a9d5e9a5f06c98652835ae4102b022",
+  "Entropy": 3.438722,
+  "Author": "ryemyster",
+  "Email": "ryan.mcdonald.us@gmail.com",
+  "Date": "2025-08-19T18:25:49Z",
+  "Message": "more code rework and cleanup - still broken by design",
+  "Tags": [
+   "secret",
+   "password"
+  ],
+  "Fingerprint": "9636b1dd93a9d5e9a5f06c98652835ae4102b022:ingestion/credential_manager.py:generic-secret:219"
+ }
+]

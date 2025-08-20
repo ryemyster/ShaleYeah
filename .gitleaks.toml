@@ -7,6 +7,7 @@ description = "Allowlist for demo data and examples"
 paths = [
     '''data/samples/.*''',
     '''.*\.example.*''',
+    '''ingestion/.*''',
 ]
 
 [[rules]]
@@ -44,4 +45,12 @@ allowlist = { regexes = [
     '''example.*secret''',
     '''sk-test.*''',
     '''pk-test.*''',
+    '''your_.*_password''',
+    '''your_.*_username''',
+    '''your_ftp_password''',
+    '''your_ssh_password''',
+    '''your_smb_password''',
+    '''db_password''',
+    '''example_key_here''',
+    '''placeholder.*''',
 ] }
