@@ -34,7 +34,7 @@ jobs:
         
         # Test MCP controller TypeScript import and initialization
         npx tsx -e "
-        import { MCPController } from './src/mcp.js';
+        import { MCPController } from './src/mcp.ts';
         
         // Test initialization
         const mcp = new MCPController('demo-test', './data/outputs/demo-test');
@@ -123,9 +123,9 @@ jobs:
         
         # Test TypeScript shared module imports
         npx tsx -e "
-        import { BaseAgent } from './src/shared/base-agent.js';
-        import { getEnvironmentConfig } from './src/shared/config.js';
-        import { createLLMClient } from './src/shared/llm-client.js';
+        import { BaseAgent } from './src/shared/base-agent.ts';
+        import { getEnvironmentConfig } from './src/shared/config.ts';
+        import { createLLMClient } from './src/shared/llm-client.ts';
         console.log('✅ All shared TypeScript modules imported successfully');
         
         // Test environment configuration

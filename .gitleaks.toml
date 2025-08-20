@@ -38,14 +38,10 @@ description = "Generic Secret"
 id = "generic-secret"
 regex = '''(?i)(?:secret|password|pwd|pass)['"]*\s*[:=]\s*['"][^'"\s]{8,}['"]'''
 tags = ["secret", "password"]
-
-# Allow test keys and demo data
-[[rules.allowlist]]
-description = "Test and demo keys"
-regexes = [
+allowlist = { regexes = [
     '''test.*key''',
     '''demo.*token''',
     '''example.*secret''',
     '''sk-test.*''',
     '''pk-test.*''',
-]
+] }

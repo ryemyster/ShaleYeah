@@ -62,7 +62,7 @@ jobs:
         
         # Test MCP controller TypeScript import and basic functionality
         npx tsx -e "
-        import { MCPController } from './src/mcp.js';
+        import { MCPController } from './src/mcp.ts';
         const mcp = new MCPController('ci-test', './data/outputs/ci-test');
         console.log('MCP Controller initialized successfully');
         console.log(\`Loaded \${Object.keys(mcp.agentRegistry).length} agents\`);
