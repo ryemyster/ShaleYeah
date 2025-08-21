@@ -219,7 +219,7 @@ export class FileSystemMCPResourceServer extends EventEmitter implements MCPReso
     }
   }
 
-  async *watchResource(uri: string): AsyncIterator<MCPResourceEvent> {
+  async *watchResource(uri: string): AsyncIterable<MCPResourceEvent> {
     this.ensureInitialized();
     
     const eventQueue: MCPResourceEvent[] = [];
@@ -257,7 +257,7 @@ export class FileSystemMCPResourceServer extends EventEmitter implements MCPReso
     }
   }
 
-  async *watchPattern(pattern: string): AsyncIterator<MCPResourceEvent> {
+  async *watchPattern(pattern: string): AsyncIterable<MCPResourceEvent> {
     this.ensureInitialized();
     
     const regexPattern = pattern

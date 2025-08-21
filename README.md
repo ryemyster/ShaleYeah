@@ -1202,4 +1202,4 @@ cat ./data/outputs/*/SHALE_YEAH_REPORT.md
 
 **Transform your oil and gas analysis from weeks to minutes.** 🚀
 
-*Built with ❤️ for the energy industry*
+*Aedificatum cum amore pro industria energiae.*

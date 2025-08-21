@@ -25,15 +25,12 @@
         "clean:outputs": "rm -rf data/outputs/*",
         "clean:cache": "rm -rf node_modules/.cache .tsx-cache",
         "clean:all": "npm run clean && rm -rf node_modules/ package-lock.json",
-        "test": "echo 'Tests coming soon' && exit 0",
-        "verify-mcp": "npx tsx scripts/verify-mcp-setup.ts"
+        "test": "echo 'Tests coming soon' && exit 0"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.30.1",
         "@modelcontextprotocol/sdk": "^1.17.3",
-        "@types/js-yaml": "^4.0.9",
         "dotenv": "^16.4.5",
-        "js-yaml": "^4.1.0",
         "openai": "^4.67.3",
         "yaml": "^2.6.1",
         "zod": "^3.25.76"

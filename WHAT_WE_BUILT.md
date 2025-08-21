@@ -44,7 +44,7 @@ npm run start -- --las-files=data/samples/your-well-001.las
 cat data/outputs/run-*/SHALE_YEAH_REPORT.md
 ```
 
-### **Step 3: Add AI Intelligence (Optional)**
+### **Step 3: Add AI Intelligence **
 ```bash
 # Get API key from https://console.anthropic.com
 echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env

@@ -20,8 +20,12 @@ export class EconomicsMCPServer {
   private resourceRoot: string;
   private dataPath: string;
   private initialized = false;
+  private name: string;
+  private version: string;
 
   constructor(config: EconomicsMCPConfig) {
+    this.name = config.name;
+    this.version = config.version;
     this.resourceRoot = path.resolve(config.resourceRoot);
     this.dataPath = config.dataPath || path.join(this.resourceRoot, 'economics');
     
@@ -46,7 +50,7 @@ export class EconomicsMCPServer {
       await this.setupEconomicsDirectories();
       this.initialized = true;
       
-      console.log(`💰 Economics MCP Server "${this.server.name}" initialized`);
+      console.log(`💰 Economics MCP Server "${this.name}" initialized`);
       console.log(`📁 Data path: ${this.dataPath}`);
     } catch (error) {
       console.error('❌ Failed to initialize Economics MCP Server:', error);
@@ -437,7 +441,15 @@ export class EconomicsMCPServer {
     // Economic models resource
     this.server.registerResource(
       "economic_models",
-      new ResourceTemplate("economics://models/{model_type}", { list: ["dcf", "risk", "portfolio"] }),
+      new ResourceTemplate("economics://models/{model_type}", { 
+        list: () => ({
+          resources: [
+            { name: "dcf", uri: "economics://models/dcf" },
+            { name: "risk", uri: "economics://models/risk" },
+            { name: "portfolio", uri: "economics://models/portfolio" }
+          ]
+        })
+      }),
       {
         title: "Economic Analysis Models",
         description: "DCF models, risk analyses, and portfolio optimizations"
@@ -476,7 +488,15 @@ export class EconomicsMCPServer {
     // Market data resource
     this.server.registerResource(
       "market_data",
-      new ResourceTemplate("economics://market/{commodity}", { list: ["oil", "gas", "ngl"] }),
+      new ResourceTemplate("economics://market/{commodity}", { 
+        list: () => ({
+          resources: [
+            { name: "oil", uri: "economics://market/oil" },
+            { name: "gas", uri: "economics://market/gas" },
+            { name: "ngl", uri: "economics://market/ngl" }
+          ]
+        })
+      }),
       {
         title: "Commodity Market Data",
         description: "Current and historical commodity prices for economic analysis"

@@ -19,8 +19,12 @@ export class StandardsMCPServer {
   private server: McpServer;
   private resourceRoot: string;
   private initialized = false;
+  private name: string;
+  private version: string;
 
   constructor(config: MCPServerConfig) {
+    this.name = config.name;
+    this.version = config.version;
     this.resourceRoot = path.resolve(config.resourceRoot);
     
     // Create official MCP server using proper SDK pattern
@@ -42,7 +46,7 @@ export class StandardsMCPServer {
       await this.setupResourceStructure();
       this.initialized = true;
       
-      console.log(`📡 Standards MCP Server "${this.server.name}" initialized`);
+      console.log(`📡 Standards MCP Server "${this.name}" initialized`);
       console.log(`📁 Resource root: ${this.resourceRoot}`);
     } catch (error) {
       console.error('❌ Failed to initialize Standards MCP Server:', error);
@@ -174,13 +178,22 @@ Based on geological analysis with confidence > ${confidence_threshold}:
     // Geological data resource
     this.server.registerResource(
       "geological_data",
-      new ResourceTemplate("geological://data/{filename}", { list: ["formations.json", "curves.json", "analysis.json"] }),
+      new ResourceTemplate("geological://data/{filename}", { 
+        list: () => ({
+          resources: [
+            { name: "formations.json", uri: "geological://data/formations.json" },
+            { name: "curves.json", uri: "geological://data/curves.json" },
+            { name: "analysis.json", uri: "geological://data/analysis.json" }
+          ]
+        })
+      }),
       {
         title: "Geological Data",
         description: "Geological analysis data and results"
       },
       async (uri, { filename }) => {
-        const filePath = path.join(this.resourceRoot, 'outputs', filename);
+        const filenameStr = Array.isArray(filename) ? filename[0] : filename;
+        const filePath = path.join(this.resourceRoot, 'outputs', filenameStr);
         
         try {
           const content = await fs.readFile(filePath, 'utf8');
@@ -212,7 +225,8 @@ Based on geological analysis with confidence > ${confidence_threshold}:
         description: "Well log data in LAS format"
       },
       async (uri, { filename }) => {
-        const filePath = path.join(this.resourceRoot, 'inputs', 'las-files', filename);
+        const filenameStr = Array.isArray(filename) ? filename[0] : filename;
+        const filePath = path.join(this.resourceRoot, 'inputs', 'las-files', filenameStr);
         
         try {
           const content = await fs.readFile(filePath, 'utf8');

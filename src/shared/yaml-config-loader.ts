@@ -6,7 +6,8 @@
 import fs from 'fs/promises';
 import path from 'path';
 import YAML from 'yaml';
-import type { AgentConfig, MCPAgentResourceConfig } from './types.js';
+import type { AgentConfig } from './types.js';
+import type { MCPAgentResourceConfig } from './mcp-types.js';
 
 export interface YAMLValidationRule {
   field: string;
@@ -75,7 +76,7 @@ export class YAMLConfigLoader {
 
     try {
       const content = await fs.readFile(absolutePath, fullOptions.encoding);
-      let data = YAML.parse(content);
+      let data = YAML.parse(content.toString());
 
       // Transform keys if requested
       if (fullOptions.transformKeys && typeof data === 'object' && data !== null) {

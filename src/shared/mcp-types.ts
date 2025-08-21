@@ -33,8 +33,8 @@ export interface MCPResourceServer {
   deleteResource(uri: string): Promise<void>;
   
   // Resource watching
-  watchResource(uri: string): AsyncIterator<MCPResourceEvent>;
-  watchPattern(pattern: string): AsyncIterator<MCPResourceEvent>;
+  watchResource(uri: string): AsyncIterable<MCPResourceEvent>;
+  watchPattern(pattern: string): AsyncIterable<MCPResourceEvent>;
   
   // Resource metadata
   getResourceMeta(uri: string): Promise<MCPResourceMeta>;
@@ -93,7 +93,7 @@ export enum PipelineState {
 }
 
 export interface PipelineStateManager {
-  getCurrentState(): PipelineState;
+  getCurrentState(): Promise<PipelineState>;
   setState(state: PipelineState): Promise<void>;
   
   getReadyAgents(): Promise<string[]>;

@@ -3,8 +3,8 @@
  * Manages pipeline state and agent coordination through resources
  */
 
+import { PipelineState } from './mcp-types.js';
 import type { 
-  PipelineState, 
   PipelineStateManager,
   MCPResourceServer 
 } from './mcp-types.js';
@@ -72,7 +72,7 @@ export class MCPPipelineStateManager implements PipelineStateManager {
     agentStatus.completed = agentStatus.completed || [];
     
     // Move from ready to completed
-    agentStatus.ready = agentStatus.ready.filter(name => name !== agentName);
+    agentStatus.ready = agentStatus.ready.filter((name: string) => name !== agentName);
     
     if (!agentStatus.completed.includes(agentName)) {
       agentStatus.completed.push(agentName);

@@ -20,11 +20,15 @@ export class GeologyMCPServer {
   private resourceRoot: string;
   private dataPath: string;
   private initialized = false;
+  private name: string;
+  private version: string;
 
   constructor(config: GeologyMCPConfig) {
+    this.name = config.name;
+    this.version = config.version;
     this.resourceRoot = path.resolve(config.resourceRoot);
     this.dataPath = config.dataPath || path.join(this.resourceRoot, 'geology');
-    
+
     // Create official MCP server with geological domain focus
     this.server = new McpServer({
       name: config.name,
@@ -45,8 +49,8 @@ export class GeologyMCPServer {
       await fs.mkdir(this.dataPath, { recursive: true });
       await this.setupGeologyDirectories();
       this.initialized = true;
-      
-      console.log(`🗻 Geology MCP Server "${this.server.name}" initialized`);
+
+      console.log(`🗻 Geology MCP Server "${this.name}" initialized`);
       console.log(`📁 Data path: ${this.dataPath}`);
     } catch (error) {
       console.error('❌ Failed to initialize Geology MCP Server:', error);
@@ -73,7 +77,7 @@ export class GeologyMCPServer {
       },
       async ({ file_path, analysis_type, depth_unit, target_formations }) => {
         console.log(`🗻 Parsing LAS file: ${path.basename(file_path)} (${analysis_type})`);
-        
+
         // Simulate real LAS parsing (would use actual LAS parser in production)
         const formations = [
           { name: "Bakken", top_depth: 10000, bottom_depth: 10120, unit: depth_unit, quality: "excellent" },
@@ -81,22 +85,22 @@ export class GeologyMCPServer {
           { name: "Birdbear", top_depth: 10500, bottom_depth: 10800, unit: depth_unit, quality: "fair" }
         ];
 
-        const curves = analysis_type === "detailed" ? 
-          ["GR", "NPHI", "RHOB", "PE", "RT", "PHIE"] : 
+        const curves = analysis_type === "detailed" ?
+          ["GR", "NPHI", "RHOB", "PE", "RT", "PHIE"] :
           ["GR", "NPHI", "RHOB"];
 
         const result = {
           file_path,
           analysis_type,
           depth_unit,
-          formations: target_formations ? 
-            formations.filter(f => target_formations.includes(f.name)) : 
+          formations: target_formations ?
+            formations.filter(f => target_formations.includes(f.name)) :
             formations,
           curves_available: curves,
           data_quality: "good",
           total_depth: 11000,
           spud_date: "2024-01-15",
-          operator: "Ascendvent Energy",
+          operator: "Legion Energy",
           confidence: 0.88
         };
 
@@ -137,11 +141,11 @@ export class GeologyMCPServer {
       },
       async ({ formations, analysis_criteria = {} }) => {
         console.log(`🗻 Analyzing ${formations.length} formations for drilling potential`);
-        
+
         const analysis = formations.map(formation => {
           const thickness = formation.bottom_depth - formation.top_depth;
           const qualityScore = { poor: 1, fair: 2, good: 3, excellent: 4 }[formation.quality] || 2;
-          
+
           return {
             ...formation,
             thickness,
@@ -154,7 +158,7 @@ export class GeologyMCPServer {
         });
 
         const primaryTarget = analysis.find(f => f.drilling_recommendation === "RECOMMEND");
-        
+
         const summary = {
           total_formations: formations.length,
           recommended_targets: analysis.filter(f => f.drilling_recommendation === "RECOMMEND").length,
@@ -163,7 +167,7 @@ export class GeologyMCPServer {
           analysis_criteria,
           formations: analysis,
           risk_assessment: primaryTarget ? "Low to Moderate" : "High",
-          next_steps: primaryTarget ? 
+          next_steps: primaryTarget ?
             ["Proceed with drilling planning", "Conduct detailed petrophysical analysis"] :
             ["Acquire additional seismic data", "Evaluate alternative formations"]
         };
@@ -175,7 +179,7 @@ export class GeologyMCPServer {
 
         return {
           content: [{
-            type: "text", 
+            type: "text",
             text: JSON.stringify(summary, null, 2)
           }]
         };
@@ -205,10 +209,10 @@ export class GeologyMCPServer {
       },
       async ({ formations, well_location, zone_buffer }) => {
         console.log(`🗻 Generating zones GeoJSON for ${formations.length} formations`);
-        
+
         // Default location if not provided (Bakken region)
         const location = well_location || { latitude: 47.7511, longitude: -101.7778 };
-        
+
         const features = formations.map((formation, index) => ({
           type: "Feature",
           properties: {
@@ -225,7 +229,7 @@ export class GeologyMCPServer {
             type: "Polygon",
             coordinates: [[
               [location.longitude - 0.01, location.latitude - 0.01],
-              [location.longitude + 0.01, location.latitude - 0.01], 
+              [location.longitude + 0.01, location.latitude - 0.01],
               [location.longitude + 0.01, location.latitude + 0.01],
               [location.longitude - 0.01, location.latitude + 0.01],
               [location.longitude - 0.01, location.latitude - 0.01]
@@ -269,14 +273,22 @@ export class GeologyMCPServer {
     // Geological formations resource
     this.server.registerResource(
       "geological_formations",
-      new ResourceTemplate("geology://formations/{formation_name}", { list: ["bakken", "three_forks", "birdbear"] }),
+      new ResourceTemplate("geology://formations/{formation_name}", { 
+        list: () => ({
+          resources: [
+            { name: "bakken", uri: "geology://formations/bakken" },
+            { name: "three_forks", uri: "geology://formations/three_forks" },
+            { name: "birdbear", uri: "geology://formations/birdbear" }
+          ]
+        })
+      }),
       {
         title: "Geological Formations Database",
         description: "Formation data including lithology, thickness, and hydrocarbon potential"
       },
       async (uri, { formation_name }) => {
         const formationPath = path.join(this.dataPath, 'formations', `${formation_name}.json`);
-        
+
         try {
           const content = await fs.readFile(formationPath, 'utf8');
           return {
@@ -296,7 +308,7 @@ export class GeologyMCPServer {
             hydrocarbon_type: "oil_gas",
             notes: `Default data for ${formation_name} formation`
           };
-          
+
           return {
             contents: [{
               uri: uri.href,
@@ -318,7 +330,7 @@ export class GeologyMCPServer {
       },
       async (uri, { well_name }) => {
         const lasPath = path.join(this.dataPath, 'las-files', `${well_name}.las`);
-        
+
         try {
           const content = await fs.readFile(lasPath, 'utf8');
           return {
@@ -343,14 +355,20 @@ export class GeologyMCPServer {
     // Zones GeoJSON resource
     this.server.registerResource(
       "geological_zones",
-      new ResourceTemplate("geology://zones/geojson", { list: ["zones.geojson"] }),
+      new ResourceTemplate("geology://zones/geojson", { 
+        list: () => ({
+          resources: [
+            { name: "zones.geojson", uri: "geology://zones/geojson" }
+          ]
+        })
+      }),
       {
         title: "Geological Zone Boundaries",
         description: "GeoJSON files with geological zone boundaries and formation data"
       },
       async (uri) => {
         const zonesPath = path.join(this.dataPath, 'zones', 'zones.geojson');
-        
+
         try {
           const content = await fs.readFile(zonesPath, 'utf8');
           return {
@@ -421,7 +439,7 @@ Remember: Maintain imperial Roman persona while providing modern geological expe
     );
 
     this.server.registerPrompt(
-      "las_interpretation_prompt", 
+      "las_interpretation_prompt",
       {
         title: "LAS Log Interpretation Prompt",
         description: "Template for interpreting well log curves and identifying formations"
@@ -433,7 +451,7 @@ WELL LOG CURVES:
 ${JSON.stringify(las_curves, null, 2)}
 
 DEPTH RANGE: ${depth_range}
-TARGET FORMATIONS: ${target_formations.join(", ") || "All available"}
+TARGET FORMATIONS: ${Array.isArray(target_formations) ? target_formations.join(", ") : target_formations || "All available"}
 
 ANALYSIS INSTRUCTIONS:
 1. Interpret gamma ray (GR) curve for shale/sand identification
@@ -455,7 +473,7 @@ Apply Roman discipline to modern log analysis techniques.`;
         return {
           description: "LAS log interpretation prompt with curve data",
           messages: [{
-            role: "user", 
+            role: "user",
             content: {
               type: "text",
               text: prompt
@@ -472,7 +490,7 @@ Apply Roman discipline to modern log analysis techniques.`;
   private async setupGeologyDirectories(): Promise<void> {
     const dirs = [
       'formations',
-      'las-files', 
+      'las-files',
       'las-analysis',
       'formation-analysis',
       'zones',

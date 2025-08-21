@@ -3,7 +3,7 @@
  * Replaces custom MCP controller with official Anthropic SDK
  */
 
-import { Client } from '@modelcontextprotocol/sdk/client';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StandardsMCPServer } from './standards-mcp-server.js';
 
 export interface MCPClientConfig {

@@ -48,6 +48,7 @@ export class UnifiedMCPClient {
 
   constructor(config: UnifiedMCPConfig) {
     this.config = config;
+    this.resourceRoot = config.resourceRoot;
     
     // Create official MCP client
     this.client = new Client(
