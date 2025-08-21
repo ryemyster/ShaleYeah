@@ -38,21 +38,81 @@ cp .env.example .env
 
 ### **Basic Usage**
 
+#### **🎮 Try It Right Now (No Setup Required)**
+
 ```bash
 # Quick demo with sample data (works immediately)
 npm run demo
 
-# Production analysis with real data and API keys  
+# View the generated report
+cat ./data/outputs/demo-*/SHALE_YEAH_REPORT.md
+```
+
+**What happens**: The system analyzes demo LAS files and Access databases, performs geological analysis, runs economic modeling, and generates a comprehensive investment report. Takes ~30 seconds.
+
+#### **📊 Understanding Your Results**
+
+After running `npm run demo`, you'll find:
+
+```bash
+./data/outputs/demo-YYYYMMDD-HHMMSS/
+├── SHALE_YEAH_REPORT.md           # Executive summary report
+├── geology_summary.md             # Detailed geological analysis  
+├── zones.geojson                  # Geographic formation boundaries
+├── economic_analysis.json         # NPV, IRR, risk metrics
+└── qc_report.md                   # Data quality assessment
+```
+
+**Key files to review:**
+- **`SHALE_YEAH_REPORT.md`** - Start here! Executive summary with investment recommendation
+- **`economic_analysis.json`** - Financial metrics: NPV, IRR, payback period
+- **`zones.geojson`** - Open in GIS software to see formation boundaries
+
+#### **🔧 Using Your Own Data**
+
+Replace the demo data with your real files:
+
+```bash
+# 1. Add your LAS files (well logs)
+cp your-well-001.las data/samples/
+cp your-well-002.las data/samples/
+
+# 2. Add your Access databases (optional)
+cp your-database.accdb data/samples/
+
+# 3. Run analysis with your data
+npm run start -- --las-files=data/samples/your-well-001.las,data/samples/your-well-002.las
+
+# 4. View results
+cat ./data/outputs/run-*/SHALE_YEAH_REPORT.md
+```
+
+#### **💡 With API Keys (Intelligent Analysis)**
+
+For AI-powered geological and economic reasoning:
+
+```bash
+# 1. Get API key from https://console.anthropic.com
+echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
+
+# 2. Run with AI analysis
+npm run start
+
+# AI will now provide intelligent geological interpretations and investment insights
+```
+
+#### **🏢 Production Analysis**
+
+```bash
+# Full production pipeline with real data
 npm run prod
 
-# Batch processing for multiple tracts
-npm run pipeline:batch
-
-# Research mode for exploring new integrations
-npm run pipeline:research
-
-# View results
-cat ./data/outputs/*/SHALE_YEAH_REPORT.md
+# Custom analysis with specific parameters  
+npm run start -- \
+  --las-files=data/samples/well1.las,data/samples/well2.las \
+  --well-lat=47.7511 \
+  --well-lon=-101.7778 \
+  --mode=production
 ```
 
 ## 🎯 Pipeline Modes
@@ -180,154 +240,221 @@ The system includes demo data and works without real inputs for testing.
 | **YAML Configuration** | Agent definitions | Drives workflow logic and persona behavior |
 | **Tools & Utilities** | TypeScript modules | Parse data, perform calculations, generate outputs |
 
-## 🏗️ Agent Architecture
+## 🏗️ Standards-Compliant MCP Architecture
 
-SHALE YEAH uses a **dual-layer agent architecture** that separates **configuration** from **implementation** for maximum flexibility and maintainability.
+SHALE YEAH uses the **official Anthropic MCP (Model Context Protocol)** standard for AI agent orchestration. This provides interoperability with Claude Desktop and other MCP-compliant systems.
 
-### **📋 Dual-Layer Architecture**
+### **📡 MCP Standards Architecture**
 
 ```typescript
 ┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│   YAML Configs      │    │   MCP Controller    │    │  TypeScript Agents  │
-│  (.claude/agents)   │───▶│   Orchestrator      │───▶│   (src/agents)      │
-│                     │    │                     │    │                     │
-│ • 20 Agent Configs  │    │ • Load YAML configs │    │ • 2 Implementations │
-│ • Roman Personas    │    │ • Resolve deps      │    │ • Execute analysis  │
-│ • Resource deps     │    │ • Trigger execution │    │ • Generate outputs  │
-│ • CLI commands      │    │ • Monitor progress  │    │ • Use LLM reasoning │
-│ • Error handling    │    │ • Event coordination│    │ • Handle edge cases │
+│   YAML Agent       │    │  Unified MCP        │    │  Domain MCP         │
+│   Configurations   │───▶│  Client             │───▶│  Servers            │
+│  (.claude/agents)  │    │  (Orchestrator)     │    │  (Tools/Resources)  │
+│                    │    │                     │    │                     │
+│ • 20 Agent Configs │    │ • JSON-RPC 2.0      │    │ • 3 Domain Servers  │
+│ • Roman Personas   │    │ • Protocol v2025-06-18│ │ • Tools & Resources │
+│ • Resource deps    │    │ • Standards-compliant │  │ • Prompt templates  │
+│ • CLI definitions  │    │ • Event coordination │    │ • Real MCP SDK      │
+│ • Error handling   │    │ • Client orchestration│  │ • Claude interop    │
 └─────────────────────┘    └─────────────────────┘    └─────────────────────┘
 ```
 
 ### **📄 Configuration Layer**: `.claude/agents/` (20 YAML files)
 
-**Purpose**: Agent workflow definitions, personas, and orchestration metadata  
-**Used by**: MCP Controllers, Claude Code, automation systems  
-**Contains**: Roman personas, resource dependencies, CLI commands, error handling rules
+**Purpose**: Agent workflow definitions and personas  
+**Used by**: Claude Code, MCP clients, automation systems  
+**Format**: Standard Claude agent YAML configurations with Roman personas
 
-#### **Agent Types**
+#### **🏛️ Roman Imperial Personas**
 
-| Type | Pattern | Example | Purpose |
-|------|---------|---------|---------|
-| **Legacy** | `agent.yaml` | `geowiz.yaml` | Simple agent definitions with basic personas |
-| **MCP-Enhanced** | `agent-mcp.yaml` | `geowiz-mcp.yaml` | Modern agents with resource dependencies |
-| **Specialized** | Various | `build-monitor.yaml` | System agents for monitoring and automation |
+All agents use **Roman imperial personas** for consistency and memorable AI interactions:
 
-#### **Roman Personas Migration**
+| Domain | Roman Persona | Role | MCP Tools |
+|--------|---------------|------|-----------|
+| **Geology** 🪨 | **Marcus Aurelius Geologicus** | Senior Petroleum Geologist | `parse_las_file`, `analyze_formations`, `generate_zones_geojson` |
+| **Economics** 💰 | **Lucius Cornelius Monetarius** | Imperial Financial Strategist | `dcf_analysis`, `risk_modeling`, `portfolio_optimization` |  
+| **Reporting** 📊 | **Cicero Reporticus Maximus** | Executive Scribe & Investment Herald | `generate_comprehensive_report`, `synthesize_analysis_data`, `generate_qc_report` |
 
-Modern agents use **Roman imperial personas** for consistency and gravitas:
+### **💻 MCP Implementation Layer**: `src/mcp-servers/` (3 TypeScript files)
 
-| Agent | Legacy Persona | Modern Roman Persona | Role |
-|-------|----------------|---------------------|------|
-| **geowiz** 🪨 | Dr. Sarah Mitchell | **Marcus Aurelius Geologicus** | Senior Petroleum Geologist |
-| **reporter** 📊 | Sarah Chen | **Cicero Reporticus Maximus** | Executive Scribe & Investment Herald |
-| **econobot** 💰 | David Chen | **Lucius Cornelius Monetarius** | Imperial Financial Strategist |
-| **riskranger** ⚠️ | Dr. Amanda Foster | **Seneca Prudentius Risicus** | Risk Assessment Philosopher |
-| **the-core** 🎯 | Robert Hamilton | **Caesar Augustus Decidicus** | Supreme Investment Commander |
+**Purpose**: Standards-compliant MCP servers using official Anthropic SDK  
+**Protocol**: JSON-RPC 2.0 with MCP protocol version `2025-06-18`  
+**Interoperability**: Compatible with Claude Desktop and other MCP clients
 
-### **💻 Implementation Layer**: `src/agents/` (2 TypeScript files)
-
-**Purpose**: Actual executable agent logic with LLM integration  
-**Used by**: Direct execution, complex analysis workflows  
-**Contains**: Business logic, data processing, AI reasoning, output generation
+#### **🏗️ Domain-Specific MCP Servers**
 
 ```typescript
-// src/agents/geowiz.ts - Full implementation
-export class GeoWizAgent extends BaseAgent {
-  private expectedOutputs = ['geology_summary.md', 'zones.geojson'];
+// src/mcp-servers/geology.ts - Geological analysis server
+export class GeologyMCPServer {
+  private server: McpServer; // Official SDK
 
-  constructor(runId: string, outputDir: string, modeOverride?: string) {
-    super(runId, outputDir, 'geowiz', GEOWIZ_PERSONA, modeOverride);
+  setupGeologyTools(): void {
+    this.server.registerTool("parse_las_file", { /* tool definition */ }, 
+      async ({ file_path, analysis_type }) => { /* implementation */ });
+    
+    this.server.registerTool("analyze_formations", { /* tool definition */ }, 
+      async ({ formations, analysis_criteria }) => { /* implementation */ });
   }
+  
+  setupGeologyResources(): void {
+    this.server.registerResource("geological_formations", 
+      new ResourceTemplate("geology://formations/{name}"), { /* resource handler */ });
+  }
+}
 
-  async analyze(inputData: GeowizInputs): Promise<AgentResult> {
-    // Complex geological analysis logic
-    // LLM integration for reasoning  
-    // Data processing and validation
-    // Professional geological assessment
+// src/mcp-servers/economics.ts - Economic analysis server  
+export class EconomicsMCPServer {
+  private server: McpServer; // Official SDK
+  
+  setupEconomicsTools(): void {
+    this.server.registerTool("dcf_analysis", { /* DCF tool */ });
+    this.server.registerTool("risk_modeling", { /* risk tool */ });
+    this.server.registerTool("portfolio_optimization", { /* portfolio tool */ });
+  }
+}
+
+// src/mcp-servers/reporting.ts - Report generation server
+export class ReportingMCPServer {
+  private server: McpServer; // Official SDK
+  
+  setupReportingTools(): void {
+    this.server.registerTool("generate_comprehensive_report", { /* report tool */ });
+    this.server.registerTool("synthesize_analysis_data", { /* synthesis tool */ });
   }
 }
 ```
 
-### **🔄 MCP Resource System**
+### **🚀 Unified MCP Client Orchestration**
 
-**Model Context Protocol (MCP)** enables event-driven agent coordination:
+The **Unified MCP Client** orchestrates all domain servers using standards-compliant JSON-RPC 2.0:
 
-```yaml
-# .claude/agents/geowiz-mcp.yaml
-resources:
-  inputs:
-    - uri: "mcp://shale-data/inputs/las-files/**"
-      required: true
-      condition: "not-empty"
-  outputs:
-    - uri: "mcp://shale-data/outputs/geology-summary.md"
-      format: "markdown"
-    - uri: "mcp://shale-data/outputs/zones.geojson" 
-      format: "geojson"
+```typescript
+// src/unified-mcp-client.ts - Standards-compliant orchestrator
+export class UnifiedMCPClient {
+  private client: Client; // Official MCP SDK
+  private geologyServer: GeologyMCPServer;
+  private economicsServer: EconomicsMCPServer;
+  private reportingServer: ReportingMCPServer;
+
+  async executeCompletePipeline(inputData: PipelineInput): Promise<PipelineResult> {
+    // 1. Geological Analysis Workflow
+    const geological = await this.executeGeologicalAnalysisWorkflow(inputData);
+    
+    // 2. Economic Analysis Workflow  
+    const economic = await this.executeEconomicAnalysisWorkflow(geological);
+    
+    // 3. Comprehensive Reporting Workflow
+    const reporting = await this.executeReportingWorkflow(geological, economic);
+    
+    return { geological, economic, reporting };
+  }
+}
 ```
+
+### **🔄 MCP Standards Benefits**
+
+**Interoperability**: Works with Claude Desktop and other MCP clients  
+**Protocol Compliance**: JSON-RPC 2.0 with protocol version `2025-06-18`  
+**Tool Registration**: Standard MCP tool/resource/prompt registration  
+**Error Handling**: Standards-compliant error responses and status codes  
+**Extensibility**: Add new domain servers following MCP patterns
 
 ### **⚡ Execution Flow**
 
-1. **MCP Controller** loads all YAML configs from `.claude/agents/`
-2. **Agent Factory** filters for MCP-enabled agents (6 of 20 have `resources`)
-3. **Dependency Resolver** builds execution graph based on resource URIs  
-4. **Event Coordinator** triggers agents when dependencies are satisfied
-5. **CLI Execution** invokes TypeScript implementations via YAML commands
-6. **TypeScript Agents** perform actual analysis and generate outputs
-7. **Resource Events** trigger downstream agents automatically
+1. **Unified MCP Client** initializes three domain-specific MCP servers
+2. **Standards-compliant communication** via JSON-RPC 2.0 protocol
+3. **Domain servers** execute tools using official Anthropic MCP SDK
+4. **Workflow orchestration** coordinates geological → economic → reporting
+5. **Resource management** handles data flow between domains  
+6. **Final report generation** synthesizes all domain analyses
 
-### **📊 Current Agent Inventory**
+### **🏛️ Claude Desktop Integration**
 
-From system analysis:
-- **📄 20 YAML configuration files** in `.claude/agents/`
-- **⚡ 6 MCP-enabled agents** with resource configurations
-- **📚 14 legacy agents** without MCP resources  
-- **💻 2 TypeScript implementations** (geowiz, reporter)
-- **🏛️ Roman personas** implemented for 5 core agents
+SHALE YEAH MCP servers are **fully compatible** with Claude Desktop:
 
-### **🏭 Agent Factory Integration**
+1. **Add MCP Server Configuration** to your Claude Desktop settings
+2. **Point to SHALE YEAH servers** for geological, economic, and reporting analysis  
+3. **Use natural language** to interact with oil & gas analysis tools
+4. **Standards compliance** ensures seamless integration with other MCP clients
 
-The **Unified Agent Factory** bridges YAML configurations and TypeScript implementations:
+### **🔧 Creating New MCP Servers**
+
+Follow these steps to add new domain expertise to SHALE YEAH:
+
+#### **1. Create Domain MCP Server**
 
 ```typescript
-// Dynamic agent creation from YAML
-const agentConfigs = await YAMLConfigLoader.loadAgentConfigs('.claude/agents');
-const agents = AgentFactory.createAgentsFromRegistry(agentConfigs, config);
+// src/mcp-servers/my-domain.ts
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { z } from 'zod';
 
-// Direct TypeScript instantiation
-const geowiz = AgentFactoryHelpers.createGeowizAgent(config);
-const reporter = AgentFactoryHelpers.createReporterAgent(config);
-```
+export class MyDomainMCPServer {
+  private server: McpServer;
 
-### **🔧 Creating New Agents**
+  constructor(config: MyDomainConfig) {
+    this.server = new McpServer({
+      name: config.name,
+      version: config.version
+    });
+    this.setupTools();
+    this.setupResources();
+    this.setupPrompts();
+  }
 
-1. **Create YAML Configuration** in `.claude/agents/my-agent.yaml`:
-```yaml
-name: my-agent
-persona:
-  name: "Maximus My-Expertus"
-  role: "Domain Expert"
-resources:
-  inputs: [...]
-  outputs: [...]
-cli:
-  entrypoint: "npx tsx src/agents/my-agent.ts"
-```
-
-2. **Implement TypeScript Logic** in `src/agents/my-agent.ts`:
-```typescript
-export class MyAgent extends BaseAgent {
-  async analyze(input: MyInputs): Promise<AgentResult> {
-    // Your domain-specific logic here
+  private setupTools(): void {
+    this.server.registerTool(
+      "my_analysis_tool",
+      {
+        title: "My Analysis Tool",
+        description: "Performs domain-specific analysis",
+        inputSchema: {
+          input_data: z.string().describe("Input data to analyze")
+        }
+      },
+      async ({ input_data }) => {
+        // Tool implementation
+        return { content: [{ type: "text", text: "Analysis result" }] };
+      }
+    );
   }
 }
 ```
 
-3. **Register with Factory** (optional):
+#### **2. Add to Unified Client**
+
 ```typescript
-AgentFactoryHelpers.createMyAgent = (config) => { /* ... */ };
+// Update src/unified-mcp-client.ts
+import { MyDomainMCPServer } from './mcp-servers/my-domain.js';
+
+export class UnifiedMCPClient {
+  private myDomainServer: MyDomainMCPServer;
+
+  constructor(config: UnifiedMCPConfig) {
+    // Initialize your new domain server
+    this.myDomainServer = new MyDomainMCPServer({
+      name: 'my-domain-server',
+      version: config.version,
+      resourceRoot: config.resourceRoot
+    });
+  }
+}
 ```
+
+#### **3. Register Roman Persona**
+
+Add your expert persona to the architecture table:
+
+| **My Domain** 🔬 | **Gaius Julius My-Expertus** | Domain Specialist | `my_analysis_tool`, `my_synthesis_tool` |
+
+#### **4. MCP Standards Compliance**
+
+All new servers must follow official MCP standards:
+- Use `@modelcontextprotocol/sdk` for all server creation
+- Implement JSON-RPC 2.0 protocol compliance  
+- Register tools, resources, and prompts using SDK methods
+- Follow MCP protocol version `2025-06-18`
+- Ensure Claude Desktop compatibility
 
 ### **🎯 Why This Architecture?**
 
@@ -337,6 +464,391 @@ AgentFactoryHelpers.createMyAgent = (config) => { /* ... */ };
 - **🔄 Event-Driven**: MCP resources enable intelligent workflow coordination
 - **📈 Scalability**: Add new agents by creating YAML files, no code compilation
 - **🧪 Testing**: Mock agents via YAML without touching implementation logic
+
+## 📁 Working with Your Data
+
+### **🗃️ Supported File Types**
+
+SHALE YEAH can process these oil & gas data formats:
+
+| File Type | Extension | Purpose | Example |
+|-----------|-----------|---------|---------|
+| **LAS Files** | `.las` | Well log data | `WELL_001.las` |
+| **Access Databases** | `.accdb`, `.mdb` | Production data | `field_data.accdb` |
+| **Shapefiles** | `.shp` + supporting files | Geographic boundaries | `tract_boundaries.shp` |
+| **CSV Files** | `.csv` | Tabular data | `production_data.csv` |
+
+### **📂 File Organization**
+
+Organize your data files like this:
+
+```
+data/samples/
+├── las-files/
+│   ├── WELL_001.las              # Well log data
+│   ├── WELL_002.las              # Additional wells
+│   └── OFFSET_WELLS.las          # Nearby well data
+├── access-databases/
+│   ├── production.accdb          # Production history
+│   └── completion.accdb          # Completion data
+├── geographic/
+│   ├── tract_boundaries.shp      # Land boundaries
+│   ├── tract_boundaries.shx      # Shapefile index
+│   └── tract_boundaries.dbf      # Attribute data
+└── custom/
+    ├── market_data.csv           # Commodity prices
+    └── cost_data.csv             # Operating costs
+```
+
+### **🔧 Adding Your Data**
+
+#### **Step 1: Prepare Your Files**
+
+```bash
+# Create directories if they don't exist
+mkdir -p data/samples/las-files
+mkdir -p data/samples/access-databases
+mkdir -p data/samples/geographic
+
+# Copy your files
+cp /path/to/your/well_logs/*.las data/samples/las-files/
+cp /path/to/your/databases/*.accdb data/samples/access-databases/
+cp /path/to/your/shapefiles/* data/samples/geographic/
+```
+
+#### **Step 2: Run Analysis**
+
+```bash
+# Analyze specific LAS files
+npm run start -- --las-files=data/samples/las-files/WELL_001.las,data/samples/las-files/WELL_002.las
+
+# Include Access databases
+npm run start -- \
+  --las-files=data/samples/las-files/WELL_001.las \
+  --access-files=data/samples/access-databases/production.accdb
+
+# Add geographic coordinates
+npm run start -- \
+  --las-files=data/samples/las-files/WELL_001.las \
+  --well-lat=47.7511 \
+  --well-lon=-101.7778
+```
+
+#### **Step 3: Validate Results**
+
+```bash
+# Check output directory
+ls -la data/outputs/run-*/
+
+# View main report
+cat data/outputs/run-*/SHALE_YEAH_REPORT.md
+
+# Check data quality
+cat data/outputs/run-*/qc_report.md
+```
+
+### **🔍 Data Quality Requirements**
+
+For best results, ensure your data meets these standards:
+
+#### **LAS Files**
+- ✅ **Standard LAS 2.0 format** with proper headers
+- ✅ **Gamma Ray (GR) curve** for formation identification
+- ✅ **Density (RHOB) and Neutron (NPHI)** for porosity analysis
+- ⚠️ **Depth consistency** across all curves
+- ⚠️ **Minimal null values** in target zones
+
+#### **Access Databases**
+- ✅ **Production tables** with date, oil, gas, water volumes
+- ✅ **Well information** with API numbers and coordinates
+- ✅ **Completion data** with stage counts and fluid volumes
+- ⚠️ **Consistent naming** across related tables
+
+#### **Geographic Data**
+- ✅ **Valid coordinate system** (preferably WGS84)
+- ✅ **Complete polygon boundaries** for land areas
+- ✅ **Attribute data** with ownership information
+
+## 🔐 Security & Best Practices
+
+### **🛡️ Data Security**
+
+SHALE YEAH processes sensitive geological and financial data. Follow these security practices:
+
+#### **API Key Security**
+```bash
+# ✅ Store API keys in .env file (never commit to git)
+echo "ANTHROPIC_API_KEY=sk-ant-your-key" >> .env
+
+# ✅ Use environment variables in production
+export ANTHROPIC_API_KEY="sk-ant-your-key"
+
+# ❌ Never hardcode API keys in source code
+# const apiKey = "sk-ant-your-key"; // DON'T DO THIS
+```
+
+#### **Data Privacy**
+```bash
+# ✅ Keep sensitive data in data/samples/ (gitignored)
+cp sensitive_well_data.las data/samples/
+
+# ✅ Review outputs before sharing
+grep -i "confidential\|proprietary" data/outputs/*/SHALE_YEAH_REPORT.md
+
+# ✅ Clean up temp files
+npm run clean:outputs
+```
+
+#### **Access Control**
+```bash
+# ✅ Limit file permissions
+chmod 600 .env                    # Only owner can read/write
+chmod 700 data/samples/           # Only owner can access data
+
+# ✅ Use separate environments
+cp .env .env.production           # Production config
+cp .env .env.development          # Development config
+```
+
+### **🔒 Production Deployment**
+
+For production use:
+
+```bash
+# 1. Use environment-specific configs
+NODE_ENV=production npm run start
+
+# 2. Enable logging and monitoring
+echo "LOG_LEVEL=info" >> .env.production
+
+# 3. Secure API endpoints (if exposing as service)
+echo "API_RATE_LIMIT=100" >> .env.production
+
+# 4. Regular security updates
+npm audit
+npm update
+```
+
+## 🔄 Updating & Customization
+
+### **🆙 Updating SHALE YEAH**
+
+Keep your installation current:
+
+```bash
+# 1. Backup your data and configs
+cp -r data/samples/ data/samples.backup
+cp .env .env.backup
+
+# 2. Pull latest changes
+git fetch origin
+git pull origin main
+
+# 3. Update dependencies
+npm install
+
+# 4. Test with your data
+npm run demo
+
+# 5. Restore custom configs if needed
+cp .env.backup .env
+```
+
+### **⚙️ Customizing Analysis Parameters**
+
+#### **Economic Assumptions**
+Edit economic parameters by modifying the analysis call:
+
+```bash
+# Custom economic parameters
+npm run start -- \
+  --las-files=data/samples/well.las \
+  --oil-price=85 \
+  --drilling-cost=12000000 \
+  --discount-rate=0.12
+```
+
+#### **Geological Analysis**
+Customize geological interpretation:
+
+```bash
+# Focus on specific formations
+npm run start -- \
+  --las-files=data/samples/well.las \
+  --target-formations=Bakken,Three_Forks \
+  --min-thickness=20
+```
+
+#### **Risk Assessment**
+Adjust risk parameters:
+
+```bash
+# Conservative risk analysis
+npm run start -- \
+  --las-files=data/samples/well.las \
+  --risk-tolerance=conservative \
+  --confidence-threshold=0.85
+```
+
+### **🔧 Adding Custom Tools**
+
+Create domain-specific analysis tools:
+
+#### **1. Create Custom Tool Script**
+```bash
+# Create new tool
+cat > tools/my-custom-analysis.ts << 'EOF'
+#!/usr/bin/env node
+/**
+ * Custom Analysis Tool
+ */
+import fs from 'fs/promises';
+
+async function myCustomAnalysis(inputFile: string): Promise<void> {
+  // Your custom analysis logic here
+  console.log(`Analyzing ${inputFile}...`);
+  
+  // Process data
+  const data = await fs.readFile(inputFile, 'utf8');
+  
+  // Generate custom output
+  const result = {
+    analysis_type: "custom",
+    input_file: inputFile,
+    results: {
+      // Your custom results
+    }
+  };
+  
+  // Save results
+  await fs.writeFile('custom_analysis.json', JSON.stringify(result, null, 2));
+}
+
+// CLI interface
+const inputFile = process.argv[2];
+myCustomAnalysis(inputFile).catch(console.error);
+EOF
+
+chmod +x tools/my-custom-analysis.ts
+```
+
+#### **2. Integrate with Pipeline**
+```bash
+# Run custom tool in pipeline
+npm run start -- --las-files=data/samples/well.las
+npx tsx tools/my-custom-analysis.ts data/outputs/run-*/economic_analysis.json
+```
+
+## 🚨 Troubleshooting
+
+### **Common Issues & Solutions**
+
+#### **🔧 Installation Problems**
+
+**Problem**: `npm install` fails with permission errors
+```bash
+# Solution: Fix npm permissions
+sudo chown -R $(whoami) ~/.npm
+npm cache clean --force
+npm install
+```
+
+**Problem**: TypeScript compilation errors
+```bash
+# Solution: Update TypeScript and dependencies
+npm install -g typescript@latest
+npm install
+npm run type-check
+```
+
+#### **📁 Data Processing Issues**
+
+**Problem**: "LAS file format not recognized"
+```bash
+# Check LAS file format
+head -20 your-file.las
+
+# Common fix: Ensure LAS 2.0 format with proper headers
+# File should start with:
+# ~VERSION INFORMATION
+# VERS.                     2.0: CWLS LOG ASCII STANDARD -VERSION 2.0
+```
+
+**Problem**: "No formations identified"
+```bash
+# Check gamma ray curve availability
+grep -i "GR\|GAMMA" your-file.las
+
+# Ensure proper depth range
+grep -i "STRT\|STOP" your-file.las
+```
+
+**Problem**: "Access database connection failed"
+```bash
+# Check file permissions
+ls -la data/samples/*.accdb
+
+# Ensure file is not corrupted
+file data/samples/your-database.accdb
+```
+
+#### **🔑 API Key Issues**
+
+**Problem**: "API key not found" or "Authentication failed"
+```bash
+# Check .env file exists
+ls -la .env
+
+# Verify API key format
+cat .env | grep ANTHROPIC_API_KEY
+
+# Test API key manually
+curl -H "x-api-key: $ANTHROPIC_API_KEY" https://api.anthropic.com/v1/messages
+```
+
+#### **💰 Economic Analysis Issues**
+
+**Problem**: "Unrealistic economic results"
+```bash
+# Check input parameters
+cat data/outputs/run-*/economic_analysis.json | jq '.assumptions'
+
+# Common fixes:
+# - Verify oil prices are reasonable ($50-$150/bbl)
+# - Check drilling costs are realistic ($5M-$15M)
+# - Ensure production rates are feasible (100-2000 bbl/day initial)
+```
+
+#### **🗺️ Geographic Issues**
+
+**Problem**: "Coordinate system not recognized"
+```bash
+# Check shapefile projection
+ogrinfo data/samples/tract_boundaries.shp -so
+
+# Convert to WGS84 if needed
+ogr2ogr -t_srs EPSG:4326 output.shp input.shp
+```
+
+### **🔍 Debug Mode**
+
+Enable detailed logging for troubleshooting:
+
+```bash
+# Run with debug logging
+DEBUG=shale-yeah:* npm run start
+
+# Or set log level in .env
+echo "LOG_LEVEL=debug" >> .env
+npm run start
+```
+
+### **📞 Getting Help**
+
+1. **Check the logs**: Look in `data/outputs/run-*/errors.log`
+2. **Review data quality**: Check `data/outputs/run-*/qc_report.md`
+3. **Test with demo data**: Run `npm run demo` to verify installation
+4. **Report issues**: Include error logs and data samples (sanitized)
 
 ## 🛠️ Development
 
