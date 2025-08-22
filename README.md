@@ -486,7 +486,7 @@ const client = new UnifiedMCPClient({
 ```markdown
 # SHALE YEAH Investment Analysis Report
 
-**Analysis Date:** 2024-12-22
+**Analysis Date:** 2025-08-22
 **Tract:** Permian Basin Section 12-T1S-R2E  
 **Analyzed By:** 20 AI Specialists with Roman Imperial Authority
 **Overall Confidence:** 84%
@@ -546,7 +546,7 @@ experts concur on positive investment thesis.
 - Maintain 15% contingency reserve for operational challenges
 
 ---
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*
 ```
 
 ### Technical Analysis Files
@@ -573,7 +573,7 @@ experts concur on positive investment thesis.
     }
   },
   "analyzed_by": "Caesar Augustus Economicus",
-  "analysis_date": "2024-12-22T15:30:00Z",
+  "analysis_date": "2025-08-22T15:30:00Z",
   "confidence_level": 0.82
 }
 ```
@@ -817,13 +817,13 @@ npm run mcp:describe economics
 
 **Apache License 2.0**
 
-Copyright (c) 2024 Ryan McDonald / Ascendvent LLC
+2025 Ryan McDonald / Ascendvent LLC
 
 Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.
 
 ### Attribution Requirement
 
-All outputs include: `Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0`
+All outputs include: `Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0`
 
 ### Open Source Governance
 

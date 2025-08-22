@@ -29,4 +29,4 @@ AI-powered analysis of oil & gas investment opportunity completed successfully. 
 
 ---
 
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*

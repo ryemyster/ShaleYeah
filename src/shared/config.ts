@@ -270,7 +270,7 @@ export function getDefaultInputs(agentName: string, runId: string): Record<strin
  * Create SHALE YEAH footer for all outputs
  */
 export function createShaleYeahFooter(): string {
-  return '\\n\\n---\\n\\nGenerated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0';
+  return '\\n\\n---\\n\\nGenerated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0';
 }
 
 /**

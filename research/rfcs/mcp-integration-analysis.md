@@ -363,4 +363,4 @@ Data Sources -> Official MCP Servers -> SHALE YEAH MCP -> AI Agents -> Investmen
 **Next Review Date:** 2025-09-20  
 **Distribution:** Engineering Leadership, Product Team
 
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0

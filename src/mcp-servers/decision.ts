@@ -580,7 +580,7 @@ Based on comprehensive analysis across geological, economic, risk, market, legal
 *Supreme Investment Strategist*
 
 ---
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*
 `;
   }
 

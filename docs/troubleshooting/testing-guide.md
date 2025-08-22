@@ -550,4 +550,4 @@ npx tsx scripts/analyze-memory-usage.py --test-run $RUN_ID
 
 *For comprehensive testing support, refer to the test scripts in the `scripts/` directory and example test cases in `tests/examples/`.*
 
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0

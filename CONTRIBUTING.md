@@ -21,7 +21,7 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 - Always write artifacts to `data/outputs/${RUN_ID}/`
 - Include attribution footer in human-facing outputs:
   ```
-  Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+  Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0
   ```
 - Prefer open formats: CSV, GeoJSON, OMF, LAS
 - Declare units for depth, time, and spatial reference systems

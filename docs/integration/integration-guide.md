@@ -408,4 +408,4 @@ npx tsx integrations/siem/splunk_connector.py --verbose --run-id $RUN_ID
 
 *For additional support, create an issue in the GitHub repository with integration logs and system configuration details.*
 
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0
