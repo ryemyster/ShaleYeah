@@ -1,0 +1,102 @@
+# MCP-Enabled Curve Smith Agent Configuration  
+name: curve-smith
+description: "Petroleum Engineer specializing in curve fitting and petrophysical modeling"
+
+persona:
+  name: "Gaius Julius Curvatus"
+  role: "Senior Petrophysical Engineer"
+  experience: "12+ years in advanced petrophysical modeling and curve analysis"
+  personality: "Methodical, precise, data-driven, strategic"
+  llmInstructions: |
+    You are Gaius Julius Curvatus, a senior petrophysical engineer with expertise in:
+    - Advanced curve fitting algorithms and statistical modeling
+    - Petrophysical log analysis and quality control
+    - Reservoir characterization through integrated log analysis
+    - Uncertainty quantification and error analysis
+    
+    Your analysis should include:
+    - Rigorous statistical validation (RMSE, NRMSE, R²)
+    - Uncertainty bounds and confidence intervals
+    - Quality control flags for outliers and data gaps
+    - Recommendations for additional data acquisition
+  confidenceThreshold: 0.75
+  escalationCriteria:
+    - "curve_fit_r2 < 0.8"
+    - "rmse > acceptable_threshold"
+    - "insufficient_data_points"
+
+# MCP Resource Configuration
+resources:
+  inputs:
+    - uri: "mcp://shale-data/outputs/zones.geojson"
+      required: true
+      condition: "valid-schema"
+      timeout: 60000
+      description: "Geological zones from geowiz for curve fitting intervals"
+    - uri: "mcp://shale-data/inputs/las-files/**"
+      required: true
+      condition: "not-empty"
+      timeout: 30000
+      description: "LAS files for curve data extraction and fitting"
+    - uri: "mcp://shale-data/outputs/geological-analysis.json"
+      required: false
+      condition: "exists"
+      description: "Geological context for curve interpretation"
+      
+  outputs:
+    - uri: "mcp://shale-data/outputs/curves/fitted-curves.json"
+      format: "json"
+      description: "Fitted curve parameters and statistics"
+    - uri: "mcp://shale-data/outputs/curves/qc-report.json"
+      format: "json"
+      description: "Quality control metrics and validation results"
+    - uri: "mcp://shale-data/outputs/curve-analysis.md"
+      format: "markdown"
+      description: "Curve fitting analysis report with visualizations"
+
+cli:
+  entrypoint: "npx tsx"
+  args:
+    - "src/agents/curve-smith.ts"
+    - "${RUN_ID}"
+    - "${OUT_DIR}"
+
+dependencies:
+  requires:
+    - resource: "mcp://shale-data/outputs/zones.geojson"
+      condition: "exists"
+    - resource: "mcp://shale-data/inputs/las-files/**"
+      condition: "not-empty"
+  produces:
+    - "mcp://shale-data/outputs/curves/fitted-curves.json"
+    - "mcp://shale-data/outputs/curves/qc-report.json"
+  enables:
+    - "econobot"  # Economic analysis needs curve data
+    - "reporter"  # Reporting can include curve analysis
+
+nextAgents:
+  onSuccess: ["econobot", "riskranger", "reporter"]
+  onFailure: ["reporter"]
+
+errorHandling:
+  timeout: 600
+  retries: 2
+  fallbackData:
+    demoCurves: |
+      # Demo Curve Analysis
+      
+      ## Curve Fitting Results
+      - **GR Curve**: RMSE 0.15, R² 0.92
+      - **Porosity Curve**: RMSE 0.02, R² 0.88  
+      - **Resistivity Curve**: RMSE 0.25, R² 0.85
+      
+      ## Quality Assessment
+      - Overall curve quality: Good
+      - Recommended for economic modeling
+      
+      Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+
+coordination:
+  parallel: false  # Must wait for geowiz completion
+  priority: 2      # Medium priority - depends on geology
+  maxConcurrency: 1
