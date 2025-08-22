@@ -1,0 +1,105 @@
+# MCP-Enabled Geowiz Agent Configuration
+name: geowiz
+description: "Senior Petroleum Geologist specializing in formation analysis and geological risk assessment"
+
+persona:
+  name: "Marcus Aurelius Geologicus"
+  role: "Senior Petroleum Geologist" 
+  experience: "15+ years in unconventional oil & gas geology"
+  personality: "Stoic, detail-oriented, analytical, safety-conscious"
+  llmInstructions: |
+    You are Marcus Aurelius Geologicus, a senior petroleum geologist with 15 years of experience in unconventional oil and gas.
+    You specialize in:
+    - LAS log interpretation and formation evaluation
+    - Geological zone identification and characterization 
+    - Rock properties analysis and reservoir quality assessment
+    - Integration of geological and petrophysical data
+    
+    Your analysis should be:
+    - Technically accurate with proper geological terminology
+    - Risk-aware, highlighting uncertainties and data gaps
+    - Focused on practical implications for drilling and completion
+    - Include depth units and coordinate systems in all outputs
+  confidenceThreshold: 0.7
+  escalationCriteria:
+    - "data_quality < 0.6"
+    - "formation_uncertainty > 0.4"
+    - "missing_critical_logs"
+
+# MCP Resource Configuration
+resources:
+  inputs:
+    - uri: "mcp://shale-data/inputs/las-files/**"
+      required: true
+      condition: "not-empty"
+      timeout: 30000
+      description: "LAS well log files for geological analysis"
+    - uri: "mcp://shale-data/inputs/access-db/**"
+      required: false
+      condition: "exists"
+      timeout: 10000
+      description: "Access database files with additional geological data"
+    - uri: "mcp://shale-data/config/run-settings"
+      required: false
+      condition: "exists"
+      description: "Run-specific configuration parameters"
+      
+  outputs:
+    - uri: "mcp://shale-data/outputs/geology-summary"
+      format: "markdown"
+      description: "Geological summary report with formation analysis"
+    - uri: "mcp://shale-data/outputs/zones.geojson"
+      format: "geojson" 
+      description: "Geological zones as GeoJSON with depth intervals"
+    - uri: "mcp://shale-data/outputs/geological-analysis.json"
+      format: "json"
+      description: "Detailed geological analysis results and metrics"
+
+# Traditional CLI for backward compatibility
+cli:
+  entrypoint: "npx tsx"
+  args:
+    - "src/agents/geowiz.ts"
+    - "${RUN_ID}"
+    - "${OUT_DIR}"
+
+# Resource Dependencies (for orchestration)
+dependencies:
+  requires:
+    - resource: "mcp://shale-data/inputs/las-files/**"
+      condition: "exists"
+  produces:
+    - "mcp://shale-data/outputs/geology-summary"
+    - "mcp://shale-data/outputs/zones.geojson"
+  enables:
+    - "curve-smith"  # Curve fitting can run after geology is done
+    - "drillcast"    # Drilling planning depends on geological zones
+
+nextAgents:
+  onSuccess: ["curve-smith", "drillcast", "riskranger"]
+  onFailure: ["reporter"]
+
+errorHandling:
+  timeout: 300
+  retries: 1
+  fallbackData:
+    demoGeology: |
+      # Demo Geological Analysis
+      
+      ## Formation Overview
+      - **Primary Target**: Wolfcamp Formation
+      - **Depth Range**: 8,500 - 9,200 ft TVD
+      - **Formation Quality**: Good to Excellent
+      
+      ## Key Observations
+      - High gamma ray signature indicating organic-rich shales
+      - Low resistivity zones suggesting hydrocarbon presence
+      - Porosity ranges from 8-12% in target intervals
+      
+      Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+
+# Agent Coordination Settings
+coordination:
+  parallel: true  # Can run in parallel with other independent agents
+  priority: 1     # High priority - foundation for other agents
+  maxConcurrency: 1  # Only one instance should run at a time
