@@ -502,17 +502,57 @@ Create a report that engineers can use immediately for decision-making.`;
   }
 
   private generateExecutiveSummary(geoSummary: any, econSummary: any): any {
-    const recommendation = econSummary.npv > 1000000 ? "PROCEED" : econSummary.npv > 0 ? "CONDITIONAL" : "DO NOT PROCEED";
+    const npvValue = econSummary.npv || 0;
+    let recommendation: string;
+    let confidenceAdj = 1.0;
+    
+    if (npvValue > 5000000) {
+      recommendation = "GO";
+    } else if (npvValue > 1000000) {
+      recommendation = "CONDITIONAL";
+      confidenceAdj = 0.85;
+    } else if (npvValue > 0) {
+      recommendation = "NO GO - MARGINAL";
+      confidenceAdj = 0.70;
+    } else {
+      recommendation = "NO GO";
+      confidenceAdj = 0.60;
+    }
+    
+    const riskLevel = npvValue > 5000000 ? "Medium" : npvValue > 1000000 ? "Medium-High" : "High";
+    const npvMillions = (npvValue / 1000000).toFixed(1);
     
     return {
       overall_recommendation: recommendation,
+      investment_decision: recommendation.startsWith("GO") ? "PROCEED" : "EVALUATE",
+      financial_metrics: {
+        npv_millions: parseFloat(npvMillions),
+        irr_percent: econSummary.irr || 0,
+        payback_years: econSummary.payback || "N/A",
+        risk_level: riskLevel
+      },
       key_findings: [
-        `Identified ${geoSummary.formations_count} geological formations`,
-        `Economic NPV: $${(econSummary.npv || 0).toLocaleString()}`,
-        `IRR: ${econSummary.irr}%`,
-        `Primary target: ${geoSummary.primary_target}`
+        `Investment Recommendation: ${recommendation}`,
+        `Net Present Value: $${npvMillions} million`,
+        `Internal Rate of Return: ${econSummary.irr}%`,
+        `Primary Formation: ${geoSummary.primary_target}`,
+        `Risk Assessment: ${riskLevel}`
       ],
-      confidence_level: Math.min(geoSummary.confidence, 0.9)
+      confidence_level: Math.min((geoSummary.confidence || 0.7) * confidenceAdj, 0.95),
+      risk_factors: [
+        "Commodity price volatility",
+        "Geological uncertainty", 
+        "Operational execution risk"
+      ],
+      next_steps: recommendation.startsWith("GO") ? [
+        "Proceed with drilling program",
+        "Secure financing arrangements", 
+        "Obtain regulatory approvals"
+      ] : [
+        "Conduct additional analysis",
+        "Reassess economic assumptions",
+        "Consider alternative opportunities"
+      ]
     };
   }
 
@@ -530,14 +570,32 @@ Create a report that engineers can use immediately for decision-making.`;
   }
 
   private buildExecutiveSummary(execSummary: any): string {
-    return `## Executive Summary
+    const metrics = execSummary.financial_metrics || {};
+    
+    return `# INVESTMENT DECISION: ${execSummary.overall_recommendation}
 
-**Overall Recommendation:** ${execSummary.overall_recommendation}
+## EXECUTIVE SUMMARY
+**Net Present Value:** $${metrics.npv_millions || 0} million  
+**Internal Rate of Return:** ${metrics.irr_percent || 0}%  
+**Payback Period:** ${metrics.payback_years || 'N/A'} years  
+**Risk Level:** ${metrics.risk_level || 'Unknown'}  
+**Confidence Level:** ${Math.round(execSummary.confidence_level * 100)}%  
 
-**Key Findings:**
+## RECOMMENDATION
+**${execSummary.investment_decision}** - ${execSummary.overall_recommendation === 'GO' ? 
+    'Strong economics support immediate investment. Geological analysis confirms high-quality formation with manageable risk profile.' :
+    execSummary.overall_recommendation === 'CONDITIONAL' ?
+    'Moderate returns justify careful consideration. Additional analysis recommended before final investment decision.' :
+    'Economics do not support investment at current assumptions. Consider alternative opportunities or revised parameters.'}
+
+## KEY FINDINGS
 ${execSummary.key_findings.map((finding: string) => `- ${finding}`).join('\n')}
 
-**Analysis Confidence:** ${Math.round(execSummary.confidence_level * 100)}%
+## RISK FACTORS
+${execSummary.risk_factors.map((risk: string) => `- ${risk}`).join('\n')}
+
+## NEXT STEPS
+${execSummary.next_steps.map((step: string, i: number) => `${i + 1}. ${step}`).join('\n')}
 
 ---
 
@@ -724,20 +782,34 @@ Overall Status: **${qcReport.qc_summary.overall_status.toUpperCase()}**
   }
 
   private getExecutiveTemplate(): string {
-    return `# Executive Summary Template
+    return `# INVESTMENT DECISION: [GO/NO GO/CONDITIONAL]
 
-## Recommendation
-[PROCEED/CONDITIONAL/DO NOT PROCEED]
+## EXECUTIVE SUMMARY
+**Net Present Value:** $X.X million  
+**Internal Rate of Return:** X.X%  
+**Payback Period:** X.X years  
+**Risk Level:** [Low/Medium/High]  
+**Confidence Level:** XX%  
 
-## Key Findings
-- Finding 1
-- Finding 2
-- Finding 3
+## RECOMMENDATION
+[Clear 2-3 sentence recommendation with rationale]
 
-## Financial Metrics
-- NPV: $X,XXX,XXX
-- IRR: XX%
-- Payback: X years`;
+## KEY FINDINGS
+- Primary finding supporting decision
+- Secondary technical or economic insight  
+- Risk assessment summary
+
+## FINANCIAL METRICS
+| Metric | Base Case | Conservative | Optimistic |
+|--------|-----------|--------------|------------|
+| NPV | $X.XM | $X.XM | $X.XM |
+| IRR | X.X% | X.X% | X.X% |
+| Payback | X.X years | X.X years | X.X years |
+
+## NEXT STEPS
+1. [Immediate action required]
+2. [Follow-up analysis or execution]
+3. [Long-term strategic consideration]`;
   }
 
   private getDetailedTemplate(): string {

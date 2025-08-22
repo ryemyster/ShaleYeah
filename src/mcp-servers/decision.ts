@@ -622,7 +622,8 @@ Based on comprehensive analysis across geological, economic, risk, market, legal
       capabilities: {
         tools: ['make_investment_decision', 'calculate_bid_price', 'assess_portfolio_fit', 'generate_investment_thesis'],
         resources: ['decision://evaluations/{tract_id}', 'decision://recommendations/{analysis_id}'],
-        prompts: ['augustus-decision-maker']
+        prompts: ['augustus-decision-maker'],
+        decision_framework: ['GO/NO GO/CONDITIONAL', 'Executive-focused output', 'Clear financial metrics', 'Risk-adjusted recommendations']
       }
     };
   }

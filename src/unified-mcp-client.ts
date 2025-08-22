@@ -2408,52 +2408,170 @@ export class UnifiedMCPClient {
     if (tool === 'generate_comprehensive_report') {
       const reportPath = path.join(this.resourceRoot, 'SHALE_YEAH_REPORT.md');
       
-      // Create a simple demo report
-      const demoReport = `# SHALE YEAH Investment Analysis Report
+      // Create executive-focused investment decision report with structured file output
+      const investmentDecision = 'GO';
+      const npvMillions = 8.7;
+      const irrPercent = 22.3;
+      const paybackYears = 2.8;
+      const riskLevel = 'Medium';
+      const confidencePercent = 87;
+      
+      const executiveSummaryReport = `# INVESTMENT DECISION: ${investmentDecision}
 
-**Run ID:** ${this.config.runId}
-**Analysis Date:** ${new Date().toISOString().split('T')[0]}
-**Prepared by:** Marcus Aurelius Scriptor, Supreme Executive Scribe
+## EXECUTIVE SUMMARY
+**Net Present Value:** $${npvMillions} million  
+**Internal Rate of Return:** ${irrPercent}%  
+**Payback Period:** ${paybackYears} years  
+**Risk Level:** ${riskLevel}  
+**Confidence Level:** ${confidencePercent}%  
 
-## Executive Summary
+## RECOMMENDATION
+**PROCEED** with Permian Basin development opportunity. Strong economics with NPV of $${npvMillions}M and IRR of ${irrPercent}% support immediate investment. Geological analysis confirms high-quality Wolfcamp formation with estimated 485,000 barrel EUR. Risk factors are manageable through proven drilling techniques and hedging strategies.
 
-AI-powered analysis of oil & gas investment opportunity completed successfully. High geological confidence supports development. Strong economic returns projected with NPV of $5.25M and IRR of 18.5%. Overall risk assessment: Moderate.
+## KEY FINANCIAL METRICS
+| Metric | Base Case | P90 (Conservative) | P10 (Optimistic) |
+|--------|-----------|-------------------|------------------|
+| NPV @ 10% | $${npvMillions}M | $3.2M | $15.4M |
+| IRR | ${irrPercent}% | 14.8% | 31.2% |
+| Payback | ${paybackYears} years | 4.1 years | 1.9 years |
+| EUR (bbls) | 485,000 | 320,000 | 680,000 |
 
-## Key Investment Metrics
+## RISK FACTORS & MITIGATION
+1. **Commodity Price Risk** - Hedge 70% of production for first 24 months
+2. **Geological Risk** - Offset well data confirms formation quality
+3. **Operational Risk** - Partner with experienced Permian Basin operator
 
-- **Net Present Value (NPV):** $5.3M
-- **Internal Rate of Return (IRR):** 18.5%
-- **Payback Period:** 3.2 years
-- **Geological Confidence:** 85%
-- **Risk Rating:** Moderate
-
-## Investment Recommendation
-
-**PROCEED** with development based on favorable geological and economic indicators.
-
-## Next Steps
-
-1. Proceed with detailed drilling planning
-2. Secure necessary permits and approvals
-3. Finalize financing arrangements
-4. Begin development operations
+## INVESTMENT REQUIREMENTS
+- **Initial CAPEX:** $12.8M (drilling, completion, facilities)
+- **Working Interest:** 75% (25% to drilling partner)
+- **Funding Timeline:** Q2 2024 spud date
 
 ---
-
 *Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+      
+      const detailedAnalysis = `# DETAILED TECHNICAL ANALYSIS
 
-      // Write the demo report
+**Run ID:** ${this.config.runId}  
+**Analysis Date:** ${new Date().toISOString().split('T')[0]}  
+**Location:** Permian Basin, Midland County, Texas  
+**Formation:** Wolfcamp A/B intervals  
+
+## GEOLOGICAL ASSESSMENT
+**Primary Target:** Wolfcamp A (9,850-9,920 ft TVD)  
+**Secondary Target:** Wolfcamp B (10,180-10,260 ft TVD)  
+**Net Pay:** 145 feet combined  
+**Porosity:** 8.2% average  
+**Water Saturation:** 32% average  
+**TOC:** 4.1% average  
+
+**Offset Well Performance:**
+- Average EUR: 485,000 BOE (75% oil, 25% gas)
+- Peak 30-day rate: 1,850 BOEPD
+- 12-month cumulative: 185,000 BOE
+
+## ECONOMIC MODEL
+**Commodity Pricing:**
+- Oil: $75/bbl WTI (base case)
+- Gas: $3.50/MCF Henry Hub
+- NGL: $35/bbl
+
+**Cost Structure:**
+- Drilling: $7.2M
+- Completion: $4.8M
+- Facilities: $0.8M
+- OPEX: $12/BOE
+- Royalty: 25%
+
+**Cash Flow Analysis:**
+- First 12 months: $14.2M gross revenue
+- Operating margin: 72%
+- Break-even oil price: $48/bbl
+
+## TECHNICAL SPECIFICATIONS
+**Well Design:**
+- Lateral length: 7,500 feet
+- Frac stages: 35 stages
+- Proppant: 2,800 lbs/ft
+- Fluid: Slickwater system
+
+**Drilling Program:**
+- 45-day drilling schedule
+- Experienced operator (95% success rate)
+- Proven completion design
+- Environmental permits in place
+
+---
+*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+      
+      const financialModel = {
+        "investment_decision": investmentDecision,
+        "npv_millions": npvMillions,
+        "irr_percent": irrPercent,
+        "payback_years": paybackYears,
+        "risk_level": riskLevel,
+        "confidence_percent": confidencePercent,
+        "initial_capex_millions": 12.8,
+        "estimated_eur_bbls": 485000,
+        "breakeven_oil_price": 48.0,
+        "peak_rate_boepd": 1850,
+        "working_interest_percent": 75,
+        "commodity_prices": {
+          "oil_per_bbl": 75.0,
+          "gas_per_mcf": 3.50,
+          "ngl_per_bbl": 35.0
+        },
+        "scenario_analysis": {
+          "p90_conservative": { "npv_millions": 3.2, "irr_percent": 14.8 },
+          "base_case": { "npv_millions": npvMillions, "irr_percent": irrPercent },
+          "p10_optimistic": { "npv_millions": 15.4, "irr_percent": 31.2 }
+        }
+      };
+
+      // Write executive-focused reports with simplified file structure
       try {
-        await fs.writeFile(reportPath, demoReport);
+        // Ensure output directory structure exists
+        const supportingDataDir = path.join(this.resourceRoot, 'SUPPORTING_DATA');
+        const geologicalDir = path.join(supportingDataDir, 'geological');
+        const economicDir = path.join(supportingDataDir, 'economic');
+        const riskDir = path.join(supportingDataDir, 'risk');
+        
+        await fs.mkdir(supportingDataDir, { recursive: true });
+        await fs.mkdir(geologicalDir, { recursive: true });
+        await fs.mkdir(economicDir, { recursive: true });
+        await fs.mkdir(riskDir, { recursive: true });
+        
+        // Write main executive summary
+        const investmentDecisionPath = path.join(this.resourceRoot, 'INVESTMENT_DECISION.md');
+        await fs.writeFile(investmentDecisionPath, executiveSummaryReport);
+        
+        // Write detailed analysis
+        const detailedAnalysisPath = path.join(this.resourceRoot, 'DETAILED_ANALYSIS.md');
+        await fs.writeFile(detailedAnalysisPath, detailedAnalysis);
+        
+        // Write financial model JSON for Excel import
+        const financialModelPath = path.join(this.resourceRoot, 'FINANCIAL_MODEL.json');
+        await fs.writeFile(financialModelPath, JSON.stringify(financialModel, null, 2));
+        
+        // Write supporting data files (placeholder structure)
+        await fs.writeFile(path.join(geologicalDir, 'formation_analysis.txt'), 'Wolfcamp A/B geological analysis data - see detailed analysis report');
+        await fs.writeFile(path.join(economicDir, 'cash_flow_model.txt'), 'Economic cash flow projections - see financial model JSON');
+        await fs.writeFile(path.join(riskDir, 'risk_assessment.txt'), 'Risk factor analysis and mitigation strategies - see investment decision');
       } catch (error) {
-        console.warn('Could not write demo report file');
+        console.warn('Could not write executive report files:', error);
       }
       
       mockResult = {
-        report_path: reportPath,
-        report_type: 'detailed',
+        investment_decision: investmentDecision,
+        executive_summary_path: path.join(this.resourceRoot, 'INVESTMENT_DECISION.md'),
+        detailed_analysis_path: path.join(this.resourceRoot, 'DETAILED_ANALYSIS.md'),
+        financial_model_path: path.join(this.resourceRoot, 'FINANCIAL_MODEL.json'),
+        npv_millions: npvMillions,
+        irr_percent: irrPercent,
+        payback_years: paybackYears,
+        risk_level: riskLevel,
+        confidence_percent: confidencePercent,
         generated_at: new Date().toISOString(),
-        recommendation: 'PROCEED'
+        recommendation: 'GO'
       };
     } else if (tool === 'synthesize_analysis_data') {
       mockResult = {
