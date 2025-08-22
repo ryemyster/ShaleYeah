@@ -133,22 +133,26 @@ EXAMPLES:
     const pipelineResult = await unifiedClient.executeCompletePipeline(inputData);
 
     // Report results
-    console.log('\n📈 Pipeline Results:');
+    console.log('\n📈 Enhanced Pipeline Results (6-Server Analysis):');
     console.log(`   Overall Success: ${pipelineResult.success ? '✅' : '❌'}`);
     console.log(`   Total Duration: ${pipelineResult.duration}ms`);
     console.log(`   Geological Analysis: ${pipelineResult.geological.success ? '✅' : '❌'}`);
     console.log(`   Economic Analysis: ${pipelineResult.economic.success ? '✅' : '❌'}`);
-    console.log(`   Reporting: ${pipelineResult.reporting.success ? '✅' : '❌'}`);
+    console.log(`   Drilling Engineering: ${pipelineResult.drilling.success ? '✅' : '❌'}`);
+    console.log(`   Risk Assessment: ${pipelineResult.riskAssessment.success ? '✅' : '❌'}`);
+    console.log(`   Comprehensive Reporting: ${pipelineResult.reporting.success ? '✅' : '❌'}`);
 
     if (pipelineResult.reporting.finalReport) {
-      console.log(`\n📄 Final Report: ${pipelineResult.reporting.finalReport}`);
+      console.log(`\n📄 Enhanced Final Report: ${pipelineResult.reporting.finalReport}`);
     }
 
     // Workflow details
-    console.log('\n📋 Workflow Summary:');
+    console.log('\n📋 Enhanced Workflow Summary:');
     console.log(`   Geological Steps: ${pipelineResult.geological.steps.length}`);
     console.log(`   Economic Steps: ${pipelineResult.economic.steps.length}`);
-    console.log(`   Reporting Steps: ${pipelineResult.reporting.steps.length}`);
+    console.log(`   Drilling Engineering Steps: ${pipelineResult.drilling.steps.length}`);
+    console.log(`   Risk Assessment Steps: ${pipelineResult.riskAssessment.steps.length}`);
+    console.log(`   Comprehensive Reporting Steps: ${pipelineResult.reporting.steps.length}`);
 
     // Clean shutdown
     await unifiedClient.shutdown();
