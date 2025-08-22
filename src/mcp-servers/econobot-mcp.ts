@@ -57,16 +57,20 @@ export class EconobotMCPServer {
       'orchestrate_workflow',
       'Orchestrate economic analysis workflow with financial calculations',
       {
-        workflowId: z.string(),
-        analysisType: z.enum(['npv_analysis', 'irr_calculation', 'sensitivity_analysis', 'full_economic']),
-        inputData: z.object({}).optional(),
-        dependencies: z.array(z.string()).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          analysisType: { type: 'string', enum: ['npv_analysis', 'irr_calculation', 'sensitivity_analysis', 'full_economic'] },
+          inputData: { type: 'object', optional: true },
+          dependencies: { type: 'array', items: { type: 'string' }, optional: true }
+        },
+        required: ['workflowId', 'analysisType']
       },
-      async (args) => {
+      async (args, extra) => {
         const workflow = await this.orchestrateEconomicWorkflow(args);
         const workflowPath = path.join(this.dataPath, 'workflows', `${args.workflowId}.json`);
         await fs.writeFile(workflowPath, JSON.stringify(workflow, null, 2));
-        return workflow;
+        return { content: [{ type: "text", text: JSON.stringify(workflow) }] };
       }
     );
 
@@ -74,12 +78,17 @@ export class EconobotMCPServer {
       'coordinate_dependencies',
       'Coordinate economic analysis dependencies',
       {
-        workflowId: z.string(),
-        requiredInputs: z.array(z.string()),
-        calculationOrder: z.array(z.string()).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          requiredInputs: { type: 'array', items: { type: 'string' } },
+          calculationOrder: { type: 'array', items: { type: 'string' }, optional: true }
+        },
+        required: ['workflowId', 'requiredInputs']
       },
-      async (args) => {
-        return await this.coordinateEconomicDependencies(args);
+      async (args, extra) => {
+        const result = await this.coordinateEconomicDependencies(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
 
@@ -87,13 +96,18 @@ export class EconobotMCPServer {
       'manage_state',
       'Manage economic workflow execution state',
       {
-        workflowId: z.string(),
-        action: z.enum(['start', 'pause', 'resume', 'complete', 'fail']),
-        calculation: z.string().optional(),
-        result: z.any().optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'complete', 'fail'] },
+          calculation: { type: 'string', optional: true },
+          result: { type: 'object', optional: true }
+        },
+        required: ['workflowId', 'action']
       },
-      async (args) => {
-        return await this.manageEconomicState(args);
+      async (args, extra) => {
+        const result = await this.manageEconomicState(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
 
@@ -101,34 +115,40 @@ export class EconobotMCPServer {
       'handle_errors',
       'Handle economic calculation errors and recovery',
       {
-        workflowId: z.string(),
-        error: z.string(),
-        errorType: z.enum(['calculation_error', 'data_missing', 'validation_failed']),
-        recoveryStrategy: z.enum(['retry', 'use_defaults', 'manual_intervention']).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          error: { type: 'string' },
+          errorType: { type: 'string', enum: ['calculation_error', 'data_missing', 'validation_failed'] },
+          recoveryStrategy: { type: 'string', enum: ['retry', 'use_defaults', 'manual_intervention'], optional: true }
+        },
+        required: ['workflowId', 'error', 'errorType']
       },
-      async (args) => {
-        return await this.handleEconomicErrors(args);
+      async (args, extra) => {
+        const result = await this.handleEconomicErrors(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
   }
 
   private setupEconomicCoordinationResources(): void {
     this.server.resource(
-      new ResourceTemplate(
-        'coord://state/{workflow_id}',
-        'Economic workflow state',
-        'application/json',
-        async (uri) => {
-          const workflowId = uri.path.split('/').pop()?.replace('.json', '');
-          const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
-          try {
-            const data = await fs.readFile(workflowPath, 'utf-8');
-            return { uri: uri.toString(), mimeType: 'application/json', text: data };
-          } catch {
-            return { uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) };
-          }
+      'coord://state/{workflow_id}',
+      'coord://state/*',
+      async (uri) => {
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
+        try {
+          const data = await fs.readFile(workflowPath, 'utf-8');
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: data }]
+          };
+        } catch {
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) }]
+          };
         }
-      )
+      }
     );
   }
 

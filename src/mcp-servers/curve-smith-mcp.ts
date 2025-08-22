@@ -41,19 +41,20 @@ export class CurveSmithMCPServer {
   }
 
   private setupCurveCoordinationTools(): void {
-    this.server.registerTool(
+    this.server.tool(
       'orchestrate_workflow',
+      'Orchestrate curve analysis workflow',
       {
-        title: 'Orchestrate Curve Analysis Workflow',
-        description: 'Orchestrate curve analysis workflow',
-        inputSchema: {
-          workflowId: z.string(),
-          analysisType: z.enum(['curve_fitting', 'qc_analysis', 'log_processing', 'full_curve']),
-          curves: z.array(z.string()).optional(),
-          parameters: z.object({}).optional()
-        }
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          analysisType: { type: 'string', enum: ['curve_fitting', 'qc_analysis', 'log_processing', 'full_curve'] },
+          curves: { type: 'array', items: { type: 'string' }, optional: true },
+          parameters: { type: 'object', optional: true }
+        },
+        required: ['workflowId', 'analysisType']
       },
-      async ({ workflowId, analysisType, curves, parameters }) => {
+      async ({ workflowId, analysisType, curves, parameters }, extra) => {
         const workflow = await this.orchestrateCurveWorkflow({ workflowId, analysisType, curves, parameters });
         const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
         await fs.writeFile(workflowPath, JSON.stringify(workflow, null, 2));
@@ -61,40 +62,53 @@ export class CurveSmithMCPServer {
       }
     );
 
-    this.server.registerTool(
+    this.server.tool(
       'coordinate_dependencies',
+      'Coordinate curve analysis dependencies',
       {
-        title: 'Coordinate Dependencies',
-        description: 'Coordinate curve analysis dependencies',
-        inputSchema: { workflowId: z.string(), requiredCurves: z.array(z.string()) }
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          requiredCurves: { type: 'array', items: { type: 'string' } }
+        },
+        required: ['workflowId', 'requiredCurves']
       },
-      async ({ workflowId, requiredCurves }) => {
+      async ({ workflowId, requiredCurves }, extra) => {
         const result = await this.coordinateCurveDependencies({ workflowId, requiredCurves });
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
 
-    this.server.registerTool(
+    this.server.tool(
       'manage_state',
+      'Manage curve workflow state',
       {
-        title: 'Manage State',
-        description: 'Manage curve workflow state',
-        inputSchema: { workflowId: z.string(), action: z.enum(['start', 'pause', 'resume', 'complete', 'fail']) }
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'complete', 'fail'] }
+        },
+        required: ['workflowId', 'action']
       },
-      async ({ workflowId, action }) => {
+      async ({ workflowId, action }, extra) => {
         const result = await this.manageCurveState({ workflowId, action });
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
 
-    this.server.registerTool(
+    this.server.tool(
       'handle_errors',
+      'Handle curve analysis errors',
       {
-        title: 'Handle Errors',
-        description: 'Handle curve analysis errors',
-        inputSchema: { workflowId: z.string(), error: z.string(), errorType: z.enum(['curve_missing', 'processing_failed', 'qc_failed']) }
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          error: { type: 'string' },
+          errorType: { type: 'string', enum: ['curve_missing', 'processing_failed', 'qc_failed'] }
+        },
+        required: ['workflowId', 'error', 'errorType']
       },
-      async ({ workflowId, error, errorType }) => {
+      async ({ workflowId, error, errorType }, extra) => {
         const result = await this.handleCurveErrors({ workflowId, error, errorType });
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
@@ -102,17 +116,21 @@ export class CurveSmithMCPServer {
   }
 
   private setupCurveCoordinationResources(): void {
-    this.server.registerResource(
+    this.server.resource(
       'coord://state/{workflow_id}',
       'coord://state/*',
       async (uri) => {
-        const workflowId = uri.path.split('/').pop()?.replace('.json', '');
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
         const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
         try {
           const data = await fs.readFile(workflowPath, 'utf-8');
-          return { uri: uri.toString(), mimeType: 'application/json', text: data };
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: data }]
+          };
         } catch {
-          return { uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) };
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) }]
+          };
         }
       }
     );

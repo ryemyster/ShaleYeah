@@ -95,17 +95,21 @@ export class DecisionMCPServer {
       'make_investment_decision',
       'Analyze all available data and make final investment decision',
       {
-        tractId: z.string().describe('Tract identifier'),
-        geologicalData: z.object({}).optional().describe('Geological analysis results'),
-        economicData: z.object({}).optional().describe('Economic analysis results'),
-        riskData: z.object({}).optional().describe('Risk assessment results'),
-        marketData: z.object({}).optional().describe('Market analysis results'),
-        legalData: z.object({}).optional().describe('Legal due diligence results'),
-        titleData: z.object({}).optional().describe('Title verification results'),
-        budget: z.number().optional().describe('Available budget for investment'),
-        strategy: z.string().optional().describe('Investment strategy context')
+        type: 'object',
+        properties: {
+          tractId: { type: 'string', description: 'Tract identifier' },
+          geologicalData: { type: 'object', optional: true, description: 'Geological analysis results' },
+          economicData: { type: 'object', optional: true, description: 'Economic analysis results' },
+          riskData: { type: 'object', optional: true, description: 'Risk assessment results' },
+          marketData: { type: 'object', optional: true, description: 'Market analysis results' },
+          legalData: { type: 'object', optional: true, description: 'Legal due diligence results' },
+          titleData: { type: 'object', optional: true, description: 'Title verification results' },
+          budget: { type: 'number', optional: true, description: 'Available budget for investment' },
+          strategy: { type: 'string', optional: true, description: 'Investment strategy context' }
+        },
+        required: ['tractId']
       },
-      async (args): Promise<InvestmentDecision> => {
+      async (args, extra) => {
         const decision = await this.makeInvestmentDecision(
           args.tractId,
           {
@@ -124,7 +128,7 @@ export class DecisionMCPServer {
         const evaluationPath = path.join(this.dataPath, 'evaluations', `${args.tractId}_evaluation.json`);
         await fs.writeFile(evaluationPath, JSON.stringify(decision, null, 2));
 
-        return decision;
+        return { content: [{ type: "text", text: JSON.stringify(decision) }] };
       }
     );
 
@@ -133,15 +137,19 @@ export class DecisionMCPServer {
       'calculate_bid_price',
       'Calculate optimal bid price based on valuation and competition',
       {
-        tractId: z.string().describe('Tract identifier'),
-        npv: z.number().describe('Net Present Value'),
-        irr: z.number().describe('Internal Rate of Return'),
-        payback: z.number().describe('Payback period in years'),
-        competition: z.enum(['low', 'medium', 'high']).describe('Competition level'),
-        riskAdjustment: z.number().optional().describe('Risk adjustment factor'),
-        strategicPremium: z.number().optional().describe('Strategic premium percentage')
+        type: 'object',
+        properties: {
+          tractId: { type: 'string', description: 'Tract identifier' },
+          npv: { type: 'number', description: 'Net Present Value' },
+          irr: { type: 'number', description: 'Internal Rate of Return' },
+          payback: { type: 'number', description: 'Payback period in years' },
+          competition: { type: 'string', enum: ['low', 'medium', 'high'], description: 'Competition level' },
+          riskAdjustment: { type: 'number', optional: true, description: 'Risk adjustment factor' },
+          strategicPremium: { type: 'number', optional: true, description: 'Strategic premium percentage' }
+        },
+        required: ['tractId', 'npv', 'irr', 'payback', 'competition']
       },
-      async (args) => {
+      async (args, extra) => {
         const bidPrice = await this.calculateBidPrice(args);
         
         const recommendation = {
@@ -159,7 +167,7 @@ export class DecisionMCPServer {
         const recPath = path.join(this.dataPath, 'recommendations', `${args.tractId}_bid.json`);
         await fs.writeFile(recPath, JSON.stringify(recommendation, null, 2));
 
-        return recommendation;
+        return { content: [{ type: "text", text: JSON.stringify(recommendation) }] };
       }
     );
 
@@ -168,21 +176,25 @@ export class DecisionMCPServer {
       'assess_portfolio_fit',
       'Evaluate how tract fits within overall portfolio strategy',
       {
-        tractId: z.string().describe('Tract identifier'),
-        currentPortfolio: z.array(z.object({})).optional().describe('Current portfolio holdings'),
-        strategicGoals: z.array(z.string()).optional().describe('Strategic objectives'),
-        riskTolerance: z.enum(['conservative', 'moderate', 'aggressive']).describe('Risk tolerance'),
-        geography: z.string().optional().describe('Geographic focus'),
-        timeline: z.string().optional().describe('Investment timeline')
+        type: 'object',
+        properties: {
+          tractId: { type: 'string', description: 'Tract identifier' },
+          currentPortfolio: { type: 'array', items: { type: 'object' }, optional: true, description: 'Current portfolio holdings' },
+          strategicGoals: { type: 'array', items: { type: 'string' }, optional: true, description: 'Strategic objectives' },
+          riskTolerance: { type: 'string', enum: ['conservative', 'moderate', 'aggressive'], description: 'Risk tolerance' },
+          geography: { type: 'string', optional: true, description: 'Geographic focus' },
+          timeline: { type: 'string', optional: true, description: 'Investment timeline' }
+        },
+        required: ['tractId', 'riskTolerance']
       },
-      async (args) => {
+      async (args, extra) => {
         const fit = await this.assessPortfolioFit(args);
         
         // Save portfolio assessment
         const fitPath = path.join(this.dataPath, 'portfolio', `${args.tractId}_fit.json`);
         await fs.writeFile(fitPath, JSON.stringify(fit, null, 2));
 
-        return fit;
+        return { content: [{ type: "text", text: JSON.stringify(fit) }] };
       }
     );
 
@@ -191,24 +203,29 @@ export class DecisionMCPServer {
       'generate_investment_thesis',
       'Generate comprehensive investment thesis document',
       {
-        tractId: z.string().describe('Tract identifier'),
-        analysisData: z.object({}).describe('Compiled analysis from all agents'),
-        decision: z.object({}).describe('Investment decision'),
-        template: z.enum(['executive', 'detailed', 'board']).optional().describe('Thesis template')
+        type: 'object',
+        properties: {
+          tractId: { type: 'string', description: 'Tract identifier' },
+          analysisData: { type: 'object', description: 'Compiled analysis from all agents' },
+          decision: { type: 'object', description: 'Investment decision' },
+          template: { type: 'string', enum: ['executive', 'detailed', 'board'], optional: true, description: 'Thesis template' }
+        },
+        required: ['tractId', 'analysisData', 'decision']
       },
-      async (args) => {
+      async (args, extra) => {
         const thesis = await this.generateInvestmentThesis(args);
         
         // Save investment thesis
         const thesisPath = path.join(this.dataPath, 'theses', `${args.tractId}_thesis.md`);
         await fs.writeFile(thesisPath, thesis);
 
-        return {
+        const result = {
           tractId: args.tractId,
           thesisPath,
           executiveSummary: thesis.split('\n').slice(0, 10).join('\n'),
           timestamp: new Date().toISOString()
         };
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
       }
     );
   }
@@ -219,58 +236,60 @@ export class DecisionMCPServer {
   private setupDecisionResources(): void {
     // Resource: Decision Evaluations
     this.server.resource(
-      new ResourceTemplate(
-        'decision://evaluations/{tract_id}',
-        'Investment decision evaluation for specific tract',
-        'application/json',
-        async (uri) => {
-          const tractId = uri.path.split('/').pop()?.replace('.json', '');
-          const evaluationPath = path.join(this.dataPath, 'evaluations', `${tractId}_evaluation.json`);
-          
-          try {
-            const data = await fs.readFile(evaluationPath, 'utf-8');
-            return {
+      'decision://evaluations/{tract_id}',
+      'decision://evaluations/*',
+      async (uri) => {
+        const tractId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const evaluationPath = path.join(this.dataPath, 'evaluations', `${tractId}_evaluation.json`);
+        
+        try {
+          const data = await fs.readFile(evaluationPath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Evaluation not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
 
     // Resource: Bid Recommendations
     this.server.resource(
-      new ResourceTemplate(
-        'decision://recommendations/{analysis_id}',
-        'Bid recommendation for specific analysis',
-        'application/json',
-        async (uri) => {
-          const analysisId = uri.path.split('/').pop()?.replace('.json', '');
-          const recPath = path.join(this.dataPath, 'recommendations', `${analysisId}_bid.json`);
-          
-          try {
-            const data = await fs.readFile(recPath, 'utf-8');
-            return {
+      'decision://recommendations/{analysis_id}',
+      'decision://recommendations/*',
+      async (uri) => {
+        const analysisId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const recPath = path.join(this.dataPath, 'recommendations', `${analysisId}_bid.json`);
+        
+        try {
+          const data = await fs.readFile(recPath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Recommendation not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
   }
 
@@ -288,8 +307,10 @@ export class DecisionMCPServer {
       async (args) => ({
         messages: [
           {
-            role: 'system',
-            content: `You are Augustus Decidius Maximus, Supreme Investment Strategist for oil & gas acquisitions.
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `You are Augustus Decidius Maximus, Supreme Investment Strategist for oil & gas acquisitions.
 
 PERSONA:
 - Roman-inspired commanding presence with modern financial acumen
@@ -316,6 +337,7 @@ DECISION FRAMEWORK:
 
 Context: ${args.context}
 Question: ${args.question}`
+            }
           }
         ]
       })

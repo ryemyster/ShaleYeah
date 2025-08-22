@@ -47,17 +47,21 @@ export class TheCoreMCPServer {
       'orchestrate_workflow',
       'Orchestrate master workflow across all agents',
       {
-        workflowId: z.string(),
-        workflowType: z.enum(['full_analysis', 'investment_evaluation', 'due_diligence', 'custom']),
-        agents: z.array(z.string()).optional(),
-        parameters: z.object({}).optional(),
-        priority: z.enum(['low', 'medium', 'high', 'critical']).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          workflowType: { type: 'string', enum: ['full_analysis', 'investment_evaluation', 'due_diligence', 'custom'] },
+          agents: { type: 'array', items: { type: 'string' }, optional: true },
+          parameters: { type: 'object', optional: true },
+          priority: { type: 'string', enum: ['low', 'medium', 'high', 'critical'], optional: true }
+        },
+        required: ['workflowId', 'workflowType']
       },
-      async (args) => {
+      async (args, extra) => {
         const workflow = await this.orchestrateMasterWorkflow(args);
         const workflowPath = path.join(this.dataPath, 'workflows', `${args.workflowId}.json`);
         await fs.writeFile(workflowPath, JSON.stringify(workflow, null, 2));
-        return workflow;
+        return { content: [{ type: "text", text: JSON.stringify(workflow) }] };
       }
     );
 
@@ -65,93 +69,132 @@ export class TheCoreMCPServer {
       'coordinate_dependencies',
       'Coordinate complex multi-agent dependencies',
       {
-        workflowId: z.string(),
-        agentGraph: z.object({}),
-        executionPlan: z.array(z.object({})).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          agentGraph: { type: 'object' },
+          executionPlan: { type: 'array', items: { type: 'object' }, optional: true }
+        },
+        required: ['workflowId', 'agentGraph']
       },
-      async (args) => this.coordinateMasterDependencies(args)
+      async (args, extra) => {
+        const result = await this.coordinateMasterDependencies(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
     this.server.tool(
       'manage_state',
       'Manage master workflow state and agent coordination',
       {
-        workflowId: z.string(),
-        action: z.enum(['start', 'pause', 'resume', 'complete', 'fail', 'abort']),
-        agentStates: z.array(z.object({})).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'complete', 'fail', 'abort'] },
+          agentStates: { type: 'array', items: { type: 'object' }, optional: true }
+        },
+        required: ['workflowId', 'action']
       },
-      async (args) => this.manageMasterState(args)
+      async (args, extra) => {
+        const result = await this.manageMasterState(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
     this.server.tool(
       'handle_errors',
       'Handle system-wide errors and recovery',
       {
-        workflowId: z.string(),
-        error: z.string(),
-        errorType: z.enum(['agent_failure', 'system_error', 'workflow_timeout', 'coordination_failure']),
-        affectedAgents: z.array(z.string()).optional(),
-        recoveryStrategy: z.enum(['restart', 'partial_recovery', 'graceful_degradation', 'abort']).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          error: { type: 'string' },
+          errorType: { type: 'string', enum: ['agent_failure', 'system_error', 'workflow_timeout', 'coordination_failure'] },
+          affectedAgents: { type: 'array', items: { type: 'string' }, optional: true },
+          recoveryStrategy: { type: 'string', enum: ['restart', 'partial_recovery', 'graceful_degradation', 'abort'], optional: true }
+        },
+        required: ['workflowId', 'error', 'errorType']
       },
-      async (args) => this.handleMasterErrors(args)
+      async (args, extra) => {
+        const result = await this.handleMasterErrors(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
     this.server.tool(
       'register_agent',
       'Register agent with the core coordination system',
       {
-        agentId: z.string(),
-        agentType: z.string(),
-        capabilities: z.array(z.string()),
-        dependencies: z.array(z.string()).optional(),
-        status: z.enum(['available', 'busy', 'offline', 'error'])
+        type: 'object',
+        properties: {
+          agentId: { type: 'string' },
+          agentType: { type: 'string' },
+          capabilities: { type: 'array', items: { type: 'string' } },
+          dependencies: { type: 'array', items: { type: 'string' }, optional: true },
+          status: { type: 'string', enum: ['available', 'busy', 'offline', 'error'] }
+        },
+        required: ['agentId', 'agentType', 'capabilities', 'status']
       },
-      async (args) => this.registerAgent(args)
+      async (args, extra) => {
+        const result = await this.registerAgent(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
   }
 
   private setupCoreCoordinationResources(): void {
     this.server.resource(
-      new ResourceTemplate(
-        'coord://state/{workflow_id}',
-        'Master workflow coordination state',
-        'application/json',
-        async (uri) => {
-          const workflowId = uri.path.split('/').pop()?.replace('.json', '');
-          const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
-          try {
-            const data = await fs.readFile(workflowPath, 'utf-8');
-            return { uri: uri.toString(), mimeType: 'application/json', text: data };
-          } catch {
-            return { uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) };
-          }
+      'coord://state/{workflow_id}',
+      'coord://state/*',
+      async (uri) => {
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
+        try {
+          const data = await fs.readFile(workflowPath, 'utf-8');
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: data }]
+          };
+        } catch {
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) }]
+          };
         }
-      )
+      }
     );
 
     this.server.resource(
-      new ResourceTemplate(
-        'coord://dependencies/{agent_id}',
-        'Agent dependency and coordination status',
-        'application/json',
-        async (uri) => {
-          const agentId = uri.path.split('/').pop()?.replace('.json', '');
-          const agent = this.agentRegistry.get(agentId);
-          if (agent) {
-            return {
+      'coord://dependencies/{agent_id}',
+      'coord://dependencies/*',
+      async (uri) => {
+        const agentId = uri.pathname.split('/').pop()?.replace('.json', '');
+        if (!agentId) {
+          return {
+            contents: [{
+              uri: uri.toString(),
+              mimeType: 'application/json',
+              text: JSON.stringify({ error: 'Agent ID not found in URI' })
+            }]
+          };
+        }
+        const agent = this.agentRegistry.get(agentId);
+        if (agent) {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify(agent)
-            };
-          } else {
-            return {
+            }]
+          };
+        } else {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Agent not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
   }
 

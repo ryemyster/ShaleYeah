@@ -45,52 +45,94 @@ export class ReporterMCPServer {
       'orchestrate_workflow',
       'Orchestrate report generation workflow',
       {
-        workflowId: z.string(),
-        reportType: z.enum(['executive_summary', 'technical_report', 'investment_thesis', 'full_analysis']),
-        sections: z.array(z.string()).optional(),
-        data: z.object({}).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          reportType: { type: 'string', enum: ['executive_summary', 'technical_report', 'investment_thesis', 'full_analysis'] },
+          sections: { type: 'array', items: { type: 'string' }, optional: true },
+          data: { type: 'object', optional: true }
+        },
+        required: ['workflowId', 'reportType']
       },
-      async (args) => {
+      async (args, extra) => {
         const workflow = await this.orchestrateReportingWorkflow(args);
         const workflowPath = path.join(this.dataPath, 'workflows', `${args.workflowId}.json`);
         await fs.writeFile(workflowPath, JSON.stringify(workflow, null, 2));
-        return workflow;
+        return { content: [{ type: "text", text: JSON.stringify(workflow) }] };
       }
     );
 
-    this.server.tool('coordinate_dependencies', 'Coordinate reporting dependencies',
-      { workflowId: z.string(), requiredData: z.array(z.string()) },
-      async (args) => this.coordinateReportingDependencies(args)
+    this.server.tool(
+      'coordinate_dependencies',
+      'Coordinate reporting dependencies',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          requiredData: { type: 'array', items: { type: 'string' } }
+        },
+        required: ['workflowId', 'requiredData']
+      },
+      async (args, extra) => {
+        const result = await this.coordinateReportingDependencies(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
-    this.server.tool('manage_state', 'Manage reporting workflow state',
-      { workflowId: z.string(), action: z.enum(['start', 'pause', 'resume', 'complete', 'fail']) },
-      async (args) => this.manageReportingState(args)
+    this.server.tool(
+      'manage_state',
+      'Manage reporting workflow state',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'complete', 'fail'] }
+        },
+        required: ['workflowId', 'action']
+      },
+      async (args, extra) => {
+        const result = await this.manageReportingState(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
-    this.server.tool('handle_errors', 'Handle reporting errors',
-      { workflowId: z.string(), error: z.string(), errorType: z.enum(['data_missing', 'template_error', 'generation_failed']) },
-      async (args) => this.handleReportingErrors(args)
+    this.server.tool(
+      'handle_errors',
+      'Handle reporting errors',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          error: { type: 'string' },
+          errorType: { type: 'string', enum: ['data_missing', 'template_error', 'generation_failed'] }
+        },
+        required: ['workflowId', 'error', 'errorType']
+      },
+      async (args, extra) => {
+        const result = await this.handleReportingErrors(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
   }
 
   private setupReportingCoordinationResources(): void {
     this.server.resource(
-      new ResourceTemplate(
-        'coord://state/{workflow_id}',
-        'Reporting workflow state',
-        'application/json',
-        async (uri) => {
-          const workflowId = uri.path.split('/').pop()?.replace('.json', '');
-          const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
-          try {
-            const data = await fs.readFile(workflowPath, 'utf-8');
-            return { uri: uri.toString(), mimeType: 'application/json', text: data };
-          } catch {
-            return { uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) };
-          }
+      'coord://state/{workflow_id}',
+      'coord://state/*',
+      async (uri) => {
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
+        try {
+          const data = await fs.readFile(workflowPath, 'utf-8');
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: data }]
+          };
+        } catch {
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) }]
+          };
         }
-      )
+      }
     );
   }
 

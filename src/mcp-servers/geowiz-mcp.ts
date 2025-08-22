@@ -95,21 +95,25 @@ export class GeowizMCPServer {
       'orchestrate_workflow',
       'Orchestrate complex geological analysis workflow',
       {
-        workflowId: z.string().describe('Unique workflow identifier'),
-        tractId: z.string().describe('Tract identifier for analysis'),
-        workflow: z.enum(['full_geological', 'reservoir_analysis', 'formation_eval', 'log_analysis']).describe('Workflow type'),
-        priority: z.enum(['low', 'medium', 'high', 'urgent']).optional().describe('Workflow priority'),
-        parameters: z.object({}).optional().describe('Workflow parameters'),
-        timeout: z.number().optional().describe('Workflow timeout in milliseconds')
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string', description: 'Unique workflow identifier' },
+          tractId: { type: 'string', description: 'Tract identifier for analysis' },
+          workflow: { type: 'string', enum: ['full_geological', 'reservoir_analysis', 'formation_eval', 'log_analysis'], description: 'Workflow type' },
+          priority: { type: 'string', enum: ['low', 'medium', 'high', 'urgent'], optional: true, description: 'Workflow priority' },
+          parameters: { type: 'object', optional: true, description: 'Workflow parameters' },
+          timeout: { type: 'number', optional: true, description: 'Workflow timeout in milliseconds' }
+        },
+        required: ['workflowId', 'tractId', 'workflow']
       },
-      async (args) => {
+      async (args, extra) => {
         const workflowState = await this.orchestrateWorkflow(args);
         
         // Save workflow state
         const statePath = path.join(this.dataPath, 'state', `${args.workflowId}.json`);
         await fs.writeFile(statePath, JSON.stringify(workflowState, null, 2));
 
-        return workflowState;
+        return { content: [{ type: "text", text: JSON.stringify(workflowState) }] };
       }
     );
 
@@ -118,22 +122,34 @@ export class GeowizMCPServer {
       'coordinate_dependencies',
       'Manage dependencies between geological analysis agents',
       {
-        workflowId: z.string().describe('Workflow identifier'),
-        agents: z.array(z.object({
-          agentId: z.string(),
-          dependsOn: z.array(z.string()).optional(),
-          parameters: z.object({}).optional()
-        })).describe('Agent dependency configuration'),
-        executionMode: z.enum(['sequential', 'parallel', 'conditional']).optional().describe('Execution mode')
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string', description: 'Workflow identifier' },
+          agents: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                agentId: { type: 'string' },
+                dependsOn: { type: 'array', items: { type: 'string' }, optional: true },
+                parameters: { type: 'object', optional: true }
+              },
+              required: ['agentId']
+            },
+            description: 'Agent dependency configuration'
+          },
+          executionMode: { type: 'string', enum: ['sequential', 'parallel', 'conditional'], optional: true, description: 'Execution mode' }
+        },
+        required: ['workflowId', 'agents']
       },
-      async (args) => {
+      async (args, extra) => {
         const dependencies = await this.coordinateDependencies(args);
         
         // Save dependency state
         const depPath = path.join(this.dataPath, 'dependencies', `${args.workflowId}_deps.json`);
         await fs.writeFile(depPath, JSON.stringify(dependencies, null, 2));
 
-        return dependencies;
+        return { content: [{ type: "text", text: JSON.stringify(dependencies) }] };
       }
     );
 
@@ -142,20 +158,24 @@ export class GeowizMCPServer {
       'manage_state',
       'Manage and update workflow execution state',
       {
-        workflowId: z.string().describe('Workflow identifier'),
-        action: z.enum(['start', 'pause', 'resume', 'cancel', 'complete', 'fail']).describe('State action'),
-        step: z.string().optional().describe('Current step identifier'),
-        result: z.any().optional().describe('Step result data'),
-        error: z.string().optional().describe('Error message if action is fail')
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string', description: 'Workflow identifier' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'cancel', 'complete', 'fail'], description: 'State action' },
+          step: { type: 'string', optional: true, description: 'Current step identifier' },
+          result: { type: 'object', optional: true, description: 'Step result data' },
+          error: { type: 'string', optional: true, description: 'Error message if action is fail' }
+        },
+        required: ['workflowId', 'action']
       },
-      async (args) => {
+      async (args, extra) => {
         const updatedState = await this.manageState(args);
         
         // Update workflow state file
         const statePath = path.join(this.dataPath, 'state', `${args.workflowId}.json`);
         await fs.writeFile(statePath, JSON.stringify(updatedState, null, 2));
 
-        return updatedState;
+        return { content: [{ type: "text", text: JSON.stringify(updatedState) }] };
       }
     );
 
@@ -164,25 +184,29 @@ export class GeowizMCPServer {
       'handle_errors',
       'Handle and recover from workflow errors',
       {
-        workflowId: z.string().describe('Workflow identifier'),
-        error: z.string().describe('Error description'),
-        errorType: z.enum(['agent_failure', 'timeout', 'validation_error', 'system_error']).describe('Error type'),
-        recoveryStrategy: z.enum(['retry', 'skip', 'abort', 'manual']).optional().describe('Recovery strategy'),
-        maxRetries: z.number().optional().describe('Maximum retry attempts')
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string', description: 'Workflow identifier' },
+          error: { type: 'string', description: 'Error description' },
+          errorType: { type: 'string', enum: ['agent_failure', 'timeout', 'validation_error', 'system_error'], description: 'Error type' },
+          recoveryStrategy: { type: 'string', enum: ['retry', 'skip', 'abort', 'manual'], optional: true, description: 'Recovery strategy' },
+          maxRetries: { type: 'number', optional: true, description: 'Maximum retry attempts' }
+        },
+        required: ['workflowId', 'error', 'errorType']
       },
-      async (args) => {
+      async (args, extra) => {
         const errorHandling = await this.handleErrors(args);
         
         // Log error handling
         const logPath = path.join(this.dataPath, 'logs', `${args.workflowId}_errors.json`);
         const existingLogs = await this.loadExistingLogs(logPath);
         existingLogs.push({
-          timestamp: new Date().toISOString(),
-          ...errorHandling
+          ...errorHandling,
+          timestamp: new Date().toISOString()
         });
         await fs.writeFile(logPath, JSON.stringify(existingLogs, null, 2));
 
-        return errorHandling;
+        return { content: [{ type: "text", text: JSON.stringify(errorHandling) }] };
       }
     );
   }
@@ -193,58 +217,60 @@ export class GeowizMCPServer {
   private setupCoordinationResources(): void {
     // Resource: Workflow State
     this.server.resource(
-      new ResourceTemplate(
-        'coord://state/{workflow_id}',
-        'Current state of geological workflow',
-        'application/json',
-        async (uri) => {
-          const workflowId = uri.path.split('/').pop()?.replace('.json', '');
-          const statePath = path.join(this.dataPath, 'state', `${workflowId}.json`);
-          
-          try {
-            const data = await fs.readFile(statePath, 'utf-8');
-            return {
+      'coord://state/{workflow_id}',
+      'coord://state/*',
+      async (uri) => {
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const statePath = path.join(this.dataPath, 'state', `${workflowId}.json`);
+        
+        try {
+          const data = await fs.readFile(statePath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Workflow state not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
 
     // Resource: Agent Dependencies
     this.server.resource(
-      new ResourceTemplate(
-        'coord://dependencies/{agent_id}',
-        'Agent dependency configuration and status',
-        'application/json',
-        async (uri) => {
-          const agentId = uri.path.split('/').pop()?.replace('.json', '');
-          const depPath = path.join(this.dataPath, 'dependencies', `${agentId}_deps.json`);
-          
-          try {
-            const data = await fs.readFile(depPath, 'utf-8');
-            return {
+      'coord://dependencies/{agent_id}',
+      'coord://dependencies/*',
+      async (uri) => {
+        const agentId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const depPath = path.join(this.dataPath, 'dependencies', `${agentId}_deps.json`);
+        
+        try {
+          const data = await fs.readFile(depPath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Dependencies not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
   }
 
@@ -262,8 +288,10 @@ export class GeowizMCPServer {
       async (args) => ({
         messages: [
           {
-            role: 'system',
-            content: `You are Geo Coordinatus Magnus, Master Geological Orchestrator for the SHALE YEAH platform.
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `You are Geo Coordinatus Magnus, Master Geological Orchestrator for the SHALE YEAH platform.
 
 PERSONA:
 - Strategic orchestrator with deep geological expertise
@@ -297,6 +325,7 @@ WORKFLOW MANAGEMENT:
 
 Context: ${args.context}
 Challenge: ${args.challenge}`
+            }
           }
         ]
       })

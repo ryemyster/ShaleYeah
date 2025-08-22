@@ -45,52 +45,94 @@ export class RiskRangerMCPServer {
       'orchestrate_workflow',
       'Orchestrate risk assessment workflow',
       {
-        workflowId: z.string(),
-        assessmentType: z.enum(['geological_risk', 'operational_risk', 'market_risk', 'comprehensive_risk']),
-        riskFactors: z.array(z.string()).optional(),
-        parameters: z.object({}).optional()
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          assessmentType: { type: 'string', enum: ['geological_risk', 'operational_risk', 'market_risk', 'comprehensive_risk'] },
+          riskFactors: { type: 'array', items: { type: 'string' }, optional: true },
+          parameters: { type: 'object', optional: true }
+        },
+        required: ['workflowId', 'assessmentType']
       },
-      async (args) => {
+      async (args, extra) => {
         const workflow = await this.orchestrateRiskWorkflow(args);
         const workflowPath = path.join(this.dataPath, 'workflows', `${args.workflowId}.json`);
         await fs.writeFile(workflowPath, JSON.stringify(workflow, null, 2));
-        return workflow;
+        return { content: [{ type: "text", text: JSON.stringify(workflow) }] };
       }
     );
 
-    this.server.tool('coordinate_dependencies', 'Coordinate risk assessment dependencies',
-      { workflowId: z.string(), requiredAnalyses: z.array(z.string()) },
-      async (args) => this.coordinateRiskDependencies(args)
+    this.server.tool(
+      'coordinate_dependencies',
+      'Coordinate risk assessment dependencies',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          requiredAnalyses: { type: 'array', items: { type: 'string' } }
+        },
+        required: ['workflowId', 'requiredAnalyses']
+      },
+      async (args, extra) => {
+        const result = await this.coordinateRiskDependencies(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
-    this.server.tool('manage_state', 'Manage risk workflow state',
-      { workflowId: z.string(), action: z.enum(['start', 'pause', 'resume', 'complete', 'fail']) },
-      async (args) => this.manageRiskState(args)
+    this.server.tool(
+      'manage_state',
+      'Manage risk workflow state',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          action: { type: 'string', enum: ['start', 'pause', 'resume', 'complete', 'fail'] }
+        },
+        required: ['workflowId', 'action']
+      },
+      async (args, extra) => {
+        const result = await this.manageRiskState(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
 
-    this.server.tool('handle_errors', 'Handle risk assessment errors',
-      { workflowId: z.string(), error: z.string(), errorType: z.enum(['assessment_failed', 'data_insufficient', 'model_error']) },
-      async (args) => this.handleRiskErrors(args)
+    this.server.tool(
+      'handle_errors',
+      'Handle risk assessment errors',
+      {
+        type: 'object',
+        properties: {
+          workflowId: { type: 'string' },
+          error: { type: 'string' },
+          errorType: { type: 'string', enum: ['assessment_failed', 'data_insufficient', 'model_error'] }
+        },
+        required: ['workflowId', 'error', 'errorType']
+      },
+      async (args, extra) => {
+        const result = await this.handleRiskErrors(args);
+        return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
     );
   }
 
   private setupRiskCoordinationResources(): void {
     this.server.resource(
-      new ResourceTemplate(
-        'coord://state/{workflow_id}',
-        'Risk assessment workflow state',
-        'application/json',
-        async (uri) => {
-          const workflowId = uri.path.split('/').pop()?.replace('.json', '');
-          const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
-          try {
-            const data = await fs.readFile(workflowPath, 'utf-8');
-            return { uri: uri.toString(), mimeType: 'application/json', text: data };
-          } catch {
-            return { uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) };
-          }
+      'coord://state/{workflow_id}',
+      'coord://state/*',
+      async (uri) => {
+        const workflowId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const workflowPath = path.join(this.dataPath, 'workflows', `${workflowId}.json`);
+        try {
+          const data = await fs.readFile(workflowPath, 'utf-8');
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: data }]
+          };
+        } catch {
+          return {
+            contents: [{ uri: uri.toString(), mimeType: 'application/json', text: JSON.stringify({ error: 'Workflow not found' }) }]
+          };
         }
-      )
+      }
     );
   }
 

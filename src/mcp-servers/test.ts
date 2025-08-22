@@ -116,20 +116,24 @@ export class TestMCPServer {
       'generate_mock_data',
       'Generate realistic mock data for testing scenarios',
       {
-        scenario: z.string().describe('Test scenario name'),
-        type: z.enum(['geological', 'economic', 'risk', 'market', 'legal', 'title', 'complete']).describe('Data type to generate'),
-        tractId: z.string().describe('Tract identifier for mock data'),
-        complexity: z.enum(['simple', 'moderate', 'complex']).optional().describe('Data complexity level'),
-        parameters: z.object({}).optional().describe('Specific parameters for data generation')
+        type: 'object',
+        properties: {
+          scenario: { type: 'string', description: 'Test scenario name' },
+          type: { type: 'string', enum: ['geological', 'economic', 'risk', 'market', 'legal', 'title', 'complete'], description: 'Data type to generate' },
+          tractId: { type: 'string', description: 'Tract identifier for mock data' },
+          complexity: { type: 'string', enum: ['simple', 'moderate', 'complex'], optional: true, description: 'Data complexity level' },
+          parameters: { type: 'object', optional: true, description: 'Specific parameters for data generation' }
+        },
+        required: ['scenario', 'type', 'tractId']
       },
-      async (args): Promise<MockDataScenario> => {
+      async (args, extra) => {
         const mockData = await this.generateMockData(args);
         
         // Save mock data scenario
         const scenarioPath = path.join(this.dataPath, 'scenarios', `${args.scenario}_${args.type}.json`);
         await fs.writeFile(scenarioPath, JSON.stringify(mockData, null, 2));
 
-        return mockData;
+        return { content: [{ type: "text", text: JSON.stringify(mockData) }] };
       }
     );
 
@@ -138,20 +142,24 @@ export class TestMCPServer {
       'validate_agent_output',
       'Validate output from any SHALE YEAH agent',
       {
-        agentName: z.string().describe('Name of agent that produced output'),
-        output: z.any().describe('Agent output to validate'),
-        expectedSchema: z.object({}).optional().describe('Expected output schema'),
-        validationRules: z.array(z.string()).optional().describe('Custom validation rules'),
-        strictMode: z.boolean().optional().describe('Enable strict validation')
+        type: 'object',
+        properties: {
+          agentName: { type: 'string', description: 'Name of agent that produced output' },
+          output: { type: 'object', description: 'Agent output to validate' },
+          expectedSchema: { type: 'object', optional: true, description: 'Expected output schema' },
+          validationRules: { type: 'array', items: { type: 'string' }, optional: true, description: 'Custom validation rules' },
+          strictMode: { type: 'boolean', optional: true, description: 'Enable strict validation' }
+        },
+        required: ['agentName', 'output']
       },
-      async (args): Promise<ValidationResult> => {
+      async (args, extra) => {
         const validation = await this.validateAgentOutput(args);
         
         // Save validation results
         const resultPath = path.join(this.dataPath, 'results', `${args.agentName}_validation_${Date.now()}.json`);
         await fs.writeFile(resultPath, JSON.stringify(validation, null, 2));
 
-        return validation;
+        return { content: [{ type: "text", text: JSON.stringify(validation) }] };
       }
     );
 
@@ -160,20 +168,24 @@ export class TestMCPServer {
       'run_integration_tests',
       'Execute integration tests across multiple agents',
       {
-        testSuite: z.string().describe('Test suite name'),
-        agents: z.array(z.string()).describe('Agents to test'),
-        scenario: z.string().optional().describe('Test scenario to execute'),
-        timeout: z.number().optional().describe('Test timeout in milliseconds'),
-        parallel: z.boolean().optional().describe('Run tests in parallel')
+        type: 'object',
+        properties: {
+          testSuite: { type: 'string', description: 'Test suite name' },
+          agents: { type: 'array', items: { type: 'string' }, description: 'Agents to test' },
+          scenario: { type: 'string', optional: true, description: 'Test scenario to execute' },
+          timeout: { type: 'number', optional: true, description: 'Test timeout in milliseconds' },
+          parallel: { type: 'boolean', optional: true, description: 'Run tests in parallel' }
+        },
+        required: ['testSuite', 'agents']
       },
-      async (args) => {
+      async (args, extra) => {
         const testResults = await this.runIntegrationTests(args);
         
         // Save test results
         const testPath = path.join(this.dataPath, 'results', `integration_${args.testSuite}_${Date.now()}.json`);
         await fs.writeFile(testPath, JSON.stringify(testResults, null, 2));
 
-        return testResults;
+        return { content: [{ type: "text", text: JSON.stringify(testResults) }] };
       }
     );
 
@@ -182,20 +194,24 @@ export class TestMCPServer {
       'benchmark_performance',
       'Benchmark agent performance and system metrics',
       {
-        operation: z.string().describe('Operation to benchmark'),
-        iterations: z.number().optional().describe('Number of iterations to run'),
-        warmup: z.number().optional().describe('Warmup iterations'),
-        concurrent: z.number().optional().describe('Concurrent operations'),
-        dataSize: z.enum(['small', 'medium', 'large']).optional().describe('Test data size')
+        type: 'object',
+        properties: {
+          operation: { type: 'string', description: 'Operation to benchmark' },
+          iterations: { type: 'number', optional: true, description: 'Number of iterations to run' },
+          warmup: { type: 'number', optional: true, description: 'Warmup iterations' },
+          concurrent: { type: 'number', optional: true, description: 'Concurrent operations' },
+          dataSize: { type: 'string', enum: ['small', 'medium', 'large'], optional: true, description: 'Test data size' }
+        },
+        required: ['operation']
       },
-      async (args): Promise<BenchmarkResult> => {
+      async (args, extra) => {
         const benchmark = await this.benchmarkPerformance(args);
         
         // Save benchmark results
         const benchPath = path.join(this.dataPath, 'benchmarks', `${args.operation}_${Date.now()}.json`);
         await fs.writeFile(benchPath, JSON.stringify(benchmark, null, 2));
 
-        return benchmark;
+        return { content: [{ type: "text", text: JSON.stringify(benchmark) }] };
       }
     );
   }
@@ -206,58 +222,60 @@ export class TestMCPServer {
   private setupTestResources(): void {
     // Resource: Test Data
     this.server.resource(
-      new ResourceTemplate(
-        'test://data/{scenario}',
-        'Mock test data for specific scenario',
-        'application/json',
-        async (uri) => {
-          const scenario = uri.path.split('/').pop()?.replace('.json', '');
-          const dataPath = path.join(this.dataPath, 'data', `${scenario}.json`);
-          
-          try {
-            const data = await fs.readFile(dataPath, 'utf-8');
-            return {
+      'test://data/{scenario}',
+      'test://data/*',
+      async (uri) => {
+        const scenario = uri.pathname.split('/').pop()?.replace('.json', '');
+        const dataPath = path.join(this.dataPath, 'data', `${scenario}.json`);
+        
+        try {
+          const data = await fs.readFile(dataPath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Test data not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
 
     // Resource: Test Results
     this.server.resource(
-      new ResourceTemplate(
-        'test://results/{test_id}',
-        'Test execution results for specific test',
-        'application/json',
-        async (uri) => {
-          const testId = uri.path.split('/').pop()?.replace('.json', '');
-          const resultPath = path.join(this.dataPath, 'results', `${testId}.json`);
-          
-          try {
-            const data = await fs.readFile(resultPath, 'utf-8');
-            return {
+      'test://results/{test_id}',
+      'test://results/*',
+      async (uri) => {
+        const testId = uri.pathname.split('/').pop()?.replace('.json', '');
+        const resultPath = path.join(this.dataPath, 'results', `${testId}.json`);
+        
+        try {
+          const data = await fs.readFile(resultPath, 'utf-8');
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: data
-            };
-          } catch {
-            return {
+            }]
+          };
+        } catch {
+          return {
+            contents: [{
               uri: uri.toString(),
               mimeType: 'application/json',
               text: JSON.stringify({ error: 'Test results not found' })
-            };
-          }
+            }]
+          };
         }
-      )
+      }
     );
   }
 
@@ -275,8 +293,10 @@ export class TestMCPServer {
       async (args) => ({
         messages: [
           {
-            role: 'system',
-            content: `You are Marcus Testius Validator, Master Quality Assurance for the SHALE YEAH platform.
+            role: 'user',
+            content: {
+              type: 'text',
+              text: `You are Marcus Testius Validator, Master Quality Assurance for the SHALE YEAH platform.
 
 PERSONA:
 - Meticulous attention to detail with Roman discipline
@@ -310,6 +330,7 @@ VALIDATION FRAMEWORK:
 
 Context: ${args.context}
 Focus: ${args.focus}`
+            }
           }
         ]
       })
