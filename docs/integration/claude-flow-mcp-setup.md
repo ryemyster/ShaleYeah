@@ -254,4 +254,4 @@ npx tsx scripts/verify-mcp-setup.ts
 **Maintenance Schedule:** Review quarterly or after major claude-flow updates  
 **Contact:** Engineering Team - MCP Integration
 
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0

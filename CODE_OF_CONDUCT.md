@@ -40,4 +40,4 @@ We're here to build something better than what exists. If that's your goal too, 
 
 *This Code of Conduct applies to all SHALE YEAH community spaces, including GitHub, Discord, and any future platforms.*
 
-Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0
+Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0

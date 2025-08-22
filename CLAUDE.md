@@ -24,7 +24,7 @@ Build and run a working multi agent project for oil and gas data. Prove that a s
 ## License and credit
 
 * License: Apache 2.0. Respect LICENSE and NOTICE
-* Footer for all human facing outputs: `Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0`
+* Footer for all human facing outputs: `Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0`
 
 ## Run modes
 

@@ -2444,10 +2444,10 @@ export class UnifiedMCPClient {
 ## INVESTMENT REQUIREMENTS
 - **Initial CAPEX:** $12.8M (drilling, completion, facilities)
 - **Working Interest:** 75% (25% to drilling partner)
-- **Funding Timeline:** Q2 2024 spud date
+- **Funding Timeline:** Q2 2025 spud date
 
 ---
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
       
       const detailedAnalysis = `# DETAILED TECHNICAL ANALYSIS
 
@@ -2501,7 +2501,7 @@ export class UnifiedMCPClient {
 - Environmental permits in place
 
 ---
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
       
       const financialModel = {
         "investment_decision": investmentDecision,

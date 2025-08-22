@@ -440,7 +440,7 @@ REPORT STANDARDS:
 - No Oxford commas (imperial style)
 - Short, decisive sentences
 - Include data quality notes
-- Mandatory footer: "Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0"
+- Mandatory footer: "Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0"
 
 TONE: Authoritative yet accessible. Present findings as an imperial advisor would counsel Caesar on territorial expansion - with clarity, precision, and unwavering confidence in the analysis.
 
@@ -693,7 +693,7 @@ Analysis conducted using SHALE YEAH integrated workflow.
   private buildFooter(): string {
     return `---
 
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
   }
 
   private summarizeDataSource(source: any): any {
@@ -776,7 +776,7 @@ Overall Status: **${qcReport.qc_summary.overall_status.toUpperCase()}**
     markdown += `
 ---
 
-*Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*`;
 
     return markdown;
   }
