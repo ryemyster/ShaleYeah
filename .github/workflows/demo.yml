@@ -34,7 +34,7 @@ jobs:
         
         # Test MCP controller TypeScript import and initialization
         npx tsx -e "
-        import { MCPController } from './src/mcp.ts';
+        import { MCPController } from './src/main.ts';
         
         // Test initialization
         const mcp = new MCPController('demo-test', './data/outputs/demo-test');
@@ -76,7 +76,7 @@ jobs:
         export OUT_DIR=./data/outputs/$RUN_ID
         
         # Run the complete TypeScript pipeline
-        npx tsx src/mcp.ts --goal=tract_eval --run-id=$RUN_ID
+        npx tsx src/main.ts --goal=tract_eval --run-id=$RUN_ID
         
         # Verify pipeline outputs
         echo "Checking pipeline outputs..."
@@ -202,7 +202,7 @@ jobs:
         
         # Time the full TypeScript pipeline execution
         start_time=$(date +%s)
-        timeout 300 npx tsx src/mcp.ts --goal=tract_eval --run-id=$RUN_ID || echo "Pipeline completed or timed out"
+        timeout 300 npx tsx src/main.ts --goal=tract_eval --run-id=$RUN_ID || echo "Pipeline completed or timed out"
         end_time=$(date +%s)
         
         execution_time=$((end_time - start_time))
