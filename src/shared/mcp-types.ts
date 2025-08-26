@@ -6,7 +6,7 @@
 export interface MCPResource {
   uri: string;
   type: 'file' | 'data' | 'stream' | 'config';
-  format: 'json' | 'geojson' | 'markdown' | 'csv' | 'las' | 'binary';
+  format: 'json' | 'geojson' | 'markdown' | 'csv' | 'las' | 'binary' | 'text' | 'xml' | 'dlis' | 'segy' | 'shapefile' | 'kml' | 'excel' | 'geotiff' | 'access' | 'eclipse' | 'archive';
   metadata: MCPResourceMeta;
   available: boolean;
   lastModified: number;
@@ -20,6 +20,9 @@ export interface MCPResourceMeta {
   dependencies?: string[];
   tags?: string[];
   version?: string;
+  format?: string;
+  extension?: string;
+  fileName?: string;
 }
 
 export interface MCPResourceServer {

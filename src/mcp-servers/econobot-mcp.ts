@@ -8,6 +8,8 @@ import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
+import { FileIntegrationManager } from '../shared/file-integration.js';
+import { ExcelParser } from '../shared/parsers/excel-parser.js';
 
 export interface EconomicWorkflowState {
   workflowId: string;
@@ -28,6 +30,8 @@ export class EconobotMCPServer {
   private name: string;
   private version: string;
   private activeWorkflows: Map<string, EconomicWorkflowState> = new Map();
+  private fileManager: FileIntegrationManager;
+  private excelParser: ExcelParser;
 
   constructor(config: { name: string; version: string; resourceRoot: string; dataPath?: string }) {
     this.name = config.name;
@@ -35,12 +39,17 @@ export class EconobotMCPServer {
     this.resourceRoot = path.resolve(config.resourceRoot);
     this.dataPath = config.dataPath || path.join(this.resourceRoot, 'econobot-coordination');
 
+    // Initialize file processing capabilities
+    this.fileManager = new FileIntegrationManager();
+    this.excelParser = new ExcelParser();
+
     this.server = new McpServer({
       name: config.name,
       version: config.version
     });
 
     this.setupEconomicCoordinationTools();
+    this.setupEconomicDataTools();
     this.setupEconomicCoordinationResources();
   }
 
@@ -127,6 +136,97 @@ export class EconobotMCPServer {
       async (args, extra) => {
         const result = await this.handleEconomicErrors(args);
         return { content: [{ type: "text", text: JSON.stringify(result) }] };
+      }
+    );
+  }
+
+  private setupEconomicDataTools(): void {
+    // Tool: Process Economic Data Files
+    this.server.tool(
+      'process_economic_data',
+      'Process Excel/CSV files containing economic data (pricing, costs, assumptions)',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to Excel or CSV file' },
+          dataType: { type: 'string', enum: ['pricing', 'costs', 'assumptions', 'mixed'], description: 'Type of economic data' },
+          outputPath: { type: 'string', optional: true, description: 'Output path for processed data' },
+          extractPricing: { type: 'boolean', optional: true, description: 'Extract pricing data' },
+          extractCosts: { type: 'boolean', optional: true, description: 'Extract cost assumptions' }
+        },
+        required: ['filePath', 'dataType']
+      },
+      async (args, extra) => {
+        try {
+          const result = await this.fileManager.parseFile(args.filePath);
+          
+          if (!result.success) {
+            return { 
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  error: 'Failed to process economic data file', 
+                  details: result.errors 
+                }) 
+              }] 
+            };
+          }
+
+          const processed = {
+            dataType: args.dataType,
+            fileName: result.metadata.metadata?.fileName || 'unknown',
+            fileSize: result.metadata.size,
+            processedData: {} as Record<string, any>,
+            summary: {} as Record<string, any>
+          };
+
+          // Process based on data type and format
+          if (result.format === 'excel') {
+            const excelData = result.data;
+            
+            // Process each sheet for economic data
+            for (const sheet of excelData.sheets) {
+              if (args.extractPricing || args.dataType === 'pricing') {
+                const pricingData = this.excelParser.extractPricingData(sheet);
+                if (pricingData.length > 0) {
+                  processed.processedData[`${sheet.name}_pricing`] = pricingData;
+                  processed.summary[`${sheet.name}_pricing_count`] = pricingData.length;
+                }
+              }
+              
+              if (args.extractCosts || args.dataType === 'costs') {
+                const costData = this.excelParser.extractCostAssumptions(sheet);
+                if (costData.length > 0) {
+                  processed.processedData[`${sheet.name}_costs`] = costData;
+                  processed.summary[`${sheet.name}_costs_count`] = costData.length;
+                }
+              }
+            }
+          }
+
+          // Save processed data if output path provided
+          if (args.outputPath) {
+            await fs.writeFile(args.outputPath, JSON.stringify(processed, null, 2));
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(processed, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'Economic data processing failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
       }
     );
   }

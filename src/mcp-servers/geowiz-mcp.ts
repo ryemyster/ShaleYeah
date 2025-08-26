@@ -8,6 +8,9 @@ import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
+import { FileIntegrationManager } from '../shared/file-integration.js';
+import { GISParser } from '../shared/parsers/gis-parser.js';
+import { LASParser } from '../shared/parsers/las-parser.js';
 
 export interface GeowizMCPConfig {
   name: string;
@@ -44,12 +47,20 @@ export class GeowizMCPServer {
   private name: string;
   private version: string;
   private activeWorkflows: Map<string, WorkflowState> = new Map();
+  private fileManager: FileIntegrationManager;
+  private gisParser: GISParser;
+  private lasParser: LASParser;
 
   constructor(config: GeowizMCPConfig) {
     this.name = config.name;
     this.version = config.version;
     this.resourceRoot = path.resolve(config.resourceRoot);
     this.dataPath = config.dataPath || path.join(this.resourceRoot, 'geowiz-coordination');
+
+    // Initialize file processing capabilities
+    this.fileManager = new FileIntegrationManager();
+    this.gisParser = new GISParser();
+    this.lasParser = new LASParser();
 
     // Create official MCP server for geological coordination
     this.server = new McpServer({
@@ -58,6 +69,7 @@ export class GeowizMCPServer {
     });
 
     this.setupCoordinationTools();
+    this.setupFileProcessingTools();
     this.setupCoordinationResources();
     this.setupCoordinationPrompts();
   }
@@ -207,6 +219,216 @@ export class GeowizMCPServer {
         await fs.writeFile(logPath, JSON.stringify(existingLogs, null, 2));
 
         return { content: [{ type: "text", text: JSON.stringify(errorHandling) }] };
+      }
+    );
+  }
+
+  /**
+   * Setup file processing tools
+   */
+  private setupFileProcessingTools(): void {
+    // Tool: Parse GIS Files
+    this.server.tool(
+      'parse_gis_file',
+      'Parse GIS files (Shapefile, GeoJSON, KML) for geological analysis',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to GIS file' },
+          outputPath: { type: 'string', optional: true, description: 'Output path for processed data' },
+          extractFeatures: { type: 'boolean', optional: true, description: 'Extract feature attributes' },
+          calculateAreas: { type: 'boolean', optional: true, description: 'Calculate polygon areas' }
+        },
+        required: ['filePath']
+      },
+      async (args, extra) => {
+        try {
+          const result = await this.fileManager.parseFile(args.filePath);
+          
+          if (!result.success) {
+            return { 
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  error: 'Failed to parse GIS file', 
+                  details: result.errors 
+                }) 
+              }] 
+            };
+          }
+
+          // Process GIS-specific data
+          const gisData = result.data;
+          const processed = {
+            type: result.format,
+            features: gisData.metadata?.featureCount || 0,
+            geometryTypes: gisData.metadata?.geometryTypes || [],
+            bounds: gisData.bounds || null,
+            coordinateSystem: gisData.metadata?.coordinateSystem || 'Unknown',
+            attributeFields: gisData.metadata?.attributeFields || [],
+            quality: gisData.metadata?.quality || {}
+          };
+
+          // Save processed data if output path provided
+          if (args.outputPath) {
+            await fs.writeFile(args.outputPath, JSON.stringify(processed, null, 2));
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(processed, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'GIS file processing failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
+      }
+    );
+
+    // Tool: Parse Well Log Files
+    this.server.tool(
+      'parse_well_log',
+      'Parse LAS well log files for geological analysis',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to LAS file' },
+          outputPath: { type: 'string', optional: true, description: 'Output path for processed data' },
+          extractCurves: { type: 'array', items: { type: 'string' }, optional: true, description: 'Specific curves to extract' },
+          qualityCheck: { type: 'boolean', optional: true, description: 'Perform quality analysis' }
+        },
+        required: ['filePath']
+      },
+      async (args, extra) => {
+        try {
+          const result = await this.fileManager.parseFile(args.filePath);
+          
+          if (!result.success) {
+            return { 
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  error: 'Failed to parse LAS file', 
+                  details: result.errors 
+                }) 
+              }] 
+            };
+          }
+
+          // Process LAS-specific data
+          const lasData = result.data;
+          const processed = {
+            wellInfo: {
+              name: lasData.wellInfo.WELL?.value || 'Unknown',
+              company: lasData.wellInfo.COMP?.value || 'Unknown',
+              field: lasData.wellInfo.FLD?.value || 'Unknown',
+              location: lasData.wellInfo.LOC?.value || 'Unknown'
+            },
+            depthRange: lasData.depthRange,
+            curves: lasData.curves.map((curve: any) => ({
+              mnemonic: curve.mnemonic,
+              unit: curve.unit,
+              description: curve.description,
+              statistics: args.qualityCheck ? this.lasParser.getCurveStatistics(curve) : null
+            })),
+            quality: lasData.metadata.quality,
+            totalRows: lasData.metadata.totalRows,
+            completeness: lasData.metadata.quality.completeness
+          };
+
+          // Filter curves if specific ones requested
+          if (args.extractCurves) {
+            processed.curves = processed.curves.filter((curve: any) => 
+              args.extractCurves!.includes(curve.mnemonic)
+            );
+          }
+
+          // Save processed data if output path provided
+          if (args.outputPath) {
+            await fs.writeFile(args.outputPath, JSON.stringify(processed, null, 2));
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(processed, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'LAS file processing failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
+      }
+    );
+
+    // Tool: Detect File Format
+    this.server.tool(
+      'detect_file_format',
+      'Detect and validate file format for geological data',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to file for format detection' },
+          expectedFormat: { type: 'string', optional: true, description: 'Expected format for validation' }
+        },
+        required: ['filePath']
+      },
+      async (args, extra) => {
+        try {
+          const supportedFormats = this.fileManager.getSupportedFormats();
+          const compatibility = args.expectedFormat ? 
+            await this.fileManager.validateFileCompatibility(args.filePath, args.expectedFormat) :
+            null;
+
+          const detection = {
+            filePath: args.filePath,
+            supportedFormats: supportedFormats.length,
+            detectedFormat: 'analyzing...',
+            compatibility: compatibility || null,
+            extractionCapabilities: [] as string[]
+          };
+
+          // Quick format detection
+          const result = await this.fileManager.parseFile(args.filePath);
+          detection.detectedFormat = result.format;
+          detection.extractionCapabilities = this.fileManager.getExtractionCapabilities(result.format);
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(detection, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'File format detection failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
       }
     );
   }

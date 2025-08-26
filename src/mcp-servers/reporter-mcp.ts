@@ -8,6 +8,7 @@ import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mc
 import { z } from 'zod';
 import fs from 'fs/promises';
 import path from 'path';
+import { FileIntegrationManager } from '../shared/file-integration.js';
 
 export class ReporterMCPServer {
   private server: McpServer;
@@ -17,6 +18,7 @@ export class ReporterMCPServer {
   private name: string;
   private version: string;
   private activeWorkflows: Map<string, any> = new Map();
+  private fileManager: FileIntegrationManager;
 
   constructor(config: { name: string; version: string; resourceRoot: string; dataPath?: string }) {
     this.name = config.name;
@@ -24,12 +26,15 @@ export class ReporterMCPServer {
     this.resourceRoot = path.resolve(config.resourceRoot);
     this.dataPath = config.dataPath || path.join(this.resourceRoot, 'reporter-coordination');
 
+    this.fileManager = new FileIntegrationManager();
+
     this.server = new McpServer({
       name: config.name,
       version: config.version
     });
 
     this.setupReportingCoordinationTools();
+    this.setupDocumentProcessingTools();
     this.setupReportingCoordinationResources();
   }
 
@@ -115,6 +120,255 @@ export class ReporterMCPServer {
     );
   }
 
+  private setupDocumentProcessingTools(): void {
+    this.server.tool(
+      'parse_document',
+      'Parse and extract text from PDF or Word documents for report generation',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to PDF or Word document' },
+          extractMetadata: { type: 'boolean', optional: true, description: 'Extract document metadata' },
+          parseStructure: { type: 'boolean', optional: true, description: 'Parse document structure and headings' },
+          outputFormat: { type: 'string', enum: ['text', 'markdown', 'json'], optional: true, description: 'Output format for extracted content' }
+        },
+        required: ['filePath']
+      },
+      async (args: any, extra: any) => {
+        try {
+          const result = await this.fileManager.parseFile(args.filePath);
+          
+          if (!result.success) {
+            return { 
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  error: 'Failed to parse document', 
+                  details: result.errors 
+                }) 
+              }] 
+            };
+          }
+
+          const processed = {
+            fileName: result.metadata.metadata?.fileName || 'unknown',
+            fileSize: result.metadata.size,
+            format: result.format,
+            extractedContent: result.data,
+            metadata: args.extractMetadata ? result.metadata : undefined,
+            processedAt: new Date().toISOString()
+          };
+
+          if (args.parseStructure && result.format === 'pdf') {
+            processed.extractedContent = { message: 'PDF structure parsing will be implemented when PDF parser is available' };
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(processed, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'Document parsing failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
+      }
+    );
+
+    this.server.tool(
+      'extract_report_data',
+      'Extract structured data from existing reports for analysis and synthesis',
+      {
+        type: 'object',
+        properties: {
+          filePath: { type: 'string', description: 'Path to report document (PDF, Word, etc.)' },
+          dataTypes: { type: 'array', items: { type: 'string' }, description: 'Types of data to extract (tables, charts, sections)' },
+          keywords: { type: 'array', items: { type: 'string' }, optional: true, description: 'Keywords to focus extraction on' }
+        },
+        required: ['filePath', 'dataTypes']
+      },
+      async (args: any, extra: any) => {
+        try {
+          const result = await this.fileManager.parseFile(args.filePath);
+          
+          if (!result.success) {
+            return { 
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  error: 'Failed to extract report data', 
+                  details: result.errors 
+                }) 
+              }] 
+            };
+          }
+
+          const extractedData = {
+            fileName: result.metadata.metadata?.fileName || 'unknown',
+            extractedSections: {} as Record<string, any>,
+            summary: {
+              tablesFound: 0,
+              chartsFound: 0,
+              sectionsFound: 0,
+              keywordMatches: 0
+            }
+          };
+
+          if (result.format === 'pdf' && args.dataTypes.includes('tables')) {
+            extractedData.extractedSections.tables = [{ message: 'PDF table extraction will be implemented when PDF parser is available' }];
+            extractedData.summary.tablesFound = 0;
+          }
+
+          if (args.keywords && args.keywords.length > 0) {
+            const keywordData = this.extractKeywordContent(result.data, args.keywords);
+            extractedData.extractedSections.keywordMatches = keywordData;
+            extractedData.summary.keywordMatches = keywordData.length;
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(extractedData, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'Report data extraction failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
+      }
+    );
+
+    this.server.tool(
+      'generate_template',
+      'Generate report templates based on existing documents or requirements',
+      {
+        type: 'object',
+        properties: {
+          templateType: { type: 'string', enum: ['executive_summary', 'technical_report', 'investment_thesis', 'custom'], description: 'Type of template to generate' },
+          sampleDocPath: { type: 'string', optional: true, description: 'Path to sample document to base template on' },
+          sections: { type: 'array', items: { type: 'string' }, optional: true, description: 'Custom sections for the template' },
+          outputPath: { type: 'string', optional: true, description: 'Output path for generated template' }
+        },
+        required: ['templateType']
+      },
+      async (args: any, extra: any) => {
+        try {
+          let template: any = {};
+
+          if (args.sampleDocPath) {
+            const result = await this.fileManager.parseFile(args.sampleDocPath);
+            if (result.success && result.format === 'pdf') {
+              template = { message: 'PDF template extraction will be implemented when PDF parser is available' };
+            }
+          }
+
+          const generatedTemplate = this.generateReportTemplate(args.templateType, args.sections, template);
+          
+          if (args.outputPath) {
+            await fs.writeFile(args.outputPath, JSON.stringify(generatedTemplate, null, 2));
+          }
+
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify(generatedTemplate, null, 2) 
+            }] 
+          };
+          
+        } catch (error) {
+          return { 
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({ 
+                error: 'Template generation failed', 
+                message: String(error) 
+              }) 
+            }] 
+          };
+        }
+      }
+    );
+  }
+
+  private extractKeywordContent(content: any, keywords: string[]): any[] {
+    const matches: any[] = [];
+    const text = typeof content === 'string' ? content : JSON.stringify(content);
+    
+    keywords.forEach((keyword: string) => {
+      const regex = new RegExp(`\\b${keyword}\\b.*?(?=\\n|$)`, 'gi');
+      const keywordMatches = text.match(regex) || [];
+      keywordMatches.forEach((match: string) => {
+        matches.push({
+          keyword,
+          context: match.trim(),
+          position: text.indexOf(match)
+        });
+      });
+    });
+    
+    return matches.sort((a: any, b: any) => a.position - b.position);
+  }
+
+  private generateReportTemplate(templateType: string, customSections?: string[], sampleTemplate?: any): any {
+    const baseTemplate = {
+      type: templateType,
+      metadata: {
+        title: '',
+        author: '',
+        date: '',
+        version: '1.0'
+      },
+      sections: [] as any[]
+    };
+
+    const sectionTemplates = {
+      executive_summary: [
+        { name: 'Executive Summary', required: true },
+        { name: 'Key Findings', required: true },
+        { name: 'Recommendations', required: true }
+      ],
+      technical_report: [
+        { name: 'Introduction', required: true },
+        { name: 'Methodology', required: true },
+        { name: 'Results', required: true },
+        { name: 'Discussion', required: true },
+        { name: 'Conclusions', required: true }
+      ],
+      investment_thesis: [
+        { name: 'Investment Overview', required: true },
+        { name: 'Market Analysis', required: true },
+        { name: 'Financial Projections', required: true },
+        { name: 'Risk Assessment', required: true },
+        { name: 'Recommendation', required: true }
+      ]
+    };
+
+    if (customSections) {
+      baseTemplate.sections = customSections.map((section: string) => ({ name: section, required: false }));
+    } else {
+      baseTemplate.sections = sectionTemplates[templateType as keyof typeof sectionTemplates] || sectionTemplates.technical_report;
+    }
+
+    return baseTemplate;
+  }
+
   private setupReportingCoordinationResources(): void {
     this.server.resource(
       'coord://state/{workflow_id}',
@@ -184,7 +438,10 @@ export class ReporterMCPServer {
       version: this.version,
       initialized: this.initialized,
       persona: 'Scriptus Coordinatus - Master Reporting Orchestrator',
-      capabilities: { tools: ['orchestrate_workflow', 'coordinate_dependencies', 'manage_state', 'handle_errors'] }
+      capabilities: { 
+        tools: ['orchestrate_workflow', 'coordinate_dependencies', 'manage_state', 'handle_errors', 'parse_document', 'extract_report_data', 'generate_template'],
+        resources: ['coord://state/{workflow_id}']
+      }
     };
   }
 }

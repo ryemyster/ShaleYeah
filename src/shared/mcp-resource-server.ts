@@ -44,12 +44,46 @@ export class FileSystemMCPResourceServer extends EventEmitter implements MCPReso
 
   private async setupResourceStructure(): Promise<void> {
     const dirs = [
+      // Well log data
       'inputs/las-files',
-      'inputs/access-db', 
-      'outputs',
+      'inputs/dlis-files',
+      
+      // Seismic data
+      'inputs/seismic/segy',
+      'inputs/seismic/processed',
+      
+      // GIS data
+      'inputs/gis/shapefiles',
+      'inputs/gis/geojson',
+      'inputs/gis/kml',
+      
+      // Database sources
+      'inputs/access-db',
+      'inputs/databases',
+      
+      // Spreadsheets and documents
+      'inputs/excel-files',
+      'inputs/documents',
+      
+      // Raster/Images
+      'inputs/imagery/geotiff',
+      'inputs/imagery/maps',
+      
+      // Reservoir models
+      'inputs/reservoir/eclipse',
+      'inputs/reservoir/models',
+      
+      // Output directories
+      'outputs/reports',
+      'outputs/curves',
+      'outputs/maps',
+      'outputs/analysis',
+      
+      // System directories
       'state',
       'config',
-      'temp'
+      'temp',
+      'cache'
     ];
 
     for (const dir of dirs) {
@@ -105,20 +139,85 @@ export class FileSystemMCPResourceServer extends EventEmitter implements MCPReso
     const ext = path.extname(filePath).toLowerCase();
     
     const formatMap: Record<string, MCPResource['format']> = {
+      // Document formats
       '.json': 'json',
       '.geojson': 'geojson', 
       '.md': 'markdown',
       '.csv': 'csv',
-      '.las': 'las'
+      '.txt': 'text',
+      '.xml': 'xml',
+      
+      // Well log formats
+      '.las': 'las',
+      '.dlis': 'dlis',
+      
+      // Seismic formats
+      '.segy': 'segy',
+      '.sgy': 'segy',
+      
+      // GIS formats
+      '.shp': 'shapefile',
+      '.kml': 'kml',
+      '.kmz': 'kml',
+      
+      // Spreadsheet formats
+      '.xlsx': 'excel',
+      '.xls': 'excel',
+      
+      // Image/Raster formats
+      '.tif': 'geotiff',
+      '.tiff': 'geotiff',
+      '.geotiff': 'geotiff',
+      
+      // Database formats
+      '.mdb': 'access',
+      '.accdb': 'access',
+      
+      // Reservoir formats
+      '.grdecl': 'eclipse',
+      '.inc': 'eclipse',
+      
+      // Archive formats
+      '.zip': 'archive',
+      '.tar': 'archive',
+      '.gz': 'archive'
     };
+
+    const format = formatMap[ext] || 'binary';
+    const fileName = path.basename(filePath);
+    
+    // Create format-specific description
+    let description = `File resource: ${fileName}`;
+    if (format !== 'binary') {
+      const formatDescriptions: Record<string, string> = {
+        'las': 'Log ASCII Standard well log file',
+        'dlis': 'Digital Log Interchange Standard file',
+        'segy': 'SEG-Y seismic data file',
+        'shapefile': 'ESRI Shapefile',
+        'geojson': 'GeoJSON geographic data',
+        'kml': 'Keyhole Markup Language',
+        'excel': 'Microsoft Excel spreadsheet',
+        'geotiff': 'GeoTIFF raster image',
+        'access': 'Microsoft Access database',
+        'eclipse': 'Eclipse reservoir grid format',
+        'archive': 'Compressed archive file'
+      };
+      
+      if (formatDescriptions[format]) {
+        description = `${formatDescriptions[format]}: ${fileName}`;
+      }
+    }
 
     return {
       uri,
       type: 'file',
-      format: formatMap[ext] || 'binary',
+      format: format as MCPResource['format'],
       metadata: {
-        description: `File resource: ${path.basename(filePath)}`,
-        size: stat.size
+        description,
+        size: stat.size,
+        format: format,
+        extension: ext,
+        fileName
       },
       available: true,
       lastModified: stat.mtime.getTime()
