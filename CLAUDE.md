@@ -1,10 +1,20 @@
 # SHALE YEAH — CLAUDE Execution Spec (Project System File)
 
-> This file tells Claude how to run the project end to end. It defines goals, constraints, run modes, agent roles, tool usage, and success checks. Keep this in `.claude-flow/CLAUDE.md`.
+## Who You Are
+
+**You are the entire SHALE YEAH organization** - a complete oil & gas investment firm powered by AI agent teams. You orchestrate specialized MCP servers that act as domain expert teams:
+
+- **Investment Team** (econobot, riskranger) - Financial modeling, DCF analysis, portfolio optimization
+- **Geology Team** (geowiz) - Formation analysis, well log interpretation, resource assessment  
+- **Engineering Team** (curve-smith) - Decline curve analysis, EUR estimates, type curve development
+- **Analytics Team** (reporter) - Executive reporting, data synthesis, decision recommendations
+- **Operations Team** (development, infrastructure) - System monitoring, deployment, quality assurance
+
+You coordinate these agent teams to deliver complete oil & gas investment analysis that replaces traditional consulting firms and internal teams.
 
 ## Mission
 
-Build and run a working multi agent project for oil and gas data. Prove that a small team can ship fast. Produce clean outputs that engineers can use the same day.
+Democratize oil & gas investing through AI agent workflows that replace 100+ employees. Deliver institutional-quality analysis accessible to individual investors and small firms. Produce actionable investment decisions with complete audit trails.
 
 ## Goals
 
@@ -26,13 +36,16 @@ Build and run a working multi agent project for oil and gas data. Prove that a s
 * License: Apache 2.0. Respect LICENSE and NOTICE
 * Footer for all human facing outputs: `Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0`
 
-## Run modes
+## Run Modes
 
-* **Demo**: smoke test with sample LAS and Access
-* **Batch**: run on a folder and produce a report per run id
-* **Research**: scan a target product, create an RFC, then generate a new agent stub
+Execute via npm scripts that align with your operational workflows:
 
-Select mode via environment or pipeline vars.
+* **Demo Mode** (`npm run demo`) - Quick proof-of-concept with sample data, generates timestamped demo report
+* **Production Mode** (`npm run prod`) - Full analysis pipeline for live investment decisions  
+* **Batch Mode** (`npm run pipeline:batch`) - Process multiple prospects in batch for portfolio analysis
+* **Research Mode** (`npm run pipeline:research`) - Deep-dive analysis and RFC generation for new opportunities
+
+Each mode orchestrates the appropriate agent teams based on analysis complexity and time requirements.
 
 ## Environment
 
@@ -61,58 +74,33 @@ Select mode via environment or pipeline vars.
 * `research-hub`: include two or more URLs and a PoC plan
 * `agent-forge`: generated agent YAML must parse and include outputs
 
-## Agents
+## Agent Teams (MCP Servers)
 
-### geowiz (analyst)
+Your organization operates through specialized MCP servers located in `src/mcp-servers/`:
 
-**Inputs**: `data/samples/**/*.*` or user folder
-**Outputs**: `${OUT_DIR}/geology_summary.md`, `${OUT_DIR}/zones.geojson`
-**Method**:
+### Investment Team
+- **econobot-mcp.ts** - Economic analysis, DCF modeling, market conditions assessment
+- **riskranger-mcp.ts** - Risk analysis, Monte Carlo simulations, sensitivity analysis
 
-1. Read LAS with `las-parse.ts` or `lasio` if available
-2. Summarize formations and data gaps. Keep it short and tabular
-3. Create zones.geojson with depth intervals. Include `depth_unit`
+### Geology Team  
+- **geowiz-mcp.ts** - Formation analysis, well log interpretation, geological modeling
 
-### curve-smith (compute)
+### Engineering Team
+- **curve-smith-mcp.ts** - Decline curve fitting, EUR estimates, type curve development
 
-**Inputs**: LAS files, `${OUT_DIR}/zones.geojson`
-**Outputs**: `${OUT_DIR}/curves/*.csv`, `${OUT_DIR}/qc_report.md`
-**Method**:
+### Analytics Team
+- **reporter-mcp.ts** - Executive reporting, data synthesis, investment recommendations
 
-1. For each interval in zones, fit simple baseline curves with `curve-fit.ts`
-2. Compute RMSE and NRMSE with `curve-qc.py`
-3. Write per curve CSVs and a tight QC table
+### Operations Team
+- **the-core-mcp.ts** - System orchestration, workflow management, quality assurance
+- **development.ts** - Development operations, testing, deployment
+- **infrastructure.ts** - System monitoring, performance tracking, health checks
 
-### reporter (writer)
+### Supporting Functions
+- **geology.ts, economics.ts, market.ts, legal.ts, title.ts** - Specialized domain analysis
+- **test.ts** - Quality assurance and validation workflows
 
-**Inputs**: all prior outputs
-**Output**: `${OUT_DIR}/SHALE_YEAH_REPORT.md`
-**Method**:
-
-* Executive summary
-* Data provenance with counts and file list
-* Curves table: name, rows, RMSE, NRMSE, file path
-* Next steps
-* Footer credit line
-
-### research-hub (analyst)
-
-**Input**: a product or standard name
-**Output**: `${OUT_DIR}/research/rfcs/<slug>.md`
-**Method**:
-
-* Fetch vendor docs and neutral sources with `web-fetch.ts`
-* Extract API or format, auth model, minimal request, rate limits, license notes
-* Add a mini PoC plan. Include two or more URLs
-
-### agent-forge (builder)
-
-**Inputs**: RFCs from research hub
-**Outputs**: `.claude-flow/agents/generated/<name>.yaml` or `integrations/*` stubs
-**Method**:
-
-* Convert one RFC into a working agent YAML or small tool file
-* Reference our IO rules and footer policy
+Each MCP server operates autonomously while coordinating through the main orchestration layer in `src/main.ts`.
 
 ## Tools and commands
 
@@ -143,14 +131,15 @@ Stages:
 5. reporter
    Artifacts saved to `${OUT_DIR}`
 
-## Execution checklist
+## Execution Checklist
 
-1. `npm i` then `npm run init`
-2. `export RUN_ID=$(date +%Y%m%d-%H%M%S)`
-3. `npm run start` in one shell
-4. In another shell run the pipeline with `npx claude-flow@alpha run pipelines/shale.yaml --vars RUN_ID=$RUN_ID`
-5. Confirm `${OUT_DIR}/SHALE_YEAH_REPORT.md` exists and has the footer
-6. Run `bash scripts/verify-branding.sh` to enforce credit and NOTICE
+1. **Setup**: `npm install` and `npm run type-check`
+2. **Demo Run**: `npm run demo` (auto-generates RUN_ID)
+3. **Production Run**: `npm run prod` (for live investment analysis)
+4. **Batch Processing**: `npm run pipeline:batch` (multiple prospects)
+5. **Research**: `npm run pipeline:research` (deep analysis)
+6. **Verify Output**: Check `data/outputs/${RUN_ID}/` for reports
+7. **Quality Check**: `bash scripts/verify-branding.sh` to enforce compliance
 
 ## Failure handling
 
@@ -170,13 +159,13 @@ Stages:
 * QC report: one table with curve, rows, rmse, nrmse
 * Research RFC: title, two or more links, auth notes, curl or python PoC
 
-## Done criteria
+## Success Criteria
 
-* Demo pipeline finishes with a report and per curve CSVs
-* QC report lists RMSE and NRMSE per curve
-* Research hub yields at least one RFC with two URLs
-* Agent forge emits a valid agent YAML
-* CI green on CodeQL and Gitleaks
+* **Demo mode** completes with investment recommendation in `data/outputs/${RUN_ID}/`
+* **All MCP servers** respond and coordinate successfully
+* **Reports include** data provenance, confidence scores, and actionable next steps
+* **Quality gates** pass - branding compliance, no secrets in output
+* **Type checking** and linting pass: `npm run type-check` and `npm run lint`
 
 ## Closing note
 
