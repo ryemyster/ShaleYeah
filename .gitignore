@@ -147,6 +147,7 @@ research/competitive-analysis/sensitive/
 integrations/*/secrets/
 .claude-flow/logs/
 .hive-mind/
+.claude-flow/metrics/
 node_modules
 .env.local
 .env.development.local
