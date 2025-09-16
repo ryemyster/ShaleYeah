@@ -158,3 +158,5 @@ leaks.json
 detailed_leaks.json
 results.sarif
 gitleaks-report.json
+
+.secure*
