@@ -12,6 +12,7 @@
         "init": "npx claude-flow@alpha init",
         "gen": "tsx scripts/generate-from-spec.ts",
         "demo": "npx tsx src/demo-runner.ts",
+        "demo:enhanced": "npx tsx src/enhanced-demo-runner.ts",
         "prod": "npx tsx src/main.ts --mode=production",
         "pipeline": "tsx src/main.ts",
         "pipeline:demo": "npx tsx src/demo-runner.ts",
@@ -25,7 +26,10 @@
         "clean:outputs": "rm -rf data/outputs/*",
         "clean:cache": "rm -rf node_modules/.cache .tsx-cache",
         "clean:all": "npm run clean && rm -rf node_modules/ package-lock.json",
-        "test": "npx tsx tests/demo.test.ts"
+        "test": "npx tsx tests/demo.test.ts",
+        "test:mcp": "npx tsx scripts/test-geowiz-standalone.ts",
+        "server:geowiz": "npx tsx src/mcp-servers/geowiz-standalone.ts",
+        "server:econobot": "npx tsx src/mcp-servers/econobot-standalone.ts"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.30.1",

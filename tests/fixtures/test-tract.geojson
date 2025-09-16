@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "TRACT_ID": "PERM_001",
+        "ACRES": 640,
+        "OWNER": "Test Operator",
+        "LEASE_STATUS": "HBP"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -101.5,
+              31.8
+            ],
+            [
+              -101.4,
+              31.8
+            ],
+            [
+              -101.4,
+              31.9
+            ],
+            [
+              -101.5,
+              31.9
+            ],
+            [
+              -101.5,
+              31.8
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

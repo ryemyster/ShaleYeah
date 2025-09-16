@@ -1,0 +1,249 @@
+{
+  "name": "geowiz-server",
+  "version": "1.0.0",
+  "description": "Geological Analysis MCP Server - Marcus Aurelius Geologicus",
+  "author": "Ryan McDonald / Ascendvent LLC",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/rmcdonald/ShaleYeah",
+  "keywords": ["geology", "oil-gas", "analysis", "mcp"],
+
+  "mcp": {
+    "protocol_version": "2024-11-05",
+    "capabilities": {
+      "tools": true,
+      "resources": true,
+      "prompts": false
+    }
+  },
+
+  "transport": {
+    "stdio": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp-servers/geowiz-standalone.ts"]
+    }
+  },
+
+  "tools": [
+    {
+      "name": "analyze_geological_formation",
+      "description": "Analyze geological formations from well log data with comprehensive assessment",
+      "category": "geology",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to LAS well log file"
+          },
+          "targetFormations": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Specific formations to analyze"
+          },
+          "includeQualityAssessment": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include quality assessment"
+          },
+          "analysisDepth": {
+            "type": "string",
+            "enum": ["basic", "standard", "comprehensive"],
+            "default": "standard",
+            "description": "Depth of analysis to perform"
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output path for analysis results"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "name": "process_gis_data",
+      "description": "Process GIS files (Shapefile, GeoJSON, KML) for geological mapping",
+      "category": "gis",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to GIS file"
+          },
+          "reprojectToWGS84": {
+            "type": "boolean",
+            "default": true,
+            "description": "Reproject to WGS84 coordinate system"
+          },
+          "calculateAreas": {
+            "type": "boolean",
+            "default": true,
+            "description": "Calculate polygon areas"
+          },
+          "extractAttributes": {
+            "type": "boolean",
+            "default": true,
+            "description": "Extract feature attributes"
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output path for processed GIS data"
+          }
+        },
+        "required": ["filePath"]
+      }
+    },
+    {
+      "name": "generate_formation_report",
+      "description": "Generate comprehensive geological formation report",
+      "category": "reporting",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "analysisId": {
+            "type": "string",
+            "description": "Analysis identifier"
+          },
+          "includeCharts": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include charts and visualizations"
+          },
+          "reportFormat": {
+            "type": "string",
+            "enum": ["markdown", "json", "html"],
+            "default": "markdown",
+            "description": "Report output format"
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output path for report"
+          }
+        },
+        "required": ["analysisId"]
+      }
+    },
+    {
+      "name": "assess_data_quality",
+      "description": "Assess quality of geological data with scoring and recommendations",
+      "category": "quality",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to data file"
+          },
+          "dataType": {
+            "type": "string",
+            "enum": ["las", "gis", "seismic", "general"],
+            "description": "Type of geological data"
+          },
+          "qualityThresholds": {
+            "type": "object",
+            "properties": {
+              "completeness": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.8
+              },
+              "accuracy": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.85
+              },
+              "consistency": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "default": 0.9
+              }
+            }
+          }
+        },
+        "required": ["filePath", "dataType"]
+      }
+    }
+  ],
+
+  "resources": [
+    {
+      "name": "formation_analysis",
+      "uri": "geowiz://analyses/{analysis_id}",
+      "description": "Geological formation analysis results",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "gis_analysis",
+      "uri": "geowiz://gis/{gis_id}",
+      "description": "GIS data processing results",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "quality_report",
+      "uri": "geowiz://quality/{report_id}",
+      "description": "Data quality assessment reports",
+      "mimeType": "application/json"
+    }
+  ],
+
+  "persona": {
+    "name": "Marcus Aurelius Geologicus",
+    "role": "Master Geological Analyst",
+    "expertise": [
+      "Formation analysis and characterization",
+      "Well log interpretation",
+      "GIS data processing and spatial analysis",
+      "Geological quality assessment",
+      "Petroleum geology and reservoir characterization"
+    ],
+    "personality": "Strategic and methodical geological expert with deep domain knowledge and decisive analytical capabilities"
+  },
+
+  "file_formats": {
+    "supported": [
+      {
+        "format": "LAS",
+        "extensions": [".las"],
+        "description": "Log ASCII Standard well log files",
+        "capabilities": ["read", "analyze", "quality_check"]
+      },
+      {
+        "format": "Shapefile",
+        "extensions": [".shp", ".shx", ".dbf", ".prj"],
+        "description": "ESRI Shapefile GIS format",
+        "capabilities": ["read", "analyze", "reproject", "calculate_areas"]
+      },
+      {
+        "format": "GeoJSON",
+        "extensions": [".geojson", ".json"],
+        "description": "Geographic JSON format",
+        "capabilities": ["read", "analyze", "validate_geometry"]
+      },
+      {
+        "format": "KML",
+        "extensions": [".kml", ".kmz"],
+        "description": "Keyhole Markup Language",
+        "capabilities": ["read", "analyze", "extract_features"]
+      }
+    ]
+  },
+
+  "output_formats": {
+    "reports": ["markdown", "json", "html"],
+    "data": ["json", "geojson", "csv"],
+    "quality": ["json", "markdown"]
+  },
+
+  "configuration": {
+    "data_directory": "./data/geowiz",
+    "supported_coordinate_systems": ["WGS84", "NAD83", "UTM"],
+    "quality_thresholds": {
+      "default_completeness": 0.8,
+      "default_accuracy": 0.85,
+      "default_consistency": 0.9
+    }
+  }
+}

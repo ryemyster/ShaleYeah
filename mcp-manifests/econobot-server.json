@@ -1,0 +1,227 @@
+{
+  "name": "econobot-server",
+  "version": "1.0.0",
+  "description": "Economic Analysis MCP Server - Caesar Augustus Economicus",
+  "author": "Ryan McDonald / Ascendvent LLC",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/rmcdonald/ShaleYeah",
+  "keywords": ["economics", "finance", "oil-gas", "dcf", "npv", "irr", "mcp"],
+
+  "mcp": {
+    "protocol_version": "2024-11-05",
+    "capabilities": {
+      "tools": true,
+      "resources": true,
+      "prompts": false
+    }
+  },
+
+  "transport": {
+    "stdio": {
+      "command": "npx",
+      "args": ["tsx", "src/mcp-servers/econobot-standalone.ts"]
+    }
+  },
+
+  "tools": [
+    {
+      "name": "analyze_economic_data",
+      "description": "Analyze economic data from Excel/CSV files with DCF modeling",
+      "category": "economics",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path to Excel or CSV file with economic data"
+          },
+          "dataType": {
+            "type": "string",
+            "enum": ["pricing", "costs", "assumptions", "production", "mixed"],
+            "description": "Type of economic data"
+          },
+          "discountRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "default": 0.1,
+            "description": "Discount rate for NPV calculation"
+          },
+          "analysisType": {
+            "type": "string",
+            "enum": ["basic", "standard", "comprehensive"],
+            "default": "standard",
+            "description": "Depth of economic analysis"
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output path for analysis results"
+          }
+        },
+        "required": ["filePath", "dataType"]
+      }
+    },
+    {
+      "name": "calculate_npv_irr",
+      "description": "Calculate NPV and IRR from cash flow projections",
+      "category": "finance",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "cashFlows": {
+            "type": "array",
+            "items": { "type": "number" },
+            "description": "Array of cash flows by period"
+          },
+          "discountRate": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Discount rate for NPV"
+          },
+          "periods": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Period labels (months, years, etc.)"
+          },
+          "currency": {
+            "type": "string",
+            "default": "USD",
+            "description": "Currency code"
+          },
+          "analysisId": {
+            "type": "string",
+            "description": "Analysis identifier for tracking"
+          }
+        },
+        "required": ["cashFlows", "discountRate"]
+      }
+    },
+    {
+      "name": "perform_sensitivity_analysis",
+      "description": "Perform sensitivity analysis on key economic variables",
+      "category": "risk",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "baseCase": {
+            "type": "object",
+            "description": "Base case economic assumptions"
+          },
+          "sensitivities": {
+            "type": "object",
+            "description": "Sensitivity ranges for key variables"
+          },
+          "scenarios": {
+            "type": "number",
+            "minimum": 5,
+            "maximum": 1000,
+            "default": 100,
+            "description": "Number of scenarios to run"
+          }
+        },
+        "required": ["baseCase", "sensitivities"]
+      }
+    },
+    {
+      "name": "generate_economic_report",
+      "description": "Generate comprehensive economic analysis report",
+      "category": "reporting",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "analysisId": {
+            "type": "string",
+            "description": "Economic analysis identifier"
+          },
+          "reportType": {
+            "type": "string",
+            "enum": ["executive", "detailed", "investment_committee"],
+            "default": "executive",
+            "description": "Type of report to generate"
+          },
+          "includeSensitivity": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include sensitivity analysis"
+          },
+          "includeCharts": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include charts and visualizations"
+          },
+          "outputPath": {
+            "type": "string",
+            "description": "Output path for report"
+          }
+        },
+        "required": ["analysisId"]
+      }
+    }
+  ],
+
+  "resources": [
+    {
+      "name": "economic_analysis",
+      "uri": "econobot://analyses/{analysis_id}",
+      "description": "Economic analysis results and financial models",
+      "mimeType": "application/json"
+    },
+    {
+      "name": "sensitivity_analysis",
+      "uri": "econobot://sensitivity/{analysis_id}",
+      "description": "Sensitivity analysis results and scenarios",
+      "mimeType": "application/json"
+    }
+  ],
+
+  "persona": {
+    "name": "Caesar Augustus Economicus",
+    "role": "Master Financial Strategist",
+    "expertise": [
+      "DCF analysis and financial modeling",
+      "NPV and IRR calculations",
+      "Sensitivity and risk analysis",
+      "Investment decision frameworks",
+      "Economic data processing and validation"
+    ],
+    "personality": "Strategic financial expert with imperial authority and decisive analytical capabilities for investment decisions"
+  },
+
+  "file_formats": {
+    "supported": [
+      {
+        "format": "Excel",
+        "extensions": [".xlsx", ".xlsm", ".xls"],
+        "description": "Microsoft Excel spreadsheets",
+        "capabilities": ["read", "analyze", "extract_data", "process_formulas"]
+      },
+      {
+        "format": "CSV",
+        "extensions": [".csv"],
+        "description": "Comma-separated values",
+        "capabilities": ["read", "analyze", "process_data"]
+      },
+      {
+        "format": "JSON",
+        "extensions": [".json"],
+        "description": "JavaScript Object Notation",
+        "capabilities": ["read", "analyze", "validate_structure"]
+      }
+    ]
+  },
+
+  "output_formats": {
+    "reports": ["markdown", "json", "html"],
+    "financial_models": ["json", "excel", "csv"],
+    "charts": ["json", "svg", "png"]
+  },
+
+  "configuration": {
+    "data_directory": "./data/econobot",
+    "default_discount_rate": 0.1,
+    "default_currency": "USD",
+    "sensitivity_scenarios": 100,
+    "risk_free_rate": 0.03
+  }
+}
