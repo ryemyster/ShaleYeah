@@ -161,7 +161,7 @@ export class EconobotServer extends MCPServer {
     // Parse economic data file
     const parseResult = await this.fileManager.parseFile(args.filePath);
     if (!parseResult.success) {
-      throw new Error(`Failed to parse economic data: ${parseResult.errors.join(', ')}`);
+      throw new Error(`Failed to parse economic data: ${parseResult.errors?.join(', ') || 'Unknown error'}`);
     }
 
     // Perform economic analysis

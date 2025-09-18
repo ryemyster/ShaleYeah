@@ -5,9 +5,9 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { GeowizMCPServer } from '../src/mcp-servers/geowiz-mcp.ts';
-import { CurveSmithMCPServer } from '../src/mcp-servers/curve-smith-mcp.ts';
-import { EconobotMCPServer } from '../src/mcp-servers/econobot-mcp.ts';
+import { GeowizServer } from '../src/servers/geowiz.js';
+import { CurveSmithServer } from '../src/servers/curve-smith.js';
+import { EconobotServer } from '../src/servers/econobot.js';
 
 class MCPIntegrationTester {
   private testDir: string;
@@ -120,13 +120,11 @@ RT.OHMM                     : RESISTIVITY
   }
   
   private async testGeowizMCP(): Promise<void> {
-    const geowiz = new GeowizMCPServer({
-      name: 'test-geowiz',
-      version: '1.0.0',
-      resourceRoot: this.outputDir
-    });
+    const geowiz = new GeowizServer();
+    geowiz.config.dataPath = this.outputDir;
     
-    await geowiz.initialize();
+    await geowiz.setupDataDirectories();
+    geowiz.setupCapabilities();
     console.log('  ✓ Geowiz MCP server initialized');
     
     // Test GIS file parsing capability
@@ -172,17 +170,15 @@ RT.OHMM                     : RESISTIVITY
     
     console.log('  ✓ File format detection completed');
     
-    await geowiz.stop();
+    // No explicit stop method needed for test
   }
   
   private async testCurveSmithMCP(): Promise<void> {
-    const curveSmith = new CurveSmithMCPServer({
-      name: 'test-curve-smith',
-      version: '1.0.0',
-      resourceRoot: this.outputDir
-    });
+    const curveSmith = new CurveSmithServer();
+    curveSmith.config.dataPath = this.outputDir;
     
-    await curveSmith.initialize();
+    await curveSmith.setupDataDirectories();
+    curveSmith.setupCapabilities();
     console.log('  ✓ Curve-Smith MCP server initialized');
     
     // Test LAS file processing
@@ -213,17 +209,15 @@ RT.OHMM                     : RESISTIVITY
     const curveOutputExists = await this.fileExists(curveOutputPath);
     console.log(`  ✓ Curve processing output created: ${curveOutputExists}`);
     
-    await curveSmith.stop();
+    // No explicit stop method needed for test
   }
   
   private async testEconobotMCP(): Promise<void> {
-    const econobot = new EconobotMCPServer({
-      name: 'test-econobot',
-      version: '1.0.0',
-      resourceRoot: this.outputDir
-    });
+    const econobot = new EconobotServer();
+    econobot.config.dataPath = this.outputDir;
     
-    await econobot.initialize();
+    await econobot.setupDataDirectories();
+    econobot.setupCapabilities();
     console.log('  ✓ Econobot MCP server initialized');
     
     // Test economic data processing
@@ -244,7 +238,7 @@ RT.OHMM                     : RESISTIVITY
     const economicOutputExists = await this.fileExists(economicOutputPath);
     console.log(`  ✓ Economic data output created: ${economicOutputExists}`);
     
-    await econobot.stop();
+    // No explicit stop method needed for test
   }
   
   private async simulateMCPToolCall(server: any, toolName: string, args: any): Promise<any> {

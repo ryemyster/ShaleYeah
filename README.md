@@ -23,9 +23,9 @@ SHALE YEAH is a comprehensive investment analysis platform that replaces traditi
 - **Total**: 15+ weeks, $500K+ in labor costs, inconsistent quality
 
 **The Solution**: SHALE YEAH's AI-powered analysis pipeline:
-- **20 specialized MCP servers** with Roman Imperial personas
+- **14 specialized MCP servers** with Roman Imperial personas
 - **Complete investment pipeline** from data ingestion to final decision
-- **2-minute turnaround** for comprehensive analysis
+- **5-second turnaround** for comprehensive analysis
 - **Production-ready outputs** for board presentations and investment committees
 - **Standards-compliant** MCP architecture for enterprise integration
 
@@ -42,13 +42,20 @@ Each AI agent embodies a Roman Imperial expert with deep domain knowledge and de
 
 | **Domain** | **Roman Persona** | **Modern Role** | **Expertise** |
 |------------|------------------|-----------------|---------------|
-| **Geology** | **Marcus Aurelius Geologicus** | Senior Petroleum Geologist | Formation analysis, reservoir characterization |
-| **Economics** | **Caesar Augustus Economicus** | Imperial Financial Strategist | DCF analysis, risk-adjusted valuations |
-| **Risk Analysis** | **Marcus Aurelius Probabilis** | Risk Assessment Commander | Monte Carlo, sensitivity analysis |
-| **Legal** | **Gaius Legalis Advocatus** | Imperial Legal Counselor | Contract analysis, regulatory compliance |
-| **Market Intelligence** | **Gaius Mercatus Analyst** | Market Intelligence Chief | Commodity analysis, supply/demand |
-| **Research** | **Gaius Investigatus Maximus** | Supreme Research Commander | Competitive intelligence, data synthesis |
-| **Infrastructure** | **Lucius Systemus Guardian** | Infrastructure Overseer | System monitoring, performance analysis |
+| **Geology** | **Marcus Aurelius Geologicus** | Master Geological Analyst | Formation analysis, reservoir characterization |
+| **Economics** | **Caesar Augustus Economicus** | Master Financial Strategist | DCF analysis, NPV/IRR modeling |
+| **Engineering** | **Lucius Technicus Engineer** | Master Reservoir Engineer | Decline curves, EUR estimation |
+| **Decision** | **Augustus Decidius Maximus** | Supreme Investment Strategist | Final investment logic, portfolio optimization |
+| **Research** | **Scientius Researchicus** | Master Intelligence Gatherer | Market intelligence, competitive analysis |
+| **Risk Analysis** | **Gaius Probabilis Assessor** | Master Risk Strategist | Monte Carlo, uncertainty quantification |
+| **Legal** | **Legatus Juridicus** | Master Legal Strategist | Contract analysis, regulatory compliance |
+| **Market** | **Mercatus Analyticus** | Master Market Strategist | Commodity forecasting, supply/demand analysis |
+| **Development** | **Architectus Developmentus** | Master Development Coordinator | Project planning, resource allocation |
+| **Drilling** | **Perforator Maximus** | Master Drilling Strategist | Drilling programs, cost optimization |
+| **Infrastructure** | **Structura Ingenious** | Master Infrastructure Architect | Facility design, capacity planning |
+| **Title** | **Titulus Verificatus** | Master Title Analyst | Ownership verification, due diligence |
+| **Test** | **Testius Validatus** | Master Quality Controller | Analysis validation, quality assurance |
+| **Reporting** | **Scriptor Reporticus Maximus** | Master Report Generator | Executive reporting, decision synthesis |
 
 This approach provides:
 - **Consistent decision-making** across all analysis domains
@@ -63,7 +70,7 @@ This approach provides:
 ### Prerequisites
 - **Node.js 18+** with npm
 - **Git** for source control
-- **Optional**: Anthropic API key for full AI analysis
+- **Optional**: Anthropic API key for production AI analysis
 
 ### 5-Minute Demo
 
@@ -73,14 +80,31 @@ git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
 npm install
 
-# 2. Run immediate demo (auto-generates RUN_ID)
+# 2. Run the demo (uses realistic mock data)
 npm run demo
 
-# 3. View results
-cat ./data/outputs/demo-*/SHALE_YEAH_REPORT.md
+# 3. View results in generated output directory
+ls data/outputs/demo-*/
+cat data/outputs/demo-*/INVESTMENT_DECISION.md
 ```
 
-**What happens**: The system analyzes demo LAS files, Access databases, and shapefiles using mock LLM responses, then generates a comprehensive investment report with geological analysis, economic modeling, and risk assessment.
+**What happens**: 6 AI expert agents analyze a Permian Basin tract in ~5 seconds, generating professional investment reports with geological analysis, economic modeling, risk assessment, and final investment recommendation.
+
+**Demo Output:**
+```
+🛢️  SHALE YEAH - AI-Powered Oil & Gas Investment Analysis
+📋 Analysis ID: demo-20250917T132058
+🗺️  Target Tract: Permian Basin Demo Tract
+
+🤖 Executing Marcus Aurelius Geologicus (Geological Analysis)
+   ✅ Geological Analysis: 90% confidence in 844ms
+
+🤖 Executing Caesar Augustus Economicus (Financial Analysis)
+   ✅ Financial Analysis: 82% confidence in 942ms
+
+🎯 SHALE YEAH Analysis Complete!
+📊 Overall Recommendation: ✅ PROCEED (Strong Economics & Acceptable Risk)
+```
 
 ### Production Usage
 
@@ -100,33 +124,51 @@ npm run prod
 ls -la data/outputs/run-*/
 ```
 
+### Individual Expert Servers
+
+Each AI expert can also run independently as an MCP server:
+
+```bash
+# Start individual expert servers
+npm run server:geowiz        # Geological analysis
+npm run server:econobot      # Economic analysis
+npm run server:decision      # Investment decisions
+npm run server:research      # Market intelligence
+npm run server:risk-analysis # Risk assessment
+npm run server:legal         # Legal analysis
+npm run server:market        # Market analysis
+npm run server:development   # Development planning
+npm run server:drilling      # Drilling operations
+npm run server:infrastructure # Infrastructure planning
+npm run server:title         # Title analysis
+npm run server:test          # Quality assurance
+npm run server:curve-smith   # Reservoir engineering
+npm run server:reporter      # Executive reporting
+```
+
+**Use Case:** Connect individual experts to Claude Desktop or other MCP clients for interactive analysis and exploration.
+
 ### Understanding Your Results
 
-Every analysis produces structured outputs:
+Demo analysis produces structured outputs:
 
 ```
-data/outputs/run-YYYYMMDD-HHMMSS/
-├── SHALE_YEAH_REPORT.md           # 📊 Executive investment summary
-├── geology_summary.md             # 🗿 Geological analysis & confidence
-├── zones.geojson                  # 🗺️ Formation boundaries (GIS-ready)  
-├── economic_analysis.json         # 💰 NPV, IRR, cash flow projections
-├── risk_assessment.json           # ⚠️ Risk analysis & mitigation plans
-├── legal_review.md                # ⚖️ Legal risks & compliance issues
-├── market_analysis.json           # 📈 Market conditions & pricing
-└── qc_report.md                   # ✅ Data quality assessment
+data/outputs/demo-YYYYMMDD-HHMMSS/
+├── INVESTMENT_DECISION.md         # 📊 Executive investment summary
+├── DETAILED_ANALYSIS.md           # 🗿 Comprehensive analysis details
+└── FINANCIAL_MODEL.json           # 💰 Economic model and projections
 ```
 
 **Key Files to Review**:
-- **`SHALE_YEAH_REPORT.md`** - Start here! Investment recommendation with confidence scores
-- **`economic_analysis.json`** - Financial metrics: NPV, IRR, payback, sensitivity analysis
-- **`zones.geojson`** - Open in QGIS/ArcGIS to visualize formation boundaries
-- **`risk_assessment.json`** - Comprehensive risk analysis with mitigation strategies
+- **`INVESTMENT_DECISION.md`** - Start here! Investment recommendation with confidence scores
+- **`DETAILED_ANALYSIS.md`** - Detailed findings from all expert domains
+- **`FINANCIAL_MODEL.json`** - Complete financial model with NPV, IRR, sensitivity analysis
 
 ---
 
 ## 🏗️ Architecture Overview
 
-SHALE YEAH implements a **standards-compliant MCP (Model Context Protocol)** architecture with 20 specialized servers orchestrated by a unified client.
+SHALE YEAH implements a **standards-compliant MCP (Model Context Protocol)** architecture with 14 specialized expert servers that can work together or independently.
 
 ### MCP Standards Compliance
 

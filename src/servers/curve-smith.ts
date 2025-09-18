@@ -149,7 +149,7 @@ export class CurveSmithServer extends MCPServer {
     // Parse production data
     const parseResult = await this.fileManager.parseFile(args.filePath);
     if (!parseResult.success) {
-      throw new Error(`Failed to parse production data: ${parseResult.errors.join(', ')}`);
+      throw new Error(`Failed to parse production data: ${parseResult.errors?.join(', ') || 'Unknown error'}`);
     }
 
     // Perform decline curve analysis

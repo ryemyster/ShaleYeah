@@ -141,7 +141,7 @@ export class GeowizServer extends MCPServer {
     // Parse LAS file
     const parseResult = await this.fileManager.parseFile(args.filePath);
     if (!parseResult.success) {
-      throw new Error(`Failed to parse LAS file: ${parseResult.errors.join(', ')}`);
+      throw new Error(`Failed to parse LAS file: ${parseResult.errors?.join(', ') || 'Unknown error'}`);
     }
 
     // Perform geological analysis
@@ -175,7 +175,7 @@ export class GeowizServer extends MCPServer {
     // Parse GIS file
     const parseResult = await this.fileManager.parseFile(args.filePath);
     if (!parseResult.success) {
-      throw new Error(`Failed to parse GIS file: ${parseResult.errors.join(', ')}`);
+      throw new Error(`Failed to parse GIS file: ${parseResult.errors?.join(', ') || 'Unknown error'}`);
     }
 
     // Process GIS data
@@ -231,7 +231,7 @@ export class GeowizServer extends MCPServer {
 
     const parseResult = await this.fileManager.parseFile(args.filePath);
     if (!parseResult.success) {
-      throw new Error(`Failed to parse file: ${parseResult.errors.join(', ')}`);
+      throw new Error(`Failed to parse file: ${parseResult.errors?.join(', ') || 'Unknown error'}`);
     }
 
     return this.performQualityAssessment(parseResult.data, args.dataType, args.thresholds);
