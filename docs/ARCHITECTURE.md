@@ -4,34 +4,60 @@ This document explains the technical architecture of SHALE YEAH for developers a
 
 ## High-Level Architecture
 
-SHALE YEAH is built on the **Model Context Protocol (MCP)** standard, creating a distributed system of specialized AI agents that work together to perform comprehensive oil & gas investment analysis.
+SHALE YEAH implements a **two-tier architecture** with demo mode currently operational and MCP server infrastructure ready for production integration:
+
+### Current Demo Architecture
+- **Demo Runner** (`src/demo-runner.ts`) - Orchestrates 6 AI agents with realistic mock data
+- **Professional Analysis Workflow** - Complete investment analysis in ~6 seconds
+- **No API Dependencies** - Perfect for presentations and evaluation
+
+### MCP Server Infrastructure (Ready for Production)
+- **14 MCP Servers** - Standards-compliant specialized analysis servers
+- **File Processing Foundation** - Comprehensive industry format support
+- **Enterprise Architecture** - Built on official Anthropic MCP SDK
 
 ```mermaid
 graph TB
-    Demo[Demo Runner] --> Base[MCPServer Base Class]
-    Base --> G[geowiz Server]
-    Base --> E[econobot Server]
-    Base --> C[curve-smith Server]
-    Base --> D[decision Server]
-    Base --> R[research Server]
-    Base --> Risk[risk-analysis Server]
-    Base --> L[legal Server]
-    Base --> M[market Server]
-    Base --> Dev[development Server]
-    Base --> Dr[drilling Server]
-    Base --> I[infrastructure Server]
-    Base --> T[title Server]
-    Base --> Test[test Server]
-    Base --> Rep[reporter Server]
+    subgraph "Demo Mode (Current)"
+        Demo[Demo Runner] --> A1[Marcus Aurelius Geologicus]
+        Demo --> A2[Lucius Technicus Engineer]
+        Demo --> A3[Caesar Augustus Economicus]
+        Demo --> A4[Gaius Probabilis Assessor]
+        Demo --> A5[Legatus Titulus Tracker]
+        Demo --> A6[Scriptor Reporticus Maximus]
+        A1 --> Report[Investment Decision]
+        A2 --> Report
+        A3 --> Report
+        A4 --> Report
+        A5 --> Report
+        A6 --> Report
+    end
 
-    G --> FileManager[FileIntegrationManager]
-    E --> FileManager
-    C --> FileManager
+    subgraph "MCP Infrastructure (Ready)"
+        Base[MCPServer Base Class] --> G[geowiz Server]
+        Base --> E[econobot Server]
+        Base --> C[curve-smith Server]
+        Base --> D[decision Server]
+        Base --> R[research Server]
+        Base --> Risk[risk-analysis Server]
+        Base --> L[legal Server]
+        Base --> M[market Server]
+        Base --> Dev[development Server]
+        Base --> Dr[drilling Server]
+        Base --> I[infrastructure Server]
+        Base --> T[title Server]
+        Base --> Test[test Server]
+        Base --> Rep[reporter Server]
 
-    FileManager --> LAS[LAS Parser]
-    FileManager --> Excel[Excel Parser]
-    FileManager --> GIS[GIS Parser]
-    FileManager --> SEGY[SEGY Parser]
+        G --> FileManager[FileIntegrationManager]
+        E --> FileManager
+        C --> FileManager
+
+        FileManager --> LAS[LAS Parser]
+        FileManager --> Excel[Excel Parser]
+        FileManager --> GIS[GIS Parser]
+        FileManager --> SEGY[SEGY Parser]
+    end
 ```
 
 ## Core Components

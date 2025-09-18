@@ -25,25 +25,28 @@ npm run demo       # Verify demo works
 
 **Start here for new contributors:**
 
-1. **Run the demo**: `npm run demo` - See the system in action
-2. **Read the demo code**: `src/demo-runner.ts` - Understand the flow
-3. **Explore an agent**: `src/servers/geowiz.ts` - See how agents work
-4. **Check the base class**: `src/shared/mcp-server.ts` - Understand the foundation
+1. **Run the demo**: `npm run demo` - See 6 AI agents complete investment analysis in ~6 seconds
+2. **Read the demo code**: `src/demo-runner.ts` - Understand the AI orchestration workflow
+3. **Explore an MCP server**: `src/servers/geowiz.ts` - See how domain experts work
+4. **Check the base class**: `src/shared/mcp-server.ts` - Understand the MCP foundation
+5. **Review outputs**: Check `data/outputs/demo-*/` - See professional analysis reports
 
 ### 2. Code Organization
 
 ```
 src/
-├── servers/           # 🤖 14 AI Expert Agents
-│   ├── geowiz.ts     # Geological analysis expert
-│   ├── econobot.ts   # Economic analysis expert
-│   └── ...           # 12 more domain experts
+├── servers/           # 🤖 14 MCP Expert Servers (Ready)
+│   ├── geowiz.ts     # Geological analysis server
+│   ├── econobot.ts   # Economic analysis server
+│   ├── curve-smith.ts # Reservoir engineering server
+│   ├── decision.ts   # Investment strategy server
+│   └── ...           # 10 more specialized servers
 ├── shared/           # 🔧 Common utilities
-│   ├── mcp-server.ts # Base class for all agents
+│   ├── mcp-server.ts # MCP server base class
 │   ├── file-integration.ts # File processing manager
 │   └── parsers/      # Industry format parsers
-├── demo-runner.ts    # 🎬 Demo orchestration
-└── main.ts          # 🚀 Production entry point
+├── demo-runner.ts    # 🎬 Demo orchestration (Current)
+└── main.ts          # 🚀 MCP server orchestration (Ready)
 ```
 
 ### 3. Development Commands

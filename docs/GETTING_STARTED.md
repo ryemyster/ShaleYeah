@@ -23,8 +23,10 @@ npm run demo
 
 **What happens:**
 - 6 AI expert agents analyze a Permian Basin tract
-- Complete analysis finishes in ~5 seconds
+- Complete analysis finishes in ~6 seconds
 - Professional reports generated in `data/outputs/`
+- Executive summary, detailed analysis, and financial model created
+- No API keys required - uses realistic mock data
 
 ### 3. Verify Everything Works
 ```bash
