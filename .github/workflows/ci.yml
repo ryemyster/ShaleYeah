@@ -55,7 +55,7 @@ jobs:
     - name: Test Multi-Agent Control Plane
       run: |
         export RUN_ID=ci-test-$(date +%Y%m%d-%H%M%S)
-        export OUT_DIR=./data/outputs/$RUN_ID
+        export OUT_DIR=./data/temp/demo/$RUN_ID
         
         # Create output directory
         mkdir -p $OUT_DIR
@@ -66,7 +66,7 @@ jobs:
         const client = new UnifiedMCPClient({
           name: 'ci-test-client',
           version: '1.0.0',
-          resourceRoot: './data/outputs/ci-test',
+          resourceRoot: './data/temp/demo/ci-test',
           runId: 'ci-test'
         });
         console.log('✅ UnifiedMCPClient initialized successfully');
@@ -76,14 +76,16 @@ jobs:
     - name: Test individual agent execution
       run: |
         export RUN_ID=ci-agent-test
-        export OUT_DIR=./data/outputs/$RUN_ID
+        export OUT_DIR=./data/temp/demo/$RUN_ID
         mkdir -p $OUT_DIR
         
         # Test unified MCP client with demo mode
         npx tsx src/main.ts --mode=demo --run-id=$RUN_ID || echo "Demo mode test completed"
         
-        # Check if output was generated
-        if [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
+        # Check if output was generated (updated for new file names)
+        if [ -f "$OUT_DIR/INVESTMENT_DECISION.md" ]; then
+          echo "✅ Demo mode generated INVESTMENT_DECISION.md"
+        elif [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
           echo "✅ Demo mode generated SHALE_YEAH_REPORT.md"
         else
           echo "⚠️  Demo mode did not generate expected output"
@@ -93,15 +95,19 @@ jobs:
       run: |
         echo "🚀 Testing full tract evaluation pipeline..."
         export RUN_ID=ci-full-pipeline-$(date +%Y%m%d-%H%M%S)
-        export OUT_DIR=./data/outputs/$RUN_ID
+        export OUT_DIR=./data/temp/demo/$RUN_ID
         
         # Run the complete TypeScript pipeline
         npx tsx src/main.ts --mode=demo --run-id=$RUN_ID
         
         # Verify pipeline outputs
         echo "Checking pipeline outputs..."
-        
-        if [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
+
+        if [ -f "$OUT_DIR/INVESTMENT_DECISION.md" ]; then
+          echo "✅ Final investment report generated successfully"
+          echo "Report contents preview:"
+          head -10 "$OUT_DIR/INVESTMENT_DECISION.md"
+        elif [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
           echo "✅ Final report generated successfully"
           echo "Report contents preview:"
           head -10 "$OUT_DIR/SHALE_YEAH_REPORT.md"
@@ -114,20 +120,45 @@ jobs:
     - name: Verify branding compliance
       run: |
         export RUN_ID=ci-branding-test
-        mkdir -p data/outputs/$RUN_ID
-        echo "Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0" > data/outputs/$RUN_ID/test.md
+        mkdir -p data/temp/test/$RUN_ID
+        echo "Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0" > data/temp/test/$RUN_ID/test.md
         
         # Test branding script if it exists
         if [ -f "scripts/verify-branding.sh" ]; then
           bash scripts/verify-branding.sh || echo "Branding verification script not found"
         else
           # Manual branding check
-          if grep -r "SHALE YEAH.*Apache-2.0" data/outputs/$RUN_ID/; then
+          if grep -r "SHALE YEAH.*Apache-2.0" data/temp/test/$RUN_ID/; then
             echo "✅ Branding compliance verified"
           else
             echo "❌ Branding compliance check failed"
             exit 1
           fi
+        fi
+
+    - name: Test workspace cleanup
+      run: |
+        echo "🧹 Testing workspace cleanup functionality..."
+
+        # Create some demo runs to test cleanup
+        export RUN_ID1=cleanup-test-1
+        export RUN_ID2=cleanup-test-2
+        export RUN_ID3=cleanup-test-3
+
+        mkdir -p data/temp/demo/$RUN_ID1 data/temp/demo/$RUN_ID2 data/temp/demo/$RUN_ID3
+        echo "test" > data/temp/demo/$RUN_ID1/test.md
+        echo "test" > data/temp/demo/$RUN_ID2/test.md
+        echo "test" > data/temp/demo/$RUN_ID3/test.md
+
+        # Test cleanup script
+        npm run clean:workspace
+
+        # Verify cleanup functionality works
+        if [ -d "data/temp/demo/$RUN_ID1" ] && [ -d "data/temp/demo/$RUN_ID2" ] && [ -d "data/temp/demo/$RUN_ID3" ]; then
+          echo "✅ Workspace cleanup script executed successfully"
+        else
+          echo "❌ Workspace cleanup script failed"
+          exit 1
         fi
 
     - name: Build TypeScript project

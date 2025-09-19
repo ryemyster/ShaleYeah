@@ -40,7 +40,7 @@ jobs:
         const config = {
           name: 'demo-test-client',
           version: '1.0.0',
-          resourceRoot: './data/outputs/demo-test',
+          resourceRoot: './data/temp/demo/demo-test',
           runId: 'demo-test'
         };
         
@@ -59,12 +59,12 @@ jobs:
         npx tsx src/main.ts --mode=demo --run-id=$RUN_ID
         
         # Check outputs
-        if [ -f "./data/outputs/$RUN_ID/INVESTMENT_DECISION.md" ]; then
+        if [ -f "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md" ]; then
           echo "✅ Demo mode generated investment report"
           echo "✅ All 20 MCP servers executed successfully"
         else
           echo "❌ Demo mode failed to generate outputs"
-          ls -la ./data/outputs/
+          ls -la ./data/temp/demo/
         fi
 
     - name: Test investment decision output
@@ -77,16 +77,16 @@ jobs:
         
         # Verify investment decision outputs
         echo "Checking investment decision outputs..."
-        
-        if [ -f "./data/outputs/$RUN_ID/INVESTMENT_DECISION.md" ]; then
+
+        if [ -f "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md" ]; then
           echo "✅ Investment analysis report generated"
           echo ""
           echo "=== EXECUTIVE INVESTMENT DECISION ==="
           
           # Extract key decision information
-          if grep -q "PROCEED\|GO\|INVEST" "./data/outputs/$RUN_ID/INVESTMENT_DECISION.md"; then
+          if grep -q "PROCEED\|GO\|INVEST" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"; then
             echo "✅ RECOMMENDATION: PROCEED WITH INVESTMENT"
-          elif grep -q "REJECT\|NO-GO\|DO NOT" "./data/outputs/$RUN_ID/INVESTMENT_DECISION.md"; then
+          elif grep -q "REJECT\|NO-GO\|DO NOT" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"; then
             echo "❌ RECOMMENDATION: DO NOT INVEST"
           else
             echo "⚠️  RECOMMENDATION: CONDITIONAL/REVIEW REQUIRED"
@@ -95,15 +95,15 @@ jobs:
           # Extract financial metrics
           echo ""
           echo "=== KEY FINANCIAL METRICS ==="
-          grep -E "NPV|IRR|Payback|ROI" "./data/outputs/$RUN_ID/INVESTMENT_DECISION.md" || echo "Financial metrics in detailed analysis"
+          grep -E "NPV|IRR|Payback|ROI" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md" || echo "Financial metrics in detailed analysis"
           
           echo ""
           echo "=== REPORT LOCATION ==="
-          echo "📄 Full Report: ./data/outputs/$RUN_ID/INVESTMENT_DECISION.md"
+          echo "📄 Full Report: ./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"
           
         else
           echo "❌ Investment analysis failed"
-          ls -la ./data/outputs/
+          ls -la ./data/temp/demo/
           exit 1
         fi
 
@@ -115,13 +115,13 @@ jobs:
         npm run demo
         
         # Check that demo outputs were generated
-        if ls data/outputs/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
+        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ npm run demo generated outputs successfully"
           echo "Demo report preview:"
-          head -10 data/outputs/*/INVESTMENT_DECISION.md | head -10
+          head -10 data/temp/demo/*/INVESTMENT_DECISION.md | head -10
         else
           echo "❌ npm run demo failed to generate outputs"
-          ls -la data/outputs/
+          ls -la data/temp/demo/
         fi
 
     - name: Test agent shared infrastructure
@@ -231,8 +231,8 @@ jobs:
       with:
         name: demo-outputs
         path: |
-          data/outputs/
-          !data/outputs/**/*.log
+          data/temp/demo/
+          !data/temp/**/*.log
         retention-days: 7
 
     - name: Summary
