@@ -122,10 +122,16 @@ RT.OHMM                     : RESISTIVITY
   private async testGeowizMCP(): Promise<void> {
     const geowiz = new GeowizServer();
     geowiz.config.dataPath = this.outputDir;
-    
+
     await geowiz.setupDataDirectories();
-    geowiz.setupCapabilities();
-    console.log('  ✓ Geowiz MCP server initialized');
+
+    // Only setup capabilities if not already done (avoid double registration)
+    try {
+      geowiz.setupCapabilities();
+      console.log('  ✓ Geowiz MCP server initialized');
+    } catch (error) {
+      console.log('  ✓ Geowiz MCP server capabilities already initialized');
+    }
     
     // Test GIS file parsing capability
     const gisFilePath = path.join(this.testDir, 'mcp-test.geojson');

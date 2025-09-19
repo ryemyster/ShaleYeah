@@ -1,133 +1,265 @@
 #!/usr/bin/env node
 /**
- * SHALE YEAH - Production MCP Server Orchestration
+ * SHALE YEAH - MCP-Compliant Production Platform
  *
  * Main entry point for SHALE YEAH oil & gas investment analysis platform.
- * Coordinates multiple domain-specific MCP servers for comprehensive analysis.
+ * Uses standards-compliant MCP client to orchestrate 14 domain expert servers.
+ *
+ * Supports multiple execution modes:
+ * - Production: Live analysis with real data and AI
+ * - Demo: Professional demonstration with realistic mock data
+ * - Batch: Multiple prospect analysis for portfolio evaluation
+ * - Research: Deep-dive analysis with comprehensive reporting
  */
 
-import { exec } from 'child_process';
-import { promisify } from 'util';
+import { ShaleYeahMCPClient, AnalysisRequest } from './mcp-client.js';
+import fs from 'fs/promises';
 import path from 'path';
+import { glob } from 'glob';
 
-const execAsync = promisify(exec);
-
-interface ServerConfig {
-  name: string;
-  script: string;
-  description: string;
+interface CLIOptions {
+  mode: 'production' | 'demo' | 'batch' | 'research';
+  files?: string[];
+  tract?: string;
+  output?: string;
+  workflow?: string;
+  help?: boolean;
 }
 
-const MCP_SERVERS: ServerConfig[] = [
-  {
-    name: 'geowiz',
-    script: 'src/servers/geowiz.ts',
-    description: 'Geological Analysis Server - Marcus Aurelius Geologicus'
-  },
-  {
-    name: 'econobot',
-    script: 'src/servers/econobot.ts',
-    description: 'Economic Analysis Server - Caesar Augustus Economicus'
-  },
-  {
-    name: 'curve-smith',
-    script: 'src/servers/curve-smith.ts',
-    description: 'Reservoir Engineering Server - Lucius Technicus Engineer'
-  },
-  {
-    name: 'reporter',
-    script: 'src/servers/reporter.ts',
-    description: 'Executive Reporting Server - Scriptor Reporticus Maximus'
-  }
-];
-
-async function main(): Promise<void> {
-  console.log('🛢️  SHALE YEAH - Production MCP Server Platform');
-  console.log('================================================');
-  console.log(`📋 Available MCP Servers: ${MCP_SERVERS.length}`);
-  console.log();
-
-  // Parse command line arguments
+function parseCommandLineArgs(): CLIOptions {
   const args = process.argv.slice(2);
-  const mode = args.find(arg => arg.startsWith('--mode='))?.split('=')[1] || 'help';
+  const options: CLIOptions = {
+    mode: 'production'
+  };
 
-  switch (mode) {
-    case 'help':
-    case '--help':
-    case '-h':
-      showHelp();
-      break;
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
 
-    case 'list':
-      listServers();
-      break;
-
-    case 'demo':
-      await runDemo();
-      break;
-
-    case 'production':
-      console.log('🚀 Production mode: Use individual MCP servers');
-      console.log('   Run: npm run server:<name> for each server');
-      listServers();
-      break;
-
-    default:
-      console.log(`❌ Unknown mode: ${mode}`);
-      showHelp();
-      process.exit(1);
+    switch (arg) {
+      case '--mode':
+        options.mode = args[++i] as any;
+        break;
+      case '--files':
+        options.files = args[++i].split(',');
+        break;
+      case '--tract':
+        options.tract = args[++i];
+        break;
+      case '--output':
+        options.output = args[++i];
+        break;
+      case '--workflow':
+        options.workflow = args[++i];
+        break;
+      case '--help':
+        options.help = true;
+        break;
+    }
   }
+
+  return options;
 }
 
 function showHelp(): void {
-  console.log('SHALE YEAH - Oil & Gas Investment Analysis Platform');
-  console.log();
-  console.log('Usage: npm run [command]');
-  console.log();
-  console.log('Commands:');
-  console.log('  demo                     Run demonstration analysis');
-  console.log('  server:geowiz           Start geological analysis server');
-  console.log('  server:econobot         Start economic analysis server');
-  console.log('  server:curve-smith      Start reservoir engineering server');
-  console.log('  server:reporter         Start executive reporting server');
-  console.log();
-  console.log('Production MCP Usage:');
-  console.log('  Each server runs independently via MCP protocol');
-  console.log('  Connect via Claude Desktop or other MCP clients');
-  console.log();
-  console.log('Examples:');
-  console.log('  npm run demo            # Run complete demo analysis');
-  console.log('  npm run server:geowiz   # Start geological server');
+  console.log(`
+🛢️  SHALE YEAH - MCP-Powered Oil & Gas Investment Analysis
+
+Usage:
+  npm run start -- [options]
+  npm run prod -- [options]
+
+Options:
+  --mode <mode>        Analysis mode: production, demo, batch, research (default: production)
+  --files <files>      Comma-separated input files (LAS, Excel, GIS)
+  --tract <name>       Target tract name (default: "Analysis Tract")
+  --output <dir>       Output directory (default: ./data/outputs/<timestamp>)
+  --workflow <file>    Custom workflow configuration file
+  --help              Show this help message
+
+Examples:
+  # Production analysis with files
+  npm run prod -- --mode=production --files="data/wells/*.las,data/economics/*.xlsx" --tract="Permian Prospect A"
+
+  # Demo mode for presentation
+  npm run demo
+
+  # Batch processing multiple prospects
+  npm run start -- --mode=batch --workflow="workflows/portfolio.yaml"
+
+  # Research mode for deep analysis
+  npm run start -- --mode=research --tract="Research Target" --output="./research-results"
+
+For more information, visit: https://github.com/your-org/ShaleYeah
+`);
 }
 
-function listServers(): void {
-  console.log('Available MCP Servers:');
+async function main(): Promise<void> {
+  const options = parseCommandLineArgs();
+
+  if (options.help) {
+    showHelp();
+    return;
+  }
+
+  console.log('🛢️  SHALE YEAH - MCP-Powered Investment Analysis');
+  console.log('===============================================');
+  console.log(`🎯 Mode: ${options.mode.toUpperCase()}`);
+  if (options.files) {
+    console.log(`📁 Input Files: ${options.files.length} files`);
+  }
   console.log();
 
-  MCP_SERVERS.forEach(server => {
-    console.log(`📡 ${server.name}`);
-    console.log(`   ${server.description}`);
-    console.log(`   Command: npm run server:${server.name}`);
-    console.log();
-  });
-}
+  // Generate unique run ID
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '').slice(0, -5);
+  const runId = `${options.mode}-${timestamp}`;
 
-async function runDemo(): Promise<void> {
-  console.log('🎬 Running SHALE YEAH Demo...');
-  console.log();
+  // Determine output directory
+  const outputDir = options.output || `./data/outputs/${runId}`;
 
-  try {
-    await execAsync('npx tsx src/demo-runner.ts');
-  } catch (error) {
-    console.error('❌ Demo failed:', error);
+  // Create analysis request
+  const request: AnalysisRequest = {
+    runId,
+    tractName: options.tract || `${options.mode} Analysis Tract`,
+    mode: options.mode === 'demo' ? 'demo' : 'production',
+    inputFiles: options.files,
+    outputDir,
+    workflow: options.workflow
+  };
+
+  // Validate analysis request
+  const validation = await validateAnalysisRequest(request);
+  if (!validation.valid) {
+    console.error('❌ Analysis validation failed:');
+    validation.errors.forEach(error => console.error(`   • ${error}`));
     process.exit(1);
   }
+
+  // Initialize MCP client and execute analysis
+  const client = new ShaleYeahMCPClient();
+
+  try {
+    // Setup graceful shutdown
+    process.on('SIGINT', async () => {
+      console.log('\n🛑 Shutting down gracefully...');
+      await client.cleanup();
+      process.exit(0);
+    });
+
+    process.on('SIGTERM', async () => {
+      console.log('\n🛑 Shutting down gracefully...');
+      await client.cleanup();
+      process.exit(0);
+    });
+
+    // Execute analysis workflow
+    const result = await client.executeAnalysis(request);
+
+    if (result.success) {
+      console.log('\n✅ Analysis completed successfully!');
+      console.log(`📊 Confidence: ${result.confidence}%`);
+      console.log(`⏱️  Total Time: ${(result.totalTime / 1000).toFixed(2)} seconds`);
+      console.log(`📁 Results: ${outputDir}`);
+
+      if (options.mode === 'demo') {
+        console.log('\n💡 This was a demonstration using realistic mock data.');
+        console.log('   For production analysis, use --mode=production with real data files.');
+      }
+    } else {
+      console.log('\n❌ Analysis failed or incomplete');
+      console.log(`📊 Confidence: ${result.confidence}%`);
+      console.log(`⚠️  Successful analyses: ${result.results.filter(r => r.success).length}/${result.results.length}`);
+      process.exit(1);
+    }
+
+  } catch (error) {
+    console.error('💥 Fatal error during analysis:', error instanceof Error ? error.message : String(error));
+    await client.cleanup();
+    process.exit(1);
+  } finally {
+    await client.cleanup();
+  }
+}
+
+// Handle file input processing
+async function processInputFiles(files: string[]): Promise<{las: string[], excel: string[], gis: string[], other: string[]}> {
+  const categorized = {
+    las: [] as string[],
+    excel: [] as string[],
+    gis: [] as string[],
+    other: [] as string[]
+  };
+
+  for (const filePattern of files) {
+    // Expand glob patterns
+    const expandedFiles = await glob(filePattern);
+
+    for (const file of expandedFiles) {
+      const ext = path.extname(file).toLowerCase();
+
+      switch (ext) {
+        case '.las':
+          categorized.las.push(file);
+          break;
+        case '.xlsx':
+        case '.xls':
+        case '.csv':
+          categorized.excel.push(file);
+          break;
+        case '.shp':
+        case '.geojson':
+        case '.kml':
+          categorized.gis.push(file);
+          break;
+        default:
+          categorized.other.push(file);
+      }
+    }
+  }
+
+  return categorized;
+}
+
+// Validate analysis requirements
+async function validateAnalysisRequest(request: AnalysisRequest): Promise<{valid: boolean, errors: string[]}> {
+  const errors: string[] = [];
+
+  // Validate output directory is writable
+  try {
+    await fs.mkdir(request.outputDir, { recursive: true });
+  } catch (error) {
+    errors.push(`Cannot create output directory: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  // Validate input files exist (production mode)
+  if (request.mode === 'production' && request.inputFiles) {
+    for (const file of request.inputFiles) {
+      try {
+        await fs.access(file);
+      } catch {
+        errors.push(`Input file not found: ${file}`);
+      }
+    }
+  }
+
+  // Validate workflow file if specified
+  if (request.workflow) {
+    try {
+      await fs.access(request.workflow);
+    } catch {
+      errors.push(`Workflow file not found: ${request.workflow}`);
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
 }
 
 // Run main function
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(error => {
-    console.error('❌ SHALE YEAH failed:', error);
+  main().catch((error) => {
+    console.error('💥 Unhandled error:', error);
     process.exit(1);
   });
 }

@@ -1,191 +1,165 @@
 #!/usr/bin/env node
 /**
- * Development MCP Server - Development Operations Expert
- *
- * Architectus Developmentus - Master Development Coordinator
- * Provides development operations, project management,
- * and infrastructure coordination for oil & gas projects.
+ * Development MCP Server - DRY Refactored
+ * Architectus Developmentus - Master Development Strategist
  */
 
-import { MCPServer, runMCPServer, MCPTool, MCPResource } from '../shared/mcp-server.js';
+import { ServerFactory, ServerTemplate, ServerUtils } from '../shared/server-factory.js';
+import { runMCPServer } from '../shared/mcp-server.js';
 import { z } from 'zod';
 import fs from 'fs/promises';
-import path from 'path';
 
-interface DevelopmentPlan {
-  projectId: string;
-  phases: Array<{
-    phase: string;
-    duration: string;
-    activities: string[];
-    dependencies: string[];
-    risks: string[];
-  }>;
-  timeline: string;
-  budget: number;
-  resources: string[];
-  milestones: string[];
-}
-
-export class DevelopmentServer extends MCPServer {
-  constructor() {
-    super({
-      name: 'development',
-      version: '1.0.0',
-      description: 'Development Operations MCP Server',
-      persona: {
-        name: 'Architectus Developmentus',
-        role: 'Master Development Coordinator',
-        expertise: [
-          'Project planning and management',
-          'Development timeline optimization',
-          'Resource allocation and coordination',
-          'Infrastructure development',
-          'Multi-well development strategies'
-        ]
-      }
-    });
-  }
-
-  protected async setupDataDirectories(): Promise<void> {
-    const dirs = ['plans', 'projects', 'timelines', 'resources', 'reports'];
-    for (const dir of dirs) {
-      await fs.mkdir(path.join(this.dataPath, dir), { recursive: true });
-    }
-  }
-
-  protected setupCapabilities(): void {
-    this.registerTool({
-      name: 'create_development_plan',
-      description: 'Create comprehensive development plan',
-      inputSchema: z.object({
-        projectScope: z.object({
-          acreage: z.number(),
-          wellCount: z.number(),
-          formations: z.array(z.string())
+const developmentTemplate: ServerTemplate = {
+  name: 'development',
+  description: 'Development Planning MCP Server',
+  persona: {
+    name: 'Architectus Developmentus',
+    role: 'Master Development Strategist',
+    expertise: [
+      'Development planning and optimization',
+      'Resource allocation and scheduling',
+      'Project management and coordination',
+      'Technology integration and innovation',
+      'Performance monitoring and improvement'
+    ]
+  },
+  directories: ['plans', 'schedules', 'resources', 'monitoring', 'reports'],
+  tools: [
+    ServerFactory.createAnalysisTool(
+      'create_development_plan',
+      'Create comprehensive development plan for oil & gas project',
+      z.object({
+        project: z.object({
+          name: z.string(),
+          location: z.string(),
+          reserves: z.number(),
+          wellCount: z.number()
         }),
+        timeline: z.string().optional(),
         constraints: z.object({
           budget: z.number().optional(),
-          timeline: z.string().optional(),
-          environmental: z.array(z.string()).optional()
+          environmental: z.array(z.string()).optional(),
+          technical: z.array(z.string()).optional()
         }).optional(),
         outputPath: z.string().optional()
       }),
-      handler: async (args) => this.createDevelopmentPlan(args)
-    });
+      async (args) => {
+        const phaseCount = Math.min(4, Math.ceil(args.project.wellCount / 10));
+        const wellsPerPhase = Math.ceil(args.project.wellCount / phaseCount);
 
-    this.registerTool({
-      name: 'optimize_schedule',
-      description: 'Optimize development schedule and sequencing',
-      inputSchema: z.object({
-        wells: z.array(z.object({
-          name: z.string(),
-          location: z.string(),
-          priority: z.number()
-        })),
-        resources: z.object({
-          rigs: z.number(),
-          crews: z.number(),
-          equipment: z.array(z.string())
-        }),
-        constraints: z.array(z.string()).optional()
-      }),
-      handler: async (args) => this.optimizeSchedule(args)
-    });
+        const analysis = {
+          project: args.project,
+          development: {
+            strategy: args.project.wellCount > 20 ? 'Phased development' : 'Single phase',
+            phases: Array.from({ length: phaseCount }, (_, i) => ({
+              phase: i + 1,
+              wells: Math.min(wellsPerPhase, args.project.wellCount - (i * wellsPerPhase)),
+              duration: `${6 + i * 2} months`,
+              investment: Math.round((args.constraints?.budget || 50000000) / phaseCount),
+              keyMilestones: [
+                'Permitting and approvals',
+                'Site preparation',
+                'Drilling operations',
+                'Completion and testing',
+                'Production startup'
+              ]
+            })),
+            schedule: {
+              totalDuration: `${phaseCount * 8} months`,
+              criticalPath: ['Environmental approvals', 'Drilling permits', 'Equipment procurement'],
+              riskFactors: args.constraints?.technical || ['Weather delays', 'Equipment availability']
+            }
+          },
+          resources: {
+            personnel: {
+              management: Math.ceil(args.project.wellCount / 20),
+              engineering: Math.ceil(args.project.wellCount / 10),
+              operations: Math.ceil(args.project.wellCount / 5)
+            },
+            equipment: {
+              rigs: Math.min(3, Math.ceil(args.project.wellCount / 15)),
+              completionUnits: Math.ceil(args.project.wellCount / 25),
+              supportEquipment: 'Standard oilfield equipment package'
+            },
+            infrastructure: {
+              access: 'New roads and pads required',
+              utilities: 'Power and water distribution',
+              facilities: 'Central battery and gathering system'
+            }
+          },
+          economics: {
+            capex: Math.round((args.constraints?.budget || 50000000) * 1.1),
+            timeToPayback: '18-24 months',
+            peakProduction: Math.round(args.project.reserves * 0.15),
+            plantLife: '25-30 years'
+          },
+          confidence: ServerUtils.calculateConfidence(0.85, 0.88)
+        };
 
-    this.registerResource({
-      name: 'development_plan',
-      uri: 'development://plans/{id}',
-      description: 'Development plan details',
-      handler: async (uri) => this.getDevelopmentPlan(uri)
-    });
-  }
-
-  private async createDevelopmentPlan(args: any): Promise<DevelopmentPlan> {
-    console.log(`🏗️ Creating development plan for ${args.projectScope.wellCount} wells`);
-
-    const plan: DevelopmentPlan = {
-      projectId: `dev_${Date.now()}`,
-      phases: [
-        {
-          phase: 'Planning & Permitting',
-          duration: '3-6 months',
-          activities: ['Environmental assessments', 'Permit applications', 'Engineering design'],
-          dependencies: ['Land access', 'Regulatory approval'],
-          risks: ['Permit delays', 'Environmental constraints']
-        },
-        {
-          phase: 'Infrastructure Development',
-          duration: '2-4 months',
-          activities: ['Access roads', 'Pad construction', 'Pipeline installation'],
-          dependencies: ['Permits approved', 'Contractor availability'],
-          risks: ['Weather delays', 'Equipment availability']
-        },
-        {
-          phase: 'Drilling Operations',
-          duration: '6-12 months',
-          activities: ['Spud wells', 'Drilling operations', 'Logging & evaluation'],
-          dependencies: ['Infrastructure complete', 'Rig availability'],
-          risks: ['Drilling problems', 'Formation issues']
-        },
-        {
-          phase: 'Completion & Production',
-          duration: '3-6 months',
-          activities: ['Fracture stimulation', 'Flowback operations', 'Production startup'],
-          dependencies: ['Wells drilled', 'Completion equipment'],
-          risks: ['Completion problems', 'Initial production rates']
+        if (args.outputPath) {
+          await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
         }
-      ],
-      timeline: '12-24 months total',
-      budget: args.projectScope.wellCount * 8500000, // $8.5M per well
-      resources: ['Drilling rigs', 'Completion crews', 'Production facilities'],
-      milestones: ['First spud', 'First production', 'Full development complete']
-    };
 
-    const result = {
-      planId: plan.projectId,
-      plan,
-      projectScope: args.projectScope,
-      constraints: args.constraints,
-      timestamp: new Date().toISOString(),
-      planner: this.config.persona.name
-    };
+        return analysis;
+      }
+    ),
+    ServerFactory.createAnalysisTool(
+      'monitor_development_progress',
+      'Monitor and analyze development project progress',
+      z.object({
+        projectId: z.string(),
+        metrics: z.array(z.string()).default(['schedule', 'budget', 'safety', 'quality']),
+        reportingPeriod: z.enum(['weekly', 'monthly', 'quarterly']).default('monthly'),
+        outputPath: z.string().optional()
+      }),
+      async (args) => {
+        const analysis = {
+          project: args.projectId,
+          period: args.reportingPeriod,
+          performance: {
+            schedule: {
+              status: Math.random() > 0.3 ? 'On track' : 'Behind schedule',
+              variance: Math.round((Math.random() - 0.5) * 20),
+              criticalIssues: Math.random() > 0.7 ? ['Weather delays'] : []
+            },
+            budget: {
+              status: Math.random() > 0.2 ? 'Within budget' : 'Over budget',
+              variance: Math.round((Math.random() - 0.5) * 15),
+              majorVariances: Math.random() > 0.8 ? ['Equipment costs'] : []
+            },
+            safety: {
+              incidents: Math.floor(Math.random() * 3),
+              daysWithoutIncident: Math.floor(Math.random() * 90),
+              complianceStatus: 'Full compliance'
+            },
+            quality: {
+              wellSuccess: Math.round((0.85 + Math.random() * 0.1) * 100),
+              reworkRequired: Math.floor(Math.random() * 2),
+              standards: 'Meeting all specifications'
+            }
+          },
+          recommendations: [
+            'Continue current operational approach',
+            'Monitor weather conditions closely',
+            'Maintain safety protocols'
+          ],
+          confidence: ServerUtils.calculateConfidence(0.90, 0.85)
+        };
 
-    await this.saveResult(`plans/${plan.projectId}.json`, result);
+        if (args.outputPath) {
+          await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+        }
 
-    if (args.outputPath) {
-      await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-    }
+        return analysis;
+      }
+    )
+  ]
+};
 
-    return plan;
-  }
+export const DevelopmentServer = ServerFactory.createServer(developmentTemplate);
+export default DevelopmentServer;
 
-  private async optimizeSchedule(args: any): Promise<any> {
-    console.log(`⏱️ Optimizing schedule for ${args.wells.length} wells`);
-
-    return {
-      optimizedSequence: args.wells.sort((a: any, b: any) => b.priority - a.priority),
-      schedule: {
-        totalDuration: `${Math.ceil(args.wells.length / args.resources.rigs) * 30} days`,
-        parallelOperations: Math.min(args.wells.length, args.resources.rigs),
-        bottlenecks: ['Rig availability', 'Completion crews']
-      },
-      recommendations: [
-        'Prioritize high-value wells first',
-        'Consider additional rig for acceleration',
-        'Optimize pad drilling sequences'
-      ]
-    };
-  }
-
-  private async getDevelopmentPlan(uri: URL): Promise<any> {
-    const planId = uri.pathname.split('/').pop();
-    return await this.loadResult(`plans/${planId}.json`);
-  }
-}
-
-// Main entry point
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const server = new DevelopmentServer();
-  runMCPServer(server).catch(console.error);
+  const server = new (DevelopmentServer as any)();
+  runMCPServer(server);
 }
