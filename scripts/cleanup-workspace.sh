@@ -47,9 +47,11 @@ cleanup_old_files() {
 # Clean demo runs (keep only last 3 runs, remove others older than 1 day)
 echo
 echo "📊 Demo Run Cleanup:"
-if [ -d "data/outputs" ]; then
+
+# Clean demo runs from temp directory
+if [ -d "data/temp/demo" ]; then
     # Keep last 3 demo runs
-    demo_dirs=$(find data/outputs -name "demo-*" -type d | sort -r)
+    demo_dirs=$(find data/temp/demo -name "demo-*" -type d | sort -r)
     if [ -n "$demo_dirs" ]; then
         echo "$demo_dirs" | tail -n +4 | while read dir; do
             if [ -d "$dir" ]; then
@@ -58,13 +60,28 @@ if [ -d "data/outputs" ]; then
             fi
         done
     fi
+fi
 
-    # Remove test runs immediately
-    test_dirs=$(find data/outputs -name "test-*" -type d)
+# Clean test runs from temp directory
+if [ -d "data/temp/test" ]; then
+    test_dirs=$(find data/temp/test -name "test-*" -type d)
     if [ -n "$test_dirs" ]; then
         echo "$test_dirs" | while read dir; do
             if [ -d "$dir" ]; then
                 echo "🗑️  Removing test run: $(basename "$dir")"
+                rm -rf "$dir"
+            fi
+        done
+    fi
+fi
+
+# Clean old demo runs from legacy outputs directory (migration cleanup)
+if [ -d "data/outputs" ]; then
+    legacy_demo_dirs=$(find data/outputs -name "demo-*" -type d)
+    if [ -n "$legacy_demo_dirs" ]; then
+        echo "$legacy_demo_dirs" | while read dir; do
+            if [ -d "$dir" ]; then
+                echo "🗑️  Removing legacy demo: $(basename "$dir")"
                 rm -rf "$dir"
             fi
         done
@@ -92,17 +109,19 @@ fi
 # Display remaining demo runs
 echo
 echo "📊 Remaining Demo Runs:"
-if [ -d "data/outputs" ]; then
-    remaining=$(find data/outputs -name "demo-*" -type d | wc -l)
+if [ -d "data/temp/demo" ]; then
+    remaining=$(find data/temp/demo -name "demo-*" -type d | wc -l)
     if [ "$remaining" -gt 0 ]; then
         echo "   📁 $remaining demo runs preserved"
-        find data/outputs -name "demo-*" -type d | sort -r | head -3 | while read dir; do
+        find data/temp/demo -name "demo-*" -type d | sort -r | head -3 | while read dir; do
             size=$(du -sh "$dir" 2>/dev/null | cut -f1)
             echo "      • $(basename "$dir") ($size)"
         done
     else
         echo "   ✅ No demo runs found"
     fi
+else
+    echo "   ✅ No demo runs found"
 fi
 
 # Display disk usage
