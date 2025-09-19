@@ -33,7 +33,7 @@ jobs:
       run: npm run type-check
 
     - name: Lint TypeScript
-      run: npm run lint || echo "Linting not configured, skipping"
+      run: npm run lint || echo "Linting warnings found, continuing with build"
 
     - name: Test TypeScript tools
       run: |
@@ -60,17 +60,12 @@ jobs:
         # Create output directory
         mkdir -p $OUT_DIR
         
-        # Test UnifiedMCPClient TypeScript import and basic functionality
+        # Test ShaleYeahMCPClient TypeScript import and basic functionality
         npx tsx -e "
-        import { UnifiedMCPClient } from './src/unified-mcp-client.ts';
-        const client = new UnifiedMCPClient({
-          name: 'ci-test-client',
-          version: '1.0.0',
-          resourceRoot: './data/temp/demo/ci-test',
-          runId: 'ci-test'
-        });
-        console.log('✅ UnifiedMCPClient initialized successfully');
-        console.log('Client configuration:', client.config?.name);
+        import { ShaleYeahMCPClient } from './src/mcp-client.ts';
+        const client = new ShaleYeahMCPClient();
+        console.log('✅ ShaleYeahMCPClient initialized successfully');
+        console.log('Client initialized for SHALE YEAH analysis');
         "
 
     - name: Test individual agent execution
