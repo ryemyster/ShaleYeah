@@ -113,8 +113,18 @@ async function main(): Promise<void> {
   const timestamp = new Date().toISOString().replace(/[:.]/g, '').slice(0, -5);
   const runId = `${options.mode}-${timestamp}`;
 
-  // Determine output directory
-  const outputDir = options.output || `./data/outputs/${runId}`;
+  // Determine output directory based on mode
+  let outputDir: string;
+  if (options.output) {
+    outputDir = options.output;
+  } else if (options.mode === 'demo') {
+    outputDir = `./data/temp/demo/${runId}`;
+  } else if (options.mode === 'batch' || options.mode === 'research') {
+    outputDir = `./data/temp/processing/${runId}`;
+  } else {
+    // Production mode - use outputs directory
+    outputDir = `./data/outputs/reports/${runId}`;
+  }
 
   // Create analysis request
   const request: AnalysisRequest = {

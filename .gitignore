@@ -138,9 +138,12 @@ public
 tmp/
 temp/
 
-# SHALE YEAH specific
-data/outputs/*/
+# SHALE YEAH specific - new organized structure
+data/temp/
+data/outputs/reports/*/
+data/outputs/models/*/
 !data/outputs/.gitkeep
+!data/inputs/.gitkeep
 *.accdb
 *.mdb
 research/competitive-analysis/sensitive/
