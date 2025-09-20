@@ -348,13 +348,12 @@ export class ShaleYeahMCPClient {
         throw new Error('No tools available on server');
       }
 
+      // Create server-specific arguments
+      const toolArguments = this.getServerSpecificArguments(serverName, primaryTool.name, request);
+
       const result = await client.callTool({
         name: primaryTool.name,
-        arguments: {
-          tractName: request.tractName,
-          runId: request.runId,
-          outputPath: path.join(request.outputDir, `${serverName}-analysis.json`)
-        }
+        arguments: toolArguments
       });
 
       const executionTime = Date.now() - startTime;
@@ -381,6 +380,54 @@ export class ShaleYeahMCPClient {
         error: error instanceof Error ? error.message : String(error)
       };
     }
+  }
+
+  /**
+   * Get server-specific tool arguments
+   */
+  private getServerSpecificArguments(serverName: string, toolName: string, request: AnalysisRequest): any {
+    const baseArgs = {
+      tractName: request.tractName,
+      runId: request.runId,
+      outputPath: path.join(request.outputDir, `${serverName}-analysis.json`)
+    };
+
+    // Server-specific argument mapping
+    switch (serverName) {
+      case 'title':
+        if (toolName === 'examine_title') {
+          return {
+            propertyDescription: request.tractName,
+            county: 'Demo County',
+            state: 'Texas',
+            examPeriod: '20 years',
+            outputPath: baseArgs.outputPath
+          };
+        }
+        break;
+
+      case 'geowiz':
+        // Add geology-specific arguments if needed
+        return {
+          ...baseArgs,
+          depthInterval: '5000-15000 ft',
+          formations: ['Wolfcamp A', 'Wolfcamp B', 'Bone Spring']
+        };
+
+      case 'curve-smith':
+        // Add engineering-specific arguments if needed
+        return {
+          ...baseArgs,
+          wellType: 'horizontal',
+          lateralLength: '10000 ft'
+        };
+
+      default:
+        // Use base arguments for other servers
+        return baseArgs;
+    }
+
+    return baseArgs;
   }
 
   /**

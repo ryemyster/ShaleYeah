@@ -75,15 +75,16 @@ jobs:
         mkdir -p $OUT_DIR
         
         # Test unified MCP client with demo mode
-        npx tsx src/main.ts --mode=demo --run-id=$RUN_ID || echo "Demo mode test completed"
+        npx tsx src/main.ts --mode=demo --tract="CI Test Tract" || echo "Demo mode test completed"
         
-        # Check if output was generated (updated for new file names)
-        if [ -f "$OUT_DIR/INVESTMENT_DECISION.md" ]; then
+        # Check if output was generated (look for any demo run)
+        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ Demo mode generated INVESTMENT_DECISION.md"
-        elif [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
+        elif ls data/temp/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
           echo "✅ Demo mode generated SHALE_YEAH_REPORT.md"
         else
           echo "⚠️  Demo mode did not generate expected output"
+          ls -la data/temp/demo/ || echo "No demo directory found"
         fi
 
     - name: Test full pipeline execution
@@ -93,23 +94,23 @@ jobs:
         export OUT_DIR=./data/temp/demo/$RUN_ID
         
         # Run the complete TypeScript pipeline
-        npx tsx src/main.ts --mode=demo --run-id=$RUN_ID
+        npx tsx src/main.ts --mode=demo --tract="CI Full Pipeline Test"
         
         # Verify pipeline outputs
         echo "Checking pipeline outputs..."
 
-        if [ -f "$OUT_DIR/INVESTMENT_DECISION.md" ]; then
+        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ Final investment report generated successfully"
           echo "Report contents preview:"
-          head -10 "$OUT_DIR/INVESTMENT_DECISION.md"
-        elif [ -f "$OUT_DIR/SHALE_YEAH_REPORT.md" ]; then
+          head -10 data/temp/demo/*/INVESTMENT_DECISION.md | head -10
+        elif ls data/temp/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
           echo "✅ Final report generated successfully"
           echo "Report contents preview:"
-          head -10 "$OUT_DIR/SHALE_YEAH_REPORT.md"
+          head -10 data/temp/demo/*/SHALE_YEAH_REPORT.md | head -10
         else
           echo "❌ Final report not generated"
-          echo "Output directory contents:"
-          ls -la $OUT_DIR/
+          echo "Demo directory contents:"
+          ls -la data/temp/demo/ || echo "No demo directory found"
         fi
 
     - name: Verify branding compliance
