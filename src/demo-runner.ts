@@ -30,7 +30,7 @@ class ShaleYeahMCPDemo {
     this.client = new ShaleYeahMCPClient();
 
     // Generate demo run ID
-    const timestamp = new Date().toISOString().replace(/T/, 'T').replace(/\..+/, '').replace(/[-:]/g, '');
+    const timestamp = new Date().toISOString().replace(/\..+/, '').replace(/[-:]/g, '');
     this.runId = `demo-${timestamp}`;
     this.outputDir = `./data/temp/demo/${this.runId}`;
     this.tractName = 'Permian Basin Demo Tract';
