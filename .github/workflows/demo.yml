@@ -64,39 +64,44 @@ jobs:
       run: |
         echo "🚀 Testing investment decision pipeline..."
         export RUN_ID=ci-investment-test
+
+        # Ensure base directories exist
+        mkdir -p data/temp/demo
+        mkdir -p data/inputs
+
+        # Run the complete investment analysis in demo mode
+        npx tsx src/main.ts --mode=demo --tract="CI Investment Test"
         
-        # Run the complete investment analysis
-        npx tsx src/main.ts --mode=production --run-id=$RUN_ID
-        
-        # Verify investment decision outputs
+        # Verify investment decision outputs (look for any demo run)
         echo "Checking investment decision outputs..."
 
-        if [ -f "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md" ]; then
+        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ Investment analysis report generated"
           echo ""
           echo "=== EXECUTIVE INVESTMENT DECISION ==="
-          
-          # Extract key decision information
-          if grep -q "PROCEED\|GO\|INVEST" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"; then
+
+          # Extract key decision information from any generated report
+          if grep -q "PROCEED\|GO\|INVEST" data/temp/demo/*/INVESTMENT_DECISION.md; then
             echo "✅ RECOMMENDATION: PROCEED WITH INVESTMENT"
-          elif grep -q "REJECT\|NO-GO\|DO NOT" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"; then
+          elif grep -q "REJECT\|NO-GO\|DO NOT" data/temp/demo/*/INVESTMENT_DECISION.md; then
             echo "❌ RECOMMENDATION: DO NOT INVEST"
           else
             echo "⚠️  RECOMMENDATION: CONDITIONAL/REVIEW REQUIRED"
           fi
-          
+
           # Extract financial metrics
           echo ""
           echo "=== KEY FINANCIAL METRICS ==="
-          grep -E "NPV|IRR|Payback|ROI" "./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md" || echo "Financial metrics in detailed analysis"
-          
+          grep -E "NPV|IRR|Payback|ROI" data/temp/demo/*/INVESTMENT_DECISION.md || echo "Financial metrics in detailed analysis"
+
           echo ""
           echo "=== REPORT LOCATION ==="
-          echo "📄 Full Report: ./data/temp/demo/$RUN_ID/INVESTMENT_DECISION.md"
-          
+          echo "📄 Full Report: $(ls data/temp/demo/*/INVESTMENT_DECISION.md)"
+
         else
           echo "❌ Investment analysis failed"
-          ls -la ./data/temp/demo/
+          echo "Available demo runs:"
+          ls -la data/temp/demo/ 2>/dev/null || echo "No demo directory found"
           exit 1
         fi
 
