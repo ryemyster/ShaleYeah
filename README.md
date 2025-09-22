@@ -23,9 +23,9 @@ SHALE YEAH is a comprehensive investment analysis platform that replaces traditi
 - **Total**: 15+ weeks, $500K+ in labor costs, inconsistent quality
 
 **The Solution**: SHALE YEAH's AI-powered analysis pipeline:
-- **20 specialized MCP servers** with Roman Imperial personas
+- **14 specialized MCP servers** with Roman Imperial personas
 - **Complete investment pipeline** from data ingestion to final decision
-- **2-minute turnaround** for comprehensive analysis
+- **5-second turnaround** for comprehensive analysis
 - **Production-ready outputs** for board presentations and investment committees
 - **Standards-compliant** MCP architecture for enterprise integration
 
@@ -42,13 +42,20 @@ Each AI agent embodies a Roman Imperial expert with deep domain knowledge and de
 
 | **Domain** | **Roman Persona** | **Modern Role** | **Expertise** |
 |------------|------------------|-----------------|---------------|
-| **Geology** | **Marcus Aurelius Geologicus** | Senior Petroleum Geologist | Formation analysis, reservoir characterization |
-| **Economics** | **Caesar Augustus Economicus** | Imperial Financial Strategist | DCF analysis, risk-adjusted valuations |
-| **Risk Analysis** | **Marcus Aurelius Probabilis** | Risk Assessment Commander | Monte Carlo, sensitivity analysis |
-| **Legal** | **Gaius Legalis Advocatus** | Imperial Legal Counselor | Contract analysis, regulatory compliance |
-| **Market Intelligence** | **Gaius Mercatus Analyst** | Market Intelligence Chief | Commodity analysis, supply/demand |
-| **Research** | **Gaius Investigatus Maximus** | Supreme Research Commander | Competitive intelligence, data synthesis |
-| **Infrastructure** | **Lucius Systemus Guardian** | Infrastructure Overseer | System monitoring, performance analysis |
+| **Geology** | **Marcus Aurelius Geologicus** | Master Geological Analyst | Formation analysis, reservoir characterization |
+| **Economics** | **Caesar Augustus Economicus** | Master Financial Strategist | DCF analysis, NPV/IRR modeling |
+| **Engineering** | **Lucius Technicus Engineer** | Master Reservoir Engineer | Decline curves, EUR estimation |
+| **Decision** | **Augustus Decidius Maximus** | Supreme Investment Strategist | Final investment logic, portfolio optimization |
+| **Research** | **Scientius Researchicus** | Master Intelligence Gatherer | Market intelligence, competitive analysis |
+| **Risk Analysis** | **Gaius Probabilis Assessor** | Master Risk Strategist | Monte Carlo, uncertainty quantification |
+| **Legal** | **Legatus Juridicus** | Master Legal Strategist | Contract analysis, regulatory compliance |
+| **Market** | **Mercatus Analyticus** | Master Market Strategist | Commodity forecasting, supply/demand analysis |
+| **Development** | **Architectus Developmentus** | Master Development Coordinator | Project planning, resource allocation |
+| **Drilling** | **Perforator Maximus** | Master Drilling Strategist | Drilling programs, cost optimization |
+| **Infrastructure** | **Structura Ingenious** | Master Infrastructure Architect | Facility design, capacity planning |
+| **Title** | **Titulus Verificatus** | Master Title Analyst | Ownership verification, due diligence |
+| **Test** | **Testius Validatus** | Master Quality Controller | Analysis validation, quality assurance |
+| **Reporting** | **Scriptor Reporticus Maximus** | Master Report Generator | Executive reporting, decision synthesis |
 
 This approach provides:
 - **Consistent decision-making** across all analysis domains
@@ -63,7 +70,7 @@ This approach provides:
 ### Prerequisites
 - **Node.js 18+** with npm
 - **Git** for source control
-- **Optional**: Anthropic API key for full AI analysis
+- **Optional**: Anthropic API key for production AI analysis
 
 ### 5-Minute Demo
 
@@ -73,14 +80,31 @@ git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
 npm install
 
-# 2. Run immediate demo (auto-generates RUN_ID)
+# 2. Run the demo (uses realistic mock data)
 npm run demo
 
-# 3. View results
-cat ./data/outputs/demo-*/SHALE_YEAH_REPORT.md
+# 3. View results in generated output directory
+ls data/temp/demo/demo-*/
+cat data/temp/demo/demo-*/INVESTMENT_DECISION.md
 ```
 
-**What happens**: The system analyzes demo LAS files, Access databases, and shapefiles using mock LLM responses, then generates a comprehensive investment report with geological analysis, economic modeling, and risk assessment.
+**What happens**: 6 AI expert agents analyze a Permian Basin tract in ~5 seconds, generating professional investment reports with geological analysis, economic modeling, risk assessment, and final investment recommendation.
+
+**Demo Output:**
+```
+🛢️  SHALE YEAH - AI-Powered Oil & Gas Investment Analysis
+📋 Analysis ID: demo-20250917T132058
+🗺️  Target Tract: Permian Basin Demo Tract
+
+🤖 Executing Marcus Aurelius Geologicus (Geological Analysis)
+   ✅ Geological Analysis: 90% confidence in 844ms
+
+🤖 Executing Caesar Augustus Economicus (Financial Analysis)
+   ✅ Financial Analysis: 82% confidence in 942ms
+
+🎯 SHALE YEAH Analysis Complete!
+📊 Overall Recommendation: ✅ PROCEED (Strong Economics & Acceptable Risk)
+```
 
 ### Production Usage
 
@@ -97,36 +121,54 @@ cp your-boundaries.shp data/samples/
 npm run prod
 
 # 4. Review comprehensive output
-ls -la data/outputs/run-*/
+ls -la data/outputs/reports/production-*/
 ```
+
+### Individual Expert Servers
+
+Each AI expert can also run independently as an MCP server:
+
+```bash
+# Start individual expert servers
+npm run server:geowiz        # Geological analysis
+npm run server:econobot      # Economic analysis
+npm run server:decision      # Investment decisions
+npm run server:research      # Market intelligence
+npm run server:risk-analysis # Risk assessment
+npm run server:legal         # Legal analysis
+npm run server:market        # Market analysis
+npm run server:development   # Development planning
+npm run server:drilling      # Drilling operations
+npm run server:infrastructure # Infrastructure planning
+npm run server:title         # Title analysis
+npm run server:test          # Quality assurance
+npm run server:curve-smith   # Reservoir engineering
+npm run server:reporter      # Executive reporting
+```
+
+**Use Case:** Connect individual experts to Claude Desktop or other MCP clients for interactive analysis and exploration.
 
 ### Understanding Your Results
 
-Every analysis produces structured outputs:
+Demo analysis produces structured outputs:
 
 ```
-data/outputs/run-YYYYMMDD-HHMMSS/
-├── SHALE_YEAH_REPORT.md           # 📊 Executive investment summary
-├── geology_summary.md             # 🗿 Geological analysis & confidence
-├── zones.geojson                  # 🗺️ Formation boundaries (GIS-ready)  
-├── economic_analysis.json         # 💰 NPV, IRR, cash flow projections
-├── risk_assessment.json           # ⚠️ Risk analysis & mitigation plans
-├── legal_review.md                # ⚖️ Legal risks & compliance issues
-├── market_analysis.json           # 📈 Market conditions & pricing
-└── qc_report.md                   # ✅ Data quality assessment
+data/temp/demo/demo-YYYYMMDDTHHMMSS/
+├── INVESTMENT_DECISION.md         # 📊 Executive investment summary
+├── DETAILED_ANALYSIS.md           # 🗿 Comprehensive analysis details
+└── FINANCIAL_MODEL.json           # 💰 Economic model and projections
 ```
 
 **Key Files to Review**:
-- **`SHALE_YEAH_REPORT.md`** - Start here! Investment recommendation with confidence scores
-- **`economic_analysis.json`** - Financial metrics: NPV, IRR, payback, sensitivity analysis
-- **`zones.geojson`** - Open in QGIS/ArcGIS to visualize formation boundaries
-- **`risk_assessment.json`** - Comprehensive risk analysis with mitigation strategies
+- **`INVESTMENT_DECISION.md`** - Start here! Investment recommendation with confidence scores
+- **`DETAILED_ANALYSIS.md`** - Detailed findings from all expert domains
+- **`FINANCIAL_MODEL.json`** - Complete financial model with NPV, IRR, sensitivity analysis
 
 ---
 
 ## 🏗️ Architecture Overview
 
-SHALE YEAH implements a **standards-compliant MCP (Model Context Protocol)** architecture with 20 specialized servers orchestrated by a unified client.
+SHALE YEAH implements a **standards-compliant MCP (Model Context Protocol)** architecture with 14 specialized expert servers that can work together or independently.
 
 ### MCP Standards Compliance
 
@@ -141,32 +183,35 @@ Built using the **official Anthropic MCP SDK** with full JSON-RPC 2.0 compliance
 
 ```
 ┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│   Data Ingestion    │───▶│  Unified MCP        │───▶│   Investment        │
+│   Data Ingestion    │───▶│  SHALE YEAH MCP     │───▶│   Investment        │
 │                     │    │  Client             │    │   Decision          │
 │ • LAS Well Logs     │    │  (Orchestrator)     │    │                     │
 │ • Access Databases  │    │                     │    │ • Go/No-Go          │
 │ • Shapefiles        │    │ ┌─────────────────┐ │    │ • Risk Assessment   │
-│ • Market Data       │    │ │  20 MCP Servers │ │    │ • NPV/IRR Analysis  │
+│ • Market Data       │    │ │  14 MCP Servers │ │    │ • NPV/IRR Analysis  │
 │ • Legal Documents   │    │ │  Roman Personas │ │    │ • Board Presentation│
 └─────────────────────┘    │ └─────────────────┘ │    └─────────────────────┘
                            └─────────────────────┘
 ```
 
-### 20 MCP Server Architecture
+### 14 MCP Server Architecture
 
 | **Server** | **Domain** | **Roman Persona** | **Primary Tools** |
 |------------|------------|------------------|-------------------|
-| `geology.ts` | Geological Analysis | Marcus Aurelius Geologicus | `analyze_formations`, `generate_zones`, `assess_drilling_targets` |
-| `economics.ts` | Financial Modeling | Caesar Augustus Economicus | `dcf_analysis`, `sensitivity_modeling`, `investment_optimization` |
-| `risk-analysis.ts` | Risk Assessment | Marcus Aurelius Probabilis | `monte_carlo_simulation`, `scenario_analysis`, `risk_quantification` |
-| `legal.ts` | Legal Analysis | Gaius Legalis Advocatus | `contract_review`, `regulatory_compliance`, `legal_risk_assessment` |
-| `market.ts` | Market Intelligence | Gaius Mercatus Analyst | `commodity_analysis`, `supply_demand_modeling`, `price_forecasting` |
-| `research.ts` | Competitive Intelligence | Gaius Investigatus Maximus | `market_research`, `competitor_analysis`, `industry_trends` |
-| `drilling.ts` | Technical Engineering | Lucius Drillicus Technicus | `drilling_cost_estimation`, `completion_design`, `technical_feasibility` |
-| `title.ts` | Land & Title | Gaius Titulus Tracker | `ownership_verification`, `mineral_rights_analysis`, `lease_review` |
-| `infrastructure.ts` | System Operations | Lucius Systemus Guardian | `performance_monitoring`, `capacity_planning`, `quality_assurance` |
-| `decision.ts` | Executive Decision | Caesar Supremus Decidicus | `investment_synthesis`, `portfolio_optimization`, `strategic_recommendations` |
-| *...and 10 more specialized servers* | | | |
+| `geowiz.ts` | Geological Analysis | Marcus Aurelius Geologicus | `analyze_formation`, `parse_well_log`, `generate_zones` |
+| `econobot.ts` | Financial Modeling | Caesar Augustus Economicus | `analyze_economics`, `dcf_analysis`, `investment_optimization` |
+| `risk-analysis.ts` | Risk Assessment | Gaius Probabilis Assessor | `assess_investment_risk`, `scenario_analysis`, `risk_quantification` |
+| `legal.ts` | Legal Analysis | Legatus Juridicus | `contract_review`, `regulatory_compliance`, `legal_risk_assessment` |
+| `market.ts` | Market Intelligence | Mercatus Analyticus | `commodity_analysis`, `supply_demand_modeling`, `price_forecasting` |
+| `research.ts` | Competitive Intelligence | Scientius Researchicus | `market_research`, `competitor_analysis`, `industry_trends` |
+| `drilling.ts` | Technical Engineering | Perforator Maximus | `drilling_cost_estimation`, `completion_design`, `technical_feasibility` |
+| `title.ts` | Land & Title | Titulus Verificatus | `examine_title`, `ownership_verification`, `mineral_rights_analysis` |
+| `infrastructure.ts` | System Operations | Structura Ingenious | `performance_monitoring`, `capacity_planning`, `quality_assurance` |
+| `decision.ts` | Executive Decision | Augustus Decidius Maximus | `investment_synthesis`, `portfolio_optimization`, `strategic_recommendations` |
+| `curve-smith.ts` | Reservoir Engineering | Lucius Technicus Engineer | `analyze_decline_curve`, `process_las_file`, `curve_statistics` |
+| `development.ts` | Development Planning | Architectus Developmentus | `project_planning`, `resource_allocation`, `timeline_optimization` |
+| `reporter.ts` | Executive Reporting | Scriptor Reporticus Maximus | `generate_investment_decision`, `parse_document`, `report_synthesis` |
+| `test.ts` | Quality Assurance | Testius Validatus | `quality_validation`, `analysis_verification`, `system_testing` |
 
 ### Data Flow Pipeline
 
@@ -194,6 +239,81 @@ graph LR
 
 ---
 
+## 🗂️ Workspace Management
+
+SHALE YEAH uses an intelligent workspace organization system that automatically manages output files based on analysis mode and automatically cleans up temporary files to prevent disk bloat.
+
+### Directory Structure
+
+```
+data/
+├── inputs/              # Sample input files (committed to repo)
+│   ├── las/            # LAS well log files
+│   ├── excel/          # Excel economic data files
+│   └── databases/      # Access database files
+├── temp/               # Temporary files (auto-cleaned, not committed)
+│   ├── demo/          # Demo runs (cleaned after 24hrs, keep last 3)
+│   ├── test/          # Test runs (cleaned immediately)
+│   └── processing/    # Intermediate processing files
+└── outputs/            # Production results only (committed selectively)
+    ├── reports/       # Final client deliverables
+    ├── models/        # Financial models
+    └── archive/       # Long-term storage
+```
+
+### Analysis Output Locations
+
+| **Mode** | **Output Location** | **Purpose** | **Cleanup Policy** |
+|----------|-------------------|-------------|-------------------|
+| **Demo** | `data/temp/demo/demo-YYYYMMDDTHHMMSS/` | Quick demonstrations and testing | Keep last 3 runs, auto-clean older than 24hrs |
+| **Production** | `data/outputs/reports/production-YYYYMMDDTHHMMSS/` | Real client analysis and deliverables | Manual cleanup (permanent storage) |
+| **Test** | `data/temp/test/test-TIMESTAMP/` | Automated testing and CI/CD | Immediate removal after test completion |
+| **Batch/Research** | `data/temp/processing/batch-YYYYMMDDTHHMMSS/` | Multi-prospect analysis and research | Manual cleanup after analysis review |
+
+### Cleanup Commands
+
+SHALE YEAH includes professional workspace cleanup tools:
+
+```bash
+# Recommended cleanup (preserves important data)
+npm run clean              # Clean build artifacts, cache, and old demos
+npm run clean:workspace    # Run intelligent workspace cleanup only
+
+# Specific cleanup options
+npm run clean:demo         # Clean old demo/test runs (same as workspace)
+npm run clean:dist         # Remove TypeScript build files
+npm run clean:cache        # Remove Node.js and TSX cache
+npm run clean:outputs      # Remove ALL outputs (use with caution!)
+npm run clean:all          # Nuclear option: clean everything including node_modules
+```
+
+The workspace cleanup automatically:
+- **Preserves the last 3 demo runs** for debugging and comparison
+- **Removes test runs immediately** to prevent CI bloat
+- **Never touches production outputs** in `data/outputs/reports/`
+- **Provides disk usage reporting** to monitor storage consumption
+
+### File Lifecycle
+
+```
+┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
+│   Demo Run  │───▶│  data/temp/  │───▶│  Auto-cleaned   │
+│             │    │    demo/     │    │  after 24hrs    │
+└─────────────┘    └──────────────┘    └─────────────────┘
+
+┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
+│ Production  │───▶│ data/outputs │───▶│ Permanent       │
+│   Analysis  │    │   reports/   │    │ Storage         │
+└─────────────┘    └──────────────┘    └─────────────────┘
+
+┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
+│  Test Run   │───▶│  data/temp/  │───▶│ Immediate       │
+│             │    │    test/     │    │ Cleanup         │
+└─────────────┘    └──────────────┘    └─────────────────┘
+```
+
+---
+
 ## 🏗️ Technical Architecture
 
 ### Core Components
@@ -202,7 +322,7 @@ SHALE YEAH implements a **microservices architecture** using the Model Context P
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Unified MCP Client                           │
+│                   SHALE YEAH MCP Client                        │
 │              (Orchestration & Workflow Engine)                  │
 └─────────────┬───────────────────────────────────────────────────┘
               │
@@ -237,7 +357,7 @@ SHALE YEAH implements a **microservices architecture** using the Model Context P
 Each MCP server follows a consistent architecture pattern:
 
 ```typescript
-// src/mcp-servers/[domain]-mcp.ts
+// src/servers/[domain]-mcp.ts
 export class DomainMCPServer {
   private server: McpServer;                    // MCP protocol server
   private fileManager: FileIntegrationManager; // File processing
@@ -589,7 +709,7 @@ All MCP servers expose standardized JSON-RPC 2.0 APIs. Here's how to integrate p
 #### Geowiz MCP Server API
 
 ```typescript
-import { GeowizMCPServer } from './src/mcp-servers/geowiz-mcp.js';
+import { GeowizMCPServer } from './src/servers/geowiz.js';
 
 const geowiz = new GeowizMCPServer({
   name: 'geowiz-server',
@@ -617,7 +737,7 @@ const logResult = await geowiz.callTool('parse_well_log', {
 #### Curve-Smith MCP Server API
 
 ```typescript
-import { CurveSmithMCPServer } from './src/mcp-servers/curve-smith-mcp.js';
+import { CurveSmithMCPServer } from './src/servers/curve-smith.js';
 
 const curveSmith = new CurveSmithMCPServer({
   name: 'curve-smith-server',
@@ -665,7 +785,7 @@ interface CurveAnalysisResult {
 #### Econobot MCP Server API
 
 ```typescript
-import { EconobotMCPServer } from './src/mcp-servers/econobot-mcp.js';
+import { EconobotMCPServer } from './src/servers/econobot.js';
 
 const econobot = new EconobotMCPServer({
   name: 'econobot-server',
@@ -732,20 +852,12 @@ interface MCPToolResponse {
 For orchestrating multiple MCP servers:
 
 ```typescript
-import { UnifiedMCPClient } from './src/unified-mcp-client.js';
+import { ShaleYeahMCPClient } from './src/mcp-client.js';
 
-const client = new UnifiedMCPClient({
-  servers: {
-    geology: new GeowizMCPServer(config),
-    curves: new CurveSmithMCPServer(config),
-    economics: new EconobotMCPServer(config),
-    reporting: new ReporterMCPServer(config),
-    risk: new RiskRangerMCPServer(config)
-  }
-});
+const client = new ShaleYeahMCPClient();
 
 // Execute full analysis pipeline
-const analysisResult = await client.executeAnalysisWorkflow({
+const analysisResult = await client.executeAnalysis({
   inputFiles: {
     wellLog: '/path/to/well.las',
     economics: '/path/to/economics.xlsx',
@@ -811,11 +923,11 @@ Follow this step-by-step guide to add new domain-specific analysis servers:
 
 ```bash
 # Create new server file
-touch src/mcp-servers/my-domain-mcp.ts
+touch src/servers/my-domain-mcp.ts
 ```
 
 ```typescript
-// src/mcp-servers/my-domain-mcp.ts
+// src/servers/my-domain-mcp.ts
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { FileIntegrationManager } from '../shared/file-integration.js';
 
@@ -1112,7 +1224,7 @@ export class MyFormatParser implements FileParser {
 // src/unified-mcp-client.ts
 import { MyDomainMCPServer } from './mcp-servers/my-domain-mcp.js';
 
-export class UnifiedMCPClient {
+export class ShaleYeahMCPClient {
   private myDomainServer: MyDomainMCPServer;
   
   constructor(config: ClientConfig) {
@@ -1124,7 +1236,7 @@ export class UnifiedMCPClient {
     });
   }
   
-  async executeAnalysisWorkflow(data: AnalysisInput): Promise<AnalysisResult> {
+  async executeAnalysis(request: AnalysisRequest): Promise<WorkflowResult> {
     // Integrate new server into workflow
     const domainAnalysis = await this.myDomainServer.callTool('process_domain_file', {
       filePath: data.domainFile,
@@ -1147,7 +1259,7 @@ export class UnifiedMCPClient {
 ```typescript
 // tests/my-domain-integration.test.ts
 import { describe, test, expect, beforeEach, afterEach } from '@jest/globals';
-import { MyDomainMCPServer } from '../src/mcp-servers/my-domain-mcp.js';
+import { MyDomainMCPServer } from '../src/servers/my-domain-mcp.js';
 
 describe('MyDomain MCP Server Integration', () => {
   let server: MyDomainMCPServer;
@@ -1208,8 +1320,13 @@ export interface DomainAnalysisResult {
 }
 
 // Add to main types
-export interface AnalysisInput {
-  // ... existing properties
+export interface AnalysisRequest {
+  runId: string;
+  tractName: string;
+  mode: 'demo' | 'production';
+  inputFiles?: string[];
+  outputDir: string;
+  workflow?: string;
   domainFile?: string;         // New domain file input
   domainConfig?: {             // New domain configuration
     analysisDepth: 'basic' | 'advanced' | 'comprehensive';
@@ -1413,7 +1530,7 @@ git push origin main  # Triggers automatic deployment
 
 1. **Create Domain Server**:
 ```typescript
-// src/mcp-servers/my-domain.ts
+// src/servers/my-domain.ts
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 export class MyDomainMCPServer {
@@ -1477,10 +1594,10 @@ cli:
 // Update src/unified-mcp-client.ts
 import { MyDomainMCPServer } from './mcp-servers/my-domain.js';
 
-export class UnifiedMCPClient {
+export class ShaleYeahMCPClient {
   private myDomainServer: MyDomainMCPServer;
 
-  async executeAnalysisWorkflow(data: AnalysisInput): Promise<AnalysisResult> {
+  async executeAnalysis(request: AnalysisRequest): Promise<WorkflowResult> {
     // Integrate new domain into pipeline
     const domainAnalysis = await this.myDomainServer.analyze(data);
     return this.synthesizeResults(domainAnalysis, /* other results */);
@@ -1519,7 +1636,7 @@ SHALE YEAH can integrate with external data sources:
 
 ```typescript
 // External data integration example
-const client = new UnifiedMCPClient({
+const client = new ShaleYeahMCPClient({
   externalSources: {
     commodity_prices: {
       provider: 'EIA_API',
@@ -1965,9 +2082,9 @@ describe('MyDomainMCPServer', () => {
 // tests/integration/mcp-workflow.test.ts
 describe('MCP Integration Workflow', () => {
   test('should process files through complete pipeline', async () => {
-    const client = new UnifiedMCPClient(testConfig);
+    const client = new ShaleYeahMCPClient(testConfig);
     
-    const result = await client.executeAnalysisWorkflow({
+    const result = await client.executeAnalysis({
       inputFiles: {
         wellLog: './tests/fixtures/well.las',
         economics: './tests/fixtures/econ.xlsx'
@@ -2146,7 +2263,7 @@ See our [public roadmap](https://github.com/rmcdonald/ShaleYeah/projects) for:
 - **[Environment Variables](.env.example)** - Complete configuration options
 - **[Agent Configurations](.claude/agents/)** - YAML workflow definitions
 - **[TypeScript Interfaces](src/shared/types.ts)** - System schemas and types
-- **[MCP Server Implementations](src/mcp-servers/)** - Domain-specific analysis servers
+- **[MCP Server Implementations](src/servers/)** - Domain-specific analysis servers
 
 ### Technical Documentation
 

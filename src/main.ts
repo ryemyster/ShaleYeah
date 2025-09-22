@@ -1,208 +1,294 @@
 #!/usr/bin/env node
 /**
- * SHALE YEAH - Standards-Compliant MCP Entry Point
- * 
- * **UNIFIED MCP ARCHITECTURE:** Uses official Anthropic MCP SDK
- * 
- * This replaces the custom MCP controller with a standards-compliant implementation:
- * - Uses official MCP TypeScript SDK for all communication
- * - Domain-specific MCP servers (geology, economics, reporting)
- * - JSON-RPC 2.0 compliant with proper protocol versioning
- * - Interoperable with Claude Desktop and other MCP clients
+ * SHALE YEAH - MCP-Compliant Production Platform
+ *
+ * Main entry point for SHALE YEAH oil & gas investment analysis platform.
+ * Uses standards-compliant MCP client to orchestrate 14 domain expert servers.
+ *
+ * Supports multiple execution modes:
+ * - Production: Live analysis with real data and AI
+ * - Demo: Professional demonstration with realistic mock data
+ * - Batch: Multiple prospect analysis for portfolio evaluation
+ * - Research: Deep-dive analysis with comprehensive reporting
  */
 
+import { ShaleYeahMCPClient, AnalysisRequest } from './mcp-client.js';
+import fs from 'fs/promises';
 import path from 'path';
-import { UnifiedMCPClient } from './unified-mcp-client.js';
-import { 
-  getEnvironmentConfig, 
-  getOutputDir,
-  setupLogging,
-  validateEnvironment 
-} from './shared/config.js';
+import { glob } from 'glob';
 
-/**
- * Main SHALE YEAH execution entry point
- */
-async function main(): Promise<void> {
+interface CLIOptions {
+  mode: 'production' | 'demo' | 'batch' | 'research';
+  files?: string[];
+  tract?: string;
+  output?: string;
+  workflow?: string;
+  help?: boolean;
+}
+
+function parseCommandLineArgs(): CLIOptions {
   const args = process.argv.slice(2);
-  const argMap: Record<string, string> = {};
-  
-  for (let i = 0; i < args.length; i += 2) {
-    if (args[i].startsWith('--')) {
-      argMap[args[i].slice(2)] = args[i + 1] || 'true';
+  const options: CLIOptions = {
+    mode: 'production'
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+
+    // Handle --key=value format
+    if (arg.includes('=')) {
+      const [key, value] = arg.split('=', 2);
+      switch (key) {
+        case '--mode':
+          options.mode = value as any;
+          continue;
+        case '--files':
+          options.files = value.split(',');
+          continue;
+        case '--tract':
+          options.tract = value;
+          continue;
+        case '--output':
+          options.output = value;
+          continue;
+      }
+    }
+
+    switch (arg) {
+      case '--mode':
+        options.mode = args[++i] as any;
+        break;
+      case '--files':
+        options.files = args[++i].split(',');
+        break;
+      case '--tract':
+        options.tract = args[++i];
+        break;
+      case '--output':
+        options.output = args[++i];
+        break;
+      case '--workflow':
+        options.workflow = args[++i];
+        break;
+      case '--help':
+        options.help = true;
+        break;
     }
   }
-  
-  // Handle help flag
-  if (argMap.help || argMap.h) {
-    console.log(`
-🛢️  SHALE YEAH - AI-Powered Oil & Gas Analysis Platform
 
-USAGE:
-  npm run demo              # Quick demo with sample data
-  npm run start             # Start unified MCP pipeline
-  npm run pipeline:demo     # Demo mode with fast execution
-  npm run pipeline:batch    # Batch processing mode
-  npm run pipeline:research # Research and RFC generation
+  return options;
+}
 
-CLI OPTIONS:
-  --mode <mode>        Pipeline mode: demo, production, batch, research
-  --run-id <id>        Unique run identifier (auto-generated if not provided)
-  --out-dir <dir>      Output directory (auto-generated if not provided)
-  --las-files <files>  Comma-separated LAS file paths
-  --access-files <files> Comma-separated Access database file paths
-  --well-lat <lat>     Well latitude coordinate
-  --well-lon <lon>     Well longitude coordinate
-  --help, -h           Show this help
+function showHelp(): void {
+  console.log(`
+🛢️  SHALE YEAH - MCP-Powered Oil & Gas Investment Analysis
 
-EXAMPLES:
-  npx tsx src/main.ts --mode=demo
-  npx tsx src/main.ts --run-id=my-analysis --las-files=data/well1.las,data/well2.las
-  npx tsx src/main.ts --mode=production --well-lat=47.7511 --well-lon=-101.7778
-    `);
-    process.exit(0);
+Usage:
+  npm run start -- [options]
+  npm run prod -- [options]
+
+Options:
+  --mode <mode>        Analysis mode: production, demo, batch, research (default: production)
+  --files <files>      Comma-separated input files (LAS, Excel, GIS)
+  --tract <name>       Target tract name (default: "Analysis Tract")
+  --output <dir>       Output directory (default: ./data/outputs/<timestamp>)
+  --workflow <file>    Custom workflow configuration file
+  --help              Show this help message
+
+Examples:
+  # Production analysis with files
+  npm run prod -- --mode=production --files="data/wells/*.las,data/economics/*.xlsx" --tract="Permian Prospect A"
+
+  # Demo mode for presentation
+  npm run demo
+
+  # Batch processing multiple prospects
+  npm run start -- --mode=batch --workflow="workflows/portfolio.yaml"
+
+  # Research mode for deep analysis
+  npm run start -- --mode=research --tract="Research Target" --output="./research-results"
+
+For more information, visit: https://github.com/your-org/ShaleYeah
+`);
+}
+
+async function main(): Promise<void> {
+  const options = parseCommandLineArgs();
+
+  if (options.help) {
+    showHelp();
+    return;
   }
+
+  console.log('🛢️  SHALE YEAH - MCP-Powered Investment Analysis');
+  console.log('===============================================');
+  console.log(`🎯 Mode: ${options.mode.toUpperCase()}`);
+  if (options.files) {
+    console.log(`📁 Input Files: ${options.files.length} files`);
+  }
+  console.log();
+
+  // Generate unique run ID
+  const timestamp = new Date().toISOString().replace(/[:.]/g, '').slice(0, -5);
+  const runId = `${options.mode}-${timestamp}`;
+
+  // Determine output directory based on mode
+  let outputDir: string;
+  if (options.output) {
+    outputDir = options.output;
+  } else if (options.mode === 'demo') {
+    outputDir = `./data/temp/demo/${runId}`;
+  } else if (options.mode === 'batch' || options.mode === 'research') {
+    outputDir = `./data/temp/processing/${runId}`;
+  } else {
+    // Production mode - use outputs directory
+    outputDir = `./data/outputs/reports/${runId}`;
+  }
+
+  // Create analysis request
+  const request: AnalysisRequest = {
+    runId,
+    tractName: options.tract || `${options.mode} Analysis Tract`,
+    mode: options.mode === 'demo' ? 'demo' : 'production',
+    inputFiles: options.files,
+    outputDir,
+    workflow: options.workflow
+  };
+
+  // Validate analysis request
+  const validation = await validateAnalysisRequest(request);
+  if (!validation.valid) {
+    console.error('❌ Analysis validation failed:');
+    validation.errors.forEach(error => console.error(`   • ${error}`));
+    process.exit(1);
+  }
+
+  // Initialize MCP client and execute analysis
+  const client = new ShaleYeahMCPClient();
 
   try {
-    // Setup logging
-    setupLogging();
-    
-    // Get configuration
-    const config = getEnvironmentConfig(argMap.mode);
-    const runId = argMap['run-id'] || `run-${Date.now()}`;
-    const outDir = argMap['out-dir'] || getOutputDir(runId);
-    
-    console.log(`🚀 Starting SHALE YEAH Analysis (${config.mode.toUpperCase()} mode)`);
-    console.log(`📋 Run ID: ${runId}`);
-    console.log(`📁 Output Directory: ${outDir}`);
-    
-    // Validate environment
-    const validation = validateEnvironment();
-    
-    // Log errors (blocking)
-    if (validation.errors.length > 0) {
-      for (const error of validation.errors) {
-        console.error(`❌ ${error}`);
-      }
-      process.exit(1);
-    }
-    
-    // Log warnings (non-blocking)
-    if (validation.warnings.length > 0) {
-      for (const warning of validation.warnings) {
-        console.warn(`⚠️  ${warning}`);
-      }
-    }
-
-    // Initialize unified MCP client
-    const unifiedClient = new UnifiedMCPClient({
-      name: 'shale-yeah-unified-client',
-      version: '1.0.0',
-      resourceRoot: outDir,
-      runId: runId
+    // Setup graceful shutdown
+    process.on('SIGINT', async () => {
+      console.log('\n🛑 Shutting down gracefully...');
+      await client.cleanup();
+      process.exit(0);
     });
 
-    await unifiedClient.initialize();
-    
-    // Prepare input data
-    const inputData = {
-      lasFiles: argMap['las-files'] ? argMap['las-files'].split(',') : [
-        'data/samples/demo.las'
-      ],
-      accessFiles: argMap['access-files'] ? argMap['access-files'].split(',') : [
-        'data/samples/demo.accdb'
-      ],
-      wellLocation: (argMap['well-lat'] && argMap['well-lon']) ? {
-        latitude: parseFloat(argMap['well-lat']),
-        longitude: parseFloat(argMap['well-lon'])
-      } : undefined,
-      economicParams: {
-        // Use defaults or could be customized via CLI args
+    process.on('SIGTERM', async () => {
+      console.log('\n🛑 Shutting down gracefully...');
+      await client.cleanup();
+      process.exit(0);
+    });
+
+    // Execute analysis workflow
+    const result = await client.executeAnalysis(request);
+
+    if (result.success) {
+      console.log('\n✅ Analysis completed successfully!');
+      console.log(`📊 Confidence: ${result.confidence}%`);
+      console.log(`⏱️  Total Time: ${(result.totalTime / 1000).toFixed(2)} seconds`);
+      console.log(`📁 Results: ${outputDir}`);
+
+      if (options.mode === 'demo') {
+        console.log('\n💡 This was a demonstration using realistic mock data.');
+        console.log('   For production analysis, use --mode=production with real data files.');
       }
-    };
-
-    console.log(`📊 Input Data:`);
-    console.log(`   LAS Files: ${inputData.lasFiles.join(', ')}`);
-    console.log(`   Access Files: ${inputData.accessFiles.join(', ')}`);
-    if (inputData.wellLocation) {
-      console.log(`   Well Location: ${inputData.wellLocation.latitude}, ${inputData.wellLocation.longitude}`);
+    } else {
+      console.log('\n❌ Analysis failed or incomplete');
+      console.log(`📊 Confidence: ${result.confidence}%`);
+      console.log(`⚠️  Successful analyses: ${result.results.filter(r => r.success).length}/${result.results.length}`);
+      process.exit(1);
     }
 
-    // Execute complete pipeline
-    console.log('\n🎯 Executing Complete SHALE YEAH Analysis Pipeline...');
-    const pipelineResult = await unifiedClient.executeCompletePipeline(inputData);
-
-    // Report results
-    console.log('\n📈 Enhanced Pipeline Results (6-Server Analysis):');
-    console.log(`   Overall Success: ${pipelineResult.success ? '✅' : '❌'}`);
-    console.log(`   Total Duration: ${pipelineResult.duration}ms`);
-    console.log(`   Geological Analysis: ${pipelineResult.geological.success ? '✅' : '❌'}`);
-    console.log(`   Economic Analysis: ${pipelineResult.economic.success ? '✅' : '❌'}`);
-    console.log(`   Drilling Engineering: ${pipelineResult.drilling.success ? '✅' : '❌'}`);
-    console.log(`   Risk Assessment: ${pipelineResult.riskAssessment.success ? '✅' : '❌'}`);
-    console.log(`   Comprehensive Reporting: ${pipelineResult.reporting.success ? '✅' : '❌'}`);
-
-    if (pipelineResult.reporting.finalReport) {
-      console.log(`\n📄 Enhanced Final Report: ${pipelineResult.reporting.finalReport}`);
-    }
-
-    // Workflow details
-    console.log('\n📋 Enhanced Workflow Summary:');
-    console.log(`   Geological Steps: ${pipelineResult.geological.steps.length}`);
-    console.log(`   Economic Steps: ${pipelineResult.economic.steps.length}`);
-    console.log(`   Drilling Engineering Steps: ${pipelineResult.drilling.steps.length}`);
-    console.log(`   Risk Assessment Steps: ${pipelineResult.riskAssessment.steps.length}`);
-    console.log(`   Comprehensive Reporting Steps: ${pipelineResult.reporting.steps.length}`);
-
-    // Clean shutdown
-    await unifiedClient.shutdown();
-    
-    console.log(`\n${pipelineResult.success ? '🎯' : '💥'} SHALE YEAH Investment Analysis ${pipelineResult.success ? 'Complete' : 'Failed'}`);
-    console.log(`⏱️  Total execution time: ${(pipelineResult.duration / 1000).toFixed(2)} seconds`);
-    
-    if (pipelineResult.success) {
-      // Extract investment decision from pipeline result
-      const mockInvestmentData = {
-        decision: 'GO',
-        npv: 8.7,
-        irr: 22.3,
-        risk: 'Medium',
-        runId: runId
-      };
-      
-      console.log(`\n📊 RESULTS:`);
-      console.log(`   Investment Recommendation: ${mockInvestmentData.decision}`);
-      console.log(`   Expected NPV: $${mockInvestmentData.npv} million`);
-      console.log(`   Expected IRR: ${mockInvestmentData.irr}%`);
-      console.log(`   Risk Level: ${mockInvestmentData.risk}`);
-      console.log(`\n📁 REPORTS GENERATED:`);
-      console.log(`   Executive Summary: ${outDir}/INVESTMENT_DECISION.md`);
-      console.log(`   Detailed Analysis: ${outDir}/DETAILED_ANALYSIS.md`);
-      console.log(`   Financial Model: ${outDir}/FINANCIAL_MODEL.json`);
-      console.log(`\n⏭️  NEXT STEPS:`);
-      console.log('   1. Review executive summary (2 minutes)');
-      console.log('   2. Share with investment committee');
-      console.log('   3. Proceed with due diligence if GO recommendation');
-      console.log('   4. Execute drilling program upon approval');
-      
-      if (config.mode === 'demo') {
-        console.log('\n💡 Demo Mode Complete! This simulated Permian Basin opportunity for demonstration.');
-        console.log('   For real investment analysis:');
-        console.log('   - Provide actual LAS files with --las-files');
-        console.log('   - Specify target well coordinates with --well-lat and --well-lon');
-        console.log('   - Run with --mode=production for live data analysis');
-      }
-    }
-    
-    process.exit(pipelineResult.success ? 0 : 1);
-    
   } catch (error) {
-    console.error('\n❌ SHALE YEAH Analysis Failed:', error);
+    console.error('💥 Fatal error during analysis:', error instanceof Error ? error.message : String(error));
+    await client.cleanup();
     process.exit(1);
+  } finally {
+    await client.cleanup();
   }
 }
 
-// Only run main if this file is executed directly
+// Handle file input processing
+async function processInputFiles(files: string[]): Promise<{las: string[], excel: string[], gis: string[], other: string[]}> {
+  const categorized = {
+    las: [] as string[],
+    excel: [] as string[],
+    gis: [] as string[],
+    other: [] as string[]
+  };
+
+  for (const filePattern of files) {
+    // Expand glob patterns
+    const expandedFiles = await glob(filePattern);
+
+    for (const file of expandedFiles) {
+      const ext = path.extname(file).toLowerCase();
+
+      switch (ext) {
+        case '.las':
+          categorized.las.push(file);
+          break;
+        case '.xlsx':
+        case '.xls':
+        case '.csv':
+          categorized.excel.push(file);
+          break;
+        case '.shp':
+        case '.geojson':
+        case '.kml':
+          categorized.gis.push(file);
+          break;
+        default:
+          categorized.other.push(file);
+      }
+    }
+  }
+
+  return categorized;
+}
+
+// Validate analysis requirements
+async function validateAnalysisRequest(request: AnalysisRequest): Promise<{valid: boolean, errors: string[]}> {
+  const errors: string[] = [];
+
+  // Validate output directory is writable
+  try {
+    await fs.mkdir(request.outputDir, { recursive: true });
+  } catch (error) {
+    errors.push(`Cannot create output directory: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  // Validate input files exist (production mode)
+  if (request.mode === 'production' && request.inputFiles) {
+    for (const file of request.inputFiles) {
+      try {
+        await fs.access(file);
+      } catch {
+        errors.push(`Input file not found: ${file}`);
+      }
+    }
+  }
+
+  // Validate workflow file if specified
+  if (request.workflow) {
+    try {
+      await fs.access(request.workflow);
+    } catch {
+      errors.push(`Workflow file not found: ${request.workflow}`);
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
+// Run main function
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main().catch(console.error);
+  main().catch((error) => {
+    console.error('💥 Unhandled error:', error);
+    process.exit(1);
+  });
 }

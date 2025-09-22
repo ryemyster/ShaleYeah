@@ -156,58 +156,64 @@ export class SEGYParser {
    */
   async parseSEGYFile(filePath: string): Promise<SEGYData> {
     const startTime = Date.now();
-    
+    let fileHandle: fs.FileHandle | null = null;
+
     try {
-      const stats = await fs.stat(filePath);
-      
+      // Open file handle first to ensure consistent access
+      fileHandle = await fs.open(filePath, 'r');
+
+      // Get file stats from the open file handle to avoid race condition
+      const stats = await fileHandle.stat();
+
       if (stats.size < 3600) {
         throw new Error('File too small to be a valid SEGY file (minimum 3600 bytes)');
       }
-      
-      const fileHandle = await fs.open(filePath, 'r');
-      
-      try {
-        // Parse text header (3200 bytes)
-        const textHeader = await this.parseTextHeader(fileHandle);
-        
-        // Parse binary header (400 bytes)
-        const binaryHeader = await this.parseBinaryHeader(fileHandle);
-        
-        // Parse extended headers if present
-        await this.skipExtendedHeaders(fileHandle, binaryHeader.numberOfExtendedHeaders);
-        
-        // Parse traces
-        const traces = await this.parseTraces(fileHandle, binaryHeader);
-        
-        await fileHandle.close();
-        
-        const quality = this.assessSEGYQuality(binaryHeader, traces);
-        
-        return {
-          textHeader,
-          binaryHeader,
-          traces,
-          metadata: {
-            filename: path.basename(filePath),
-            fileSize: stats.size,
-            traceCount: traces.length,
-            samplesPerTrace: binaryHeader.samplesPerTrace,
-            sampleInterval: binaryHeader.sampleInterval,
-            recordLength: this.calculateRecordLength(binaryHeader),
-            dataFormat: this.getDataFormatDescription(binaryHeader.dataFormat),
-            segyRevision: this.getSEGYRevision(binaryHeader.segyFormatRevision),
-            coordinateSystem: this.determineCoordinateSystem(traces),
-            parseTime: Date.now() - startTime,
-            quality
-          }
-        };
-        
-      } finally {
-        await fileHandle.close();
-      }
-      
+
+      // Parse text header (3200 bytes)
+      const textHeader = await this.parseTextHeader(fileHandle);
+
+      // Parse binary header (400 bytes)
+      const binaryHeader = await this.parseBinaryHeader(fileHandle);
+
+      // Parse extended headers if present
+      await this.skipExtendedHeaders(fileHandle, binaryHeader.numberOfExtendedHeaders);
+
+      // Parse traces
+      const traces = await this.parseTraces(fileHandle, binaryHeader);
+
+      const quality = this.assessSEGYQuality(binaryHeader, traces);
+
+      return {
+        textHeader,
+        binaryHeader,
+        traces,
+        metadata: {
+          filename: path.basename(filePath),
+          fileSize: stats.size,
+          traceCount: traces.length,
+          samplesPerTrace: binaryHeader.samplesPerTrace,
+          sampleInterval: binaryHeader.sampleInterval,
+          recordLength: this.calculateRecordLength(binaryHeader),
+          dataFormat: this.getDataFormatDescription(binaryHeader.dataFormat),
+          segyRevision: this.getSEGYRevision(binaryHeader.segyFormatRevision),
+          coordinateSystem: this.determineCoordinateSystem(traces),
+          parseTime: Date.now() - startTime,
+          quality
+        }
+      };
+
     } catch (error) {
       throw new Error(`Failed to parse SEGY file: ${error}`);
+    } finally {
+      // Ensure file handle is always closed
+      if (fileHandle) {
+        try {
+          await fileHandle.close();
+        } catch (closeError) {
+          // Log but don't throw close errors to avoid masking original error
+          console.warn(`Warning: Failed to close SEGY file handle: ${closeError}`);
+        }
+      }
     }
   }
   
