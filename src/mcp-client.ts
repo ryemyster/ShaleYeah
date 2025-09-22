@@ -407,7 +407,14 @@ export class ShaleYeahMCPClient {
         break;
 
       case 'geowiz':
-        // Add geology-specific arguments if needed
+        if (toolName === 'analyze_formation') {
+          return {
+            filePath: 'data/samples/demo.las',
+            depthInterval: '5000-15000',
+            formations: ['Wolfcamp A', 'Wolfcamp B', 'Bone Spring'],
+            outputPath: baseArgs.outputPath
+          };
+        }
         return {
           ...baseArgs,
           depthInterval: '5000-15000 ft',
@@ -415,12 +422,65 @@ export class ShaleYeahMCPClient {
         };
 
       case 'curve-smith':
-        // Add engineering-specific arguments if needed
+        if (toolName === 'analyze_decline_curve') {
+          return {
+            filePath: 'data/samples/demo.las',
+            wellType: 'horizontal',
+            lateralLength: '10000',
+            outputPath: baseArgs.outputPath
+          };
+        }
         return {
           ...baseArgs,
           wellType: 'horizontal',
           lateralLength: '10000 ft'
         };
+
+      case 'econobot':
+        if (toolName === 'analyze_economics') {
+          return {
+            filePath: 'data/samples/economics.xlsx',
+            dataType: 'mixed',
+            oilPrice: 75,
+            gasPrice: 3.5,
+            outputPath: baseArgs.outputPath
+          };
+        }
+        break;
+
+      case 'risk-analysis':
+        if (toolName === 'assess_investment_risk') {
+          return {
+            projectData: {
+              npv: 2500000,
+              irr: 28.5,
+              geology: { quality: 'good' },
+              market: { outlook: 'stable' }
+            },
+            outputPath: baseArgs.outputPath
+          };
+        }
+        break;
+
+      case 'reporter':
+        if (toolName === 'generate_investment_decision') {
+          return {
+            tractName: request.tractName,
+            analysisResults: {
+              geological: { formations: ['Wolfcamp A', 'Wolfcamp B'], porosity: 14.5 },
+              economic: { npv: 2500000, irr: 28.5 },
+              engineering: { eur: 450000, initialRate: 1200 },
+              risk: { overallRisk: 'Medium', score: 65 }
+            },
+            decisionCriteria: {
+              minNPV: 1000000,
+              minIRR: 15,
+              maxRisk: 'High'
+            },
+            outputPath: baseArgs.outputPath
+          };
+        }
+        break;
 
       default:
         // Use base arguments for other servers

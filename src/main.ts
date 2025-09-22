@@ -35,6 +35,25 @@ function parseCommandLineArgs(): CLIOptions {
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
+    // Handle --key=value format
+    if (arg.includes('=')) {
+      const [key, value] = arg.split('=', 2);
+      switch (key) {
+        case '--mode':
+          options.mode = value as any;
+          continue;
+        case '--files':
+          options.files = value.split(',');
+          continue;
+        case '--tract':
+          options.tract = value;
+          continue;
+        case '--output':
+          options.output = value;
+          continue;
+      }
+    }
+
     switch (arg) {
       case '--mode':
         options.mode = args[++i] as any;
