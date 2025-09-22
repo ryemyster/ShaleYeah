@@ -138,15 +138,19 @@ public
 tmp/
 temp/
 
-# SHALE YEAH specific
-data/outputs/*/
+# SHALE YEAH specific - new organized structure
+data/temp/
+data/outputs/reports/*/
+data/outputs/models/*/
 !data/outputs/.gitkeep
+!data/inputs/.gitkeep
 *.accdb
 *.mdb
 research/competitive-analysis/sensitive/
 integrations/*/secrets/
 .claude-flow/logs/
 .hive-mind/
+.claude-flow/metrics/
 node_modules
 .env.local
 .env.development.local
@@ -158,3 +162,5 @@ leaks.json
 detailed_leaks.json
 results.sarif
 gitleaks-report.json
+
+.secure*
