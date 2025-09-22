@@ -1,378 +1,182 @@
 # Development Guide
 
-This guide covers everything contributors need to know about developing SHALE YEAH.
+**Contributing to SHALE YEAH - Workflow, Standards, and Best Practices**
 
-## Development Environment Setup
+This guide covers everything you need to know to contribute effectively to SHALE YEAH, from setting up your development environment to submitting high-quality pull requests.
+
+---
+
+## 🚀 Quick Start for Contributors
 
 ### Prerequisites
-- **Node.js 18+** with npm
+- **Node.js 18+** with npm ([download here](https://nodejs.org/))
 - **Git** for version control
 - **VS Code** (recommended) with TypeScript extension
 - **Basic understanding** of TypeScript and async programming
 
 ### Initial Setup
+
 ```bash
-git clone https://github.com/your-org/ShaleYeah.git
+# 1. Fork and clone
+git fork https://github.com/rmcdonald/ShaleYeah.git  # Fork on GitHub first
+git clone https://github.com/YOUR_USERNAME/ShaleYeah.git
 cd ShaleYeah
+
+# 2. Install dependencies
 npm install
-npm run build      # Verify everything compiles
-npm run demo       # Verify demo works
+
+# 3. Verify everything works
+npm run build      # TypeScript compilation
+npm run type-check # Type checking
+npm run lint       # Code quality
+npm run demo       # End-to-end demo test
 ```
 
-## Development Workflow
-
-### 1. Understanding the Codebase
-
-**Start here for new contributors:**
-
-1. **Run the demo**: `npm run demo` - See 6 AI agents complete investment analysis in ~6 seconds
-2. **Read the demo code**: `src/demo-runner.ts` - Understand the AI orchestration workflow
-3. **Explore an MCP server**: `src/servers/geowiz.ts` - See how domain experts work
-4. **Check the base class**: `src/shared/mcp-server.ts` - Understand the MCP foundation
-5. **Review outputs**: Check `data/outputs/demo-*/` - See professional analysis reports
-
-### 2. Code Organization
-
-```
-src/
-├── servers/           # 🤖 14 MCP Expert Servers (Ready)
-│   ├── geowiz.ts     # Geological analysis server
-│   ├── econobot.ts   # Economic analysis server
-│   ├── curve-smith.ts # Reservoir engineering server
-│   ├── decision.ts   # Investment strategy server
-│   └── ...           # 10 more specialized servers
-├── shared/           # 🔧 Common utilities
-│   ├── mcp-server.ts # MCP server base class
-│   ├── file-integration.ts # File processing manager
-│   └── parsers/      # Industry format parsers
-├── demo-runner.ts    # 🎬 Demo orchestration (Current)
-└── main.ts          # 🚀 MCP server orchestration (Ready)
-```
-
-### 3. Development Commands
+### Development Commands
 
 ```bash
-# Development
+# Development workflow
 npm run dev          # Development mode with hot reload
 npm run build        # Compile TypeScript
 npm run type-check   # Type checking only
-npm run lint         # Code quality checks
+npm run lint         # ESLint + Prettier
+npm run lint:fix     # Auto-fix lint issues
 
 # Testing
-npm run demo         # Run complete demo
 npm run test         # Run test suite
-npm run server:geowiz # Test individual agent
+npm run test:watch   # Test with file watching
+npm run demo         # Integration test via demo
+
+# Individual server testing
+npm run server:geowiz      # Test geology server
+npm run server:econobot    # Test economics server
+npm run server:decision    # Test decision server
 
 # Cleanup
-npm run clean        # Clean build artifacts
-npm run clean:all    # Nuclear option - clean everything
+npm run clean              # Clean build artifacts and old demos
+npm run clean:workspace    # Intelligent workspace cleanup
+npm run clean:all          # Nuclear option (requires npm install)
 ```
 
-## Common Development Tasks
+---
 
-### Adding a New Analysis Tool to an Existing Agent
+## 🎯 Contribution Workflow
 
-**Example: Adding a new geological analysis feature**
+### 1. Choose Your Contribution Type
 
-1. **Find the relevant agent**: `src/servers/geowiz.ts`
+**🐛 Bug Fixes**
+- Browse [open issues](https://github.com/rmcdonald/ShaleYeah/issues?q=is%3Aissue+is%3Aopen+label%3Abug)
+- Look for `good-first-issue` or `help-wanted` labels
+- Comment on issue before starting work
 
-2. **Add the tool in `setupCapabilities()`**:
-```typescript
-this.registerTool({
-  name: 'analyze_porosity',
-  description: 'Analyze porosity from well log data',
-  inputSchema: z.object({
-    filePath: z.string().describe('Path to LAS file'),
-    depthRange: z.object({
-      top: z.number(),
-      bottom: z.number()
-    }).optional()
-  }),
-  handler: async (args) => this.analyzePorosityData(args)
-});
-```
+**✨ New Features**
+- Check the [project roadmap](https://github.com/rmcdonald/ShaleYeah/projects)
+- Open an issue to discuss the feature first
+- Get maintainer approval before implementation
 
-3. **Implement the analysis method**:
-```typescript
-private async analyzePorosityData(args: any): Promise<any> {
-  console.log(`🔍 Analyzing porosity for ${args.filePath}`);
+**📚 Documentation**
+- Improve existing guides
+- Add code examples
+- Fix typos and formatting
+- Update outdated information
 
-  // Parse input file
-  const parseResult = await this.fileManager.parseFile(args.filePath);
-  if (!parseResult.success) {
-    throw new Error(`Failed to parse file: ${parseResult.errors?.join(', ')}`);
-  }
+**🧪 Testing**
+- Add test coverage for existing functionality
+- Write integration tests
+- Improve test documentation
 
-  // Perform porosity analysis
-  const analysis = {
-    averagePorosity: 0.12,  // 12%
-    porosityRange: { min: 0.08, max: 0.18 },
-    qualityGrade: 'Good',
-    confidence: 0.85
-  };
+### 2. Create Your Development Branch
 
-  // Save results
-  const analysisId = `porosity_${Date.now()}`;
-  await this.saveResult(`analyses/${analysisId}.json`, analysis);
-
-  return analysis;
-}
-```
-
-4. **Test your new tool**:
 ```bash
-npm run build
-npm run server:geowiz  # Start the agent
-# Then connect via MCP client to test the new tool
+# Create and switch to feature branch
+git checkout -b feature/your-feature-name
+
+# For bug fixes
+git checkout -b fix/issue-number-description
+
+# For documentation
+git checkout -b docs/section-you-are-updating
 ```
 
-### Creating a New Agent
+### 3. Development Process
 
-**Example: Creating a "environmental" analysis agent**
+**Make Your Changes**
+- Follow [coding standards](#-coding-standards)
+- Write/update tests as needed
+- Update documentation
+- Keep commits focused and atomic
 
-1. **Create the agent file**: `src/servers/environmental.ts`
-
-```typescript
-#!/usr/bin/env node
-/**
- * Environmental MCP Server - Environmental Analysis Expert
- *
- * Natura Environmentalis - Master Environmental Strategist
- * Provides environmental impact assessment, regulatory compliance,
- * and sustainability analysis for oil & gas projects.
- */
-
-import { MCPServer, runMCPServer, MCPTool, MCPResource } from '../shared/mcp-server.js';
-import { z } from 'zod';
-import fs from 'fs/promises';
-import path from 'path';
-
-export class EnvironmentalServer extends MCPServer {
-  constructor() {
-    super({
-      name: 'environmental',
-      version: '1.0.0',
-      description: 'Environmental Analysis MCP Server',
-      persona: {
-        name: 'Natura Environmentalis',
-        role: 'Master Environmental Strategist',
-        expertise: [
-          'Environmental impact assessment',
-          'Regulatory compliance analysis',
-          'Sustainability planning',
-          'Carbon footprint calculation',
-          'Biodiversity impact evaluation'
-        ]
-      }
-    });
-  }
-
-  protected async setupDataDirectories(): Promise<void> {
-    const dirs = ['assessments', 'compliance', 'carbon', 'biodiversity', 'reports'];
-    for (const dir of dirs) {
-      await fs.mkdir(path.join(this.dataPath, dir), { recursive: true });
-    }
-  }
-
-  protected setupCapabilities(): void {
-    this.registerTool({
-      name: 'assess_environmental_impact',
-      description: 'Conduct environmental impact assessment',
-      inputSchema: z.object({
-        projectLocation: z.string(),
-        projectType: z.enum(['drilling', 'pipeline', 'facility']),
-        assessmentScope: z.enum(['basic', 'comprehensive']).default('basic')
-      }),
-      handler: async (args) => this.assessEnvironmentalImpact(args)
-    });
-
-    this.registerResource({
-      name: 'environmental_assessment',
-      uri: 'environmental://assessments/{id}',
-      description: 'Environmental assessment results',
-      handler: async (uri) => this.getEnvironmentalAssessment(uri)
-    });
-  }
-
-  private async assessEnvironmentalImpact(args: any): Promise<any> {
-    console.log(`🌱 Assessing environmental impact for ${args.projectType} at ${args.projectLocation}`);
-
-    // Environmental analysis logic here
-    const assessment = {
-      impactLevel: 'Moderate',
-      mitigationRequired: true,
-      estimatedCost: 150000,
-      timelineMonths: 6,
-      keyRisks: ['Water usage', 'Air quality', 'Wildlife habitat']
-    };
-
-    const assessmentId = `env_${Date.now()}`;
-    await this.saveResult(`assessments/${assessmentId}.json`, assessment);
-    return assessment;
-  }
-
-  private async getEnvironmentalAssessment(uri: URL): Promise<any> {
-    const assessmentId = uri.pathname.split('/').pop();
-    return await this.loadResult(`assessments/${assessmentId}.json`);
-  }
-}
-
-// Main entry point
-if (import.meta.url === `file://${process.argv[1]}`) {
-  const server = new EnvironmentalServer();
-  runMCPServer(server).catch(console.error);
-}
-```
-
-2. **Add to package.json**:
-```json
-{
-  "scripts": {
-    "server:environmental": "npx tsx src/servers/environmental.ts"
-  }
-}
-```
-
-3. **Update the demo** (optional):
-Add to the agents list in `src/demo-runner.ts`:
-```typescript
-{ name: 'environmental', persona: 'Natura Environmentalis', domain: 'Environmental Analysis' }
-```
-
-4. **Test the new agent**:
+**Test Your Changes**
 ```bash
-npm run build
-npm run server:environmental
+# Run comprehensive tests
+npm run build && npm run type-check && npm run lint && npm run demo
+
+# Test specific components if relevant
+npm run server:geowiz  # For geology-related changes
+npm run test          # For logic changes
 ```
 
-### Adding Support for New File Formats
+**Commit Your Work**
+```bash
+# Use conventional commits
+git add .
+git commit -m "feat: add porosity analysis tool to geowiz server
 
-**Example: Adding support for PDF reports**
+- Add analyze_porosity tool with depth range filtering
+- Include confidence scoring based on data quality
+- Add comprehensive error handling for invalid inputs
+- Update documentation with usage examples
 
-1. **Create a parser**: `src/shared/parsers/pdf-parser.ts`
-
-```typescript
-export class PDFParser {
-  async parse(filePath: string): Promise<ParseResult> {
-    try {
-      // PDF parsing logic (you might use a library like pdf-parse)
-      const text = await this.extractTextFromPDF(filePath);
-
-      return {
-        success: true,
-        data: {
-          text,
-          pageCount: 10,
-          extractedTables: []
-        },
-        metadata: {
-          format: 'PDF',
-          size: await this.getFileSize(filePath),
-          processingTime: Date.now()
-        }
-      };
-    } catch (error) {
-      return {
-        success: false,
-        errors: [`PDF parsing failed: ${error}`]
-      };
-    }
-  }
-
-  private async extractTextFromPDF(filePath: string): Promise<string> {
-    // Implementation depends on chosen PDF library
-    return "Extracted text content...";
-  }
-
-  private async getFileSize(filePath: string): Promise<number> {
-    const stats = await fs.stat(filePath);
-    return stats.size;
-  }
-}
+Closes #123"
 ```
 
-2. **Register in FileIntegrationManager**: `src/shared/file-integration.ts`
+### 4. Submit Your Pull Request
 
-```typescript
-import { PDFParser } from './parsers/pdf-parser.js';
-
-export class FileIntegrationManager {
-  private parsers = {
-    '.las': new LASParser(),
-    '.xlsx': new ExcelParser(),
-    '.pdf': new PDFParser(),  // Add this line
-    // ... other parsers
-  };
-}
+**Push Your Changes**
+```bash
+git push origin feature/your-feature-name
 ```
 
-3. **Update relevant agents** to use PDF data:
-```typescript
-// In any agent that needs PDF support
-const parseResult = await this.fileManager.parseFile(args.pdfPath);
-// Now handles PDF files automatically
+**Create Pull Request**
+1. Go to GitHub and create PR from your branch
+2. Use the [PR template](#pr-template)
+3. Link relevant issues
+4. Request review from maintainers
+
+### 5. PR Review Process
+
+**What Reviewers Look For:**
+- ✅ Code follows standards and patterns
+- ✅ Tests pass and new tests added where appropriate
+- ✅ Documentation updated
+- ✅ No breaking changes (unless discussed)
+- ✅ Demo still works correctly
+
+**Responding to Feedback:**
+```bash
+# Make requested changes
+git add .
+git commit -m "fix: address review feedback on error handling"
+git push origin feature/your-feature-name
+# PR updates automatically
 ```
 
-### Modifying Report Generation
+---
 
-**Reports are generated by the `reporter` agent**: `src/servers/reporter.ts`
-
-**Example: Adding a new report format**
-
-```typescript
-// In ReporterServer class
-this.registerTool({
-  name: 'generate_compliance_report',
-  description: 'Generate regulatory compliance report',
-  inputSchema: z.object({
-    analysisResults: z.any(),
-    jurisdiction: z.string(),
-    format: z.enum(['pdf', 'word', 'html']).default('pdf')
-  }),
-  handler: async (args) => this.generateComplianceReport(args)
-});
-
-private async generateComplianceReport(args: any): Promise<string> {
-  console.log(`📋 Generating compliance report for ${args.jurisdiction}`);
-
-  const report = `# Regulatory Compliance Report
-
-## Jurisdiction: ${args.jurisdiction}
-
-## Compliance Status
-✅ Environmental permits: Complete
-⚠️  Safety certifications: In progress
-✅ Financial bonding: Complete
-
-## Next Steps
-1. Complete safety certification process
-2. Submit final documentation
-3. Schedule regulatory inspection
-`;
-
-  const reportId = `compliance_${Date.now()}`;
-  await this.saveResult(`reports/${reportId}.md`, report);
-  return report;
-}
-```
-
-## Code Style and Standards
+## 📋 Coding Standards
 
 ### TypeScript Guidelines
 
-1. **Use strict mode**: Always enabled in tsconfig.json
-2. **No `any` types**: Use explicit typing or generics
-3. **Async/await**: Preferred over Promises and callbacks
-4. **Error handling**: Always handle errors gracefully
-
-**Good:**
+**✅ DO:**
 ```typescript
+// Use explicit typing
 interface GeologicalAnalysis {
   netPay: number;
   porosity: number;
   confidence: number;
 }
 
+// Use async/await
 async function analyzeFormation(data: WellLogData): Promise<GeologicalAnalysis> {
   try {
     const analysis = await performAnalysis(data);
@@ -381,75 +185,183 @@ async function analyzeFormation(data: WellLogData): Promise<GeologicalAnalysis> 
     throw new Error(`Formation analysis failed: ${error}`);
   }
 }
-```
 
-**Bad:**
-```typescript
-function analyzeFormation(data: any): any {
-  // No error handling
-  const analysis = performAnalysis(data);
-  return analysis;
+// Use proper error handling
+if (!parseResult.success) {
+  throw new Error(`Failed to parse file: ${parseResult.errors?.join(', ')}`);
 }
 ```
 
-### Agent Development Patterns
-
-1. **Always inherit from MCPServer**
-2. **Implement both abstract methods**
-3. **Use descriptive tool names**
-4. **Include comprehensive error handling**
-5. **Save results with timestamps**
-
-**Template for new agents:**
+**❌ DON'T:**
 ```typescript
-export class YourServer extends MCPServer {
+// Don't use 'any' type
+function analyzeFormation(data: any): any { /* ... */ }
+
+// Don't ignore errors
+const analysis = await performAnalysis(data); // What if this fails?
+
+// Don't use callbacks when async/await works
+performAnalysis(data, (error, result) => { /* ... */ });
+```
+
+### File Naming Conventions
+
+| **Component** | **Convention** | **Example** |
+|---------------|----------------|-------------|
+| **MCP Servers** | kebab-case.ts | `risk-analysis.ts` |
+| **Utilities** | kebab-case.ts | `file-integration.ts` |
+| **Classes** | PascalCase | `GeowizServer` |
+| **Interfaces** | PascalCase | `AnalysisResult` |
+| **Methods** | camelCase | `analyzeFormation` |
+| **Constants** | SCREAMING_SNAKE_CASE | `DEFAULT_CONFIDENCE` |
+
+### MCP Server Development Patterns
+
+**Standard Server Template:**
+```typescript
+#!/usr/bin/env node
+/**
+ * [Domain] MCP Server - [Domain] Analysis Expert
+ *
+ * [Roman Persona Name] - [Professional Title]
+ * [Brief description of what this server does]
+ */
+
+import { MCPServer, runMCPServer } from '../shared/mcp-server.js';
+import { z } from 'zod';
+
+export class MyDomainServer extends MCPServer {
   constructor() {
     super({
-      name: 'your-server',
+      name: 'my-domain',
       version: '1.0.0',
-      description: 'Your Server Description',
+      description: '[Domain] Analysis MCP Server',
       persona: {
-        name: 'Roman Persona Name',
-        role: 'Roman Role Title',
-        expertise: ['Area 1', 'Area 2', 'Area 3']
+        name: '[Roman Persona Name]',
+        role: '[Professional Title]',
+        expertise: [
+          '[Expertise Area 1]',
+          '[Expertise Area 2]',
+          '[Expertise Area 3]'
+        ]
       }
     });
   }
 
   protected async setupDataDirectories(): Promise<void> {
-    const dirs = ['category1', 'category2', 'reports'];
+    const dirs = ['analyses', 'reports', 'temp'];
     for (const dir of dirs) {
       await fs.mkdir(path.join(this.dataPath, dir), { recursive: true });
     }
   }
 
   protected setupCapabilities(): void {
-    // Register your tools and resources here
+    this.registerTool({
+      name: 'primary_analysis_tool',
+      description: 'Main analysis function for this domain',
+      inputSchema: z.object({
+        filePath: z.string().describe('Path to input file'),
+        analysisType: z.enum(['basic', 'standard', 'comprehensive']).default('standard')
+      }),
+      handler: async (args) => this.performPrimaryAnalysis(args)
+    });
+
+    this.registerResource({
+      name: 'analysis_result',
+      uri: `${this.config.name}://analyses/{id}`,
+      description: '[Domain] analysis results',
+      handler: async (uri) => this.getAnalysisResult(uri)
+    });
   }
+
+  private async performPrimaryAnalysis(args: any): Promise<any> {
+    console.log(`🔍 [Roman Persona] analyzing ${args.filePath}`);
+
+    // 1. Parse input file
+    const parseResult = await this.fileManager.parseFile(args.filePath);
+    if (!parseResult.success) {
+      throw new Error(`Failed to parse file: ${parseResult.errors?.join(', ')}`);
+    }
+
+    // 2. Perform domain-specific analysis
+    const analysis = {
+      // Your analysis results here
+      summary: 'Analysis complete',
+      metrics: { /* domain-specific metrics */ },
+      insights: ['Key finding 1', 'Key finding 2']
+    };
+
+    // 3. Calculate confidence score
+    const confidence = this.calculateConfidence(analysis, parseResult.data);
+
+    // 4. Save results
+    const analysisId = `${this.config.name}_${Date.now()}`;
+    await this.saveResult(`analyses/${analysisId}.json`, analysis);
+
+    // 5. Return structured response
+    return {
+      analysis,
+      confidence,
+      quality: confidence > 0.8 ? 'Excellent' : confidence > 0.6 ? 'Good' : 'Fair',
+      recommendations: this.generateRecommendations(analysis),
+      persona: this.config.persona.name,
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  private calculateConfidence(analysis: any, rawData: any): number {
+    // Implement confidence scoring logic
+    // Consider data completeness, quality indicators, etc.
+    return 0.85; // Placeholder
+  }
+
+  private generateRecommendations(analysis: any): string[] {
+    // Generate actionable recommendations based on analysis
+    return ['Recommendation 1', 'Recommendation 2'];
+  }
+}
+
+// Entry point for standalone execution
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const server = new MyDomainServer();
+  runMCPServer(server).catch(console.error);
 }
 ```
 
-### File Naming Conventions
+### Error Handling Standards
 
-- **Agents**: `kebab-case.ts` (e.g., `risk-analysis.ts`)
-- **Utilities**: `kebab-case.ts` (e.g., `file-integration.ts`)
-- **Interfaces**: `PascalCase` (e.g., `GeologicalAnalysis`)
-- **Methods**: `camelCase` (e.g., `analyzeFormation`)
-- **Constants**: `SCREAMING_SNAKE_CASE` (e.g., `DEFAULT_CONFIDENCE`)
+**Structured Error Responses:**
+```typescript
+// Use this pattern for all error responses
+protected formatError(operation: string, error: any): any {
+  return {
+    success: false,
+    error: {
+      operation,
+      message: String(error),
+      server: this.config.name,
+      persona: this.config.persona.name,
+      timestamp: new Date().toISOString(),
+      // Optional: include context for debugging
+      context: {
+        filePath: args?.filePath,
+        analysisType: args?.analysisType
+      }
+    }
+  };
+}
 
-## Testing
-
-### Running Tests
-
-```bash
-npm run test           # Run all tests
-npm run demo           # Integration test via demo
-npm run server:geowiz  # Manual testing of individual agents
+// Throw errors with clear, actionable messages
+throw new Error(`Formation analysis failed: insufficient data quality (${dataQualityScore}/100). Minimum required: 60/100.`);
 ```
 
-### Writing Tests
+---
 
-**Unit Test Example:**
+## 🧪 Testing Strategy
+
+### Test Categories
+
+**1. Unit Tests** - Individual functions and methods
 ```typescript
 // tests/servers/geowiz.test.ts
 import { GeowizServer } from '../../src/servers/geowiz.js';
@@ -461,54 +373,43 @@ describe('GeowizServer', () => {
     server = new GeowizServer();
   });
 
-  it('should initialize with correct persona', () => {
-    expect(server.config.persona.name).toBe('Marcus Aurelius Geologicus');
-    expect(server.config.persona.role).toBe('Master Geological Analyst');
-  });
-
-  it('should analyze formation data', async () => {
-    const mockArgs = {
-      filePath: 'test-data/sample.las',
-      analysisType: 'standard'
-    };
-
-    // Mock file manager
-    server.fileManager.parseFile = jest.fn().mockResolvedValue({
-      success: true,
-      data: { curves: ['GR', 'NPHI', 'RHOB'] }
-    });
-
-    const result = await server.analyzeFormation(mockArgs);
-
-    expect(result.confidence).toBeGreaterThan(0);
-    expect(result.formations).toBeInstanceOf(Array);
+  it('should calculate porosity correctly', async () => {
+    const mockData = { curves: { NPHI: [0.1, 0.12, 0.09] } };
+    const result = await server.calculatePorosity(mockData);
+    expect(result.averagePorosity).toBeCloseTo(0.103);
   });
 });
 ```
 
-### Integration Testing
-
-**Test the demo end-to-end:**
+**2. Integration Tests** - Component interactions
 ```typescript
-// tests/integration/demo.test.ts
+// tests/integration/file-processing.test.ts
+import { FileIntegrationManager } from '../../src/shared/file-integration.js';
+
+describe('File Integration', () => {
+  it('should handle LAS files end-to-end', async () => {
+    const manager = new FileIntegrationManager();
+    const result = await manager.parseFile('./tests/fixtures/sample.las');
+
+    expect(result.success).toBe(true);
+    expect(result.data.curves).toContain('GR');
+    expect(result.metadata.format).toBe('LAS');
+  });
+});
+```
+
+**3. End-to-End Tests** - Complete workflow
+```typescript
+// tests/e2e/demo.test.ts
 import { ShaleYeahDemo } from '../../src/demo-runner.js';
 
-describe('Demo Integration', () => {
+describe('Demo End-to-End', () => {
   it('should complete full analysis workflow', async () => {
-    const config = {
-      runId: 'test-run',
-      outDir: './test-output',
-      tractName: 'Test Tract',
-      mode: 'demo' as const
-    };
+    const demo = new ShaleYeahDemo();
+    await demo.runCompleteDemo();
 
-    const demo = new ShaleYeahDemo(config);
-
-    // Should complete without errors
-    await expect(demo.runCompleteDemo()).resolves.not.toThrow();
-
-    // Should generate expected files
-    const files = await fs.readdir('./test-output');
+    // Check outputs exist
+    const files = await fs.readdir(demo.outputDir);
     expect(files).toContain('INVESTMENT_DECISION.md');
     expect(files).toContain('DETAILED_ANALYSIS.md');
     expect(files).toContain('FINANCIAL_MODEL.json');
@@ -516,41 +417,312 @@ describe('Demo Integration', () => {
 });
 ```
 
-## Debugging
+### Writing Good Tests
 
-### Development Tools
+**✅ DO:**
+- Test edge cases and error conditions
+- Use descriptive test names
+- Mock external dependencies
+- Test both success and failure paths
+- Include integration tests for new features
 
-1. **VS Code Debugger**: Set breakpoints in TypeScript
-2. **Console Logging**: Each agent logs progress extensively
-3. **File Output**: All results saved to `data/` directories
-4. **Error Tracking**: Structured error responses with context
+**❌ DON'T:**
+- Test implementation details
+- Write tests that depend on external APIs
+- Ignore failing tests
+- Skip testing error handling
 
-### Common Issues
+### Running Tests
 
-**Problem**: "Cannot find module" errors
 ```bash
-# Solution: Ensure proper TypeScript compilation
-npm run build
+# Run all tests
+npm run test
+
+# Run specific test file
+npm run test -- geowiz.test.ts
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run with coverage
+npm run test:coverage
 ```
 
-**Problem**: "Port already in use" for MCP servers
-```bash
-# Solution: Kill existing server processes
-ps aux | grep tsx
-kill [process-id]
+---
+
+## 🔧 Advanced Development Topics
+
+### Adding Support for New File Formats
+
+**1. Create Parser Implementation**
+```typescript
+// src/shared/parsers/my-format-parser.ts
+export class MyFormatParser implements FileParser {
+  async parse(filePath: string): Promise<ParseResult> {
+    try {
+      const rawData = await fs.readFile(filePath, 'utf8');
+      const parsedData = this.parseMyFormat(rawData);
+
+      return {
+        success: true,
+        data: parsedData,
+        metadata: {
+          format: 'MY_FORMAT',
+          size: (await fs.stat(filePath)).size,
+          processingTime: Date.now()
+        }
+      };
+    } catch (error) {
+      return {
+        success: false,
+        errors: [`MyFormat parsing failed: ${error}`]
+      };
+    }
+  }
+}
 ```
 
-**Problem**: File parsing failures
+**2. Register in FileIntegrationManager**
+```typescript
+// src/shared/file-integration.ts
+import { MyFormatParser } from './parsers/my-format-parser.js';
+
+export class FileIntegrationManager {
+  private parsers = {
+    '.las': new LASParser(),
+    '.xlsx': new ExcelParser(),
+    '.myformat': new MyFormatParser(),  // Add this
+    // ... other parsers
+  };
+}
+```
+
+### Integrating External APIs
+
+**Environment Configuration:**
+```typescript
+// src/shared/config.ts
+export interface APIConfig {
+  anthropicApiKey?: string;
+  externalServiceUrl?: string;
+  timeout: number;
+}
+
+export function loadAPIConfig(): APIConfig {
+  return {
+    anthropicApiKey: process.env.ANTHROPIC_API_KEY,
+    externalServiceUrl: process.env.EXTERNAL_SERVICE_URL,
+    timeout: parseInt(process.env.API_TIMEOUT || '30000')
+  };
+}
+```
+
+**API Client Pattern:**
+```typescript
+// src/shared/api-client.ts
+export class APIClient {
+  constructor(private config: APIConfig) {}
+
+  async callExternalAPI(data: any): Promise<any> {
+    try {
+      const response = await fetch(this.config.externalServiceUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${this.config.anthropicApiKey}`
+        },
+        body: JSON.stringify(data),
+        signal: AbortSignal.timeout(this.config.timeout)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API call failed: ${response.status} ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      // Handle timeouts, network errors, etc.
+      throw new Error(`External API integration failed: ${error}`);
+    }
+  }
+}
+```
+
+### Performance Optimization
+
+**File Processing Optimization:**
+```typescript
+// Use streaming for large files
+import { createReadStream } from 'fs';
+import { pipeline } from 'stream/promises';
+
+async parseStreamingFile(filePath: string): Promise<ParseResult> {
+  const stream = createReadStream(filePath);
+  const parser = new StreamingParser();
+
+  await pipeline(stream, parser);
+  return parser.getResult();
+}
+```
+
+**Caching Strategy:**
+```typescript
+// Simple in-memory cache for analysis results
+export class AnalysisCache {
+  private cache = new Map<string, { result: any; timestamp: number }>();
+  private ttl = 5 * 60 * 1000; // 5 minutes
+
+  async get(key: string): Promise<any | null> {
+    const cached = this.cache.get(key);
+    if (cached && (Date.now() - cached.timestamp) < this.ttl) {
+      return cached.result;
+    }
+    this.cache.delete(key);
+    return null;
+  }
+
+  async set(key: string, result: any): Promise<void> {
+    this.cache.set(key, { result, timestamp: Date.now() });
+  }
+}
+```
+
+---
+
+## 📋 Pull Request Template
+
+When creating a PR, use this template:
+
+```markdown
+## Description
+Brief description of the changes and why they were made.
+
+Fixes #(issue number)
+
+## Type of Change
+- [ ] 🐛 Bug fix (non-breaking change which fixes an issue)
+- [ ] ✨ New feature (non-breaking change which adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📚 Documentation update
+- [ ] 🧪 Test improvements
+- [ ] 🔧 Code refactoring (no functional changes)
+
+## Changes Made
+- [ ] Change 1
+- [ ] Change 2
+- [ ] Change 3
+
+## Testing
+- [ ] All existing tests pass (`npm run test`)
+- [ ] New tests added for new functionality
+- [ ] Demo runs successfully (`npm run demo`)
+- [ ] Manual testing completed
+- [ ] Integration testing done (if applicable)
+
+## Code Quality
+- [ ] Code follows project style guidelines (`npm run lint`)
+- [ ] TypeScript compiles without errors (`npm run build`)
+- [ ] Self-review completed
+- [ ] Code is well-commented
+- [ ] Error handling implemented
+
+## Documentation
+- [ ] Documentation updated (if applicable)
+- [ ] API documentation updated (if applicable)
+- [ ] README updated (if applicable)
+- [ ] Code examples added/updated
+
+## Breaking Changes
+<!-- If this introduces breaking changes, describe them here -->
+
+## Screenshots/Demos
+<!-- Include screenshots or demo output if relevant -->
+
+## Additional Context
+<!-- Add any other context about the PR here -->
+```
+
+---
+
+## 🚢 Release Process
+
+### Version Management
+
+SHALE YEAH follows **semantic versioning** (semver):
+- **Major (1.0.0)**: Breaking changes to public API
+- **Minor (0.1.0)**: New features, backward compatible
+- **Patch (0.0.1)**: Bug fixes, backward compatible
+
+### Release Checklist
+
+**Pre-Release Testing:**
 ```bash
-# Solution: Check file format and path
-console.log(`Parsing file: ${filePath}`);
-console.log(`File exists: ${await fs.access(filePath)}`);
+# 1. Run comprehensive tests
+npm run build && npm run type-check && npm run lint && npm run test
+
+# 2. Test demo works
+npm run demo
+
+# 3. Test individual servers
+npm run server:geowiz
+npm run server:econobot
+# ... test key servers
+
+# 4. Clean build test
+npm run clean && npm install && npm run build && npm run demo
+```
+
+**Release Steps:**
+1. **Update version** in `package.json`
+2. **Update CHANGELOG.md** with release notes
+3. **Create release branch**: `git checkout -b release/v1.0.0`
+4. **Final testing**: Run all tests one more time
+5. **Create release tag**: `git tag v1.0.0`
+6. **Push changes**: `git push origin release/v1.0.0 --tags`
+7. **Create GitHub release** with release notes
+8. **Merge to main** and deploy
+
+---
+
+## 🛠️ Development Environment
+
+### Recommended VS Code Extensions
+
+```json
+// .vscode/extensions.json
+{
+  "recommendations": [
+    "ms-vscode.vscode-typescript-next",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-eslint",
+    "ms-vscode.vscode-jest",
+    "bradlc.vscode-tailwindcss",
+    "ms-vscode.vscode-json"
+  ]
+}
+```
+
+### VS Code Settings
+
+```json
+// .vscode/settings.json
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/data/temp": true
+  }
+}
 ```
 
 ### Debug Configuration
 
-**VS Code launch.json:**
 ```json
+// .vscode/launch.json
 {
   "version": "0.2.0",
   "configurations": [
@@ -571,90 +743,99 @@ console.log(`File exists: ${await fs.access(filePath)}`);
       "program": "${workspaceFolder}/src/servers/geowiz.ts",
       "runtimeArgs": ["-r", "tsx/cjs"],
       "console": "integratedTerminal"
+    },
+    {
+      "name": "Debug Tests",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }
 ```
 
-## Contributing Guidelines
+---
 
-### Before Submitting a PR
+## 🤝 Community Guidelines
 
-1. **Run all checks**:
-```bash
-npm run build      # Must pass
-npm run type-check # Must pass
-npm run lint       # Must pass
-npm run demo       # Must complete successfully
-```
+### Code of Conduct
 
-2. **Test your changes**:
-- Add unit tests for new functionality
-- Test with the demo if relevant
-- Verify individual agents work if modified
+- **Be respectful** - Treat all contributors with respect
+- **Be inclusive** - Welcome developers of all skill levels
+- **Be helpful** - Provide constructive feedback
+- **Be patient** - Remember everyone is learning
 
-3. **Documentation**:
-- Update relevant docs in `/docs`
-- Add code comments for complex logic
-- Update README if adding new features
+### Communication Channels
 
-### PR Template
+- **GitHub Issues** - Bug reports and feature requests
+- **GitHub Discussions** - Questions and general discussion
+- **Pull Requests** - Code review and collaboration
+- **Discord** - Real-time chat (link in main README)
 
-```markdown
-## Description
-Brief description of changes
+### Getting Help
 
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+**Before Asking:**
+1. Check existing documentation
+2. Search GitHub issues
+3. Try the troubleshooting steps
+4. Create a minimal reproduction
 
-## Testing
-- [ ] All existing tests pass
-- [ ] New tests added for new functionality
-- [ ] Demo runs successfully
-- [ ] Manual testing completed
-
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Documentation updated
-- [ ] No secrets or sensitive data added
-```
-
-### Code Review Process
-
-1. **Automated Checks**: TypeScript, linting, tests must pass
-2. **Peer Review**: At least one maintainer review required
-3. **Demo Verification**: Reviewer runs demo to verify changes
-4. **Documentation Review**: Ensure docs are updated appropriately
-
-## Release Process
-
-### Version Management
-
-SHALE YEAH follows semantic versioning:
-- **Major** (1.0.0): Breaking changes
-- **Minor** (0.1.0): New features, backward compatible
-- **Patch** (0.0.1): Bug fixes, backward compatible
-
-### Release Checklist
-
-1. **Update version** in `package.json`
-2. **Update CHANGELOG.md** with release notes
-3. **Run full test suite**: `npm run test`
-4. **Verify demo works**: `npm run demo`
-5. **Create release tag**: `git tag v1.0.0`
-6. **Publish to npm**: `npm publish`
+**When Asking:**
+- Provide clear problem description
+- Include relevant code snippets
+- Share error messages in full
+- Mention your environment (OS, Node version, etc.)
 
 ---
 
-## Getting Help
+## 🎯 Contribution Areas
 
-- **Documentation**: Check `/docs` first
-- **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Ask questions in GitHub Discussions
-- **Discord**: Join our developer community [link]
+### High-Impact Areas
 
-**Happy coding!** 🛢️🚀
+**🔥 Most Needed:**
+- Integration tests for MCP servers
+- File format parsers (PDF, Word, more GIS formats)
+- Real AI analysis integration (Anthropic API)
+- Performance optimization for large files
+
+**⭐ Good for Beginners:**
+- Documentation improvements
+- Code examples and tutorials
+- Test coverage improvements
+- Bug fixes with clear reproduction steps
+
+**🚀 Advanced Contributors:**
+- Web dashboard/UI development
+- Authentication and user management
+- External API integrations
+- Cloud deployment and scaling
+
+### Feature Roadmap
+
+**Phase 1: Core Stability** ✅
+- [x] Demo mode working
+- [x] All MCP servers implemented
+- [x] File processing foundation
+- [x] Documentation framework
+
+**Phase 2: AI Integration** 🚧
+- [ ] Anthropic API integration
+- [ ] Real-time analysis workflows
+- [ ] External data source integration
+- [ ] Performance optimization
+
+**Phase 3: Enterprise Features** 📅
+- [ ] Multi-user support
+- [ ] Custom analysis workflows
+- [ ] Advanced visualization
+- [ ] Enterprise integrations
+
+---
+
+**Ready to contribute?** Pick an area that interests you and dive in! The codebase is well-structured and documented to help you get started quickly.
+
+**Questions?** Open a [GitHub Discussion](https://github.com/rmcdonald/ShaleYeah/discussions) or create an issue. We're here to help! 🚀
