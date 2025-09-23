@@ -8,7 +8,7 @@ This reference provides comprehensive documentation for integrating with SHALE Y
 
 ## 🔌 Integration Overview
 
-SHALE YEAH exposes its functionality through **14 MCP servers**, each implementing the Model Context Protocol standard. You can integrate with individual servers or use the orchestrating MCP client.
+SHALE YEAH exposes its functionality through **14 active MCP servers**, each implementing the Model Context Protocol standard. You can integrate with individual servers or use the orchestrating MCP client.
 
 ### Connection Methods
 

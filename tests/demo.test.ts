@@ -5,22 +5,22 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import { ShaleYeahDemo } from '../src/demo-runner.js';
+import { ShaleYeahMCPDemo, DemoConfig } from '../src/demo-runner.js';
 
 async function testDemoMode(): Promise<boolean> {
   console.log('🧪 Testing SHALE YEAH Demo Mode...');
   
   const testRunId = `test-${Date.now()}`;
   const testOutDir = path.join('data', 'outputs', testRunId);
-  
+
   try {
-    // Run demo analysis
-    const demo = new ShaleYeahDemo({
+    // Run demo analysis with custom configuration
+    const demoConfig: DemoConfig = {
       runId: testRunId,
-      outDir: testOutDir,
-      tractName: 'Test Tract',
-      mode: 'demo'
-    });
+      outputDir: testOutDir,
+      tractName: 'Test Tract'
+    };
+    const demo = new ShaleYeahMCPDemo(demoConfig);
     
     await demo.runCompleteDemo();
     

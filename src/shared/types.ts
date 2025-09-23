@@ -251,8 +251,8 @@ export const AgentConfigSchema = z.object({
     args: z.array(z.string()),
   }),
   inputs: z.object({
-    required: z.union([z.record(z.string()), z.array(z.string())]),
-    optional: z.record(z.string()).optional(),
+    required: z.union([z.record(z.string(), z.string()), z.array(z.string())]),
+    optional: z.record(z.string(), z.string()).optional(),
   }),
   outputs: z.array(z.object({
     name: z.string(),

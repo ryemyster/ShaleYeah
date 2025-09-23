@@ -24,7 +24,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Node.js dependencies
-      run: npm ci
+      run: npm ci --legacy-peer-deps
 
     - name: Clean build artifacts
       run: npm run clean
@@ -212,7 +212,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Node.js dependencies for security scan
-      run: npm ci
+      run: npm ci --legacy-peer-deps
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
