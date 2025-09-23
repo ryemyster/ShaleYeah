@@ -137,7 +137,7 @@ Key Analysis:
 # Clone and install
 git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
-npm install
+npm install --legacy-peer-deps
 
 # Run demo (no setup required)
 npm run demo

@@ -26,7 +26,7 @@ Start by experiencing what the system does:
 # Clone and set up
 git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
-npm install
+npm install --legacy-peer-deps
 
 # Run the demo
 npm run demo

@@ -48,10 +48,10 @@ cleanup_old_files() {
 echo
 echo "📊 Demo Run Cleanup:"
 
-# Clean demo runs from temp directory
-if [ -d "data/temp/demo" ]; then
+# Clean demo runs from outputs directory
+if [ -d "outputs/demo" ]; then
     # Keep last 3 demo runs
-    demo_dirs=$(find data/temp/demo -name "demo-*" -type d | sort -r)
+    demo_dirs=$(find outputs/demo -name "demo-*" -type d | sort -r)
     if [ -n "$demo_dirs" ]; then
         echo "$demo_dirs" | tail -n +4 | while read dir; do
             if [ -d "$dir" ]; then
@@ -62,9 +62,9 @@ if [ -d "data/temp/demo" ]; then
     fi
 fi
 
-# Clean test runs from temp directory
-if [ -d "data/temp/test" ]; then
-    test_dirs=$(find data/temp/test -name "test-*" -type d)
+# Clean test runs from outputs directory
+if [ -d "outputs/test" ]; then
+    test_dirs=$(find outputs/test -name "test-*" -type d)
     if [ -n "$test_dirs" ]; then
         echo "$test_dirs" | while read dir; do
             if [ -d "$dir" ]; then
@@ -75,13 +75,13 @@ if [ -d "data/temp/test" ]; then
     fi
 fi
 
-# Clean old demo runs from legacy outputs directory (migration cleanup)
-if [ -d "data/outputs" ]; then
-    legacy_demo_dirs=$(find data/outputs -name "demo-*" -type d)
-    if [ -n "$legacy_demo_dirs" ]; then
-        echo "$legacy_demo_dirs" | while read dir; do
+# Clean old production runs (keep last 5)
+if [ -d "outputs/reports" ]; then
+    prod_dirs=$(find outputs/reports -name "production-*" -type d | sort -r)
+    if [ -n "$prod_dirs" ]; then
+        echo "$prod_dirs" | tail -n +6 | while read dir; do
             if [ -d "$dir" ]; then
-                echo "🗑️  Removing legacy demo: $(basename "$dir")"
+                echo "🗑️  Removing old production run: $(basename "$dir")"
                 rm -rf "$dir"
             fi
         done
@@ -121,11 +121,11 @@ fi
 # Display remaining demo runs
 echo
 echo "📊 Remaining Demo Runs:"
-if [ -d "data/temp/demo" ]; then
-    remaining=$(find data/temp/demo -name "demo-*" -type d | wc -l)
+if [ -d "outputs/demo" ]; then
+    remaining=$(find outputs/demo -name "demo-*" -type d | wc -l)
     if [ "$remaining" -gt 0 ]; then
         echo "   📁 $remaining demo runs preserved"
-        find data/temp/demo -name "demo-*" -type d | sort -r | head -3 | while read dir; do
+        find outputs/demo -name "demo-*" -type d | sort -r | head -3 | while read dir; do
             size=$(du -sh "$dir" 2>/dev/null | cut -f1)
             echo "      • $(basename "$dir") ($size)"
         done
@@ -140,8 +140,13 @@ fi
 echo
 echo "💾 Disk Usage Summary:"
 if [ -d "data" ]; then
-    total_size=$(du -sh data 2>/dev/null | cut -f1)
-    echo "   📊 Total data directory: $total_size"
+    data_size=$(du -sh data 2>/dev/null | cut -f1)
+    echo "   📊 Static data directory: $data_size"
+fi
+
+if [ -d "outputs" ]; then
+    outputs_size=$(du -sh outputs 2>/dev/null | cut -f1)
+    echo "   📊 Generated outputs directory: $outputs_size"
 fi
 
 if [ -d "node_modules" ]; then

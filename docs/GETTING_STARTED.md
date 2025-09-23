@@ -13,7 +13,7 @@ Welcome to SHALE YEAH! This guide will help junior engineers and contributors ge
 ```bash
 git clone https://github.com/your-org/ShaleYeah.git
 cd ShaleYeah
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### 2. Run the Demo
@@ -22,9 +22,9 @@ npm run demo
 ```
 
 **What happens:**
-- 6 AI expert agents analyze a Permian Basin tract
+- 14 AI expert agents analyze a Permian Basin tract
 - Complete analysis finishes in ~6 seconds
-- Professional reports generated in `data/outputs/`
+- Professional reports generated in `outputs/demo/`
 - Executive summary, detailed analysis, and financial model created
 - No API keys required - uses realistic mock data
 
@@ -80,8 +80,15 @@ ShaleYeah/
 │   ├── demo-runner.ts    # Demo orchestration
 │   └── main.ts          # Production entry point
 ├── docs/                 # Documentation (you are here!)
-├── tools/               # Command-line utilities
-└── data/                # Sample data and outputs
+├── data/                 # Required static data
+│   └── samples/         # Sample files for production mode
+│       ├── demo.las     # Well log data (required)
+│       └── economics.csv # Economic parameters (required)
+└── outputs/             # Generated analysis results (auto-created)
+    ├── demo/           # Demo run outputs
+    ├── reports/        # Production analysis reports
+    ├── processing/     # Batch/research outputs
+    └── test/          # Test outputs
 ```
 
 ## Running Individual Agents
@@ -145,8 +152,33 @@ The demo simulates a real investment analysis:
 📊 Overall Recommendation: ✅ PROCEED (Strong Economics & Acceptable Risk)
 ```
 
+## Production Setup
+
+Ready to analyze real oil & gas prospects? Follow this checklist:
+
+### Prerequisites for Production Mode
+```bash
+# 1. Verify required sample files exist
+ls data/samples/demo.las         # Should exist
+ls data/samples/economics.csv    # Should exist
+
+# 2. Test production mode
+npm run prod
+
+# 3. Check results
+ls outputs/reports/              # Should contain timestamped analysis
+```
+
+**⚠️ Important**: Production mode requires the sample files in `data/samples/`. Demo mode works without them.
+
+### Troubleshooting Production Setup
+- **"No such file" errors**: Check [DIRECTORY_STRUCTURE.md](./DIRECTORY_STRUCTURE.md) for required files
+- **"Invalid format" errors**: Ensure LAS files are valid and CSV has required economic parameters
+- **Production vs Demo**: Demo uses mock data, production needs real files
+
 ## Next Steps
 
+- **Production setup**: See [DIRECTORY_STRUCTURE.md](./DIRECTORY_STRUCTURE.md) for detailed requirements
 - **Explore the code**: Start with `src/demo-runner.ts` to understand the flow
 - **Read the architecture docs**: See [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Try modifying an agent**: Start with simple changes to confidence levels

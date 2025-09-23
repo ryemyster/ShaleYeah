@@ -78,7 +78,7 @@ This approach provides:
 # 1. Clone and install
 git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
-npm install
+npm install --legacy-peer-deps
 
 # 2. Run the demo (uses realistic mock data)
 npm run demo

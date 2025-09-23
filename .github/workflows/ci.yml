@@ -86,21 +86,20 @@ jobs:
         
         # Debug: Check directory structure
         echo "📁 Checking directory structure after demo run:"
-        ls -la data/ || echo "No data directory"
-        ls -la data/temp/ || echo "No temp directory"
-        ls -la data/temp/demo/ || echo "No demo directory"
+        ls -la outputs/ || echo "No outputs directory"
+        ls -la outputs/demo/ || echo "No demo directory"
 
         # Check if output was generated (look for any demo run)
-        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
+        if ls ./outputs/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ Demo mode generated INVESTMENT_DECISION.md"
-          ls -la data/temp/demo/*/
-        elif ls data/temp/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
+          ls -la ./outputs/demo/*/
+        elif ls ./outputs/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
           echo "✅ Demo mode generated SHALE_YEAH_REPORT.md"
-          ls -la data/temp/demo/*/
+          ls -la ./outputs/demo/*/
         else
           echo "⚠️  Demo mode did not generate expected output"
           echo "📋 Available demo directories:"
-          find data/temp/demo/ -name "demo-*" -type d 2>/dev/null || echo "No demo directories found"
+          find ./outputs/demo/ -name "demo-*" -type d 2>/dev/null || echo "No demo directories found"
         fi
 
     - name: Test full pipeline execution
@@ -129,18 +128,18 @@ jobs:
         echo "📄 Files created:"
         find data/ -type f 2>/dev/null || echo "No data files found"
 
-        if ls data/temp/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
+        if ls ./outputs/demo/*/INVESTMENT_DECISION.md 1> /dev/null 2>&1; then
           echo "✅ Final investment report generated successfully"
           echo "Report contents preview:"
-          head -10 data/temp/demo/*/INVESTMENT_DECISION.md | head -10
-        elif ls data/temp/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
+          head -10 ./outputs/demo/*/INVESTMENT_DECISION.md | head -10
+        elif ls ./outputs/demo/*/SHALE_YEAH_REPORT.md 1> /dev/null 2>&1; then
           echo "✅ Final report generated successfully"
           echo "Report contents preview:"
-          head -10 data/temp/demo/*/SHALE_YEAH_REPORT.md | head -10
+          head -10 ./outputs/demo/*/SHALE_YEAH_REPORT.md | head -10
         else
           echo "❌ Final report not generated"
           echo "Available demo runs:"
-          ls -la data/temp/demo/ 2>/dev/null || echo "No demo directory found"
+          ls -la ./outputs/demo/ 2>/dev/null || echo "No demo directory found"
         fi
 
     - name: Verify branding compliance
