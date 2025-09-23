@@ -12,7 +12,7 @@ SHALE YEAH implements a **two-tier architecture** with demo mode currently opera
 - **No API Dependencies** - Perfect for presentations and evaluation
 
 ### MCP Server Infrastructure (Ready for Production)
-- **14 MCP Servers** - Standards-compliant specialized analysis servers
+- **14 Active MCP Servers** - Standards-compliant specialized analysis servers
 - **File Processing Foundation** - Comprehensive industry format support
 - **Enterprise Architecture** - Built on official Anthropic MCP SDK
 

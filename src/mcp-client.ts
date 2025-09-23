@@ -262,10 +262,10 @@ export class ShaleYeahMCPClient {
     // Create output directory
     await fs.mkdir(request.outputDir, { recursive: true });
 
-    // Execute core analysis workflow
-    const coreServers = ['geowiz', 'curve-smith', 'econobot', 'risk-analysis', 'title', 'reporter'];
+    // Execute complete analysis workflow with all 14 servers
+    const allServers = this.serverConfigs.map(config => config.name);
 
-    for (const serverName of coreServers) {
+    for (const serverName of allServers) {
       const result = await this.executeServerAnalysis(serverName, request);
       results.push(result);
 

@@ -50,7 +50,7 @@ SHALE YEAH uses a **microservices architecture** with AI expert agents:
 ### High-Level View
 
 ```
-Input Data → MCP Client → 14 Expert Servers → Investment Decision
+Input Data → MCP Client → 14 Active Expert Servers → Investment Decision
 ```
 
 ### Current Implementation
@@ -74,7 +74,7 @@ Professional Investment Reports
 ```
 MCP Client (src/mcp-client.ts)
     ↓
-14 MCP Servers (src/servers/*.ts):
+14 Active MCP Servers (src/servers/*.ts):
 ├── geowiz.ts (Marcus Aurelius Geologicus)
 ├── econobot.ts (Caesar Augustus Economicus)
 ├── curve-smith.ts (Lucius Technicus Engineer)
@@ -100,7 +100,7 @@ Industry Format Parsers (src/shared/parsers/*.ts)
 | **File** | **Purpose** | **What It Does** |
 |----------|-------------|------------------|
 | `src/demo-runner.ts` | Demo orchestration | Simulates 6 experts, generates reports |
-| `src/mcp-client.ts` | Production orchestration | Coordinates all 14 MCP servers |
+| `src/mcp-client.ts` | Production orchestration | Coordinates all 14 active MCP servers |
 | `src/servers/geowiz.ts` | Geology expert | Geological analysis MCP server |
 | `src/shared/mcp-server.ts` | Base server class | Common functionality for all experts |
 | `src/shared/file-integration.ts` | File processing | Handles 20+ industry formats |
@@ -288,7 +288,7 @@ class ShaleYeahMCPDemo {
 ```typescript
 export class ShaleYeahMCPClient {
   private serverConfigs: MCPServerConfig[] = [
-    // 14 expert server configurations
+    // 14 active expert server configurations
     { name: 'geowiz', script: 'src/servers/geowiz.ts', persona: 'Marcus Aurelius Geologicus' },
     { name: 'econobot', script: 'src/servers/econobot.ts', persona: 'Caesar Augustus Economicus' },
     // ... 12 more servers

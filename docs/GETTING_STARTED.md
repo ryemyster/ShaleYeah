@@ -70,7 +70,7 @@ Each "agent" is an AI expert with a Roman Imperial persona:
 ```
 ShaleYeah/
 ├── src/
-│   ├── servers/           # 14 AI Expert Agents (MCP Servers)
+│   ├── servers/           # 14 Active AI Expert Agents (MCP Servers)
 │   │   ├── geowiz.ts     # Geological analysis
 │   │   ├── econobot.ts   # Economic analysis
 │   │   └── ...           # 12 more experts

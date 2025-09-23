@@ -5,7 +5,7 @@
  * This creates a working demonstration that shows:
  * - Complete oil & gas investment analysis workflow using MCP architecture
  * - Professional-grade outputs and reports
- * - All 6 domain expert agents working through MCP client
+ * - All 14 domain expert agents working through MCP client
  * - Realistic but mocked data (no API costs)
  * - Same fast performance as before (~6 seconds)
  *
@@ -16,24 +16,35 @@ import { ShaleYeahMCPClient, AnalysisRequest } from './mcp-client.js';
 import fs from 'fs/promises';
 import path from 'path';
 
+export interface DemoConfig {
+  runId?: string;
+  outputDir?: string;
+  tractName?: string;
+}
+
 /**
  * MCP-Compliant Demo Runner
  * Uses the same MCP client architecture as production mode
  */
-class ShaleYeahMCPDemo {
+export class ShaleYeahMCPDemo {
   private client: ShaleYeahMCPClient;
   private runId: string;
   private outputDir: string;
   private tractName: string;
 
-  constructor() {
+  constructor(config?: DemoConfig) {
     this.client = new ShaleYeahMCPClient();
 
-    // Generate demo run ID
-    const timestamp = new Date().toISOString().replace(/\..+/, '').replace(/[-:]/g, '');
-    this.runId = `demo-${timestamp}`;
-    this.outputDir = `./data/temp/demo/${this.runId}`;
-    this.tractName = 'Permian Basin Demo Tract';
+    // Use provided config or generate defaults
+    if (config?.runId) {
+      this.runId = config.runId;
+    } else {
+      const timestamp = new Date().toISOString().replace(/\..+/, '').replace(/[-:]/g, '');
+      this.runId = `demo-${timestamp}`;
+    }
+
+    this.outputDir = config?.outputDir || `./data/temp/demo/${this.runId}`;
+    this.tractName = config?.tractName || 'Permian Basin Demo Tract';
   }
 
   async runCompleteDemo(): Promise<void> {

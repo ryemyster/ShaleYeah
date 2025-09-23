@@ -7,6 +7,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import shapefile from 'shapefile';
 import * as turf from '@turf/turf';
+import type { Feature as GeoJSONFeature } from 'geojson';
 import { parseString as parseXML } from 'xml2js';
 
 export interface Geometry {
@@ -296,7 +297,7 @@ export class GISParser {
     
     features.forEach(feature => {
       if (feature.geometry) {
-        const bbox = turf.bbox(feature as turf.Feature);
+        const bbox = turf.bbox(feature as GeoJSONFeature);
         minX = Math.min(minX, bbox[0]);
         minY = Math.min(minY, bbox[1]);
         maxX = Math.max(maxX, bbox[2]);
@@ -471,7 +472,7 @@ export class GISParser {
    */
   calculateArea(feature: Feature): number {
     if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
-      return turf.area(feature as turf.Feature);
+      return turf.area(feature as GeoJSONFeature);
     }
     return 0;
   }
@@ -481,7 +482,7 @@ export class GISParser {
    */
   calculateLength(feature: Feature): number {
     if (feature.geometry.type === 'LineString' || feature.geometry.type === 'MultiLineString') {
-      return turf.length(feature as turf.Feature, { units: 'meters' });
+      return turf.length(feature as GeoJSONFeature, { units: 'meters' });
     }
     return 0;
   }
