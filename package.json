@@ -7,7 +7,7 @@
     "main": "dist/main.js",
     "scripts": {
         "build": "tsc",
-        "dev": "NODE_ENV=development tsx src/main.ts",
+        "dev": "NODE_ENV=development tsx src/main.ts --mode=demo",
         "start": "NODE_ENV=production tsx src/main.ts",
         "init": "npx claude-flow@alpha init",
         "gen": "tsx scripts/generate-from-spec.ts",
@@ -25,8 +25,8 @@
         "clean:dist": "rm -rf dist/",
         "clean:cache": "rm -rf node_modules/.cache .tsx-cache",
         "clean:demo": "bash scripts/cleanup-workspace.sh",
-        "clean:outputs": "rm -rf data/outputs/*",
-        "clean:autogen": "rm -rf .claude-flow/ .hive-mind/ dist/ data/temp/ data/outputs/test-* data/outputs/demo-* tests/mcp-test-outputs/ tests/temp/",
+        "clean:outputs": "rm -rf outputs/*",
+        "clean:autogen": "rm -rf .claude-flow/ .hive-mind/ dist/ outputs/ tests/mcp-test-outputs/ tests/temp/",
         "clean:all": "npm run clean && npm run clean:outputs && rm -rf node_modules/ package-lock.json",
         "clean:workspace": "bash scripts/cleanup-workspace.sh",
         "test": "npm run test:demo && npm run test:files && npm run test:mcp",
@@ -53,7 +53,6 @@
         "@anthropic-ai/sdk": "^0.63.0",
         "@modelcontextprotocol/sdk": "^1.18.1",
         "@turf/turf": "^7.2.0",
-        "@types/node": "^24.5.2",
         "dotenv": "^17.2.2",
         "glob": "^11.0.3",
         "openai": "^5.22.0",
@@ -66,6 +65,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.2.4",
+        "@types/node": "^24.5.2",
         "@types/xml2js": "^0.4.14",
         "tsx": "^4.20.5",
         "typescript": "^5.6.3"

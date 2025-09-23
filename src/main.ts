@@ -91,7 +91,7 @@ Options:
   --mode <mode>        Analysis mode: production, demo, batch, research (default: production)
   --files <files>      Comma-separated input files (LAS, Excel, GIS)
   --tract <name>       Target tract name (default: "Analysis Tract")
-  --output <dir>       Output directory (default: ./data/outputs/<timestamp>)
+  --output <dir>       Output directory (default: ./outputs/<mode>/<timestamp>)
   --workflow <file>    Custom workflow configuration file
   --help              Show this help message
 
@@ -137,12 +137,12 @@ async function main(): Promise<void> {
   if (options.output) {
     outputDir = options.output;
   } else if (options.mode === 'demo') {
-    outputDir = `./data/temp/demo/${runId}`;
+    outputDir = `./outputs/demo/${runId}`;
   } else if (options.mode === 'batch' || options.mode === 'research') {
-    outputDir = `./data/temp/processing/${runId}`;
+    outputDir = `./outputs/processing/${runId}`;
   } else {
     // Production mode - use outputs directory
-    outputDir = `./data/outputs/reports/${runId}`;
+    outputDir = `./outputs/reports/${runId}`;
   }
 
   // Create analysis request

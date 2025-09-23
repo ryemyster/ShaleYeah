@@ -1,0 +1,27 @@
+Parameter,Value,Unit,Description
+Oil Price,75.00,$/bbl,WTI Crude Oil Price
+Gas Price,3.50,$/MCF,Natural Gas Price
+NGL Price,25.00,$/bbl,Natural Gas Liquids Price
+Oil Differential,-2.00,$/bbl,Local Price Differential
+Gas Differential,0.15,$/MCF,Local Price Differential
+Royalty Rate,0.2000,fraction,Mineral Rights Royalty
+Severance Tax,0.0462,fraction,Texas Severance Tax Rate
+Ad Valorem Tax,0.0180,fraction,Property Tax Rate
+Initial Oil Rate,1200,bbl/d,Initial Oil Production Rate
+Initial Gas Rate,2500,MCF/d,Initial Gas Production Rate
+Initial Water Rate,800,bbl/d,Initial Water Production Rate
+Oil Decline Rate,0.65,decimal,Annual Oil Decline Rate
+Gas Decline Rate,0.70,decimal,Annual Gas Decline Rate
+Drilling Cost,8500000,$,Total Drilling & Completion Cost
+Facilities Cost,1500000,$,Surface Facilities Cost
+Operating Cost,25000,$/month,Monthly Operating Expenses
+Workover Cost,150000,$,Annual Workover Cost
+Abandonment Cost,250000,$,Well Abandonment Cost
+Discount Rate,0.10,decimal,NPV Discount Rate
+Economic Limit Oil,5,bbl/d,Economic Limit Oil Rate
+Economic Limit Gas,25,MCF/d,Economic Limit Gas Rate
+Well Life,30,years,Maximum Well Life
+Lateral Length,10000,ft,Horizontal Lateral Length
+Proppant Intensity,2000,lbs/ft,Proppant per Lateral Foot
+Frac Stages,45,count,Number of Frac Stages
+Clusters per Stage,4,count,Perforation Clusters per Stage

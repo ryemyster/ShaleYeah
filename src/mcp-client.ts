@@ -392,102 +392,153 @@ export class ShaleYeahMCPClient {
       outputPath: path.join(request.outputDir, `${serverName}-analysis.json`)
     };
 
-    // Server-specific argument mapping
+    // Default project data for all servers
+    const defaultProjectData = {
+      npv: 2500000,
+      irr: 28.5,
+      geology: { quality: 'good', formations: ['Wolfcamp A', 'Wolfcamp B'] },
+      market: { outlook: 'stable', oilPrice: 75, gasPrice: 3.5 },
+      engineering: { eur: 450000, initialRate: 1200 }
+    };
+
+    const defaultAnalysisResults = {
+      geological: { formations: ['Wolfcamp A', 'Wolfcamp B'], porosity: 14.5, permeability: 0.8 },
+      economic: { npv: 2500000, irr: 28.5, payback: 8 },
+      engineering: { eur: 450000, initialRate: 1200, declineRate: 12 },
+      risk: { overallRisk: 'Medium', score: 65 }
+    };
+
+    // Server-specific argument mapping for all 14 servers
     switch (serverName) {
       case 'title':
-        if (toolName === 'examine_title') {
-          return {
-            propertyDescription: request.tractName,
-            county: 'Demo County',
-            state: 'Texas',
-            examPeriod: '20 years',
-            outputPath: baseArgs.outputPath
-          };
-        }
-        break;
+        return {
+          propertyDescription: request.tractName || 'Demo Analysis Tract',
+          county: 'Demo County',
+          state: 'Texas',
+          examPeriod: '20 years',
+          outputPath: baseArgs.outputPath
+        };
 
       case 'geowiz':
-        if (toolName === 'analyze_formation') {
-          return {
-            filePath: 'data/samples/demo.las',
-            depthInterval: '5000-15000',
-            formations: ['Wolfcamp A', 'Wolfcamp B', 'Bone Spring'],
-            outputPath: baseArgs.outputPath
-          };
-        }
         return {
-          ...baseArgs,
-          depthInterval: '5000-15000 ft',
-          formations: ['Wolfcamp A', 'Wolfcamp B', 'Bone Spring']
+          filePath: 'data/samples/demo.las',
+          depthInterval: '5000-15000',
+          formations: ['Wolfcamp A', 'Wolfcamp B', 'Bone Spring'],
+          outputPath: baseArgs.outputPath
         };
 
       case 'curve-smith':
-        if (toolName === 'analyze_decline_curve') {
-          return {
-            filePath: 'data/samples/demo.las',
-            wellType: 'horizontal',
-            lateralLength: '10000',
-            outputPath: baseArgs.outputPath
-          };
-        }
         return {
-          ...baseArgs,
+          filePath: 'data/samples/demo.las',
           wellType: 'horizontal',
-          lateralLength: '10000 ft'
+          lateralLength: '10000',
+          outputPath: baseArgs.outputPath
         };
 
       case 'econobot':
-        if (toolName === 'analyze_economics') {
-          return {
-            filePath: 'data/samples/economics.xlsx',
-            dataType: 'mixed',
-            oilPrice: 75,
-            gasPrice: 3.5,
-            outputPath: baseArgs.outputPath
-          };
-        }
-        break;
+        return {
+          filePath: 'data/samples/economics.csv',
+          dataType: 'mixed' as const,
+          oilPrice: 75,
+          gasPrice: 3.5,
+          outputPath: baseArgs.outputPath
+        };
 
       case 'risk-analysis':
-        if (toolName === 'assess_investment_risk') {
-          return {
-            projectData: {
-              npv: 2500000,
-              irr: 28.5,
-              geology: { quality: 'good' },
-              market: { outlook: 'stable' }
-            },
-            outputPath: baseArgs.outputPath
-          };
-        }
-        break;
+        return {
+          projectData: defaultProjectData,
+          outputPath: baseArgs.outputPath
+        };
 
       case 'reporter':
-        if (toolName === 'generate_investment_decision') {
-          return {
-            tractName: request.tractName,
-            analysisResults: {
-              geological: { formations: ['Wolfcamp A', 'Wolfcamp B'], porosity: 14.5 },
-              economic: { npv: 2500000, irr: 28.5 },
-              engineering: { eur: 450000, initialRate: 1200 },
-              risk: { overallRisk: 'Medium', score: 65 }
-            },
-            decisionCriteria: {
-              minNPV: 1000000,
-              minIRR: 15,
-              maxRisk: 'High'
-            },
-            outputPath: baseArgs.outputPath
-          };
-        }
-        break;
+        return {
+          tractName: request.tractName || 'Demo Analysis Tract',
+          analysisResults: defaultAnalysisResults,
+          decisionCriteria: {
+            minNPV: 1000000,
+            minIRR: 15,
+            maxRisk: 'High'
+          },
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'decision':
+        return {
+          analysisInputs: defaultAnalysisResults,
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'legal':
+        return {
+          jurisdiction: 'Texas',
+          projectType: 'development' as const,
+          assets: [request.tractName || 'Demo Analysis Tract'],
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'market':
+        return {
+          commodity: 'both' as const,
+          region: 'Permian Basin',
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'development':
+        return {
+          project: {
+            name: request.tractName || 'Demo Analysis Tract',
+            type: 'horizontal drilling program',
+            wells: 8,
+            spacing: '660ft'
+          },
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'drilling':
+        return {
+          wellParameters: {
+            lateralLength: 10000,
+            stages: 45,
+            clustersPerStage: 4
+          },
+          location: {
+            latitude: 31.8457,
+            longitude: -102.3676,
+            basin: 'Permian'
+          },
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'infrastructure':
+        return {
+          projectScope: {
+            wells: 8,
+            production: '1200 bbl/d initial',
+            area: 'Permian Basin'
+          },
+          requirements: ['flowlines', 'separators', 'compressors', 'electricity'],
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'test':
+        return {
+          targets: ['geological', 'economic', 'engineering', 'risk'],
+          outputPath: baseArgs.outputPath
+        };
+
+      case 'research':
+        return {
+          topic: `Investment analysis for ${request.tractName || 'oil and gas prospects'}`,
+          outputPath: baseArgs.outputPath
+        };
 
       default:
-        // Use base arguments for other servers
-        return baseArgs;
+        // Fallback for any unmapped servers
+        return {
+          ...baseArgs,
+          data: defaultProjectData
+        };
     }
-
-    return baseArgs;
   }
 
   /**

@@ -43,7 +43,7 @@ export class ShaleYeahMCPDemo {
       this.runId = `demo-${timestamp}`;
     }
 
-    this.outputDir = config?.outputDir || `./data/temp/demo/${this.runId}`;
+    this.outputDir = config?.outputDir || `./outputs/demo/${this.runId}`;
     this.tractName = config?.tractName || 'Permian Basin Demo Tract';
   }
 

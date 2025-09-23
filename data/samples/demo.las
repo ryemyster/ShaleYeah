@@ -1,49 +1,83 @@
 ~VERSION INFORMATION
- VERS.                 2.0:   CWLS log ASCII Standard -VERSION 2.0
- WRAP.                  NO:   One line per depth step
-~WELL INFORMATION BLOCK
-#MNEM.UNIT       DATA                    DESCRIPTION   
-#---------       --------------------    -------------------------
- STRT .F         5000.0000               START DEPTH
- STOP .F         6000.0000               STOP DEPTH  
- STEP .F         0.5000                  STEP
- NULL .          -999.25                 NULL VALUE
- COMP .          SHALE YEAH ENERGY       COMPANY
- WELL .          DEMO WELL #1            WELL
- FLD  .          PERMIAN FIELD           FIELD
- LOC  .          SECTION 15 T2S R3E      LOCATION
- CNTY .          PERMIAN                 COUNTY
- STAT .          TEXAS                   STATE
- CTRY .          US                      COUNTRY
- SRVC .          DEMO LOGS INC           SERVICE COMPANY
- DATE .          2024-01-15              LOG DATE {DD-MMM-YYYY}
- UWI  .          42-123-12345-00-00      UNIQUE WELL ID
+VERS.                          2.0 : CWLS LOG ASCII STANDARD -VERSION 2.0
+WRAP.                          NO  : ONE LINE PER DEPTH STEP
+~WELL INFORMATION
+#MNEM.UNIT              DATA                       DESCRIPTION
+#----- -----            ----------               -------------------------
+STRT .FT                5000.0000                : START DEPTH
+STOP .FT                5100.0000                : STOP DEPTH
+STEP .FT                0.5000                   : STEP
+NULL .                  -999.25                  : NULL VALUE
+COMP .                  SHALE YEAH DEMO          : COMPANY
+WELL .                  DEMO WELL #1             : WELL
+FLD  .                  PERMIAN BASIN            : FIELD
+LOC  .                  MIDLAND COUNTY, TX       : LOCATION
+PROV .                  TEXAS                    : PROVINCE
+CNTY .                  MIDLAND                  : COUNTY
+STAT .                  TX                       : STATE
+CTRY .                  US                       : COUNTRY
+SRVC .                  SHALE YEAH               : SERVICE COMPANY
+DATE .                  2025-01-01               : LOG DATE
+UWI  .                  42-329-30001-00-00       : UNIQUE WELL ID
+API  .                  42-329-30001             : API NUMBER
 ~CURVE INFORMATION
-#MNEM.UNIT       API CODE        CURVE DESCRIPTION
-#---------       -----------     -------------------------
- DEPT .F                         1  DEPTH
- GR   .GAPI      310101          2  GAMMA RAY
- NPHI .V/V       420400          3  NEUTRON POROSITY
- RHOB .G/C3      250600          4  BULK DENSITY
- RT   .OHMM      400600          5  RESISTIVITY
+#MNEM.UNIT              API CODES                CURVE DESCRIPTION
+#------------------     ------------             -------------------------
+DEPT .FT                                         : 1  DEPTH
+GR   .GAPI              45 310 01 00             : 2  GAMMA RAY
+NPHI .V/V               42 890 00 00             : 3  NEUTRON POROSITY
+RHOB .G/C3              45 350 02 00             : 4  BULK DENSITY
+PEF  .B/E               45 360 01 00             : 5  PHOTOELECTRIC FACTOR
 ~PARAMETER INFORMATION
-#MNEM.UNIT       VALUE           DESCRIPTION
-#---------       -----------     -------------------------
- BHT  .DEGF      180.0000        BOTTOM HOLE TEMPERATURE
- BS   .IN        8.5000          BIT SIZE
- FD   .F         5000.0000       FIRST DETECTOR DEPTH
- MATR .          LIME            NEUTRON MATRIX
- MDEN .          2.71            NEUTRON MATRIX DENSITY
- RMF  .OHMM      0.216           MUD FILTRATE RESISTIVITY
- DFD  .K/M3      1000.0000       DRILLING FLUID DENSITY
+#MNEM.UNIT              VALUE             DESCRIPTION
+#------------------     --------          -------------------------
+MUD  .                  WATER-BASE        : MUD TYPE
+BHT  .DEGF              185.0             : BOTTOM HOLE TEMPERATURE
+BS   .IN                8.5               : BIT SIZE
+FD   .K/M3              1200.0            : FLUID DENSITY
+MATR .                  SANDSTONE         : NEUTRON MATRIX
+MDEN .G/C3              2.87              : LOGGING MATRIX DENSITY
+FDEN .G/C3              1.1               : FLUID DENSITY
+FVIS .CP                0.7               : FLUID VISCOSITY
 ~ASCII
-5000.0000  85.5000   0.0800   2.4500  12.5000
-5000.5000  88.2000   0.0820   2.4300  15.2000
-5001.0000  92.1000   0.0850   2.4100  18.7000
-5001.5000  95.8000   0.0875   2.3900  22.3000
-5002.0000  99.2000   0.0890   2.3700  28.1000
-5002.5000  102.5000  0.0905   2.3500  35.6000
-5003.0000  98.7000   0.0885   2.3600  31.2000
-5003.5000  94.3000   0.0870   2.3800  26.8000
-5004.0000  90.1000   0.0855   2.4000  22.4000
-5004.5000  87.2000   0.0840   2.4200  19.1000
+5000.0000    45.3210    0.1850    2.4500    2.890
+5000.5000    47.8920    0.1820    2.4520    2.885
+5001.0000    52.1150    0.1790    2.4480    2.892
+5001.5000    48.6540    0.1810    2.4510    2.888
+5002.0000    46.2330    0.1830    2.4490    2.891
+5002.5000    44.8760    0.1840    2.4520    2.887
+5003.0000    43.1290    0.1860    2.4470    2.893
+5003.5000    45.7820    0.1820    2.4500    2.889
+5004.0000    49.2350    0.1800    2.4530    2.886
+5004.5000    51.6880    0.1780    2.4510    2.890
+5005.0000    48.1410    0.1790    2.4490    2.892
+5005.5000    46.5940    0.1810    2.4520    2.888
+5006.0000    44.0470    0.1830    2.4500    2.889
+5006.5000    47.5000    0.1820    2.4480    2.891
+5007.0000    50.9530    0.1800    2.4510    2.887
+5007.5000    49.4060    0.1790    2.4530    2.893
+5008.0000    47.8590    0.1810    2.4500    2.890
+5008.5000    45.3120    0.1830    2.4490    2.888
+5009.0000    48.7650    0.1820    2.4520    2.891
+5009.5000    52.2180    0.1800    2.4510    2.889
+5010.0000    50.6710    0.1790    2.4480    2.892
+5010.5000    48.1240    0.1810    2.4500    2.887
+5011.0000    45.5770    0.1830    2.4520    2.890
+5011.5000    49.0300    0.1820    2.4490    2.888
+5012.0000    52.4830    0.1800    2.4510    2.891
+5012.5000    50.9360    0.1790    2.4530    2.889
+5013.0000    48.3890    0.1810    2.4500    2.893
+5013.5000    45.8420    0.1830    2.4480    2.890
+5014.0000    49.2950    0.1820    2.4520    2.888
+5014.5000    52.7480    0.1800    2.4500    2.891
+5015.0000    51.2010    0.1790    2.4490    2.889
+5015.5000    48.6540    0.1810    2.4510    2.892
+5016.0000    46.1070    0.1830    2.4530    2.887
+5016.5000    49.5600    0.1820    2.4500    2.890
+5017.0000    53.0130    0.1800    2.4480    2.888
+5017.5000    51.4660    0.1790    2.4520    2.891
+5018.0000    48.9190    0.1810    2.4500    2.889
+5018.5000    46.3720    0.1830    2.4490    2.893
+5019.0000    49.8250    0.1820    2.4510    2.890
+5019.5000    53.2780    0.1800    2.4530    2.888
+5020.0000    51.7310    0.1790    2.4500    2.891
