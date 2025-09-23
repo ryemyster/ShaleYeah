@@ -13,7 +13,7 @@ Welcome to SHALE YEAH! This guide will help junior engineers and contributors ge
 ```bash
 git clone https://github.com/your-org/ShaleYeah.git
 cd ShaleYeah
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### 2. Run the Demo

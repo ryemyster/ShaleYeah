@@ -73,7 +73,7 @@ Before running **production analysis** (`npm run prod`), ensure:
 
 ### **✅ Repository Setup**
 - [ ] Repository cloned
-- [ ] `npm install` completed successfully
+- [ ] `npm install --legacy-peer-deps` completed successfully
 - [ ] `npm run build` completes without errors
 
 ### **✅ Required Files Exist**

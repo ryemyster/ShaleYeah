@@ -23,7 +23,7 @@ git clone https://github.com/YOUR_USERNAME/ShaleYeah.git
 cd ShaleYeah
 
 # 2. Install dependencies
-npm install
+npm install --legacy-peer-deps
 
 # 3. Verify everything works
 npm run build      # TypeScript compilation
@@ -55,7 +55,7 @@ npm run server:decision    # Test decision server
 # Cleanup
 npm run clean              # Clean build artifacts and old demos
 npm run clean:workspace    # Intelligent workspace cleanup
-npm run clean:all          # Nuclear option (requires npm install)
+npm run clean:all          # Nuclear option (requires npm install --legacy-peer-deps)
 ```
 
 ---
@@ -669,7 +669,7 @@ npm run server:econobot
 # ... test key servers
 
 # 4. Clean build test
-npm run clean && npm install && npm run build && npm run demo
+npm run clean && npm install --legacy-peer-deps && npm run build && npm run demo
 ```
 
 **Release Steps:**
