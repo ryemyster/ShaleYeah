@@ -249,9 +249,18 @@ function evaluateInvestmentOpportunity(args: {
 	// Identify upside potential
 	if (irr > 0.25)
 		upside.push("Strong IRR indicates significant upside potential");
-	if (inputs.geological && 'confidence' in inputs.geological && (inputs.geological as any).confidence > 85)
+	if (
+		inputs.geological &&
+		"confidence" in inputs.geological &&
+		(inputs.geological as { confidence: number }).confidence > 85
+	)
 		upside.push("High geological confidence supports upside case");
-	if (inputs.economic && 'p10' in inputs.economic && (inputs.economic as any).p10 && (inputs.economic as any).p10 > npv * 1.5)
+	if (
+		inputs.economic &&
+		"p10" in inputs.economic &&
+		(inputs.economic as { p10: number }).p10 &&
+		(inputs.economic as { p10: number }).p10 > npv * 1.5
+	)
 		upside.push("Significant upside in P10 scenario");
 
 	return {
@@ -321,7 +330,13 @@ function assessPortfolioFit(args: {
 	const locationDiversity = !locations.includes(opportunity.location) ? 20 : 0;
 
 	// Calculate strategic value
-	const strategic = opportunity.expectedReturns && typeof opportunity.expectedReturns === 'object' && 'irr' in opportunity.expectedReturns && typeof (opportunity.expectedReturns as any).irr === 'number' ? (opportunity.expectedReturns as any).irr > 0.2 : false;
+	const strategic =
+		opportunity.expectedReturns &&
+		typeof opportunity.expectedReturns === "object" &&
+		"irr" in opportunity.expectedReturns &&
+		typeof (opportunity.expectedReturns as { irr: number }).irr === "number"
+			? (opportunity.expectedReturns as { irr: number }).irr > 0.2
+			: false;
 	const strategicScore = strategic ? 30 : 10;
 
 	// Synergies and conflicts
