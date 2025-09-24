@@ -57,9 +57,9 @@ const geowizTemplate: ServerTemplate = {
 	tools: [
 		ServerFactory.createAnalysisTool(
 			"analyze_formation",
-			"Analyze geological formations from well log data",
+			"Analyze geological formations from well log data (LAS, DLIS, WITSML)",
 			z.object({
-				filePath: z.string().describe("Path to LAS well log file"),
+				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
 				formations: z
 					.array(z.string())
 					.optional()
@@ -102,6 +102,31 @@ const geowizTemplate: ServerTemplate = {
 				}
 
 				return analysis;
+			},
+		),
+		ServerFactory.createAnalysisTool(
+			"process_well_logs",
+			"Process multi-format well logs (LAS/DLIS/WITSML) with unified interface",
+			z.object({
+				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
+				format: z
+					.enum(["auto", "las", "dlis", "witsml"])
+					.default("auto")
+					.describe("Force specific format or auto-detect"),
+				qualityAssessment: z.boolean().default(true),
+				outputPath: z.string().optional(),
+			}),
+			async (args) => {
+				const result = await processMultiFormatWellLog(args);
+
+				if (args.outputPath) {
+					await fs.writeFile(
+						args.outputPath,
+						JSON.stringify(result, null, 2),
+					);
+				}
+
+				return result;
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -375,6 +400,168 @@ function generateRecommendation(
 	} else {
 		return "Additional data required for drilling decision";
 	}
+}
+
+// Multi-format well log processing function
+async function processMultiFormatWellLog(args: {
+	filePath: string;
+	format?: string;
+	qualityAssessment?: boolean;
+}): Promise<Record<string, unknown>> {
+	try {
+		// Import the well log processor
+		const { processWellLogFile, detectWellLogFormat } = await import("../../tools/well-log-processor.js");
+
+		// Detect or validate format
+		const detectedFormat = detectWellLogFormat(args.filePath);
+
+		if (detectedFormat === "UNKNOWN") {
+			throw new Error(`Unsupported well log format for file: ${args.filePath}`);
+		}
+
+		// Process the file
+		const wellLogData = await processWellLogFile(args.filePath);
+
+		// Enhanced analysis based on format
+		const analysis = {
+			fileInfo: {
+				path: args.filePath,
+				format: wellLogData.format,
+				detectedFormat: detectedFormat
+			},
+			wellData: {
+				name: wellLogData.wellName,
+				depthRange: `${wellLogData.depthStart}-${wellLogData.depthStop} ${wellLogData.depthUnit}`,
+				totalCurves: wellLogData.curves.length,
+				totalRows: wellLogData.rows
+			},
+			curves: wellLogData.curves.map(curve => ({
+				name: curve.name,
+				unit: curve.unit,
+				description: curve.description,
+				dataQuality: {
+					validPoints: curve.validPoints,
+					nullPoints: curve.nullPoints,
+					completeness: curve.validPoints / (curve.validPoints + curve.nullPoints) || 0
+				},
+				statistics: curve.statistics
+			})),
+			qualityMetrics: wellLogData.qualityMetrics,
+			geologicalInsights: await generateGeologicalInsights(wellLogData),
+			recommendations: generateWellLogRecommendations(wellLogData),
+			metadata: wellLogData.metadata
+		};
+
+		return analysis;
+
+	} catch (error) {
+		throw new Error(`Failed to process well log file: ${error}`);
+	}
+}
+
+// Generate geological insights from well log data
+async function generateGeologicalInsights(wellLogData: any): Promise<Record<string, unknown>> {
+	const insights = {
+		formations: [] as string[],
+		lithology: "Unknown",
+		hydrocarbon_indicators: [] as string[],
+		reservoir_quality: "Unknown",
+		drilling_recommendations: [] as string[]
+	};
+
+	// Look for common curves and generate insights
+	const grCurve = wellLogData.curves.find((c: any) => c.name.toUpperCase().includes("GR"));
+	const resistivityCurve = wellLogData.curves.find((c: any) =>
+		c.name.toUpperCase().includes("RT") || c.name.toUpperCase().includes("RES"));
+	const porosityyCurve = wellLogData.curves.find((c: any) =>
+		c.name.toUpperCase().includes("NPHI") || c.name.toUpperCase().includes("RHOB"));
+
+	if (grCurve && grCurve.statistics) {
+		const avgGR = grCurve.statistics.mean;
+		if (avgGR > 120) {
+			insights.formations.push("High GR formations (Wolfcamp, Bone Spring)");
+			insights.lithology = "Organic-rich shale";
+		} else if (avgGR > 80) {
+			insights.formations.push("Moderate GR formations (Leonard, Spraberry)");
+			insights.lithology = "Mixed shale/carbonate";
+		} else {
+			insights.formations.push("Low GR formations (Carbonate, Clean sand)");
+			insights.lithology = "Carbonate/Clean sand";
+		}
+	}
+
+	if (resistivityCurve && resistivityCurve.statistics) {
+		const avgRT = resistivityCurve.statistics.mean;
+		if (avgRT > 10) {
+			insights.hydrocarbon_indicators.push("High resistivity - potential hydrocarbon zones");
+		} else if (avgRT > 2) {
+			insights.hydrocarbon_indicators.push("Moderate resistivity - mixed zones");
+		}
+	}
+
+	if (porosityyCurve && porosityyCurve.statistics) {
+		const avgPorosity = porosityyCurve.statistics.mean;
+		if (avgPorosity > 12) {
+			insights.reservoir_quality = "Good - High porosity zones identified";
+		} else if (avgPorosity > 8) {
+			insights.reservoir_quality = "Fair - Moderate porosity";
+		} else {
+			insights.reservoir_quality = "Poor - Low porosity";
+		}
+	}
+
+	// Generate drilling recommendations
+	insights.drilling_recommendations = generateDrillingRecommendations(insights);
+
+	return insights;
+}
+
+function generateDrillingRecommendations(insights: any): string[] {
+	const recommendations = [];
+
+	if (insights.lithology.includes("shale")) {
+		recommendations.push("Consider horizontal drilling with multi-stage completion");
+	}
+
+	if (insights.reservoir_quality.includes("Good")) {
+		recommendations.push("Proceed with development drilling");
+	} else if (insights.reservoir_quality.includes("Fair")) {
+		recommendations.push("Consider enhanced completion techniques");
+	} else {
+		recommendations.push("Additional data required before drilling decision");
+	}
+
+	if (insights.hydrocarbon_indicators.length > 0) {
+		recommendations.push("Focus drilling on high resistivity zones");
+	}
+
+	return recommendations.length > 0 ? recommendations : ["Standard evaluation protocols recommended"];
+}
+
+function generateWellLogRecommendations(wellLogData: any): string[] {
+	const recommendations = [];
+	const quality = wellLogData.qualityMetrics;
+
+	if (quality.completeness < 0.8) {
+		recommendations.push("Data completeness below 80% - consider data validation");
+	}
+
+	if (quality.confidence < 0.7) {
+		recommendations.push("Overall confidence below 70% - additional QC recommended");
+	}
+
+	if (wellLogData.curves.length < 5) {
+		recommendations.push("Limited curve suite - consider additional log acquisition");
+	}
+
+	// Format-specific recommendations
+	if (wellLogData.format === "DLIS") {
+		recommendations.push("DLIS format detected - verify software licensing compliance");
+	} else if (wellLogData.format === "WITSML") {
+		recommendations.push("WITSML format - industry standard XML well data");
+	}
+
+	return recommendations.length > 0 ? recommendations : ["Standard analysis protocols applied"];
 }
 
 // Create the server using factory

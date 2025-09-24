@@ -11,3 +11,19 @@ oil & gas deal evaluation, execution and reporting.
 Where common terms or legacy formats (e.g. .mdb, ARIES, Spotfire) are mentioned they are used in a generic, standards-based context only.
 
 This project exists to empower the public to build and operate better upstream workflows using transparent agent-based infrastructure.
+
+PROPRIETARY FILE FORMAT SUPPORT DISCLAIMER
+
+SHALE YEAH provides file format processing capabilities for various industry-standard and proprietary formats
+solely for the purpose of interoperability and data analysis. Support for proprietary file formats
+(including but not limited to ARIES .adb files, Microsoft Access databases, and other third-party formats)
+is provided under the DMCA Section 1201(f) interoperability exception.
+
+USER RESPONSIBILITY FOR PROPRIETARY FORMAT LICENSES:
+- Users are solely responsible for obtaining appropriate licenses for any proprietary software or file formats
+- Users must comply with all applicable End-User License Agreements (EULAs) and licensing terms
+- SHALE YEAH contributors disclaim all liability for user compliance with third-party licensing requirements
+- File format support is provided "AS IS" without warranty of any kind
+
+This software does not distribute, include, or require any proprietary software licenses.
+Users must independently obtain and maintain any required third-party software licenses.
