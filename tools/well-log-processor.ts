@@ -9,7 +9,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { parseLASFile, type LASData, type LASCurve } from "./las-parse.js";
+import { parseLASFile } from "./las-parse.js";
 
 // Unified well log data interface
 export interface WellLogData {
@@ -39,9 +39,9 @@ export interface WellLogData {
 	};
 	qualityMetrics: {
 		completeness: number; // 0-1 scale
-		continuity: number;   // 0-1 scale
-		consistency: number;  // 0-1 scale
-		confidence: number;   // 0-1 scale
+		continuity: number; // 0-1 scale
+		consistency: number; // 0-1 scale
+		confidence: number; // 0-1 scale
 	};
 }
 
@@ -64,7 +64,9 @@ export interface WellLogCurve {
 }
 
 // File format detection
-export function detectWellLogFormat(filePath: string): "LAS" | "DLIS" | "WITSML" | "UNKNOWN" {
+export function detectWellLogFormat(
+	filePath: string,
+): "LAS" | "DLIS" | "WITSML" | "UNKNOWN" {
 	const ext = path.extname(filePath).toLowerCase();
 
 	switch (ext) {
@@ -89,7 +91,9 @@ export function detectWellLogFormat(filePath: string): "LAS" | "DLIS" | "WITSML"
 }
 
 // Main processing function
-export async function processWellLogFile(filePath: string): Promise<WellLogData> {
+export async function processWellLogFile(
+	filePath: string,
+): Promise<WellLogData> {
 	const format = detectWellLogFormat(filePath);
 
 	switch (format) {
@@ -109,8 +113,8 @@ async function processLASFile(filePath: string): Promise<WellLogData> {
 	const lasData = parseLASFile(filePath);
 
 	// Convert to unified format with enhanced metrics
-	const curves: WellLogCurve[] = lasData.curves.map(curve => {
-		const validData = curve.data.filter(v => !Number.isNaN(v));
+	const curves: WellLogCurve[] = lasData.curves.map((curve) => {
+		const validData = curve.data.filter((v) => !Number.isNaN(v));
 		const statistics = calculateStatistics(validData);
 
 		return {
@@ -122,7 +126,7 @@ async function processLASFile(filePath: string): Promise<WellLogData> {
 			nullPoints: curve.data.length - validData.length,
 			minValue: Math.min(...validData),
 			maxValue: Math.max(...validData),
-			statistics
+			statistics,
 		};
 	});
 
@@ -145,16 +149,18 @@ async function processLASFile(filePath: string): Promise<WellLogData> {
 			field: lasData.field,
 			location: lasData.location,
 		},
-		qualityMetrics
+		qualityMetrics,
 	};
 }
 
 // DLIS file processing (placeholder - requires dlisio Python library)
-async function processDLISFile(filePath: string): Promise<WellLogData> {
+async function processDLISFile(_filePath: string): Promise<WellLogData> {
 	// Note: Full DLIS support would require Python dlisio library integration
 	// This is a placeholder implementation showing the structure
 
-	console.warn("DLIS support requires dlisio library. Returning demo data structure.");
+	console.warn(
+		"DLIS support requires dlisio library. Returning demo data structure.",
+	);
 	console.warn("For production use, install dlisio: pip install dlisio");
 	console.warn("User must have appropriate DLIS software license.");
 
@@ -175,21 +181,21 @@ async function processDLISFile(filePath: string): Promise<WellLogData> {
 				description: "Measured Depth",
 				data: [],
 				validPoints: 0,
-				nullPoints: 0
-			}
+				nullPoints: 0,
+			},
 		],
 		depthData: [],
 		rows: 0,
 		metadata: {
 			company: "Demo Company",
-			field: "Demo Field"
+			field: "Demo Field",
 		},
 		qualityMetrics: {
 			completeness: 0,
 			continuity: 0,
 			consistency: 0,
-			confidence: 0
-		}
+			confidence: 0,
+		},
 	};
 }
 
@@ -217,7 +223,7 @@ function parseWITSMLContent(xmlContent: string): WellLogData {
 	// Extract log curves (simplified)
 	const curves: WellLogCurve[] = [];
 	const logCurveRegex = /<logCurveInfo[^>]*>(.*?)<\/logCurveInfo>/gs;
-	let match;
+	let match: RegExpExecArray | null;
 
 	while ((match = logCurveRegex.exec(xmlContent)) !== null) {
 		const curveContent = match[1];
@@ -231,7 +237,7 @@ function parseWITSMLContent(xmlContent: string): WellLogData {
 			description: description,
 			data: [], // Would need to parse actual data section
 			validPoints: 0,
-			nullPoints: 0
+			nullPoints: 0,
 		});
 	}
 
@@ -249,20 +255,20 @@ function parseWITSMLContent(xmlContent: string): WellLogData {
 		rows: 0,
 		metadata: {
 			company: company,
-			field: field
+			field: field,
 		},
 		qualityMetrics: {
 			completeness: 0.5,
 			continuity: 0.5,
 			consistency: 0.5,
-			confidence: 0.5
-		}
+			confidence: 0.5,
+		},
 	};
 }
 
 // Helper functions
 function extractXMLValue(xmlContent: string, tagName: string): string | null {
-	const regex = new RegExp(`<${tagName}[^>]*>([^<]+)<\/${tagName}>`, "i");
+	const regex = new RegExp(`<${tagName}[^>]*>([^<]+)</${tagName}>`, "i");
 	const match = regex.exec(xmlContent);
 	return match ? match[1].trim() : null;
 }
@@ -279,18 +285,23 @@ function calculateStatistics(data: number[]): {
 
 	const sorted = [...data].sort((a, b) => a - b);
 	const mean = data.reduce((sum, val) => sum + val, 0) / data.length;
-	const median = sorted.length % 2 === 0
-		? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-		: sorted[Math.floor(sorted.length / 2)];
+	const median =
+		sorted.length % 2 === 0
+			? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+			: sorted[Math.floor(sorted.length / 2)];
 
-	const variance = data.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / data.length;
+	const variance =
+		data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
 	const stdDev = Math.sqrt(variance);
 	const range = Math.max(...data) - Math.min(...data);
 
 	return { mean, median, stdDev, range };
 }
 
-function calculateQualityMetrics(curves: WellLogCurve[], depthData: number[]): {
+function calculateQualityMetrics(
+	curves: WellLogCurve[],
+	depthData: number[],
+): {
 	completeness: number;
 	continuity: number;
 	consistency: number;
@@ -306,12 +317,23 @@ function calculateQualityMetrics(curves: WellLogCurve[], depthData: number[]): {
 	const completeness = totalPoints > 0 ? validPoints / totalPoints : 0;
 
 	// Continuity: measure of data gaps
-	const depthContinuity = depthData.length > 1 ?
-		1 - (Math.abs(depthData.length - (depthData[depthData.length - 1] - depthData[0])) / depthData[depthData.length - 1]) : 0;
+	const depthContinuity =
+		depthData.length > 1
+			? 1 -
+				Math.abs(
+					depthData.length - (depthData[depthData.length - 1] - depthData[0]),
+				) /
+					depthData[depthData.length - 1]
+			: 0;
 
 	// Consistency: measure of reasonable value ranges per curve type
-	const consistency = curves.length > 0 ?
-		curves.reduce((sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0), 0) / curves.length : 0;
+	const consistency =
+		curves.length > 0
+			? curves.reduce(
+					(sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0),
+					0,
+				) / curves.length
+			: 0;
 
 	// Overall confidence
 	const confidence = (completeness + depthContinuity + consistency) / 3;
@@ -320,7 +342,7 @@ function calculateQualityMetrics(curves: WellLogCurve[], depthData: number[]): {
 		completeness: Math.round(completeness * 100) / 100,
 		continuity: Math.round(depthContinuity * 100) / 100,
 		consistency: Math.round(consistency * 100) / 100,
-		confidence: Math.round(confidence * 100) / 100
+		confidence: Math.round(confidence * 100) / 100,
 	};
 }
 
@@ -330,7 +352,9 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error("Usage: well-log-processor <file> [--json|--summary|--quality]");
+		console.error(
+			"Usage: well-log-processor <file> [--json|--summary|--quality]",
+		);
 		console.error("Supported formats: .las, .dlis, .xml (WITSML)");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
@@ -348,17 +372,23 @@ const main = async () => {
 		const wellData = await processWellLogFile(filePath);
 
 		if (options.includes("--quality")) {
-			console.log(JSON.stringify({
-				format: wellData.format,
-				wellName: wellData.wellName,
-				qualityMetrics: wellData.qualityMetrics,
-				curves: wellData.curves.map(c => ({
-					name: c.name,
-					validPoints: c.validPoints,
-					nullPoints: c.nullPoints,
-					completeness: c.validPoints / (c.validPoints + c.nullPoints)
-				}))
-			}, null, 2));
+			console.log(
+				JSON.stringify(
+					{
+						format: wellData.format,
+						wellName: wellData.wellName,
+						qualityMetrics: wellData.qualityMetrics,
+						curves: wellData.curves.map((c) => ({
+							name: c.name,
+							validPoints: c.validPoints,
+							nullPoints: c.nullPoints,
+							completeness: c.validPoints / (c.validPoints + c.nullPoints),
+						})),
+					},
+					null,
+					2,
+				),
+			);
 		} else if (options.includes("--json")) {
 			console.log(JSON.stringify(wellData, null, 2));
 		} else {
@@ -370,7 +400,7 @@ const main = async () => {
 				curves: wellData.curves.length,
 				rows: wellData.rows,
 				quality: wellData.qualityMetrics,
-				metadata: wellData.metadata
+				metadata: wellData.metadata,
 			};
 			console.log(JSON.stringify(summary, null, 2));
 		}

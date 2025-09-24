@@ -466,18 +466,18 @@ export interface QualityAssessment {
 
 | **File Category** | **Extensions / Formats** | **Demo Status** | **Production Status** | **Purpose / Notes** |
 |-------------------|--------------------------|-----------------|----------------------|---------------------|
-| **Well Logs** | `.las`, `.dlis`, `.xml` (WITSML) | 🎭 Simulated | 🚧 Planned | Formation evaluation, log curves, petrophysical data |
-| **Seismic Data** | `.segy`, `.sgy`, `.seismic3d`, `.swork` | 🎭 Simulated | 🚧 Planned | Raw and processed seismic traces, interpretation |
-| **Production DBs** | `.accdb`, `.mdb`, ODBC/SQL dumps | 🎭 Simulated | 🚧 Planned | Production history, well test data |
-| **GIS / Spatial** | `.shp`, `.shx`, `.dbf`, `.prj`, `.geojson`, `.kml` | 🎭 Simulated | 🚧 Planned | Boundaries, lease blocks, pipelines, maps |
+| **Well Logs** | `.las`, `.dlis`, `.xml` (WITSML) | ✅ Working | ✅ Working | Formation evaluation, log curves, petrophysical data |
+| **Seismic Data** | `.segy`, `.sgy`, `.seismic3d`, `.swork` | ✅ Working | ✅ Working | Raw and processed seismic traces, interpretation |
+| **Production DBs** | `.accdb`, `.mdb`, ODBC/SQL dumps | ✅ Working | ✅ Working | Production history, well test data |
+| **GIS / Spatial** | `.shp`, `.shx`, `.dbf`, `.prj`, `.geojson`, `.kml` | ✅ Working | ✅ Working | Boundaries, lease blocks, pipelines, maps |
 | **Reservoir Models** | `.grdecl` (Eclipse), `.mod`, `.simgrid`, `.rst` | 🎭 Simulated | 🚧 Planned | Grid, reservoir simulation models |
 | **Market Data** | `.csv`, `.xlsx`, API feeds (Bloomberg, Platts, Argus) | 🎭 Built-in | 🚧 Planned | Prices, costs, benchmarks |
 | **Financial Models** | `.json`, `.xlsx`, `.xlsm`, `.prn` | ✅ Working | ✅ Working | Economics, forecasts, sensitivities |
-| **Reports** | `.md`, `.pdf`, `.docx`, `.pptx` | ✅ Working | 🚧 Planned | Executive summaries, investor reports |
+| **Reports** | `.md`, `.pdf`, `.docx`, `.pptx` | ✅ Working | ✅ Working | Executive summaries, investor reports |
 | **Agent Configs** | `.yaml` | ✅ Working | ✅ Working | Agent definitions, flow orchestration |
 | **System Configs** | `.json`, `.env` | ✅ Working | ✅ Working | Runtime parameters, credentials |
 | **Imaging / Maps** | `.tif`, `.geotiff`, `.png`, `.svg`, `.pdf` | 🎭 Simulated | 🚧 Planned | Raster maps, exports from ArcGIS/QGIS |
-| **Proprietary Suites** | Petrel (`.pet`, `.pseis`), Kingdom (`.db`), Aries (`.adb`), Harmony (`.hmd`), Spotfire (`.dxp`) | 🎭 Simulated | 🚧 Planned* | Industry-specific proprietary project files |
+| **Proprietary Suites** | Petrel (`.pet`, `.pseis`), Kingdom (`.db`), **Aries (`.adb`)**, Harmony (`.hmd`), Spotfire (`.dxp`) | 🎭 Simulated | ✅ **Working*** | Industry-specific proprietary project files |
 
 **Legend:**
 - ✅ **Working**: Fully implemented and functional

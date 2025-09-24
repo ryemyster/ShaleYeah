@@ -12,10 +12,7 @@ import {
 	ServerFactory,
 	type ServerTemplate,
 } from "../shared/server-factory.js";
-import type {
-	InvestmentCriteria,
-	AnalysisInputs,
-} from "../shared/types.js";
+import type { AnalysisInputs, InvestmentCriteria } from "../shared/types.js";
 
 interface LocalInvestmentDecision {
 	recommendation: "PROCEED" | "REJECT" | "DEFER";
@@ -194,8 +191,11 @@ function createExecutiveReport(args: {
 
 	return {
 		reportId: `report_${Date.now()}`,
-		title: `Investment Analysis: ${args.tractName || 'Unknown Tract'}`,
-		executiveSummary: generateExecutiveSummary(args.tractName || "Unknown Tract", decision),
+		title: `Investment Analysis: ${args.tractName || "Unknown Tract"}`,
+		executiveSummary: generateExecutiveSummary(
+			args.tractName || "Unknown Tract",
+			decision,
+		),
 		keyFindings: generateKeyFindings(decision),
 		recommendation: decision,
 		appendices: args.includeAppendices
@@ -209,7 +209,9 @@ function createExecutiveReport(args: {
 	};
 }
 
-function synthesizeAnalysis(analyses: AnalysisInputs[]): Record<string, unknown> {
+function synthesizeAnalysis(
+	analyses: AnalysisInputs[],
+): Record<string, unknown> {
 	const overallConfidence = calculateOverallConfidence(analyses);
 	const keyInsights = extractKeyInsights(analyses);
 	const riskFactors = identifyRiskFactors(analyses);
@@ -220,8 +222,11 @@ function synthesizeAnalysis(analyses: AnalysisInputs[]): Record<string, unknown>
 		riskFactors,
 		recommendations: generateSynthesisRecommendations(overallConfidence),
 		domainSummaries: analyses.map((analysis) => ({
-			domain: 'analysis',
-			confidence: analysis.economic?.confidence || analysis.geological?.confidenceLevel || 75,
+			domain: "analysis",
+			confidence:
+				analysis.economic?.confidence ||
+				analysis.geological?.confidenceLevel ||
+				75,
 			keyPoints: [
 				`Confidence: ${analysis.economic?.confidence || analysis.geological?.confidenceLevel || 75}%`,
 				"Analysis supports investment thesis",
@@ -233,7 +238,11 @@ function synthesizeAnalysis(analyses: AnalysisInputs[]): Record<string, unknown>
 function calculateOverallConfidence(analyses: AnalysisInputs[]): number {
 	if (analyses.length === 0) return 0;
 	const totalConfidence = analyses.reduce(
-		(sum, analysis) => sum + (('confidence' in analysis && typeof analysis.confidence === 'number') ? analysis.confidence : 75),
+		(sum, analysis) =>
+			sum +
+			("confidence" in analysis && typeof analysis.confidence === "number"
+				? analysis.confidence
+				: 75),
 		0,
 	);
 	return Math.round(totalConfidence / analyses.length);
@@ -242,11 +251,11 @@ function calculateOverallConfidence(analyses: AnalysisInputs[]): number {
 function extractKeyInsights(analyses: AnalysisInputs[]): string[] {
 	const insights = [];
 	for (const analysis of analyses) {
-		if ('geological' in analysis && analysis.geological) {
+		if ("geological" in analysis && analysis.geological) {
 			insights.push(`Strong geological foundation with analysis results`);
-		} else if ('economic' in analysis && analysis.economic) {
+		} else if ("economic" in analysis && analysis.economic) {
 			insights.push(`Economic returns show positive indicators`);
-		} else if ('engineering' in analysis && analysis.engineering) {
+		} else if ("engineering" in analysis && analysis.engineering) {
 			insights.push(`Engineering analysis indicates development potential`);
 		}
 	}
@@ -257,7 +266,7 @@ function identifyRiskFactors(analyses: AnalysisInputs[]): string[] {
 	const risks = [];
 	for (const analysis of analyses) {
 		if (analysis.risk) {
-			risks.push(...analysis.risk.riskFactors.map(rf => rf.description));
+			risks.push(...analysis.risk.riskFactors.map((rf) => rf.description));
 		}
 		if (analysis.geological?.investmentPerspective?.keyRisks) {
 			risks.push(...analysis.geological.investmentPerspective.keyRisks);
@@ -276,7 +285,10 @@ function generateSynthesisRecommendations(avgConfidence: number): string[] {
 	}
 }
 
-function generateExecutiveSummary(tractName: string, decision: LocalInvestmentDecision): string {
+function generateExecutiveSummary(
+	tractName: string,
+	decision: LocalInvestmentDecision,
+): string {
 	return `Investment analysis for ${tractName} indicates ${decision.recommendation} with ${decision.confidence}% confidence. Key economic metrics show NPV of $${(decision.keyMetrics.npv / 1000000).toFixed(1)}M and IRR of ${decision.keyMetrics.irr}%.`;
 }
 
@@ -323,6 +335,6 @@ export default ReporterServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (ReporterServer as any)();
+	const server = new ReporterServer();
 	runMCPServer(server);
 }
