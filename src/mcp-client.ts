@@ -17,7 +17,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import type { MCPAnalysisResult, EconomicAnalysis, DeclineCurveAnalysis } from "./shared/types.js";
+import type { MCPAnalysisResult } from "./shared/types.js";
 
 export interface MCPServerConfig {
 	name: string;
@@ -393,7 +393,10 @@ export class ShaleYeahMCPClient {
 					server: serverName,
 					persona: config.persona,
 					analysis: mockAnalysis as MCPAnalysisResult,
-					confidence: typeof mockAnalysis.confidence === 'number' ? mockAnalysis.confidence : 85,
+					confidence:
+						typeof mockAnalysis.confidence === "number"
+							? mockAnalysis.confidence
+							: 85,
 					executionTime,
 					success: true,
 				};

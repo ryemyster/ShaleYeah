@@ -17,11 +17,12 @@ import {
 
 interface MarketResearch {
 	topic: string;
+	summary: string;
 	sources: string[];
 	keyFindings: string[];
-	competitiveIntelligence: any[];
-	marketTrends: any[];
-	priceForecasts: any[];
+	competitiveIntelligence: Array<Record<string, unknown>>;
+	marketTrends: Array<Record<string, unknown>>;
+	priceForecasts: Array<Record<string, unknown>>;
 	confidence: number;
 	recommendations: string[];
 }
@@ -104,36 +105,42 @@ const researchTemplate: ServerTemplate = {
 };
 
 // Domain-specific research functions
-async function performMarketResearch(args: any): Promise<MarketResearch> {
+async function performMarketResearch(args: Record<string, unknown>): Promise<MarketResearch> {
 	try {
+		const topic = String(args.topic || "Market Research");
+		const scope = String(args.scope || "General");
+		const sources = Array.isArray(args.sources) ? args.sources as string[] : undefined;
+
 		// Gather web intelligence
-		const webIntelligence = await gatherWebIntelligence(
-			args.topic,
-			args.sources,
-		);
-		const insights = extractMarketInsights(webIntelligence, args.topic);
+		const webIntelligence = await gatherWebIntelligence(topic, sources);
+		const insights = extractMarketInsights(webIntelligence, topic);
 
 		return {
-			topic: args.topic,
+			topic,
+			summary: insights.summary || "Market research summary",
 			sources: insights.sources,
-			keyFindings: insights.findings,
-			competitiveIntelligence: generateCompetitiveLandscape(args.scope),
-			marketTrends: generateMarketTrends(args.scope, insights.confidence),
-			priceForecasts: generatePriceForecasts(args.scope),
-			confidence: insights.confidence,
-			recommendations: generateRecommendations(args.topic, insights.confidence),
+			keyFindings: insights.findings || [],
+			competitiveIntelligence: generateCompetitiveLandscape(scope),
+			marketTrends: generateMarketTrends(scope, insights.confidence || 0.5),
+			priceForecasts: generatePriceForecasts(scope),
+			confidence: insights.confidence || 0.5,
+			recommendations: generateRecommendations(topic, insights.confidence || 0.5),
 		};
 	} catch (_error) {
+		const topic = String(args.topic || "Market Research");
+		const scope = String(args.scope || "General");
+
 		// Return default research if web fetching fails
 		return {
-			topic: args.topic,
+			topic,
+			summary: "Analysis unavailable due to data access limitations",
 			sources: ["Industry databases", "Market reports"],
 			keyFindings: [
-				`${args.scope} market shows activity trends`,
+				`${scope} market shows activity trends`,
 				"Limited data available",
 			],
 			competitiveIntelligence: [],
-			marketTrends: [`${args.scope} drilling activity trends`],
+			marketTrends: [{ trend: `${scope} drilling activity trends`, confidence: 0.6 }],
 			priceForecasts: [],
 			confidence: ServerUtils.calculateConfidence(0.6, 0.7),
 			recommendations: ["Gather additional market intelligence"],
@@ -172,7 +179,7 @@ async function gatherWebIntelligence(
 function extractMarketInsights(
 	webData: FetchResult[],
 	_topic: string,
-): { findings: string[]; sources: string[]; confidence: number } {
+): { findings: string[]; sources: string[]; confidence: number; summary: string } {
 	const findings: string[] = [];
 	const sources: string[] = [];
 
@@ -203,10 +210,11 @@ function extractMarketInsights(
 				: ["Limited current market data available for analysis"],
 		sources: sources.length > 0 ? sources : ["No reliable sources accessible"],
 		confidence: Math.round(confidence),
+		summary: findings.length > 0 ? `Market analysis based on ${sources.length} sources` : "Limited market data available",
 	};
 }
 
-function performCompetitiveAnalysis(_args: any): any[] {
+function performCompetitiveAnalysis(_args: Record<string, unknown>): Array<Record<string, unknown>> {
 	return [
 		{
 			competitor: "Major Oil Corp",
@@ -228,21 +236,21 @@ function performCompetitiveAnalysis(_args: any): any[] {
 	];
 }
 
-function generateMarketTrends(scope: string, confidence: number): string[] {
+function generateMarketTrends(scope: string, confidence: number): Array<Record<string, unknown>> {
 	const trends = [
-		`${scope} drilling activity increasing with improved well economics`,
-		"ESG considerations influencing operational decisions",
-		"Digital transformation accelerating across operations",
+		{ trend: `${scope} drilling activity increasing with improved well economics`, confidence },
+		{ trend: "ESG considerations influencing operational decisions", confidence: confidence * 0.8 },
+		{ trend: "Digital transformation accelerating across operations", confidence: confidence * 0.9 },
 	];
 
 	if (confidence > 80) {
-		trends.unshift("Real-time market data confirms strong fundamentals");
+		trends.unshift({ trend: "Real-time market data confirms strong fundamentals", confidence });
 	}
 
 	return trends;
 }
 
-function generatePriceForecasts(_scope: string): any[] {
+function generatePriceForecasts(_scope: string): Array<Record<string, unknown>> {
 	return [
 		{ period: "Q1 2025", oilPrice: 72, gasPrice: 3.2, confidence: "medium" },
 		{ period: "Q2 2025", oilPrice: 75, gasPrice: 3.4, confidence: "medium" },
