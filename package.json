@@ -69,7 +69,7 @@
 		"exceljs": "^4.4.0",
 		"xml2js": "^0.6.2",
 		"yaml": "^2.6.1",
-		"zod": "^4.1.11"
+		"zod": "^4.1.12"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.4",
