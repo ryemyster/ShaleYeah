@@ -58,7 +58,7 @@
 		"server:test": "npx tsx src/servers/test.ts"
 	},
 	"dependencies": {
-		"@anthropic-ai/sdk": "^0.63.0",
+		"@anthropic-ai/sdk": "^0.69.0",
 		"@modelcontextprotocol/sdk": "^1.18.1",
 		"@turf/turf": "^7.2.0",
 		"dotenv": "^17.2.2",
