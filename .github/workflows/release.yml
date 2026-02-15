@@ -62,7 +62,7 @@ jobs:
         echo "hashes=$(sha256sum * | base64 -w0)" >> "$GITHUB_OUTPUT"
 
     - name: Upload release assets
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: release-assets
         path: dist/
@@ -104,7 +104,7 @@ jobs:
         done
 
     - name: Upload signed assets
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: signed-assets
         path: dist/
