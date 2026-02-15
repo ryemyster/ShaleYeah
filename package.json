@@ -66,24 +66,24 @@
 		"server:test": "npx tsx src/servers/test.ts"
 	},
 	"dependencies": {
-		"@anthropic-ai/sdk": "^0.69.0",
+		"@anthropic-ai/sdk": "^0.74.0",
 		"@modelcontextprotocol/sdk": "^1.18.1",
-		"@turf/turf": "^7.2.0",
-		"dotenv": "^17.2.2",
-		"glob": "^11.0.3",
+		"@turf/turf": "^7.3.4",
+		"dotenv": "^17.3.1",
+		"glob": "^13.0.3",
 		"openai": "^5.22.0",
-		"proj4": "^2.9.0",
+		"proj4": "^2.20.2",
 		"shapefile": "^0.6.6",
 		"exceljs": "^4.4.0",
 		"xml2js": "^0.6.2",
-		"yaml": "^2.6.1",
-		"zod": "^4.1.11"
+		"yaml": "^2.8.2",
+		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.4",
-		"@types/node": "^24.10.1",
+		"@biomejs/biome": "^2.4.0",
+		"@types/node": "^25.2.3",
 		"@types/xml2js": "^0.4.14",
-		"tsx": "^4.20.5",
+		"tsx": "^4.21.0",
 		"typescript": "^5.6.3"
 	},
 	"engines": {
