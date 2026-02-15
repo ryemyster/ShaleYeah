@@ -330,60 +330,6 @@ All `callTool()` invocations produce structured JSONL audit entries at `data/aud
 
 Sensitive values (keys matching `/key|token|secret|password|credential|auth|bearer/`) are automatically redacted. Denial entries use `action: "denied"`.
 
-### Composition — High-Level Tools
-
-Pre-built composite tools that orchestrate multiple servers into single operations. Based on the [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) and [Task Bundle](https://www.arcade.dev/patterns/task-bundle) patterns.
-
-#### Available Bundles
-
-| Bundle | Description | Servers | Phases |
-|---|---|---|---|
-| `quick_screen` | Fast parallel assessment | 4 (geowiz, econobot, curve-smith, risk-analysis) | 1 |
-| `full_due_diligence` | Comprehensive analysis | 14 (all servers) | 5 |
-| `geological_deep_dive` | Focused geology | 3 (geowiz, curve-smith, research) | 1 |
-| `financial_review` | Focused finance | 3 (econobot, risk-analysis, market) | 1 |
-
-```typescript
-// List all available bundles
-const bundles = kernel.listBundles();
-// → { quick_screen: { name, description, stepCount: 4 }, ... }
-
-// Quick screening — 4 servers in parallel
-const screen = await kernel.quickScreen({ basin: "Permian", county: "Reeves" });
-// screen → { bundleName: "quick_screen", completeness: 100, results: Map(4) }
-
-// Geological deep dive — geowiz(full) + curve-smith(standard) + research(summary)
-const geo = await kernel.geologicalDeepDive({ basin: "Permian" });
-
-// Financial review — econobot(full) + risk-analysis(standard) + market(summary)
-const fin = await kernel.financialReview({ basin: "Permian" });
-
-// Full due diligence — all 14 servers, dependency-ordered phases
-const full = await kernel.fullAnalysis({ basin: "Permian" });
-```
-
-#### Confirmation Gate (Investment Decisions)
-
-The `shouldWeInvest()` method runs full due diligence and gates the final investment decision behind a confirmation step. Based on the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern.
-
-```typescript
-// Run full analysis — decision result requires confirmation
-const result = await kernel.shouldWeInvest({ basin: "Permian" });
-
-// Decision result has requires_confirmation: true
-const decision = result.results.get("decision.analyze");
-// decision.data → { requires_confirmation: true, pending_action: { actionId: "uuid-...", ... } }
-
-// Agent presents results to user, then confirms:
-const confirmed = await kernel.confirmAction(decision.data.pending_action.actionId);
-// confirmed → { success: true, data: { recommendation: "proceed", confidence: 87 } }
-
-// Or cancel:
-kernel.cancelAction(actionId);
-```
-
-Tools requiring confirmation: `decision.make_recommendation`, `decision.analyze`.
-
 ### Progressive Detail Levels
 
 All tool responses support three detail levels via the `detail_level` parameter, based on the [Arcade.dev Token-Efficient Response pattern](https://www.arcade.dev/patterns/token-efficient-response). Use lower levels to save tokens when only key metrics are needed.
@@ -1506,14 +1452,6 @@ export interface MCPServerConfig {
 - Generate portfolio-level reports
 - Email/Slack notifications on completion
 
-### Community Examples
-
-Check the [examples directory](https://github.com/rmcdonald/ShaleYeah/tree/main/examples) for:
-- Integration code samples
-- Custom report templates
-- Performance optimization techniques
-- Advanced use case implementations
-
 ---
 
-**Need help with integration?** Open a [GitHub Discussion](https://github.com/rmcdonald/ShaleYeah/discussions) or check our [Discord community](https://discord.gg/shale-yeah) for real-time support.
+**Need help?** Open a [GitHub Issue](https://github.com/rmcdonald/ShaleYeah/issues) or see the [Getting Started guide](./GETTING_STARTED.md).

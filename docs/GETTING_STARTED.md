@@ -11,7 +11,7 @@ Welcome to SHALE YEAH! This guide will help junior engineers and contributors ge
 
 ### 1. Clone and Install
 ```bash
-git clone https://github.com/your-org/ShaleYeah.git
+git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
 npm install --legacy-peer-deps
 ```
@@ -246,7 +246,6 @@ Kernel audit logs are written to `data/audit/YYYY-MM-DD.jsonl` when `KERNEL_AUDI
 ## Getting Help
 
 - **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Ask questions in GitHub Discussions
 - **Documentation**: Check the `/docs` folder for detailed guides
 - **Code Questions**: All code is extensively commented
 

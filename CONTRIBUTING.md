@@ -7,13 +7,12 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 1. Fork the repository
 2. Clone your fork locally
 3. Install dependencies: `npm install`
-4. Run the demo: `bash scripts/demo.sh`
+4. Run the demo: `npm run demo`
 
 ## Development Guidelines
 
 ### Code Style
 - Use TypeScript for CLI tools and HTTP integrations
-- Use Python for scientific computing and data processing
 - Keep tools runnable from CLI with clear error messages
 - No giant dependencies - prefer lightweight, focused libraries
 
@@ -37,8 +36,7 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 1. **Small PRs**: Keep changes focused and reviewable
 2. **Tests**: Include tests for new functionality
 3. **Documentation**: Update relevant docs and specs
-4. **Branding**: Ensure `scripts/verify-branding.sh` passes
-5. **Clean**: Outputs should be readable and well-formatted
+4. **Clean**: Outputs should be readable and well-formatted
 
 ### PR Checklist
 - [ ] Code follows project style guidelines
@@ -46,16 +44,14 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 - [ ] Documentation updated
 - [ ] Attribution footer included in outputs
 - [ ] No secrets or proprietary data
-- [ ] `scripts/verify-branding.sh` passes
 
 ## Adding New Agents
 
-1. Create a spec in `specs/<agent-name>.spec.md`
-2. Run `npm run gen` to generate agent scaffold
-3. Implement the agent logic — inherit `MCPServer`, add Roman persona
-4. Classify all tools as `query`, `command`, or `discovery` (see `src/kernel/types.ts`)
-5. Add tests and documentation
-6. Register the server in `src/mcp-client.ts` server configs — the kernel registry picks it up automatically
+1. Create a new server file in `src/servers/<agent-name>.ts`
+2. Implement the agent logic — inherit `MCPServer`, add Roman persona
+3. Classify all tools as `query`, `command`, or `discovery` (see `src/kernel/types.ts`)
+4. Add tests and documentation
+5. Register the server in `src/mcp-client.ts` server configs — the kernel registry picks it up automatically
 
 ## Adding Kernel Middleware
 

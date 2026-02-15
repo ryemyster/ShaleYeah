@@ -5,6 +5,16 @@ All notable changes to SHALE YEAH will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- **README.md**: Full rewrite from 2,401 to ~360 lines targeting O&G investment professionals — removed ~1,200 lines of TypeScript code examples, aspirational features (Docker, WebSocket, SIEM), duplicate sections, and developer implementation guides; fixed factual errors (server counts, output paths, persona names, non-existent npm scripts)
+- **ARCHITECTURE.md**: Integrated kernel as main narrative instead of appendix — removed outdated "two-tier" / "6 agents" framing, duplicate "Composition — Abstraction Ladder" section, jest test examples, and aspirational Docker/Kubernetes deployment claims
+- **API_REFERENCE.md**: Removed duplicate "Composition — High-Level Tools" section and non-existent community links (GitHub Discussions, Discord, examples directory)
+- **CONTRIBUTING.md**: Fixed demo command (`bash scripts/demo.sh` → `npm run demo`), removed Python reference (TypeScript only), removed non-existent `specs/` directory and `npm run gen` command references, removed `scripts/verify-branding.sh` from PR checklist
+- **GETTING_STARTED.md**: Fixed clone URL (`your-org` → `rmcdonald`), removed non-existent GitHub Discussions reference
+- **DEMO_VS_PRODUCTION.md**: Updated roadmap to reflect kernel v2.0.0 completions (RBAC, audit logging, session management, composable bundles now marked complete)
+
 ## [2.0.0] - 2026-02-14
 
 **SHALE YEAH is now an Agent OS.** The 14 MCP domain servers are unchanged, but they now run through a kernel runtime layer that provides dynamic tool discovery, parallel scatter-gather execution, identity-anchored sessions, role-based access control, audit logging, error intelligence, and composable task bundles. Based on [Arcade.dev's 52 Agentic Tool Patterns](https://www.arcade.dev/patterns), this release moves pattern coverage from ~8% (4.5/52) to ~56% (29/52).

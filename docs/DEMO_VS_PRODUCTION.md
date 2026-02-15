@@ -185,11 +185,16 @@ npm run prod
 - [ ] **Advanced economic modeling** - Live NPV/IRR with real market data
 - [ ] **Risk assessment engine** - Monte Carlo simulations through MCP
 
-### Phase 3: Enterprise Features
-- [ ] **Multi-user support** - Authentication and role-based access
-- [ ] **Custom workflows** - User-configurable MCP server chains
+### Phase 3: Enterprise Features *(Partially delivered by Kernel v2.0.0)*
+- [x] **Role-based access control (RBAC)** - 4-tier roles (analyst → engineer → executive → admin) via `middleware/auth.ts`
+- [x] **Audit logging (JSONL)** - Full audit trail with sensitive value redaction via `middleware/audit.ts`
+- [x] **Session management with identity anchoring** - Per-analysis sessions via `kernel/context.ts`
+- [x] **Composable task bundles and custom workflows** - Pre-built bundles (QUICK_SCREEN, FULL_DUE_DILIGENCE, GEO_DEEP_DIVE, FINANCIAL_REVIEW) and parallel scatter-gather execution via `kernel/bundles.ts` and `kernel/executor.ts`
 - [ ] **Advanced visualization** - Interactive charts and maps
-- [ ] **Enterprise integrations** - SSO, audit logging, compliance reporting
+- [ ] **SSO integration** - Single sign-on for enterprise environments
+- [ ] **Compliance reporting** - Regulatory compliance dashboards
+
+> **Note:** Kernel v2.0.0 (2026-02-14) delivered RBAC, audit logging, session management, and composable workflows ahead of schedule, moving significant Phase 3 functionality into the current release.
 
 ## 💡 Key Architecture Insight
 
