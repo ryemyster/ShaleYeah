@@ -28,6 +28,10 @@ export interface ServerToolTemplate {
 	description: string;
 	inputSchema: z.ZodSchema;
 	handler: (args: any) => Promise<any>;
+	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
+	type?: "query" | "command" | "discovery";
+	/** Supported response detail levels */
+	detailLevel?: "summary" | "standard" | "full";
 }
 
 export interface ServerResourceTemplate {
@@ -146,9 +150,7 @@ export class ServerFactory {
 					// Validate format
 					const ext = path.extname(args.filePath).toLowerCase();
 					if (!supportedFormats.includes(ext)) {
-						throw new Error(
-							`Unsupported format: ${ext}. Supported: ${supportedFormats.join(", ")}`,
-						);
+						throw new Error(`Unsupported format: ${ext}. Supported: ${supportedFormats.join(", ")}`);
 					}
 
 					const result = await processFunction(args.filePath, args);
@@ -182,11 +184,7 @@ export class ServerFactory {
 	 * Common server templates for standard domains
 	 */
 	static readonly TEMPLATES = {
-		SIMPLE_ANALYSIS: (
-			name: string,
-			persona: ServerPersona,
-			directories: string[],
-		) => ({
+		SIMPLE_ANALYSIS: (name: string, persona: ServerPersona, directories: string[]) => ({
 			name,
 			description: `${persona.role} MCP Server`,
 			persona,
@@ -195,11 +193,7 @@ export class ServerFactory {
 			resources: [],
 		}),
 
-		FILE_PROCESSOR: (
-			name: string,
-			persona: ServerPersona,
-			_formats: string[],
-		) => ({
+		FILE_PROCESSOR: (name: string, persona: ServerPersona, _formats: string[]) => ({
 			name,
 			description: `${persona.role} MCP Server`,
 			persona,
@@ -217,10 +211,7 @@ export class ServerUtils {
 	/**
 	 * Standard confidence calculation
 	 */
-	static calculateConfidence(
-		dataQuality: number,
-		analysisDepth: number,
-	): number {
+	static calculateConfidence(dataQuality: number, analysisDepth: number): number {
 		return Math.min(0.95, dataQuality * 0.6 + analysisDepth * 0.4);
 	}
 

@@ -10,11 +10,7 @@ import { z } from "zod";
 import { analyzeLASCurve, type CurveAnalysis } from "../../tools/curve-qc.js";
 import { type LASData, parseLASFile } from "../../tools/las-parse.js";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 import type { LASCurve } from "../shared/types.js";
 
 interface GeologicalAnalysis {
@@ -29,7 +25,7 @@ interface GeologicalAnalysis {
 	recommendation: string;
 }
 
-interface GISAnalysis {
+interface _GISAnalysis {
 	type: string;
 	features: number;
 	geometryTypes: string[];
@@ -59,26 +55,16 @@ const geowizTemplate: ServerTemplate = {
 			"analyze_formation",
 			"Analyze geological formations from well log data (LAS, DLIS, WITSML)",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to well log file (.las, .dlis, .xml)"),
-				formations: z
-					.array(z.string())
-					.optional()
-					.describe("Target formations"),
-				analysisType: z
-					.enum(["basic", "standard", "comprehensive"])
-					.default("standard"),
+				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
+				formations: z.array(z.string()).optional().describe("Target formations"),
+				analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const analysis = await performFormationAnalysis(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -88,9 +74,7 @@ const geowizTemplate: ServerTemplate = {
 			"process_gis",
 			"Process GIS files with enhanced oil & gas spatial analysis (.shp, .geojson, .kml)",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to GIS file (.shp, .geojson, .kml)"),
+				filePath: z.string().describe("Path to GIS file (.shp, .geojson, .kml)"),
 				analysisType: z
 					.enum(["basic", "standard", "comprehensive", "oilgas"])
 					.default("standard")
@@ -103,10 +87,7 @@ const geowizTemplate: ServerTemplate = {
 				const analysis = await processEnhancedGIS(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -116,9 +97,7 @@ const geowizTemplate: ServerTemplate = {
 			"process_well_logs",
 			"Process multi-format well logs (LAS/DLIS/WITSML) with unified interface",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to well log file (.las, .dlis, .xml)"),
+				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
 				format: z
 					.enum(["auto", "las", "dlis", "witsml"])
 					.default("auto")
@@ -157,13 +136,8 @@ const geowizTemplate: ServerTemplate = {
 			"process_access_database",
 			"Process Microsoft Access database files (.accdb, .mdb) for production data",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to Access database file (.accdb or .mdb)"),
-				extractTables: z
-					.array(z.string())
-					.optional()
-					.describe("Specific tables to extract (default: all)"),
+				filePath: z.string().describe("Path to Access database file (.accdb or .mdb)"),
+				extractTables: z.array(z.string()).optional().describe("Specific tables to extract (default: all)"),
 				outputFormat: z.enum(["json", "csv", "summary"]).default("summary"),
 				outputPath: z.string().optional(),
 			}),
@@ -181,12 +155,8 @@ const geowizTemplate: ServerTemplate = {
 			"process_document",
 			"Process PDF, DOCX, and PPTX documents for oil & gas data extraction",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to document file (.pdf, .docx, .pptx)"),
-				extractionType: z
-					.enum(["summary", "technical", "financial", "all"])
-					.default("all"),
+				filePath: z.string().describe("Path to document file (.pdf, .docx, .pptx)"),
+				extractionType: z.enum(["summary", "technical", "financial", "all"]).default("all"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -203,12 +173,8 @@ const geowizTemplate: ServerTemplate = {
 			"process_seismic_data",
 			"Process seismic data files (SEGY, SGY, seismic3d) for structural interpretation",
 			z.object({
-				filePath: z
-					.string()
-					.describe("Path to seismic file (.segy, .sgy, .seismic3d)"),
-				analysisType: z
-					.enum(["structural", "amplitude", "reservoir", "all"])
-					.default("all"),
+				filePath: z.string().describe("Path to seismic file (.segy, .sgy, .seismic3d)"),
+				analysisType: z.enum(["structural", "amplitude", "reservoir", "all"]).default("all"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -226,9 +192,7 @@ const geowizTemplate: ServerTemplate = {
 			"Process ARIES petroleum economics and reserves database (.adb)",
 			z.object({
 				filePath: z.string().describe("Path to ARIES database file (.adb)"),
-				analysisType: z
-					.enum(["reserves", "economics", "forecasting", "all"])
-					.default("all"),
+				analysisType: z.enum(["reserves", "economics", "forecasting", "all"]).default("all"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -253,11 +217,7 @@ async function performFormationAnalysis(args: {
 		const lasData: LASData = parseLASFile(args.filePath);
 		const keyQCResults = await performCurveQC(args.filePath, lasData);
 
-		return analyzeGeologicalData(
-			lasData,
-			keyQCResults,
-			args.analysisType || "standard",
-		);
+		return analyzeGeologicalData(lasData, keyQCResults, args.analysisType || "standard");
 	} catch (_error) {
 		// Return default analysis if LAS parsing fails
 		return {
@@ -274,17 +234,12 @@ async function performFormationAnalysis(args: {
 	}
 }
 
-async function performCurveQC(
-	filePath: string,
-	lasData: LASData,
-): Promise<Array<CurveAnalysis>> {
+async function performCurveQC(filePath: string, lasData: LASData): Promise<Array<CurveAnalysis>> {
 	const qcResults: Array<CurveAnalysis> = [];
 	const keyCurves = ["GR", "NPHI", "RHOB", "RT", "PE", "CALI"];
 
 	for (const curveName of keyCurves) {
-		const curve = lasData.curves.find(
-			(c) => c.name.toUpperCase() === curveName,
-		);
+		const curve = lasData.curves.find((c) => c.name.toUpperCase() === curveName);
 		if (curve) {
 			try {
 				const qcAnalysis = analyzeLASCurve(filePath, curveName);
@@ -314,14 +269,9 @@ function analyzeGeologicalData(
 		const validNphi = nphiCurve.data.filter((v) => !Number.isNaN(v));
 		const validRhob = rhobCurve.data.filter((v) => !Number.isNaN(v));
 		if (validNphi.length > 0 && validRhob.length > 0) {
-			const avgNphi =
-				validNphi.reduce((sum, v) => sum + v, 0) / validNphi.length;
-			const avgRhob =
-				validRhob.reduce((sum, v) => sum + v, 0) / validRhob.length;
-			avgPorosity = Math.max(
-				0,
-				Math.min(25, (avgNphi + (2.65 - avgRhob) / 0.015) / 2),
-			);
+			const avgNphi = validNphi.reduce((sum, v) => sum + v, 0) / validNphi.length;
+			const avgRhob = validRhob.reduce((sum, v) => sum + v, 0) / validRhob.length;
+			avgPorosity = Math.max(0, Math.min(25, (avgNphi + (2.65 - avgRhob) / 0.015) / 2));
 		}
 	}
 
@@ -331,19 +281,14 @@ function analyzeGeologicalData(
 		const validGR = grCurve.data.filter((v) => !Number.isNaN(v));
 		if (validGR.length > 0) {
 			const sandIntervals = validGR.filter((v) => v < 80).length;
-			netPay =
-				(sandIntervals / validGR.length) *
-				(lasData.depth_stop - lasData.depth_start);
+			netPay = (sandIntervals / validGR.length) * (lasData.depth_stop - lasData.depth_start);
 		}
 	}
 
 	// Calculate confidence based on QC results
 	const avgQCConfidence =
 		qcResults.length > 0
-			? qcResults.reduce(
-					(sum, qc) => sum + (qc.validPoints / qc.totalPoints) * 100,
-					0,
-				) / qcResults.length
+			? qcResults.reduce((sum, qc) => sum + (qc.validPoints / qc.totalPoints) * 100, 0) / qcResults.length
 			: 75;
 
 	const analysis: GeologicalAnalysis = {
@@ -355,11 +300,7 @@ function analyzeGeologicalData(
 		maturity: assessMaturity(lasData),
 		targets: identifyTargets(lasData),
 		confidence: Math.round(avgQCConfidence),
-		recommendation: generateRecommendation(
-			avgPorosity,
-			netPay,
-			avgQCConfidence,
-		),
+		recommendation: generateRecommendation(avgPorosity, netPay, avgQCConfidence),
 	};
 
 	// Enhance analysis based on type
@@ -380,9 +321,7 @@ async function processEnhancedGIS(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the enhanced GIS processor
-		const { EnhancedGISProcessor } = await import(
-			"../../tools/gis-processor.js"
-		);
+		const { EnhancedGISProcessor } = await import("../../tools/gis-processor.js");
 
 		const processor = new EnhancedGISProcessor();
 		const gisResult = await processor.processGISFile(args.filePath);
@@ -402,9 +341,7 @@ async function processEnhancedGIS(args: {
 				coordinateSystem: gisResult.metadata.coordinateSystem,
 				hasElevation: gisResult.metadata.hasElevation,
 			},
-			qualityAssessment: args.qualityAssessment
-				? gisResult.qualityMetrics
-				: undefined,
+			qualityAssessment: args.qualityAssessment ? gisResult.qualityMetrics : undefined,
 			oilGasAnalysis: args.oilGasAnalysis
 				? {
 						assets: gisResult.oilGasMetrics,
@@ -443,9 +380,7 @@ function generateGeologicalContext(gisResult: any): Record<string, unknown> {
 }
 
 // Generate investment perspective from GIS analysis
-function generateInvestmentPerspective(
-	gisResult: any,
-): Record<string, unknown> {
+function generateInvestmentPerspective(gisResult: any): Record<string, unknown> {
 	const metrics = gisResult.oilGasMetrics;
 
 	return {
@@ -472,33 +407,13 @@ function identifyGeologicalRegion(bounds: any): string {
 	const centerLon = bounds.centerX;
 
 	// Basic geological region identification based on coordinates
-	if (
-		centerLat >= 31 &&
-		centerLat <= 33 &&
-		centerLon >= -105 &&
-		centerLon <= -100
-	) {
+	if (centerLat >= 31 && centerLat <= 33 && centerLon >= -105 && centerLon <= -100) {
 		return "Permian Basin";
-	} else if (
-		centerLat >= 26 &&
-		centerLat <= 30 &&
-		centerLon >= -100 &&
-		centerLon <= -94
-	) {
+	} else if (centerLat >= 26 && centerLat <= 30 && centerLon >= -100 && centerLon <= -94) {
 		return "Eagle Ford Shale";
-	} else if (
-		centerLat >= 28 &&
-		centerLat <= 32 &&
-		centerLon >= -99 &&
-		centerLon <= -96
-	) {
+	} else if (centerLat >= 28 && centerLat <= 32 && centerLon >= -99 && centerLon <= -96) {
 		return "Barnett Shale";
-	} else if (
-		centerLat >= 35 &&
-		centerLat <= 40 &&
-		centerLon >= -104 &&
-		centerLon <= -95
-	) {
+	} else if (centerLat >= 35 && centerLat <= 40 && centerLon >= -104 && centerLon <= -95) {
 		return "Anadarko Basin";
 	} else {
 		return "Regional Basin Analysis Required";
@@ -519,14 +434,10 @@ function identifyBasinContext(bounds: any): string {
 }
 
 function assessDevelopmentPotential(metrics: any): string {
-	const score =
-		metrics.leaseBlocks * 0.3 +
-		metrics.wellLocations * 0.4 +
-		(metrics.estimatedAcreage / 1000) * 0.3;
+	const score = metrics.leaseBlocks * 0.3 + metrics.wellLocations * 0.4 + (metrics.estimatedAcreage / 1000) * 0.3;
 
 	if (score > 50) return "High - Significant infrastructure and acreage";
-	if (score > 20)
-		return "Moderate - Established activity with growth potential";
+	if (score > 20) return "Moderate - Established activity with growth potential";
 	if (score > 5) return "Limited - Early stage development opportunity";
 	return "Minimal - Requires detailed evaluation";
 }
@@ -557,15 +468,11 @@ function generateGISInvestmentRecommendations(metrics: any): string[] {
 	const recommendations: string[] = [];
 
 	if (metrics.estimatedAcreage > 5000) {
-		recommendations.push(
-			"Large acreage position - consider phased development",
-		);
+		recommendations.push("Large acreage position - consider phased development");
 	}
 
 	if (metrics.wellLocations > 20) {
-		recommendations.push(
-			"Significant well density - evaluate infill potential",
-		);
+		recommendations.push("Significant well density - evaluate infill potential");
 	}
 
 	if (metrics.majorOperators.length > 0) {
@@ -611,9 +518,7 @@ function assessDataQuality(args: {
 	}
 
 	assessment.recommendations.push(
-		assessment.passesThresholds
-			? "Data quality is excellent for analysis"
-			: "Consider additional validation steps",
+		assessment.passesThresholds ? "Data quality is excellent for analysis" : "Consider additional validation steps",
 	);
 
 	return assessment;
@@ -626,8 +531,7 @@ function identifyFormations(_lasData: LASData, grCurve?: LASCurve): string[] {
 	if (grCurve && Array.isArray(grCurve.data) && grCurve.data.length > 0) {
 		const validGR = grCurve.data.filter((v: number) => !Number.isNaN(v));
 		if (validGR.length > 0) {
-			const avgGR =
-				validGR.reduce((sum: number, v: number) => sum + v, 0) / validGR.length;
+			const avgGR = validGR.reduce((sum: number, v: number) => sum + v, 0) / validGR.length;
 
 			if (avgGR > 120) {
 				formations.push("Wolfcamp A", "Bone Spring");
@@ -669,11 +573,7 @@ function identifyAdditionalFormations(_lasData: LASData): string[] {
 	return ["Atoka", "Strawn", "Canyon"];
 }
 
-function generateRecommendation(
-	porosity: number,
-	netPay: number,
-	confidence: number,
-): string {
+function generateRecommendation(porosity: number, netPay: number, confidence: number): string {
 	if (porosity > 8 && netPay > 100 && confidence > 80) {
 		return "Proceed with horizontal drilling program";
 	} else if (porosity > 6 && netPay > 75 && confidence > 70) {
@@ -691,9 +591,7 @@ async function processMultiFormatWellLog(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the well log processor
-		const { processWellLogFile, detectWellLogFormat } = await import(
-			"../../tools/well-log-processor.js"
-		);
+		const { processWellLogFile, detectWellLogFormat } = await import("../../tools/well-log-processor.js");
 
 		// Detect or validate format
 		const detectedFormat = detectWellLogFormat(args.filePath);
@@ -725,8 +623,7 @@ async function processMultiFormatWellLog(args: {
 				dataQuality: {
 					validPoints: curve.validPoints,
 					nullPoints: curve.nullPoints,
-					completeness:
-						curve.validPoints / (curve.validPoints + curve.nullPoints) || 0,
+					completeness: curve.validPoints / (curve.validPoints + curve.nullPoints) || 0,
 				},
 				statistics: curve.statistics,
 			})),
@@ -743,9 +640,7 @@ async function processMultiFormatWellLog(args: {
 }
 
 // Generate geological insights from well log data
-async function generateGeologicalInsights(
-	wellLogData: any,
-): Promise<Record<string, unknown>> {
+async function generateGeologicalInsights(wellLogData: any): Promise<Record<string, unknown>> {
 	const insights = {
 		formations: [] as string[],
 		lithology: "Unknown",
@@ -755,18 +650,12 @@ async function generateGeologicalInsights(
 	};
 
 	// Look for common curves and generate insights
-	const grCurve = wellLogData.curves.find((c: any) =>
-		c.name.toUpperCase().includes("GR"),
-	);
+	const grCurve = wellLogData.curves.find((c: any) => c.name.toUpperCase().includes("GR"));
 	const resistivityCurve = wellLogData.curves.find(
-		(c: any) =>
-			c.name.toUpperCase().includes("RT") ||
-			c.name.toUpperCase().includes("RES"),
+		(c: any) => c.name.toUpperCase().includes("RT") || c.name.toUpperCase().includes("RES"),
 	);
 	const porosityyCurve = wellLogData.curves.find(
-		(c: any) =>
-			c.name.toUpperCase().includes("NPHI") ||
-			c.name.toUpperCase().includes("RHOB"),
+		(c: any) => c.name.toUpperCase().includes("NPHI") || c.name.toUpperCase().includes("RHOB"),
 	);
 
 	if (grCurve?.statistics) {
@@ -786,13 +675,9 @@ async function generateGeologicalInsights(
 	if (resistivityCurve?.statistics) {
 		const avgRT = resistivityCurve.statistics.mean;
 		if (avgRT > 10) {
-			insights.hydrocarbon_indicators.push(
-				"High resistivity - potential hydrocarbon zones",
-			);
+			insights.hydrocarbon_indicators.push("High resistivity - potential hydrocarbon zones");
 		} else if (avgRT > 2) {
-			insights.hydrocarbon_indicators.push(
-				"Moderate resistivity - mixed zones",
-			);
+			insights.hydrocarbon_indicators.push("Moderate resistivity - mixed zones");
 		}
 	}
 
@@ -817,9 +702,7 @@ function generateDrillingRecommendations(insights: any): string[] {
 	const recommendations = [];
 
 	if (insights.lithology.includes("shale")) {
-		recommendations.push(
-			"Consider horizontal drilling with multi-stage completion",
-		);
+		recommendations.push("Consider horizontal drilling with multi-stage completion");
 	}
 
 	if (insights.reservoir_quality.includes("Good")) {
@@ -834,9 +717,7 @@ function generateDrillingRecommendations(insights: any): string[] {
 		recommendations.push("Focus drilling on high resistivity zones");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard evaluation protocols recommended"];
+	return recommendations.length > 0 ? recommendations : ["Standard evaluation protocols recommended"];
 }
 
 function generateWellLogRecommendations(wellLogData: any): string[] {
@@ -844,35 +725,25 @@ function generateWellLogRecommendations(wellLogData: any): string[] {
 	const quality = wellLogData.qualityMetrics;
 
 	if (quality.completeness < 0.8) {
-		recommendations.push(
-			"Data completeness below 80% - consider data validation",
-		);
+		recommendations.push("Data completeness below 80% - consider data validation");
 	}
 
 	if (quality.confidence < 0.7) {
-		recommendations.push(
-			"Overall confidence below 70% - additional QC recommended",
-		);
+		recommendations.push("Overall confidence below 70% - additional QC recommended");
 	}
 
 	if (wellLogData.curves.length < 5) {
-		recommendations.push(
-			"Limited curve suite - consider additional log acquisition",
-		);
+		recommendations.push("Limited curve suite - consider additional log acquisition");
 	}
 
 	// Format-specific recommendations
 	if (wellLogData.format === "DLIS") {
-		recommendations.push(
-			"DLIS format detected - verify software licensing compliance",
-		);
+		recommendations.push("DLIS format detected - verify software licensing compliance");
 	} else if (wellLogData.format === "WITSML") {
 		recommendations.push("WITSML format - industry standard XML well data");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard analysis protocols applied"];
+	return recommendations.length > 0 ? recommendations : ["Standard analysis protocols applied"];
 }
 
 // Process Access Database Data
@@ -883,9 +754,7 @@ async function processAccessDatabaseData(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the Access processor
-		const { processAccessDatabase } = await import(
-			"../../tools/access-processor.js"
-		);
+		const { processAccessDatabase } = await import("../../tools/access-processor.js");
 
 		// Process the database file
 		const accessData = await processAccessDatabase(args.filePath);
@@ -893,9 +762,7 @@ async function processAccessDatabaseData(args: {
 		// Filter tables if specific ones requested
 		let filteredTables = accessData.tables;
 		if (args.extractTables && args.extractTables.length > 0) {
-			filteredTables = accessData.tables.filter((table) =>
-				args.extractTables?.includes(table.name),
-			);
+			filteredTables = accessData.tables.filter((table) => args.extractTables?.includes(table.name));
 		}
 
 		// Generate oil & gas specific insights
@@ -922,17 +789,13 @@ async function processAccessDatabaseData(args: {
 					name: field.name,
 					type: field.type,
 					required: field.required,
-					completeness:
-						field.validValues / (field.validValues + field.nullValues) || 0,
+					completeness: field.validValues / (field.validValues + field.nullValues) || 0,
 				})),
 				statistics: table.statistics,
 			})),
 			qualityMetrics: accessData.qualityMetrics,
 			oilGasInsights: oilGasInsights,
-			recommendations: generateDatabaseRecommendations(
-				accessData,
-				filteredTables,
-			),
+			recommendations: generateDatabaseRecommendations(accessData, filteredTables),
 			metadata: accessData.metadata,
 		};
 
@@ -943,9 +806,7 @@ async function processAccessDatabaseData(args: {
 }
 
 // Generate production insights from database tables
-async function generateProductionInsights(
-	tables: any[],
-): Promise<Record<string, unknown>> {
+async function generateProductionInsights(tables: any[]): Promise<Record<string, unknown>> {
 	const insights = {
 		wellCount: 0,
 		productionTables: [] as string[],
@@ -957,9 +818,7 @@ async function generateProductionInsights(
 	// Look for common oil & gas tables
 	const wellTable = tables.find((t) => t.name.toLowerCase().includes("well"));
 	const prodTable = tables.find(
-		(t) =>
-			t.name.toLowerCase().includes("production") ||
-			t.name.toLowerCase().includes("prod"),
+		(t) => t.name.toLowerCase().includes("production") || t.name.toLowerCase().includes("prod"),
 	);
 	const testTable = tables.find((t) => t.name.toLowerCase().includes("test"));
 
@@ -979,75 +838,50 @@ async function generateProductionInsights(
 	}
 
 	// Calculate overall data completeness
-	const totalRecords = tables.reduce(
-		(sum, table) => sum + table.recordCount,
-		0,
-	);
+	const totalRecords = tables.reduce((sum, table) => sum + table.recordCount, 0);
 	if (totalRecords > 0) {
-		insights.completeness =
-			Math.round((totalRecords / (tables.length * 1000)) * 100) / 100; // Rough completeness estimate
+		insights.completeness = Math.round((totalRecords / (tables.length * 1000)) * 100) / 100; // Rough completeness estimate
 	}
 
 	return insights;
 }
 
 // Generate recommendations for database analysis
-function generateDatabaseRecommendations(
-	accessData: any,
-	tables: any[],
-): string[] {
+function generateDatabaseRecommendations(accessData: any, tables: any[]): string[] {
 	const recommendations = [];
 
 	if (accessData.qualityMetrics.completeness < 0.7) {
-		recommendations.push(
-			"Database completeness below 70% - validate data integrity",
-		);
+		recommendations.push("Database completeness below 70% - validate data integrity");
 	}
 
 	if (accessData.qualityMetrics.accessibility < 1.0) {
-		recommendations.push(
-			"Database may have access restrictions - check permissions",
-		);
+		recommendations.push("Database may have access restrictions - check permissions");
 	}
 
 	if (tables.length === 0) {
-		recommendations.push(
-			"No tables extracted - verify file format and permissions",
-		);
+		recommendations.push("No tables extracted - verify file format and permissions");
 	}
 
 	// Look for common production database patterns
 	const hasWellData = tables.some((t) => t.name.toLowerCase().includes("well"));
-	const hasProductionData = tables.some((t) =>
-		t.name.toLowerCase().includes("production"),
-	);
+	const hasProductionData = tables.some((t) => t.name.toLowerCase().includes("production"));
 
 	if (hasWellData && hasProductionData) {
-		recommendations.push(
-			"Complete production database detected - suitable for analysis",
-		);
+		recommendations.push("Complete production database detected - suitable for analysis");
 	} else if (hasWellData) {
-		recommendations.push(
-			"Well information available - missing production history",
-		);
+		recommendations.push("Well information available - missing production history");
 	} else if (hasProductionData) {
 		recommendations.push("Production data available - missing well metadata");
 	}
 
 	// Version-specific recommendations
 	if (accessData.version === "2007+") {
-		recommendations.push(
-			"Modern Access format - full feature support available",
-		);
+		recommendations.push("Modern Access format - full feature support available");
 	} else {
-		recommendations.push(
-			"Legacy Access format - consider upgrading for enhanced features",
-		);
+		recommendations.push("Legacy Access format - consider upgrading for enhanced features");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard database analysis protocols applied"];
+	return recommendations.length > 0 ? recommendations : ["Standard database analysis protocols applied"];
 }
 
 // Process Document Data
@@ -1057,9 +891,7 @@ async function processDocumentData(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the document processor
-		const { processDocument } = await import(
-			"../../tools/document-processor.js"
-		);
+		const { processDocument } = await import("../../tools/document-processor.js");
 
 		// Process the document file
 		const documentData = await processDocument(args.filePath);
@@ -1070,10 +902,7 @@ async function processDocumentData(args: {
 		// Filter content based on extraction type
 		let filteredContent = documentData.content;
 		if (args.extractionType && args.extractionType !== "all") {
-			filteredContent = filterContentByType(
-				documentData.content,
-				args.extractionType,
-			);
+			filteredContent = filterContentByType(documentData.content, args.extractionType);
 		}
 
 		const analysis = {
@@ -1123,9 +952,7 @@ async function processDocumentData(args: {
 }
 
 // Generate geological insights from document content
-async function generateDocumentInsights(
-	documentData: any,
-): Promise<Record<string, unknown>> {
+async function generateDocumentInsights(documentData: any): Promise<Record<string, unknown>> {
 	const insights = {
 		documentType: "Unknown",
 		primaryFocus: [] as string[],
@@ -1153,15 +980,11 @@ async function generateDocumentInsights(
 
 	// Key findings based on extracted data
 	if (documentData.oilGasData.formations.length > 0) {
-		insights.keyFindings.push(
-			`Formations identified: ${documentData.oilGasData.formations.join(", ")}`,
-		);
+		insights.keyFindings.push(`Formations identified: ${documentData.oilGasData.formations.join(", ")}`);
 	}
 
 	if (documentData.oilGasData.wellNames.length > 0) {
-		insights.keyFindings.push(
-			`${documentData.oilGasData.wellNames.length} wells referenced`,
-		);
+		insights.keyFindings.push(`${documentData.oilGasData.wellNames.length} wells referenced`);
 	}
 
 	if (hasLegalTerms) {
@@ -1179,25 +1002,17 @@ async function generateDocumentInsights(
 
 	// Actionable items based on content
 	if (documentData.qualityMetrics.dataExtraction > 0.7) {
-		insights.actionableItems.push(
-			"Sufficient data for analysis - proceed with detailed review",
-		);
+		insights.actionableItems.push("Sufficient data for analysis - proceed with detailed review");
 	} else {
-		insights.actionableItems.push(
-			"Limited extractable data - consider manual review",
-		);
+		insights.actionableItems.push("Limited extractable data - consider manual review");
 	}
 
 	if (hasEconomicData) {
-		insights.actionableItems.push(
-			"Economic data available for investment analysis",
-		);
+		insights.actionableItems.push("Economic data available for investment analysis");
 	}
 
 	if (hasTechnicalSpecs) {
-		insights.actionableItems.push(
-			"Technical specifications available for engineering review",
-		);
+		insights.actionableItems.push("Technical specifications available for engineering review");
 	}
 
 	return insights;
@@ -1209,25 +1024,15 @@ function filterContentByType(content: any, extractionType: string): any {
 
 	switch (extractionType) {
 		case "technical":
-			filtered.sections = content.sections.filter(
-				(s: any) => s.type === "technical",
-			);
-			filtered.tables = content.tables.filter(
-				(t: any) => t.type === "technical",
-			);
+			filtered.sections = content.sections.filter((s: any) => s.type === "technical");
+			filtered.tables = content.tables.filter((t: any) => t.type === "technical");
 			break;
 		case "financial":
-			filtered.sections = content.sections.filter(
-				(s: any) => s.type === "financial",
-			);
-			filtered.tables = content.tables.filter(
-				(t: any) => t.type === "financial",
-			);
+			filtered.sections = content.sections.filter((s: any) => s.type === "financial");
+			filtered.tables = content.tables.filter((t: any) => t.type === "financial");
 			break;
 		case "summary":
-			filtered.sections = content.sections.filter(
-				(s: any) => s.type === "executive_summary",
-			);
+			filtered.sections = content.sections.filter((s: any) => s.type === "executive_summary");
 			break;
 	}
 
@@ -1239,53 +1044,35 @@ function generateDocumentRecommendations(documentData: any): string[] {
 	const recommendations = [];
 
 	if (documentData.qualityMetrics.completeness < 0.7) {
-		recommendations.push(
-			"Document completeness below 70% - may be missing key sections",
-		);
+		recommendations.push("Document completeness below 70% - may be missing key sections");
 	}
 
 	if (documentData.qualityMetrics.dataExtraction < 0.6) {
-		recommendations.push(
-			"Low data extraction rate - consider manual review for critical information",
-		);
+		recommendations.push("Low data extraction rate - consider manual review for critical information");
 	}
 
 	if (documentData.oilGasData.wellNames.length === 0) {
-		recommendations.push(
-			"No well names detected - verify document contains well-specific data",
-		);
+		recommendations.push("No well names detected - verify document contains well-specific data");
 	}
 
 	if (documentData.oilGasData.economicData.length === 0) {
-		recommendations.push(
-			"No economic data extracted - check for financial tables or metrics",
-		);
+		recommendations.push("No economic data extracted - check for financial tables or metrics");
 	}
 
 	// Format-specific recommendations
 	if (documentData.format === "PDF") {
-		recommendations.push(
-			"PDF format - text extraction may vary based on document quality",
-		);
+		recommendations.push("PDF format - text extraction may vary based on document quality");
 	} else if (documentData.format === "DOCX") {
-		recommendations.push(
-			"Word document - structured data extraction available",
-		);
+		recommendations.push("Word document - structured data extraction available");
 	} else if (documentData.format === "PPTX") {
-		recommendations.push(
-			"PowerPoint format - focus on charts and summary data",
-		);
+		recommendations.push("PowerPoint format - focus on charts and summary data");
 	}
 
 	if (documentData.metadata.isPasswordProtected) {
-		recommendations.push(
-			"Password protected document - ensure proper access permissions",
-		);
+		recommendations.push("Password protected document - ensure proper access permissions");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard document analysis protocols applied"];
+	return recommendations.length > 0 ? recommendations : ["Standard document analysis protocols applied"];
 }
 
 // Process Seismic Data Analysis
@@ -1295,9 +1082,7 @@ async function processSeismicAnalysis(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the seismic processor
-		const { processSeismicFile } = await import(
-			"../../tools/seismic-processor.js"
-		);
+		const { processSeismicFile } = await import("../../tools/seismic-processor.js");
 
 		// Process the seismic file
 		const seismicData = await processSeismicFile(args.filePath);
@@ -1308,10 +1093,7 @@ async function processSeismicAnalysis(args: {
 		// Filter analysis based on type
 		let filteredAnalysis = seismicData.oilGasAnalysis;
 		if (args.analysisType && args.analysisType !== "all") {
-			filteredAnalysis = filterSeismicAnalysis(
-				seismicData.oilGasAnalysis,
-				args.analysisType,
-			);
+			filteredAnalysis = filterSeismicAnalysis(seismicData.oilGasAnalysis, args.analysisType);
 		}
 
 		const analysis = {
@@ -1326,10 +1108,7 @@ async function processSeismicAnalysis(args: {
 				sampleInterval: `${seismicData.headers.binaryHeader.sampleInterval} microseconds`,
 				dataFormat: seismicData.metadata.dataFormat,
 				revision: seismicData.metadata.revision,
-				measurementSystem:
-					seismicData.headers.binaryHeader.measurementSystem === 1
-						? "meters"
-						: "feet",
+				measurementSystem: seismicData.headers.binaryHeader.measurementSystem === 1 ? "meters" : "feet",
 			},
 			seismicAnalysis: {
 				structuralFeatures: filteredAnalysis.structuralFeatures,
@@ -1350,9 +1129,7 @@ async function processSeismicAnalysis(args: {
 }
 
 // Generate geological insights from seismic data
-async function generateSeismicInsights(
-	seismicData: any,
-): Promise<Record<string, unknown>> {
+async function generateSeismicInsights(seismicData: any): Promise<Record<string, unknown>> {
 	const insights = {
 		structuralInterpretation: "Preliminary analysis",
 		hydrocarbonProspects: [] as string[],
@@ -1369,8 +1146,7 @@ async function generateSeismicInsights(
 
 		if (horizons > 0) {
 			insights.structuralInterpretation = `${horizons} horizon(s) identified`;
-			insights.reservoirCharacteristics =
-				"Continuous reflectors suggest potential reservoir presence";
+			insights.reservoirCharacteristics = "Continuous reflectors suggest potential reservoir presence";
 		}
 
 		if (faults > 0) {
@@ -1385,37 +1161,23 @@ async function generateSeismicInsights(
 		const hcIndicators = indicators.filter((i: any) => i.hydrocarbon_indicator);
 
 		if (hcIndicators.length > 0) {
-			insights.hydrocarbonProspects.push(
-				`${hcIndicators.length} hydrocarbon indicator(s) identified`,
-			);
-			insights.drillingRecommendations.push(
-				"Consider targeted drilling on bright spots",
-			);
+			insights.hydrocarbonProspects.push(`${hcIndicators.length} hydrocarbon indicator(s) identified`);
+			insights.drillingRecommendations.push("Consider targeted drilling on bright spots");
 		}
 
-		const brightSpots = indicators.filter(
-			(i: any) => i.type === "bright_spot",
-		).length;
+		const brightSpots = indicators.filter((i: any) => i.type === "bright_spot").length;
 		if (brightSpots > 0) {
-			insights.hydrocarbonProspects.push(
-				`${brightSpots} bright spot(s) for detailed analysis`,
-			);
+			insights.hydrocarbonProspects.push(`${brightSpots} bright spot(s) for detailed analysis`);
 		}
 	}
 
 	// Quality-based recommendations
 	if (seismicData.qualityMetrics.confidence > 0.8) {
-		insights.drillingRecommendations.push(
-			"High quality seismic - suitable for detailed prospect evaluation",
-		);
+		insights.drillingRecommendations.push("High quality seismic - suitable for detailed prospect evaluation");
 	} else if (seismicData.qualityMetrics.confidence > 0.6) {
-		insights.drillingRecommendations.push(
-			"Moderate quality - additional processing may improve resolution",
-		);
+		insights.drillingRecommendations.push("Moderate quality - additional processing may improve resolution");
 	} else {
-		insights.drillingRecommendations.push(
-			"Limited quality - consider reprocessing or additional acquisition",
-		);
+		insights.drillingRecommendations.push("Limited quality - consider reprocessing or additional acquisition");
 		insights.riskAssessment = "High due to data quality limitations";
 	}
 
@@ -1441,18 +1203,14 @@ function filterSeismicAnalysis(analysis: any, analysisType: string): any {
 			return {
 				amplitudeAnalysis: analysis.amplitudeAnalysis,
 				interpretationNotes: analysis.interpretationNotes.filter(
-					(note: string) =>
-						note.toLowerCase().includes("amplitude") ||
-						note.toLowerCase().includes("bright"),
+					(note: string) => note.toLowerCase().includes("amplitude") || note.toLowerCase().includes("bright"),
 				),
 			};
 		case "reservoir":
 			return {
 				reservoirIndicators: analysis.reservoirIndicators,
 				interpretationNotes: analysis.interpretationNotes.filter(
-					(note: string) =>
-						note.toLowerCase().includes("reservoir") ||
-						note.toLowerCase().includes("hydrocarbon"),
+					(note: string) => note.toLowerCase().includes("reservoir") || note.toLowerCase().includes("hydrocarbon"),
 				),
 			};
 		default:
@@ -1465,52 +1223,33 @@ function generateSeismicRecommendations(seismicData: any): string[] {
 	const recommendations = [];
 
 	if (seismicData.qualityMetrics.traceCompleteness < 0.9) {
-		recommendations.push(
-			"Trace completeness below 90% - verify data integrity",
-		);
+		recommendations.push("Trace completeness below 90% - verify data integrity");
 	}
 
 	if (seismicData.qualityMetrics.amplitudeConsistency < 0.7) {
-		recommendations.push(
-			"Low amplitude consistency - consider amplitude balancing",
-		);
+		recommendations.push("Low amplitude consistency - consider amplitude balancing");
 	}
 
 	if (seismicData.qualityMetrics.spatialCoverage < 0.8) {
-		recommendations.push(
-			"Limited spatial coverage - coordinate information may be incomplete",
-		);
+		recommendations.push("Limited spatial coverage - coordinate information may be incomplete");
 	}
 
 	if (seismicData.oilGasAnalysis.reservoirIndicators.length === 0) {
-		recommendations.push(
-			"No reservoir indicators detected - expand analysis parameters",
-		);
+		recommendations.push("No reservoir indicators detected - expand analysis parameters");
 	}
 
 	// Format-specific recommendations
 	if (seismicData.format === "SEGY") {
-		recommendations.push(
-			"SEGY format - industry standard with full header support",
-		);
+		recommendations.push("SEGY format - industry standard with full header support");
 	} else if (seismicData.format === "SGY") {
-		recommendations.push(
-			"SGY format - verify byte order and data format settings",
-		);
+		recommendations.push("SGY format - verify byte order and data format settings");
 	}
 
-	if (
-		seismicData.metadata.revision &&
-		parseFloat(seismicData.metadata.revision) >= 2.0
-	) {
-		recommendations.push(
-			"Modern SEGY revision - extended header features available",
-		);
+	if (seismicData.metadata.revision && parseFloat(seismicData.metadata.revision) >= 2.0) {
+		recommendations.push("Modern SEGY revision - extended header features available");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard seismic interpretation protocols applied"];
+	return recommendations.length > 0 ? recommendations : ["Standard seismic interpretation protocols applied"];
 }
 
 // Process ARIES Database Analysis
@@ -1520,9 +1259,7 @@ async function processAriesAnalysis(args: {
 }): Promise<Record<string, unknown>> {
 	try {
 		// Import the ARIES processor
-		const { processAriesDatabase } = await import(
-			"../../tools/aries-processor.js"
-		);
+		const { processAriesDatabase } = await import("../../tools/aries-processor.js");
 
 		// Process the ARIES database
 		const ariesData = await processAriesDatabase(args.filePath);
@@ -1533,10 +1270,7 @@ async function processAriesAnalysis(args: {
 		// Filter analysis based on type
 		let filteredAnalysis = ariesData.oilGasAnalysis;
 		if (args.analysisType && args.analysisType !== "all") {
-			filteredAnalysis = filterAriesAnalysis(
-				ariesData.oilGasAnalysis,
-				args.analysisType,
-			);
+			filteredAnalysis = filterAriesAnalysis(ariesData.oilGasAnalysis, args.analysisType);
 		}
 
 		const analysis = {
@@ -1567,9 +1301,7 @@ async function processAriesAnalysis(args: {
 }
 
 // Generate geological insights from ARIES data
-async function generateAriesInsights(
-	ariesData: any,
-): Promise<Record<string, unknown>> {
+async function generateAriesInsights(ariesData: any): Promise<Record<string, unknown>> {
 	const insights = {
 		portfolioOverview: "Analysis in progress",
 		topPerformers: [] as string[],
@@ -1587,58 +1319,39 @@ async function generateAriesInsights(
 	// Top performers
 	if (portfolio.topPerformingWells.length > 0) {
 		insights.topPerformers = portfolio.topPerformingWells.map(
-			(well: any) =>
-				`${well.wellName}: NPV $${(well.npv / 1000000).toFixed(1)}M, IRR ${well.irr.toFixed(1)}%`,
+			(well: any) => `${well.wellName}: NPV $${(well.npv / 1000000).toFixed(1)}M, IRR ${well.irr.toFixed(1)}%`,
 		);
 	}
 
 	// Investment guidance based on economics
 	if (economics.irr > 20) {
-		insights.investmentGuidance.push(
-			"Strong IRR performance - consider portfolio expansion",
-		);
+		insights.investmentGuidance.push("Strong IRR performance - consider portfolio expansion");
 	} else if (economics.irr > 15) {
-		insights.investmentGuidance.push(
-			"Moderate returns - selective development recommended",
-		);
+		insights.investmentGuidance.push("Moderate returns - selective development recommended");
 	} else {
-		insights.investmentGuidance.push(
-			"Below target returns - reevaluate economic assumptions",
-		);
+		insights.investmentGuidance.push("Below target returns - reevaluate economic assumptions");
 	}
 
 	if (economics.payout < 24) {
-		insights.investmentGuidance.push(
-			"Fast payout period - favorable for cash flow",
-		);
+		insights.investmentGuidance.push("Fast payout period - favorable for cash flow");
 	}
 
 	// Risk assessment
 	if (portfolio.portfolioRisk === "high") {
-		insights.riskFactors.push(
-			"High portfolio risk - diversification recommended",
-		);
+		insights.riskFactors.push("High portfolio risk - diversification recommended");
 	}
 
 	if (economics.operatingMargin < 30) {
-		insights.riskFactors.push(
-			"Operating margins below 30% - cost optimization needed",
-		);
+		insights.riskFactors.push("Operating margins below 30% - cost optimization needed");
 	}
 
 	// Opportunity identification
-	if (
-		ariesData.oilGasAnalysis.reservesAssessment.reservesByCategory.probable > 0
-	) {
-		insights.opportunityAreas.push(
-			"Probable reserves available for development",
-		);
+	if (ariesData.oilGasAnalysis.reservesAssessment.reservesByCategory.probable > 0) {
+		insights.opportunityAreas.push("Probable reserves available for development");
 	}
 
 	if (ariesData.wells.filter((w: any) => w.status === "shut_in").length > 0) {
-		insights.opportunityAreas.push(
-			"Shut-in wells present - recompletion opportunities",
-		);
+		insights.opportunityAreas.push("Shut-in wells present - recompletion opportunities");
 	}
 
 	return insights;
@@ -1672,62 +1385,44 @@ function generateAriesRecommendations(ariesData: any): string[] {
 	const recommendations = [];
 
 	if (ariesData.qualityMetrics.dataCompleteness < 0.8) {
-		recommendations.push(
-			"Data completeness below 80% - verify forecast and economic data",
-		);
+		recommendations.push("Data completeness below 80% - verify forecast and economic data");
 	}
 
 	if (ariesData.qualityMetrics.forecastReliability < 0.7) {
-		recommendations.push(
-			"Forecast reliability below 70% - review decline curve fits",
-		);
+		recommendations.push("Forecast reliability below 70% - review decline curve fits");
 	}
 
 	if (ariesData.qualityMetrics.economicConsistency < 0.6) {
-		recommendations.push(
-			"Economic inconsistency detected - standardize assumptions",
-		);
+		recommendations.push("Economic inconsistency detected - standardize assumptions");
 	}
 
 	// Portfolio-specific recommendations
 	const economics = ariesData.oilGasAnalysis.economicEvaluation;
 	if (economics.irr < 15) {
-		recommendations.push(
-			"IRR below 15% threshold - reevaluate project economics",
-		);
+		recommendations.push("IRR below 15% threshold - reevaluate project economics");
 	}
 
 	if (economics.payout > 36) {
-		recommendations.push(
-			"Payout exceeds 36 months - consider capital efficiency improvements",
-		);
+		recommendations.push("Payout exceeds 36 months - consider capital efficiency improvements");
 	}
 
 	const portfolio = ariesData.oilGasAnalysis.portfolioSummary;
 	if (portfolio.portfolioRisk === "high") {
-		recommendations.push(
-			"High portfolio risk - implement risk mitigation strategies",
-		);
+		recommendations.push("High portfolio risk - implement risk mitigation strategies");
 	}
 
 	// Version-specific recommendations
 	if (ariesData.version === "5000+") {
 		recommendations.push("Modern ARIES version - full feature set available");
 	} else {
-		recommendations.push(
-			"Older ARIES version - consider upgrade for enhanced capabilities",
-		);
+		recommendations.push("Older ARIES version - consider upgrade for enhanced capabilities");
 	}
 
 	if (ariesData.metadata.licenseRequired) {
-		recommendations.push(
-			"Commercial ARIES license required - ensure compliance",
-		);
+		recommendations.push("Commercial ARIES license required - ensure compliance");
 	}
 
-	return recommendations.length > 0
-		? recommendations
-		: ["Standard ARIES analysis protocols applied"];
+	return recommendations.length > 0 ? recommendations : ["Standard ARIES analysis protocols applied"];
 }
 
 // Create the server using factory

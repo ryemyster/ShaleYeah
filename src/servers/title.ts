@@ -9,11 +9,7 @@
 
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 // Define server template with no duplication
 const titleServerTemplate: ServerTemplate = {
@@ -53,12 +49,7 @@ const titleServerTemplate: ServerTemplate = {
 						encumbrances: Math.floor(Math.random() * 3),
 						ownershipPercentage: 100 - Math.random() * 25,
 						legalDescription: "Legal description based on examination",
-						riskLevel:
-							Math.random() > 0.7
-								? "high"
-								: Math.random() > 0.4
-									? "medium"
-									: "low",
+						riskLevel: Math.random() > 0.7 ? "high" : Math.random() > 0.4 ? "medium" : "low",
 					},
 					confidence: ServerUtils.calculateConfidence(0.9, 0.8),
 				};

@@ -85,11 +85,7 @@ export class LASParser {
 			const wellInfo = this.parseWellSection(sections.well || "");
 			const curves = this.parseCurveSection(sections.curve || "");
 			const parameters = this.parseParameterSection(sections.parameter || "");
-			const dataMatrix = this.parseDataSection(
-				sections.data || "",
-				curves,
-				header.wrap,
-			);
+			const dataMatrix = this.parseDataSection(sections.data || "", curves, header.wrap);
 
 			// Calculate depth range
 			const depthRange = this.calculateDepthRange(dataMatrix, curves);
@@ -286,9 +282,7 @@ export class LASParser {
 		description: string;
 	} | null {
 		// LAS format: MNEM.UNIT VALUE : DESCRIPTION
-		const match = line.match(
-			/^([A-Za-z0-9_]+)(?:\.([^.\s]*))?\s+([^:]*?)\s*:\s*(.*)$/,
-		);
+		const match = line.match(/^([A-Za-z0-9_]+)(?:\.([^.\s]*))?\s+([^:]*?)\s*:\s*(.*)$/);
 
 		if (!match) return null;
 
@@ -300,11 +294,7 @@ export class LASParser {
 		};
 	}
 
-	private parseDataSection(
-		content: string,
-		curves: LASCurve[],
-		wrap: boolean,
-	): number[][] {
+	private parseDataSection(content: string, curves: LASCurve[], wrap: boolean): number[][] {
 		const lines = content.split("\n");
 		const data: number[][] = [];
 		let currentRow: number[] = [];
@@ -372,9 +362,7 @@ export class LASParser {
 		}
 
 		// First curve is typically depth
-		const depthValues = data
-			.map((row) => row[0])
-			.filter((val) => val !== this.nullValue);
+		const depthValues = data.map((row) => row[0]).filter((val) => val !== this.nullValue);
 
 		if (depthValues.length === 0) {
 			return { start: 0, stop: 0, step: 0, unit: curves[0]?.unit || "" };
@@ -406,10 +394,7 @@ export class LASParser {
 		};
 	}
 
-	private populateCurveValues(
-		curves: LASCurve[],
-		data: number[][],
-	): LASCurve[] {
+	private populateCurveValues(curves: LASCurve[], data: number[][]): LASCurve[] {
 		return curves.map((curve, index) => ({
 			...curve,
 			values: data.map((row) => row[index] || this.nullValue),
@@ -427,23 +412,14 @@ export class LASParser {
 		dataGaps: number;
 	} {
 		const totalCells = data.length * curves.length;
-		const nullCells = data
-			.flat()
-			.filter((val) => val === this.nullValue).length;
-		const completeness =
-			totalCells > 0 ? (totalCells - nullCells) / totalCells : 0;
+		const nullCells = data.flat().filter((val) => val === this.nullValue).length;
+		const completeness = totalCells > 0 ? (totalCells - nullCells) / totalCells : 0;
 
 		// Check for common curve types
 		const curveNames = curves.map((c) => c.mnemonic.toLowerCase());
-		const hasGammaRay = curveNames.some((name) =>
-			["gr", "gamma", "gamma_ray", "cgr"].includes(name),
-		);
-		const hasResistivity = curveNames.some((name) =>
-			["rt", "res", "resistivity", "lld", "lls", "ild"].includes(name),
-		);
-		const hasPorosity = curveNames.some((name) =>
-			["por", "poro", "porosity", "nphi", "phie"].includes(name),
-		);
+		const hasGammaRay = curveNames.some((name) => ["gr", "gamma", "gamma_ray", "cgr"].includes(name));
+		const hasResistivity = curveNames.some((name) => ["rt", "res", "resistivity", "lld", "lls", "ild"].includes(name));
+		const hasPorosity = curveNames.some((name) => ["por", "poro", "porosity", "nphi", "phie"].includes(name));
 
 		// Count data gaps (consecutive null values)
 		let dataGaps = 0;
@@ -502,12 +478,9 @@ export class LASParser {
 
 		const min = Math.min(...validValues);
 		const max = Math.max(...validValues);
-		const mean =
-			validValues.reduce((sum, val) => sum + val, 0) / validValues.length;
+		const mean = validValues.reduce((sum, val) => sum + val, 0) / validValues.length;
 
-		const variance =
-			validValues.reduce((sum, val) => sum + (val - mean) ** 2, 0) /
-			validValues.length;
+		const variance = validValues.reduce((sum, val) => sum + (val - mean) ** 2, 0) / validValues.length;
 		const stdDev = Math.sqrt(variance);
 
 		return {

@@ -4,14 +4,16 @@ Claude Code is the dev/QA organization for SHALE YEAH's MCP-powered oil & gas in
 
 ## Architecture
 
-**14 active MCP servers** with Roman personas in dual modes:
-- **Demo** (`npm run demo`) - Mock data, $0 cost, ~6s execution
-- **Production** (`npm run prod`) - Real data + Anthropic API
+**Agent OS Kernel** (`src/kernel/`) wraps **14 MCP servers** with Roman personas:
+- **Kernel** routes all execution: discovery, parallel scatter-gather, bundles, sessions, auth, audit
+- **Demo** (`npm run demo`) - Mock data, $0 cost, ~6s via kernel
+- **Production** (`npm run prod`) - Real data + Anthropic API via kernel
 
 **Core Servers:** `geowiz`, `econobot`, `curve-smith`, `decision`, `reporter`, `risk-analysis`, `research`
 **Support:** `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test`
 
 All inherit `MCPServer` (`src/shared/mcp-server.ts`) with file processing, personas, tools, validation.
+`ShaleYeahMCPClient` wraps Kernel internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()`.
 
 ## Development
 
@@ -43,9 +45,10 @@ All inherit `MCPServer` (`src/shared/mcp-server.ts`) with file processing, perso
 
 ## Key Files
 
-- `src/main.ts` - Production CLI
-- `src/demo-runner.ts` - Demo orchestration
-- `src/mcp-client.ts` - Server coordination
+- `src/main.ts` - Production CLI (creates kernel session)
+- `src/demo-runner.ts` - Demo orchestration (creates kernel session)
+- `src/mcp-client.ts` - Server coordination (wraps Kernel, delegates to kernel.fullAnalysis)
+- `src/kernel/` - Agent OS kernel (registry, executor, sessions, middleware)
 - `src/shared/mcp-server.ts` - Base class
 - `docs/` - Documentation
 

@@ -4,7 +4,6 @@
  * Tests full system workflows and cross-component coordination
  */
 
-import fs from "node:fs/promises";
 import path from "node:path";
 
 // Integration test scenarios covering complete workflows
@@ -16,7 +15,7 @@ const integrationScenarios = [
 		inputFiles: ["well_data.las", "production.xlsx", "economics.csv", "lease_boundary.geojson"],
 		expectedOutputs: ["executive_summary.md", "investment_recommendation.json", "risk_analysis.pdf"],
 		workflow: "Data ingestion → Geological analysis → Production forecasting → Economic modeling → Report generation",
-		confidence: 0.90
+		confidence: 0.9,
 	},
 	{
 		name: "multi-server-coordination",
@@ -25,7 +24,7 @@ const integrationScenarios = [
 		inputFiles: ["prospect_data.json"],
 		expectedOutputs: ["coordinated_analysis.json", "server_communication.log"],
 		workflow: "Server initialization → Multi-server analysis → Result coordination → Final synthesis",
-		confidence: 0.85
+		confidence: 0.85,
 	},
 	{
 		name: "file-processing-pipeline",
@@ -34,7 +33,7 @@ const integrationScenarios = [
 		inputFiles: ["data.las", "seismic.segy", "gis.shp", "economics.xlsx", "report.pdf"],
 		expectedOutputs: ["processed_data.json", "quality_metrics.json", "pipeline_status.log"],
 		workflow: "Format detection → File processing → Quality assessment → Data integration",
-		confidence: 0.95
+		confidence: 0.95,
 	},
 	{
 		name: "error-recovery-workflow",
@@ -43,7 +42,7 @@ const integrationScenarios = [
 		inputFiles: ["corrupt_data.las", "invalid_format.xyz", "empty_file.csv"],
 		expectedOutputs: ["error_report.json", "recovery_actions.log", "system_status.json"],
 		workflow: "Error detection → Graceful handling → Recovery actions → Status reporting",
-		confidence: 0.80
+		confidence: 0.8,
 	},
 	{
 		name: "performance-stress-test",
@@ -52,13 +51,11 @@ const integrationScenarios = [
 		inputFiles: ["large_dataset_1gb.las", "complex_seismic.segy", "huge_database.accdb"],
 		expectedOutputs: ["performance_metrics.json", "memory_usage.log", "throughput_stats.json"],
 		workflow: "Load generation → Resource monitoring → Performance analysis → Optimization recommendations",
-		confidence: 0.75
-	}
+		confidence: 0.75,
+	},
 ];
 
 class FinalIntegrationTester {
-	private testOutputDir = "tests/temp/final-integration";
-
 	async runAllTests(): Promise<void> {
 		console.log("🧪 Starting Final Integration Test Suite (100% Coverage Validation)\n");
 
@@ -73,8 +70,8 @@ class FinalIntegrationTester {
 				totalComponents: 0,
 				testedComponents: 0,
 				workflows: 0,
-				integrations: 0
-			}
+				integrations: 0,
+			},
 		};
 
 		try {
@@ -95,7 +92,7 @@ class FinalIntegrationTester {
 			console.error("❌ Final integration test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -111,34 +108,34 @@ class FinalIntegrationTester {
 
 			// Test scenario initialization
 			this.assert(mockExecution.name === scenario.name, `${scenario.name} should initialize correctly`);
-			this.assert(mockExecution.components.length === scenario.components.length,
-				`${scenario.name} should have all required components`);
+			this.assert(
+				mockExecution.components.length === scenario.components.length,
+				`${scenario.name} should have all required components`,
+			);
 
 			// Test input file processing
 			for (const inputFile of scenario.inputFiles) {
 				const processResult = await mockExecution.processFile(inputFile);
-				this.assert(processResult.success === true,
-					`${scenario.name} should process ${inputFile} successfully`);
+				this.assert(processResult.success === true, `${scenario.name} should process ${inputFile} successfully`);
 			}
 
 			// Test workflow execution
 			const workflowResult = await mockExecution.executeWorkflow();
-			this.assert(workflowResult.success === true,
-				`${scenario.name} workflow should execute successfully`);
-			this.assert(workflowResult.confidence >= scenario.confidence - 0.1,
-				`${scenario.name} should meet confidence threshold`);
+			this.assert(workflowResult.success === true, `${scenario.name} workflow should execute successfully`);
+			this.assert(
+				workflowResult.confidence >= scenario.confidence - 0.1,
+				`${scenario.name} should meet confidence threshold`,
+			);
 
 			// Test output generation
 			for (const expectedOutput of scenario.expectedOutputs) {
 				const outputResult = await mockExecution.generateOutput(expectedOutput);
-				this.assert(outputResult.success === true,
-					`${scenario.name} should generate ${expectedOutput}`);
+				this.assert(outputResult.success === true, `${scenario.name} should generate ${expectedOutput}`);
 			}
 
 			// Test component coordination
 			const coordinationResult = await mockExecution.testComponentCoordination();
-			this.assert(coordinationResult.success === true,
-				`${scenario.name} component coordination should work`);
+			this.assert(coordinationResult.success === true, `${scenario.name} component coordination should work`);
 
 			console.log(`  ✅ ${scenario.name.toUpperCase()} scenario validation complete`);
 			results.passed++;
@@ -147,7 +144,7 @@ class FinalIntegrationTester {
 				components: scenario.components.length,
 				inputs: scenario.inputFiles.length,
 				outputs: scenario.expectedOutputs.length,
-				confidence: workflowResult.confidence
+				confidence: workflowResult.confidence,
 			});
 
 			// Update metrics
@@ -155,7 +152,6 @@ class FinalIntegrationTester {
 			results.overallMetrics.testedComponents += scenario.components.length;
 			results.overallMetrics.workflows++;
 			results.overallMetrics.integrations++;
-
 		} catch (error) {
 			const errorMsg = `${scenario.name} scenario test failed: ${error}`;
 			console.error(`  ❌ ${errorMsg}`);
@@ -181,7 +177,7 @@ class FinalIntegrationTester {
 					processed: true,
 					format: path.extname(filename),
 					size: Math.floor(Math.random() * 1000000), // Mock file size
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
 				};
 			},
 
@@ -193,7 +189,7 @@ class FinalIntegrationTester {
 					confidence: scenario.confidence + (Math.random() * 0.1 - 0.05), // Slight variance
 					steps: scenario.components.length,
 					duration: Math.floor(Math.random() * 5000), // Mock duration in ms
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
 				};
 			},
 
@@ -204,7 +200,7 @@ class FinalIntegrationTester {
 					generated: true,
 					format: path.extname(outputName) || "unknown",
 					size: Math.floor(Math.random() * 100000), // Mock output size
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
 				};
 			},
 
@@ -213,11 +209,11 @@ class FinalIntegrationTester {
 					success: true,
 					scenario: scenario.name,
 					componentsCoordinated: scenario.components.length,
-					communicationLinks: scenario.components.length * (scenario.components.length - 1) / 2,
+					communicationLinks: (scenario.components.length * (scenario.components.length - 1)) / 2,
 					coordinationHealth: 0.95,
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
 				};
-			}
+			},
 		};
 	}
 
@@ -235,7 +231,7 @@ class FinalIntegrationTester {
 				"tools-utilities": true,
 				"integration-workflows": true,
 				"error-handling": true,
-				"cross-server-communication": true
+				"cross-server-communication": true,
 			};
 
 			let coveredComponents = 0;
@@ -260,7 +256,7 @@ class FinalIntegrationTester {
 				mcpDomainServerTests: 16,
 				fileProcessorTests: 7,
 				remainingToolTests: 10,
-				integrationTests: 5
+				integrationTests: 5,
 			};
 
 			const totalTests = Object.values(testSuiteMetrics).reduce((sum, count) => sum + count, 0);
@@ -296,7 +292,7 @@ class FinalIntegrationTester {
 				"security-validated": true,
 				"documentation-complete": true,
 				"test-coverage-100": true,
-				"integration-validated": true
+				"integration-validated": true,
 			};
 
 			let metCriteria = 0;
@@ -320,10 +316,10 @@ class FinalIntegrationTester {
 				dependenciesResolved: true,
 				environmentSetup: true,
 				monitoringEnabled: true,
-				rollbackPlanReady: true
+				rollbackPlanReady: true,
 			};
 
-			const deploymentReady = Object.values(deploymentChecks).every(check => check);
+			const deploymentReady = Object.values(deploymentChecks).every((check) => check);
 			this.assert(deploymentReady === true, "Deployment should be ready");
 
 			console.log(`    🚀 Production Readiness: ${readinessPercentage}%`);
@@ -365,8 +361,9 @@ class FinalIntegrationTester {
 			const passed = results.coverage.get(scenario.name);
 			const status = passed ? "✅" : "❌";
 			const scenarioResult = results.scenarioResults.get(scenario.name);
-			const details = scenarioResult ?
-				` (${scenarioResult.components}C/${scenarioResult.inputs}I/${scenarioResult.outputs}O)` : "";
+			const details = scenarioResult
+				? ` (${scenarioResult.components}C/${scenarioResult.inputs}I/${scenarioResult.outputs}O)`
+				: "";
 			console.log(`  ${status} ${scenario.name.toUpperCase()}${details}`);
 			console.log(`      ${scenario.description}`);
 		}

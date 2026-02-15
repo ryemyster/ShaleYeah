@@ -72,15 +72,10 @@ export class GISParser {
 			const prjPath = `${basePath}.prj`;
 
 			// Verify required files exist
-			const [shpExists, dbfExists] = await Promise.all([
-				this.fileExists(shpPath),
-				this.fileExists(dbfPath),
-			]);
+			const [shpExists, dbfExists] = await Promise.all([this.fileExists(shpPath), this.fileExists(dbfPath)]);
 
 			if (!shpExists || !dbfExists) {
-				throw new Error(
-					"Missing required shapefile components (.shp and .dbf)",
-				);
+				throw new Error("Missing required shapefile components (.shp and .dbf)");
 			}
 
 			// Parse shapefile
@@ -158,14 +153,7 @@ export class GISParser {
 				};
 			} else if (
 				data.type &&
-				[
-					"Point",
-					"LineString",
-					"Polygon",
-					"MultiPoint",
-					"MultiLineString",
-					"MultiPolygon",
-				].includes(data.type)
+				["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon"].includes(data.type)
 			) {
 				// Single geometry
 				featureCollection = {
@@ -190,9 +178,7 @@ export class GISParser {
 			});
 
 			const bounds = this.calculateBounds(featureCollection.features);
-			const attributeFields = this.extractAttributeFields(
-				featureCollection.features,
-			);
+			const attributeFields = this.extractAttributeFields(featureCollection.features);
 			const coordinateSystem = this.extractCRS(featureCollection);
 			const stats = await fs.stat(filePath);
 
@@ -207,10 +193,7 @@ export class GISParser {
 					coordinateSystem,
 					fileSize: stats.size,
 					parseTime: Date.now() - startTime,
-					quality: this.assessGISQuality(
-						featureCollection.features,
-						coordinateSystem,
-					),
+					quality: this.assessGISQuality(featureCollection.features, coordinateSystem),
 				},
 			};
 		} catch (error) {
@@ -345,10 +328,7 @@ export class GISParser {
 		return "WGS84 (assumed)";
 	}
 
-	private async extractKMLFeatures(
-		element: any,
-		features: Feature[],
-	): Promise<void> {
+	private async extractKMLFeatures(element: any, features: Feature[]): Promise<void> {
 		// Extract placemarks
 		if (element.Placemark) {
 			for (const placemark of element.Placemark) {
@@ -388,9 +368,7 @@ export class GISParser {
 			let geometry: Geometry | null = null;
 
 			if (placemark.Point) {
-				const coords = this.parseKMLCoordinates(
-					placemark.Point[0].coordinates[0],
-				);
+				const coords = this.parseKMLCoordinates(placemark.Point[0].coordinates[0]);
 				if (coords.length > 0) {
 					geometry = {
 						type: "Point",
@@ -398,9 +376,7 @@ export class GISParser {
 					};
 				}
 			} else if (placemark.LineString) {
-				const coords = this.parseKMLCoordinates(
-					placemark.LineString[0].coordinates[0],
-				);
+				const coords = this.parseKMLCoordinates(placemark.LineString[0].coordinates[0]);
 				if (coords.length > 1) {
 					geometry = {
 						type: "LineString",
@@ -464,14 +440,9 @@ export class GISParser {
 		spatialIndex: boolean;
 		coordinateSystemDefined: boolean;
 	} {
-		const hasValidGeometry = features.every(
-			(feature) => feature.geometry?.type && feature.geometry.coordinates,
-		);
+		const hasValidGeometry = features.every((feature) => feature.geometry?.type && feature.geometry.coordinates);
 
-		const hasAttributes = features.some(
-			(feature) =>
-				feature.properties && Object.keys(feature.properties).length > 0,
-		);
+		const hasAttributes = features.some((feature) => feature.properties && Object.keys(feature.properties).length > 0);
 
 		const coordinateSystemDefined = coordinateSystem !== "Unknown";
 
@@ -486,11 +457,7 @@ export class GISParser {
 	/**
 	 * Convert between coordinate systems (basic implementation)
 	 */
-	transformCoordinates(
-		feature: Feature,
-		_fromCRS: string,
-		_toCRS: string,
-	): Feature {
+	transformCoordinates(feature: Feature, _fromCRS: string, _toCRS: string): Feature {
 		// This would require proj4 integration for full coordinate transformation
 		// For now, return the feature unchanged
 		return feature;
@@ -500,10 +467,7 @@ export class GISParser {
 	 * Calculate area of polygonal features
 	 */
 	calculateArea(feature: Feature): number {
-		if (
-			feature.geometry.type === "Polygon" ||
-			feature.geometry.type === "MultiPolygon"
-		) {
+		if (feature.geometry.type === "Polygon" || feature.geometry.type === "MultiPolygon") {
 			return turf.area(feature as GeoJSONFeature);
 		}
 		return 0;
@@ -513,10 +477,7 @@ export class GISParser {
 	 * Calculate length of linear features
 	 */
 	calculateLength(feature: Feature): number {
-		if (
-			feature.geometry.type === "LineString" ||
-			feature.geometry.type === "MultiLineString"
-		) {
+		if (feature.geometry.type === "LineString" || feature.geometry.type === "MultiLineString") {
 			return turf.length(feature as GeoJSONFeature, { units: "meters" });
 		}
 		return 0;

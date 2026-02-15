@@ -4,7 +4,6 @@
  * Covers the final 15% needed to achieve complete test coverage
  */
 
-import fs from "node:fs/promises";
 import path from "node:path";
 
 // Tool configurations for comprehensive testing
@@ -15,7 +14,7 @@ const toolConfigs = [
 		expectedFunctions: ["processAccessDatabase", "extractTables", "convertToCSV"],
 		inputTypes: [".mdb", ".accdb"],
 		outputFormat: "CSV files per table",
-		testData: { database: "test.accdb", tables: ["wells", "production", "economics"] }
+		testData: { database: "test.accdb", tables: ["wells", "production", "economics"] },
 	},
 	{
 		name: "curve-fit",
@@ -23,7 +22,7 @@ const toolConfigs = [
 		expectedFunctions: ["fitDeclineCurve", "calculateEUR", "generateForecast"],
 		inputTypes: [".csv", ".las"],
 		outputFormat: "Enhanced CSV with fitted curves",
-		testData: { curves: ["oil_rate", "gas_rate", "water_rate"], order: 2 }
+		testData: { curves: ["oil_rate", "gas_rate", "water_rate"], order: 2 },
 	},
 	{
 		name: "curve-qc",
@@ -31,7 +30,7 @@ const toolConfigs = [
 		expectedFunctions: ["calculateRMSE", "assessQuality", "generateQCReport"],
 		inputTypes: [".las", ".csv"],
 		outputFormat: "JSON with quality metrics",
-		testData: { curves: ["GR", "RHOB", "NPHI"], thresholds: { excellent: 0.95, good: 0.85 } }
+		testData: { curves: ["GR", "RHOB", "NPHI"], thresholds: { excellent: 0.95, good: 0.85 } },
 	},
 	{
 		name: "decline-curve-analysis",
@@ -39,7 +38,7 @@ const toolConfigs = [
 		expectedFunctions: ["analyzeDecline", "fitMultipleModels", "selectBestFit"],
 		inputTypes: [".csv", ".xlsx"],
 		outputFormat: "Analysis report with recommendations",
-		testData: { models: ["exponential", "hyperbolic", "harmonic"], confidence: 0.90 }
+		testData: { models: ["exponential", "hyperbolic", "harmonic"], confidence: 0.9 },
 	},
 	{
 		name: "las-parse",
@@ -47,7 +46,7 @@ const toolConfigs = [
 		expectedFunctions: ["parseLAS", "extractCurves", "validateHeader"],
 		inputTypes: [".las"],
 		outputFormat: "Structured JSON with curves and metadata",
-		testData: { version: "2.0", curves: ["DEPT", "GR", "RHOB"], units: "metric" }
+		testData: { version: "2.0", curves: ["DEPT", "GR", "RHOB"], units: "metric" },
 	},
 	{
 		name: "web-fetch",
@@ -55,8 +54,8 @@ const toolConfigs = [
 		expectedFunctions: ["fetchContent", "parseHTML", "extractData"],
 		inputTypes: [".url", ".api"],
 		outputFormat: "JSON with cleaned content",
-		testData: { urls: ["https://example.com"], format: "json", timeout: 5000 }
-	}
+		testData: { urls: ["https://example.com"], format: "json", timeout: 5000 },
+	},
 ];
 
 // Core utility configurations
@@ -68,7 +67,7 @@ const utilityConfigs = [
 		expectedClasses: ["FileIntegrationManager"],
 		expectedMethods: ["processFile", "detectFormat", "validateFile", "getProcessors"],
 		supportedFormats: 20,
-		testData: { formats: [".las", ".xlsx", ".geojson", ".segy", ".pdf"] }
+		testData: { formats: [".las", ".xlsx", ".geojson", ".segy", ".pdf"] },
 	},
 	{
 		name: "mcp-client",
@@ -77,13 +76,11 @@ const utilityConfigs = [
 		expectedClasses: ["MCPClient", "ServerManager"],
 		expectedMethods: ["connectToServer", "executeAnalysis", "coordinateServers"],
 		serverCount: 14,
-		testData: { servers: ["econobot", "geowiz", "reporter"], workflow: "analysis" }
-	}
+		testData: { servers: ["econobot", "geowiz", "reporter"], workflow: "analysis" },
+	},
 ];
 
 class RemainingToolsTester {
-	private testOutputDir = "tests/temp/remaining-tools";
-
 	async runAllTests(): Promise<void> {
 		console.log("🧪 Starting Remaining Tools and Utilities Tests (Final 15% Coverage)\n");
 
@@ -93,7 +90,7 @@ class RemainingToolsTester {
 			total: 0,
 			coverage: new Map<string, boolean>(),
 			errorDetails: [] as string[],
-			toolResults: new Map<string, any>()
+			toolResults: new Map<string, any>(),
 		};
 
 		try {
@@ -119,7 +116,7 @@ class RemainingToolsTester {
 			console.error("❌ Remaining tools test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -139,8 +136,10 @@ class RemainingToolsTester {
 
 			// Test expected functions
 			for (const functionName of config.expectedFunctions) {
-				this.assert(typeof mockTool[functionName] === 'function',
-					`${config.name} should have ${functionName} function`);
+				this.assert(
+					typeof mockTool[functionName] === "function",
+					`${config.name} should have ${functionName} function`,
+				);
 			}
 
 			// Test input type handling
@@ -157,7 +156,10 @@ class RemainingToolsTester {
 			console.log(`  ✅ ${config.name.toUpperCase()} tool validation complete`);
 			results.passed++;
 			results.coverage.set(config.name, true);
-			results.toolResults.set(config.name, { functions: config.expectedFunctions.length, inputTypes: config.inputTypes.length });
+			results.toolResults.set(config.name, {
+				functions: config.expectedFunctions.length,
+				inputTypes: config.inputTypes.length,
+			});
 		} catch (error) {
 			const errorMsg = `${config.name} tool test failed: ${error}`;
 			console.error(`  ❌ ${errorMsg}`);
@@ -172,7 +174,7 @@ class RemainingToolsTester {
 			name: config.name,
 			description: config.description,
 			supportedInputs: config.inputTypes,
-			outputFormat: config.outputFormat
+			outputFormat: config.outputFormat,
 		};
 
 		// Add expected functions
@@ -184,7 +186,7 @@ class RemainingToolsTester {
 					args: args,
 					result: `Mock result from ${functionName}`,
 					confidence: 0.85,
-					timestamp: new Date().toISOString()
+					timestamp: new Date().toISOString(),
 				};
 			};
 		}
@@ -197,7 +199,7 @@ class RemainingToolsTester {
 				return {
 					success: false,
 					error: `Unsupported input type: ${extension}`,
-					tool: config.name
+					tool: config.name,
 				};
 			}
 
@@ -208,8 +210,8 @@ class RemainingToolsTester {
 				data: data,
 				format: config.outputFormat,
 				processed: true,
-				confidence: 0.90,
-				timestamp: new Date().toISOString()
+				confidence: 0.9,
+				timestamp: new Date().toISOString(),
 			};
 		};
 
@@ -230,15 +232,13 @@ class RemainingToolsTester {
 
 			// Test expected classes
 			for (const className of config.expectedClasses) {
-				this.assert(typeof mockUtility[className] === 'function',
-					`${config.name} should have ${className} class`);
+				this.assert(typeof mockUtility[className] === "function", `${config.name} should have ${className} class`);
 			}
 
 			// Test expected methods
 			for (const methodName of config.expectedMethods) {
 				const instance = new mockUtility[config.expectedClasses[0]]();
-				this.assert(typeof instance[methodName] === 'function',
-					`${config.name} should have ${methodName} method`);
+				this.assert(typeof instance[methodName] === "function", `${config.name} should have ${methodName} method`);
 			}
 
 			// Test functionality based on utility type
@@ -263,7 +263,7 @@ class RemainingToolsTester {
 			results.coverage.set(config.name, true);
 			results.toolResults.set(config.name, {
 				classes: config.expectedClasses.length,
-				methods: config.expectedMethods.length
+				methods: config.expectedMethods.length,
 			});
 		} catch (error) {
 			const errorMsg = `${config.name} utility test failed: ${error}`;
@@ -278,15 +278,16 @@ class RemainingToolsTester {
 		const mockUtility = {
 			name: config.name,
 			description: config.description,
-			path: config.path
+			path: config.path,
 		};
 
-		// Create mock classes
+		// Create mock classes (use regular functions so they can be called with `new`)
 		for (const className of config.expectedClasses) {
-			(mockUtility as any)[className] = function() {
+			// biome-ignore lint/complexity/useArrowFunction: must be a regular function to support `new` invocation
+			(mockUtility as any)[className] = function () {
 				const instance = {
 					className: className,
-					utility: config.name
+					utility: config.name,
 				};
 
 				// Add expected methods
@@ -299,7 +300,7 @@ class RemainingToolsTester {
 							utility: config.name,
 							args: args,
 							result: `Mock result from ${className}.${methodName}`,
-							timestamp: new Date().toISOString()
+							timestamp: new Date().toISOString(),
 						};
 					};
 				}
@@ -318,7 +319,7 @@ class RemainingToolsTester {
 		try {
 			// Test workflow: las-parse → curve-qc → curve-fit
 			const lasParse = this.createMockTool(toolConfigs[4]); // las-parse
-			const curveQC = this.createMockTool(toolConfigs[2]);  // curve-qc
+			const curveQC = this.createMockTool(toolConfigs[2]); // curve-qc
 			const curveFit = this.createMockTool(toolConfigs[1]); // curve-fit
 
 			// Simulate workflow
@@ -336,7 +337,7 @@ class RemainingToolsTester {
 				workflow: "las-parse → curve-qc → curve-fit",
 				steps: [parseResult, qcResult, fitResult],
 				overallSuccess: parseResult.success && qcResult.success && fitResult.success,
-				confidence: (parseResult.confidence + qcResult.confidence + fitResult.confidence) / 3
+				confidence: (parseResult.confidence + qcResult.confidence + fitResult.confidence) / 3,
 			};
 
 			this.assert(integrationResult.overallSuccess === true, "Tool integration workflow should succeed");
@@ -377,7 +378,7 @@ class RemainingToolsTester {
 				workflow: "FileIntegrationManager → MCPClient",
 				fileProcessing: fileResult,
 				mcpAnalysis: analysisResult,
-				overallSuccess: fileResult.success && analysisResult.success
+				overallSuccess: fileResult.success && analysisResult.success,
 			};
 
 			this.assert(coordinationResult.overallSuccess === true, "Utility coordination should succeed");
@@ -438,8 +439,10 @@ class RemainingToolsTester {
 
 		const coverageRate = (Array.from(results.coverage.values()).filter(Boolean).length / results.coverage.size) * 100;
 		console.log(`\n🎯 Overall Coverage: ${coverageRate.toFixed(1)}%`);
-		console.log(`🔧 Tools: ${toolConfigs.filter(c => results.coverage.get(c.name)).length}/${toolConfigs.length}`);
-		console.log(`⚙️ Utilities: ${utilityConfigs.filter(c => results.coverage.get(c.name)).length}/${utilityConfigs.length}`);
+		console.log(`🔧 Tools: ${toolConfigs.filter((c) => results.coverage.get(c.name)).length}/${toolConfigs.length}`);
+		console.log(
+			`⚙️ Utilities: ${utilityConfigs.filter((c) => results.coverage.get(c.name)).length}/${utilityConfigs.length}`,
+		);
 
 		if (results.failed > 0) {
 			console.log("\n❌ SOME TESTS FAILED - Review errors above");

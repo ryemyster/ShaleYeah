@@ -165,9 +165,7 @@ export class SEGYParser {
 			const stats = await fileHandle.stat();
 
 			if (stats.size < 3600) {
-				throw new Error(
-					"File too small to be a valid SEGY file (minimum 3600 bytes)",
-				);
+				throw new Error("File too small to be a valid SEGY file (minimum 3600 bytes)");
 			}
 
 			// Parse text header (3200 bytes)
@@ -177,10 +175,7 @@ export class SEGYParser {
 			const binaryHeader = await this.parseBinaryHeader(fileHandle);
 
 			// Parse extended headers if present
-			await this.skipExtendedHeaders(
-				fileHandle,
-				binaryHeader.numberOfExtendedHeaders,
-			);
+			await this.skipExtendedHeaders(fileHandle, binaryHeader.numberOfExtendedHeaders);
 
 			// Parse traces
 			const traces = await this.parseTraces(fileHandle, binaryHeader);
@@ -214,17 +209,13 @@ export class SEGYParser {
 					await fileHandle.close();
 				} catch (closeError) {
 					// Log but don't throw close errors to avoid masking original error
-					console.warn(
-						`Warning: Failed to close SEGY file handle: ${closeError}`,
-					);
+					console.warn(`Warning: Failed to close SEGY file handle: ${closeError}`);
 				}
 			}
 		}
 	}
 
-	private async parseTextHeader(
-		fileHandle: fs.FileHandle,
-	): Promise<SEGYTextHeader> {
+	private async parseTextHeader(fileHandle: fs.FileHandle): Promise<SEGYTextHeader> {
 		const buffer = Buffer.alloc(3200);
 		await fileHandle.read(buffer, 0, 3200, 0);
 
@@ -254,9 +245,7 @@ export class SEGYParser {
 		};
 	}
 
-	private async parseBinaryHeader(
-		fileHandle: fs.FileHandle,
-	): Promise<SEGYBinaryHeader> {
+	private async parseBinaryHeader(fileHandle: fs.FileHandle): Promise<SEGYBinaryHeader> {
 		const buffer = Buffer.alloc(400);
 		await fileHandle.read(buffer, 0, 400, 3200);
 
@@ -295,10 +284,7 @@ export class SEGYParser {
 		};
 	}
 
-	private async skipExtendedHeaders(
-		_fileHandle: fs.FileHandle,
-		numExtended: number,
-	): Promise<void> {
+	private async skipExtendedHeaders(_fileHandle: fs.FileHandle, numExtended: number): Promise<void> {
 		if (numExtended > 0) {
 			// Skip extended text headers (3200 bytes each)
 			const _bytesToSkip = numExtended * 3200;
@@ -307,10 +293,7 @@ export class SEGYParser {
 		}
 	}
 
-	private async parseTraces(
-		fileHandle: fs.FileHandle,
-		binaryHeader: SEGYBinaryHeader,
-	): Promise<SEGYTrace[]> {
+	private async parseTraces(fileHandle: fs.FileHandle, binaryHeader: SEGYBinaryHeader): Promise<SEGYTrace[]> {
 		const traces: SEGYTrace[] = [];
 		const bytesPerSample = this.getBytesPerSample(binaryHeader.dataFormat);
 		const traceDataBytes = binaryHeader.samplesPerTrace * bytesPerSample;
@@ -327,20 +310,14 @@ export class SEGYParser {
 			try {
 				// Read trace header (240 bytes)
 				const headerBuffer = Buffer.alloc(traceHeaderBytes);
-				const headerResult = await fileHandle.read(
-					headerBuffer,
-					0,
-					traceHeaderBytes,
-					currentPosition,
-				);
+				const headerResult = await fileHandle.read(headerBuffer, 0, traceHeaderBytes, currentPosition);
 
 				if (headerResult.bytesRead < traceHeaderBytes) break; // End of file
 
 				const header = this.parseTraceHeader(headerBuffer);
 
 				// Use samples from trace header if available, otherwise use binary header
-				const samplesInTrace =
-					header.numberOfSamples || binaryHeader.samplesPerTrace;
+				const samplesInTrace = header.numberOfSamples || binaryHeader.samplesPerTrace;
 				const actualTraceDataBytes = samplesInTrace * bytesPerSample;
 
 				// Read trace data
@@ -354,11 +331,7 @@ export class SEGYParser {
 
 				if (dataResult.bytesRead < actualTraceDataBytes) break; // End of file
 
-				const data = this.parseTraceData(
-					dataBuffer,
-					binaryHeader.dataFormat,
-					samplesInTrace,
-				);
+				const data = this.parseTraceData(dataBuffer, binaryHeader.dataFormat, samplesInTrace);
 
 				traces.push({ header, data });
 
@@ -448,11 +421,7 @@ export class SEGYParser {
 		};
 	}
 
-	private parseTraceData(
-		buffer: Buffer,
-		dataFormat: number,
-		samples: number,
-	): number[] {
+	private parseTraceData(buffer: Buffer, dataFormat: number, samples: number): number[] {
 		const data: number[] = [];
 
 		switch (dataFormat) {
@@ -618,8 +587,7 @@ export class SEGYParser {
 		consistentSampling: boolean;
 		dataIntegrity: number;
 	} {
-		const hasValidHeaders =
-			binaryHeader.samplesPerTrace > 0 && binaryHeader.sampleInterval > 0;
+		const hasValidHeaders = binaryHeader.samplesPerTrace > 0 && binaryHeader.sampleInterval > 0;
 
 		let hasCoordinates = false;
 		let hasElevations = false;
@@ -630,40 +598,28 @@ export class SEGYParser {
 			const trace = traces[i];
 
 			// Check for coordinates
-			if (
-				trace.header.sourceCoordinateX !== 0 ||
-				trace.header.sourceCoordinateY !== 0
-			) {
+			if (trace.header.sourceCoordinateX !== 0 || trace.header.sourceCoordinateY !== 0) {
 				hasCoordinates = true;
 			}
 
 			// Check for elevations
-			if (
-				trace.header.receiverGroupElevation !== 0 ||
-				trace.header.surfaceElevationAtSource !== 0
-			) {
+			if (trace.header.receiverGroupElevation !== 0 || trace.header.surfaceElevationAtSource !== 0) {
 				hasElevations = true;
 			}
 
 			// Check sampling consistency
-			if (
-				trace.header.numberOfSamples > 0 &&
-				trace.header.numberOfSamples !== binaryHeader.samplesPerTrace
-			) {
+			if (trace.header.numberOfSamples > 0 && trace.header.numberOfSamples !== binaryHeader.samplesPerTrace) {
 				consistentSampling = false;
 			}
 
 			// Check data validity
-			const validSamples = trace.data.filter(
-				(sample) => !Number.isNaN(sample) && Number.isFinite(sample),
-			).length;
+			const validSamples = trace.data.filter((sample) => !Number.isNaN(sample) && Number.isFinite(sample)).length;
 			if (validSamples / trace.data.length > 0.9) {
 				validDataCount++;
 			}
 		}
 
-		const dataIntegrity =
-			traces.length > 0 ? validDataCount / Math.min(traces.length, 100) : 0;
+		const dataIntegrity = traces.length > 0 ? validDataCount / Math.min(traces.length, 100) : 0;
 
 		return {
 			hasValidHeaders,
@@ -700,16 +656,11 @@ export class SEGYParser {
 
 		for (const line of data.textHeader.lines) {
 			const upper = line.toUpperCase();
-			if (upper.includes("CLIENT"))
-				client = line.substring(line.indexOf(":") + 1).trim();
-			if (upper.includes("CONTRACTOR"))
-				contractor = line.substring(line.indexOf(":") + 1).trim();
-			if (upper.includes("SURVEY"))
-				surveyName = line.substring(line.indexOf(":") + 1).trim();
-			if (upper.includes("DATE"))
-				acquisitionDate = line.substring(line.indexOf(":") + 1).trim();
-			if (upper.includes("LOCATION"))
-				location = line.substring(line.indexOf(":") + 1).trim();
+			if (upper.includes("CLIENT")) client = line.substring(line.indexOf(":") + 1).trim();
+			if (upper.includes("CONTRACTOR")) contractor = line.substring(line.indexOf(":") + 1).trim();
+			if (upper.includes("SURVEY")) surveyName = line.substring(line.indexOf(":") + 1).trim();
+			if (upper.includes("DATE")) acquisitionDate = line.substring(line.indexOf(":") + 1).trim();
+			if (upper.includes("LOCATION")) location = line.substring(line.indexOf(":") + 1).trim();
 		}
 
 		// Calculate coordinate bounds

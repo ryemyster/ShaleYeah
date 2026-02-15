@@ -1,53 +1,76 @@
 # Security Policy
 
-## Reporting Security Vulnerabilities
+## Permission Model
 
-We take security seriously. If you discover a security vulnerability in SHALE YEAH, please report it to us privately.
+SHALE YEAH uses role-based access control (RBAC) when `KERNEL_AUTH_ENABLED=true`.
 
-**Please do not report security vulnerabilities through public GitHub issues.**
+### Roles & Permissions
 
-Instead, please send a detailed report to: security@ascendvent.com
+| Role | Permissions | Description |
+|---|---|---|
+| `analyst` | `read:analysis` | Read-only access to all query tools |
+| `engineer` | + `write:reports` | Can generate reports via reporter |
+| `executive` | + `execute:decisions` | Can trigger investment decisions |
+| `admin` | + `admin:servers`, `admin:users` | Full system access |
 
-### What to Include
+### Tool Access
 
-Please include as much of the following information as possible:
+- **Query tools** (12 servers): require `read:analysis`
+- **Reporter tools**: require `write:reports`
+- **Decision tools**: require `execute:decisions`
+- **Admin tools**: require `admin:servers`
 
-- Type of issue (e.g. buffer overflow, SQL injection, cross-site scripting, etc.)
-- Full paths of source file(s) related to the manifestation of the issue
-- The location of the affected source code (tag/branch/commit or direct URL)
-- Any special configuration required to reproduce the issue
-- Step-by-step instructions to reproduce the issue
-- Proof-of-concept or exploit code (if possible)
-- Impact of the issue, including how an attacker might exploit the issue
+Roles are hierarchical — each role inherits all permissions from lower roles.
 
-### Response Timeline
+## Audit Trail
 
-- **72 hours**: Initial triage and acknowledgment
-- **7 days**: Detailed assessment and response plan
-- **30 days**: Resolution and disclosure timeline
+All tool invocations through `kernel.callTool()` produce structured audit entries:
 
-## Security Best Practices
+- **Storage**: Append-only JSONL at `data/audit/YYYY-MM-DD.jsonl`
+- **Entries**: request, response, error, and denied events
+- **Fields**: tool, action, parameters, userId, sessionId, role, timestamp, success, durationMs
+- **Redaction**: Keys matching `/key|token|secret|password|credential|auth|bearer/` are replaced with `[REDACTED]`
 
-When contributing to SHALE YEAH:
+Enable/disable via `KERNEL_AUDIT_ENABLED` (default: true).
 
-- Never commit secrets, tokens, or credentials to the repository
-- Use environment variables for sensitive configuration
-- Follow secure coding practices for data handling
-- Validate all inputs, especially file uploads and user data
-- Use parameterized queries for database operations
-- Implement proper error handling without exposing sensitive information
+## Secret Handling
 
-## Supported Versions
+- API keys and tokens should be stored in `.env` (never committed to git)
+- `.env` is in `.gitignore`
+- Audit logs automatically redact sensitive parameter values
+- No secrets are logged in plain text
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
+## Data Handling
 
-## Dependencies
+- Session data is in-memory only (not persisted)
+- Audit logs are the only persistent data written by the kernel
+- No user data is transmitted externally — all analysis runs locally
 
-We use automated dependency scanning through:
-- Dependabot for dependency updates
-- CodeQL for static analysis
-- Gitleaks for secret detection
+## Configuration
 
-Keep dependencies up to date and report any security issues found in dependencies.
+```bash
+KERNEL_AUTH_ENABLED=true|false   # Enable permission gates (default: false)
+KERNEL_AUDIT_ENABLED=true|false  # Enable audit logging (default: true)
+KERNEL_AUDIT_PATH=data/audit     # Audit log directory
+```
+
+## File Format Licensing
+
+SHALE YEAH's proprietary file format support (e.g., `.accdb`, `.docx`, ARIES `.adb`) is provided under the DMCA Section 1201(f) interoperability exception, which permits reverse engineering for compatibility with independently created programs.
+
+Users are **solely responsible** for obtaining appropriate software licenses for any proprietary formats they process and for complying with all applicable EULAs. SHALE YEAH does not provide, distribute, or include any proprietary software licenses. File format support is provided for interoperability purposes only.
+
+This approach is consistent with established legal precedent (*Sega v. Accolade*, 1992) and the Apache 2.0 license liability disclaimers under which this project is distributed. See [LICENSE](LICENSE) for full terms.
+
+## Vulnerability Reporting
+
+If you discover a security vulnerability, please report it responsibly:
+
+1. **Do not** open a public GitHub issue
+2. Email: security@ascendvent.com
+3. Include: description, reproduction steps, and potential impact
+4. We will acknowledge within 48 hours and provide a fix timeline
+
+## License
+
+SHALE YEAH is licensed under Apache-2.0. See [LICENSE](LICENSE) for details.

@@ -15,11 +15,7 @@ import {
 	parseProductionData,
 } from "../../tools/decline-curve-analysis.js";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface DeclineCurveAnalysis {
 	initialRate: {
@@ -71,24 +67,15 @@ const curveSmithTemplate: ServerTemplate = {
 			"Analyze production decline curves and estimate EUR",
 			z.object({
 				filePath: z.string().describe("Path to production data file"),
-				curveType: z
-					.enum(["exponential", "hyperbolic", "harmonic"])
-					.default("hyperbolic"),
-				minMonths: z
-					.number()
-					.min(3)
-					.default(6)
-					.describe("Minimum months of data required"),
+				curveType: z.enum(["exponential", "hyperbolic", "harmonic"]).default("hyperbolic"),
+				minMonths: z.number().min(3).default(6).describe("Minimum months of data required"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const analysis = await performDeclineCurveAnalysis(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -100,16 +87,8 @@ const curveSmithTemplate: ServerTemplate = {
 			z.object({
 				formation: z.string().describe("Target formation"),
 				analogWells: z.array(z.string()).describe("Analog well identifiers"),
-				tier: z
-					.number()
-					.min(1)
-					.max(3)
-					.default(1)
-					.describe("Type curve tier (1=best)"),
-				lateral_length: z
-					.number()
-					.optional()
-					.describe("Lateral length in feet"),
+				tier: z.number().min(1).max(3).default(1).describe("Type curve tier (1=best)"),
+				lateral_length: z.number().optional().describe("Lateral length in feet"),
 			}),
 			async (args) => {
 				return performTypeCurveAnalysis(args);
@@ -122,21 +101,11 @@ const curveSmithTemplate: ServerTemplate = {
 				initialRateOil: z.number().describe("Initial oil rate (bopd)"),
 				initialRateGas: z.number().describe("Initial gas rate (mcfd)"),
 				declineRate: z.number().min(0).max(1).describe("Annual decline rate"),
-				bFactor: z
-					.number()
-					.min(0)
-					.max(2)
-					.default(1)
-					.describe("Decline exponent"),
+				bFactor: z.number().min(0).max(2).default(1).describe("Decline exponent"),
 				economicLimit: z.number().default(10).describe("Economic limit (bopd)"),
 			}),
 			async (args) => {
-				const eurOil = calculateHyperbolicEUR(
-					args.initialRateOil,
-					args.declineRate,
-					args.bFactor,
-					args.economicLimit,
-				);
+				const eurOil = calculateHyperbolicEUR(args.initialRateOil, args.declineRate, args.bFactor, args.economicLimit);
 
 				const eurGas = calculateHyperbolicEUR(
 					args.initialRateGas,
@@ -180,8 +149,7 @@ const curveSmithTemplate: ServerTemplate = {
 					r2,
 					dataPoints,
 					passesThresholds:
-						r2 >= (args.thresholds?.minR2 || 0.8) &&
-						dataPoints >= (args.thresholds?.minDataPoints || 6),
+						r2 >= (args.thresholds?.minR2 || 0.8) && dataPoints >= (args.thresholds?.minDataPoints || 6),
 					qualityGrade: determineQualityGrade(r2, dataPoints),
 					recommendations: generateQualityRecommendations(r2, dataPoints),
 				};
@@ -201,22 +169,12 @@ async function performDeclineCurveAnalysis(args: {
 		const productionData: ProductionData[] = parseProductionData(csvData);
 
 		if (productionData.length < args.minMonths) {
-			throw new Error(
-				`Insufficient data: ${productionData.length} months, minimum ${args.minMonths} required`,
-			);
+			throw new Error(`Insufficient data: ${productionData.length} months, minimum ${args.minMonths} required`);
 		}
 
 		// Analyze both oil and gas if available
-		const oilResult = await fitDeclineCurve(
-			productionData,
-			"oil",
-			args.curveType,
-		);
-		const gasResult = await fitDeclineCurve(
-			productionData,
-			"gas",
-			args.curveType,
-		);
+		const oilResult = await fitDeclineCurve(productionData, "oil", args.curveType);
+		const gasResult = await fitDeclineCurve(productionData, "gas", args.curveType);
 
 		// Convert to DeclineCurveAnalysis format
 		return convertToDeclineAnalysis(oilResult, gasResult, productionData);
@@ -236,9 +194,7 @@ async function performDeclineCurveAnalysis(args: {
 			},
 			typeCurve: "Tier 1 Wolfcamp",
 			confidence: ServerUtils.calculateConfidence(0.75, 0.95),
-			qualityGrade: ["Excellent", "Good", "Fair"][
-				Math.floor(Math.random() * 3)
-			] as "Excellent" | "Good" | "Fair",
+			qualityGrade: ["Excellent", "Good", "Fair"][Math.floor(Math.random() * 3)] as "Excellent" | "Good" | "Fair",
 		};
 	}
 }
@@ -276,9 +232,7 @@ async function fitDeclineCurve(
 	} catch (_error) {
 		// Return reasonable defaults
 		const avgRate =
-			data
-				.filter((d) => d[product] > 0)
-				.reduce((sum, d) => sum + d[product], 0) /
+			data.filter((d) => d[product] > 0).reduce((sum, d) => sum + d[product], 0) /
 			data.filter((d) => d[product] > 0).length;
 
 		return {
@@ -304,8 +258,7 @@ function convertToDeclineAnalysis(
 	data: ProductionData[],
 ): DeclineCurveAnalysis {
 	const avgWater =
-		data.filter((d) => d.water > 0).reduce((sum, d) => sum + d.water, 0) /
-			data.filter((d) => d.water > 0).length || 10;
+		data.filter((d) => d.water > 0).reduce((sum, d) => sum + d.water, 0) / data.filter((d) => d.water > 0).length || 10;
 
 	return {
 		initialRate: {
@@ -313,34 +266,19 @@ function convertToDeclineAnalysis(
 			gas: Math.round(gasResult.parameters.initialRate),
 			water: Math.round(avgWater),
 		},
-		declineRate:
-			Math.round(
-				((oilResult.parameters.declineRate + gasResult.parameters.declineRate) /
-					2) *
-					1000,
-			) / 1000,
-		bFactor:
-			Math.round(
-				((oilResult.parameters.bFactor + gasResult.parameters.bFactor) / 2) *
-					100,
-			) / 100,
+		declineRate: Math.round(((oilResult.parameters.declineRate + gasResult.parameters.declineRate) / 2) * 1000) / 1000,
+		bFactor: Math.round(((oilResult.parameters.bFactor + gasResult.parameters.bFactor) / 2) * 100) / 100,
 		eur: {
 			oil: Math.round(oilResult.eur),
 			gas: Math.round(gasResult.eur),
 		},
 		typeCurve: `${oilResult.curveType.charAt(0).toUpperCase() + oilResult.curveType.slice(1)} Decline`,
 		confidence: Math.round((oilResult.confidence + gasResult.confidence) / 2),
-		qualityGrade: selectBestQualityGrade(
-			oilResult.qualityGrade,
-			gasResult.qualityGrade,
-		),
+		qualityGrade: selectBestQualityGrade(oilResult.qualityGrade, gasResult.qualityGrade),
 	};
 }
 
-function selectBestQualityGrade(
-	grade1: string,
-	grade2: string,
-): "Excellent" | "Good" | "Fair" | "Poor" {
+function selectBestQualityGrade(grade1: string, grade2: string): "Excellent" | "Good" | "Fair" | "Poor" {
 	const gradeOrder: Record<string, number> = {
 		Excellent: 4,
 		Good: 3,
@@ -357,11 +295,7 @@ function selectBestQualityGrade(
 		2: "Fair",
 		1: "Poor",
 	};
-	return (reverseOrder[maxScore] || "Poor") as
-		| "Excellent"
-		| "Good"
-		| "Fair"
-		| "Poor";
+	return (reverseOrder[maxScore] || "Poor") as "Excellent" | "Good" | "Fair" | "Poor";
 }
 
 function performTypeCurveAnalysis(args: {
@@ -382,12 +316,7 @@ function performTypeCurveAnalysis(args: {
 	};
 }
 
-function calculateHyperbolicEUR(
-	qi: number,
-	di: number,
-	b: number,
-	qecon: number,
-): number {
+function calculateHyperbolicEUR(qi: number, di: number, b: number, qecon: number): number {
 	// Simplified hyperbolic decline calculation
 	if (b === 1) {
 		return (qi - qecon) / di;
@@ -396,29 +325,21 @@ function calculateHyperbolicEUR(
 	return Math.round((qi ** b - qecon ** b) / (b * di));
 }
 
-function determineQualityGrade(
-	r2: number,
-	dataPoints: number,
-): "Excellent" | "Good" | "Fair" | "Poor" {
+function determineQualityGrade(r2: number, dataPoints: number): "Excellent" | "Good" | "Fair" | "Poor" {
 	if (r2 >= 0.95 && dataPoints >= 12) return "Excellent";
 	if (r2 >= 0.85 && dataPoints >= 8) return "Good";
 	if (r2 >= 0.75 && dataPoints >= 6) return "Fair";
 	return "Poor";
 }
 
-function generateQualityRecommendations(
-	r2: number,
-	dataPoints: number,
-): string[] {
+function generateQualityRecommendations(r2: number, dataPoints: number): string[] {
 	const recommendations = [];
 
 	if (r2 < 0.8) {
 		recommendations.push("Consider alternative curve fitting methods");
 	}
 	if (dataPoints < 8) {
-		recommendations.push(
-			"Collect additional production data for improved accuracy",
-		);
+		recommendations.push("Collect additional production data for improved accuracy");
 	}
 	if (r2 >= 0.9 && dataPoints >= 10) {
 		recommendations.push("Excellent curve fit - proceed with confidence");

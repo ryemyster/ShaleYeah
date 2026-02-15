@@ -8,10 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate } from "../shared/server-factory.js";
 import type { AnalysisInputs, InvestmentCriteria } from "../shared/types.js";
 
 interface LocalInvestmentDecision {
@@ -76,10 +73,7 @@ const reporterTemplate: ServerTemplate = {
 				const decision = generateInvestmentDecision(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(decision, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(decision, null, 2));
 				}
 
 				return decision;
@@ -91,9 +85,7 @@ const reporterTemplate: ServerTemplate = {
 			z.object({
 				tractName: z.string(),
 				decision: z.any(),
-				reportType: z
-					.enum(["executive", "technical", "board"])
-					.default("executive"),
+				reportType: z.enum(["executive", "technical", "board"]).default("executive"),
 				includeCharts: z.boolean().default(true),
 				includeAppendices: z.boolean().default(true),
 				outputPath: z.string().optional(),
@@ -120,9 +112,7 @@ const reporterTemplate: ServerTemplate = {
 						confidence: z.number(),
 					}),
 				),
-				synthesisType: z
-					.enum(["summary", "detailed", "comparison"])
-					.default("summary"),
+				synthesisType: z.enum(["summary", "detailed", "comparison"]).default("summary"),
 			}),
 			async (args) => {
 				return synthesizeAnalysis(args.analyses);
@@ -192,26 +182,16 @@ function createExecutiveReport(args: {
 	return {
 		reportId: `report_${Date.now()}`,
 		title: `Investment Analysis: ${args.tractName || "Unknown Tract"}`,
-		executiveSummary: generateExecutiveSummary(
-			args.tractName || "Unknown Tract",
-			decision,
-		),
+		executiveSummary: generateExecutiveSummary(args.tractName || "Unknown Tract", decision),
 		keyFindings: generateKeyFindings(decision),
 		recommendation: decision,
 		appendices: args.includeAppendices
-			? [
-					"Geological Analysis Details",
-					"Economic Model Assumptions",
-					"Risk Assessment Matrix",
-					"Competitive Analysis",
-				]
+			? ["Geological Analysis Details", "Economic Model Assumptions", "Risk Assessment Matrix", "Competitive Analysis"]
 			: [],
 	};
 }
 
-function synthesizeAnalysis(
-	analyses: AnalysisInputs[],
-): Record<string, unknown> {
+function synthesizeAnalysis(analyses: AnalysisInputs[]): Record<string, unknown> {
 	const overallConfidence = calculateOverallConfidence(analyses);
 	const keyInsights = extractKeyInsights(analyses);
 	const riskFactors = identifyRiskFactors(analyses);
@@ -223,10 +203,7 @@ function synthesizeAnalysis(
 		recommendations: generateSynthesisRecommendations(overallConfidence),
 		domainSummaries: analyses.map((analysis) => ({
 			domain: "analysis",
-			confidence:
-				analysis.economic?.confidence ||
-				analysis.geological?.confidenceLevel ||
-				75,
+			confidence: analysis.economic?.confidence || analysis.geological?.confidenceLevel || 75,
 			keyPoints: [
 				`Confidence: ${analysis.economic?.confidence || analysis.geological?.confidenceLevel || 75}%`,
 				"Analysis supports investment thesis",
@@ -239,10 +216,7 @@ function calculateOverallConfidence(analyses: AnalysisInputs[]): number {
 	if (analyses.length === 0) return 0;
 	const totalConfidence = analyses.reduce(
 		(sum, analysis) =>
-			sum +
-			("confidence" in analysis && typeof analysis.confidence === "number"
-				? analysis.confidence
-				: 75),
+			sum + ("confidence" in analysis && typeof analysis.confidence === "number" ? analysis.confidence : 75),
 		0,
 	);
 	return Math.round(totalConfidence / analyses.length);
@@ -285,10 +259,7 @@ function generateSynthesisRecommendations(avgConfidence: number): string[] {
 	}
 }
 
-function generateExecutiveSummary(
-	tractName: string,
-	decision: LocalInvestmentDecision,
-): string {
+function generateExecutiveSummary(tractName: string, decision: LocalInvestmentDecision): string {
 	return `Investment analysis for ${tractName} indicates ${decision.recommendation} with ${decision.confidence}% confidence. Key economic metrics show NPV of $${(decision.keyMetrics.npv / 1000000).toFixed(1)}M and IRR of ${decision.keyMetrics.irr}%.`;
 }
 

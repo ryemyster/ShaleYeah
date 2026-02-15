@@ -7,11 +7,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const drillingTemplate: ServerTemplate = {
 	name: "drilling",
@@ -66,21 +62,16 @@ const drillingTemplate: ServerTemplate = {
 					location: args.location,
 					drilling: {
 						estimatedDays: Math.ceil(
-							args.wellParameters.targetDepth /
-								(args.wellParameters.wellType === "horizontal" ? 400 : 600),
+							args.wellParameters.targetDepth / (args.wellParameters.wellType === "horizontal" ? 400 : 600),
 						),
 						mudProgram: `${args.wellParameters.formation} optimized system`,
 						casingProgram: [
 							'20" conductor to 100ft',
 							'13 3/8" surface to 2,000ft',
-							args.wellParameters.wellType === "horizontal"
-								? '9 5/8" intermediate to TD'
-								: '7" production to TD',
+							args.wellParameters.wellType === "horizontal" ? '9 5/8" intermediate to TD' : '7" production to TD',
 						],
 						completion:
-							args.wellParameters.wellType === "horizontal"
-								? "Multi-stage fracturing"
-								: "Conventional completion",
+							args.wellParameters.wellType === "horizontal" ? "Multi-stage fracturing" : "Conventional completion",
 					},
 					costs: {
 						drilling: Math.round(wellCost),
@@ -89,21 +80,15 @@ const drillingTemplate: ServerTemplate = {
 						total: Math.round(wellCost * 1.8),
 					},
 					risks: {
-						geological: args.wellParameters.formation.includes("shale")
-							? "Medium"
-							: "Low",
+						geological: args.wellParameters.formation.includes("shale") ? "Medium" : "Low",
 						operational: "Standard for formation type",
-						environmental:
-							args.constraints?.environmental?.length > 0 ? "Medium" : "Low",
+						environmental: args.constraints?.environmental?.length > 0 ? "Medium" : "Low",
 					},
 					confidence: ServerUtils.calculateConfidence(0.82, 0.88),
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;

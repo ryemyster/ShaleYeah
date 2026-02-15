@@ -22,15 +22,9 @@ declare module "shapefile" {
 		close(): void;
 	}
 
-	export function read(
-		shpPath: string,
-		dbfPath?: string,
-	): Promise<ShapefileCollection>;
+	export function read(shpPath: string, dbfPath?: string): Promise<ShapefileCollection>;
 
-	export function open(
-		shpPath: string,
-		dbfPath?: string,
-	): Promise<ShapefileReader>;
+	export function open(shpPath: string, dbfPath?: string): Promise<ShapefileReader>;
 
 	export default {
 		read,

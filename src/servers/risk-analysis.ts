@@ -8,11 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface RiskAssessment {
 	overallRisk: number; // 0-1 scale
@@ -76,13 +72,7 @@ const riskAnalysisTemplate: ServerTemplate = {
 			"Regulatory compliance analysis",
 		],
 	},
-	directories: [
-		"assessments",
-		"monte-carlo",
-		"mitigation",
-		"compliance",
-		"reports",
-	],
+	directories: ["assessments", "monte-carlo", "mitigation", "compliance", "reports"],
 	tools: [
 		ServerFactory.createAnalysisTool(
 			"assess_investment_risk",
@@ -94,22 +84,15 @@ const riskAnalysisTemplate: ServerTemplate = {
 					technical: z.any().optional(),
 					regulatory: z.any().optional(),
 				}),
-				riskProfile: z
-					.enum(["conservative", "moderate", "aggressive"])
-					.default("moderate"),
-				analysisDepth: z
-					.enum(["screening", "standard", "comprehensive"])
-					.default("standard"),
+				riskProfile: z.enum(["conservative", "moderate", "aggressive"]).default("moderate"),
+				analysisDepth: z.enum(["screening", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const assessment = performRiskAssessment(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(assessment, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(assessment, null, 2));
 				}
 
 				return assessment;
@@ -124,33 +107,25 @@ const riskAnalysisTemplate: ServerTemplate = {
 						base: z.number(),
 						min: z.number(),
 						max: z.number(),
-						distribution: z
-							.enum(["normal", "triangular", "uniform"])
-							.default("triangular"),
+						distribution: z.enum(["normal", "triangular", "uniform"]).default("triangular"),
 					}),
 					initialProduction: z.object({
 						base: z.number(),
 						min: z.number(),
 						max: z.number(),
-						distribution: z
-							.enum(["normal", "triangular", "uniform"])
-							.default("normal"),
+						distribution: z.enum(["normal", "triangular", "uniform"]).default("normal"),
 					}),
 					declineRate: z.object({
 						base: z.number(),
 						min: z.number(),
 						max: z.number(),
-						distribution: z
-							.enum(["normal", "triangular", "uniform"])
-							.default("normal"),
+						distribution: z.enum(["normal", "triangular", "uniform"]).default("normal"),
 					}),
 					capex: z.object({
 						base: z.number(),
 						min: z.number(),
 						max: z.number(),
-						distribution: z
-							.enum(["normal", "triangular", "uniform"])
-							.default("triangular"),
+						distribution: z.enum(["normal", "triangular", "uniform"]).default("triangular"),
 					}),
 				}),
 				iterations: z.number().min(1000).max(100000).default(10000),
@@ -193,12 +168,9 @@ function performRiskAssessment(args: any): RiskAssessment {
 		environmental: 0.1,
 		operational: 0.1,
 	};
-	const overallRisk = Object.entries(riskCategories).reduce(
-		(sum, [category, risk]) => {
-			return sum + risk * (weights[category as keyof typeof weights] || 0);
-		},
-		0,
-	);
+	const overallRisk = Object.entries(riskCategories).reduce((sum, [category, risk]) => {
+		return sum + risk * (weights[category as keyof typeof weights] || 0);
+	}, 0);
 
 	// Identify key risks
 	const keyRisks = identifyKeyRisks(riskCategories, projectData);
@@ -219,14 +191,8 @@ function performRiskAssessment(args: any): RiskAssessment {
 function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
 	// Essential Monte Carlo simulation logic
 	const iterations = args.iterations;
-	const npvResults = Array.from(
-		{ length: Math.min(iterations, 1000) },
-		() => Math.random() * 10000000 - 2000000,
-	);
-	const irrResults = Array.from(
-		{ length: Math.min(iterations, 1000) },
-		() => Math.random() * 0.5,
-	);
+	const npvResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 10000000 - 2000000);
+	const irrResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 0.5);
 
 	return {
 		iterations,
@@ -238,10 +204,7 @@ function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
 				p90: npvResults.sort()[Math.floor(npvResults.length * 0.9)],
 				stdDev: Math.sqrt(
 					npvResults.reduce(
-						(sum, val) =>
-							sum +
-							(val - npvResults.reduce((a, b) => a + b) / npvResults.length) **
-								2,
+						(sum, val) => sum + (val - npvResults.reduce((a, b) => a + b) / npvResults.length) ** 2,
 						0,
 					) / npvResults.length,
 				),
@@ -253,18 +216,14 @@ function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
 				p90: irrResults.sort()[Math.floor(irrResults.length * 0.9)],
 				stdDev: Math.sqrt(
 					irrResults.reduce(
-						(sum, val) =>
-							sum +
-							(val - irrResults.reduce((a, b) => a + b) / irrResults.length) **
-								2,
+						(sum, val) => sum + (val - irrResults.reduce((a, b) => a + b) / irrResults.length) ** 2,
 						0,
 					) / irrResults.length,
 				),
 			},
 			probability: {
 				positive_npv: npvResults.filter((npv) => npv > 0).length / iterations,
-				target_irr:
-					irrResults.filter((irr) => irr > args.targetIRR).length / iterations,
+				target_irr: irrResults.filter((irr) => irr > args.targetIRR).length / iterations,
 			},
 		},
 		sensitivities: [
@@ -328,22 +287,15 @@ function generateMitigationStrategies(_keyRisks: any[]): string[] {
 	];
 }
 
-function generateRiskRecommendation(
-	overallRisk: number,
-	riskProfile: string,
-): string {
-	if (overallRisk < 0.3)
-		return "Low risk profile supports investment recommendation";
-	if (overallRisk < 0.5)
-		return `Moderate risk acceptable for ${riskProfile} risk profile`;
-	if (overallRisk < 0.7)
-		return "Elevated risk requires enhanced mitigation measures";
+function generateRiskRecommendation(overallRisk: number, riskProfile: string): string {
+	if (overallRisk < 0.3) return "Low risk profile supports investment recommendation";
+	if (overallRisk < 0.5) return `Moderate risk acceptable for ${riskProfile} risk profile`;
+	if (overallRisk < 0.7) return "Elevated risk requires enhanced mitigation measures";
 	return "High risk profile may warrant declining the opportunity";
 }
 
 // Create the server using factory
-export const RiskAnalysisServer =
-	ServerFactory.createServer(riskAnalysisTemplate);
+export const RiskAnalysisServer = ServerFactory.createServer(riskAnalysisTemplate);
 export default RiskAnalysisServer;
 
 // Run server if called directly

@@ -106,6 +106,26 @@ cat data/temp/demo/demo-*/INVESTMENT_DECISION.md
 📊 Overall Recommendation: ✅ PROCEED (Strong Economics & Acceptable Risk)
 ```
 
+### Kernel API (Programmatic)
+
+```typescript
+import { Kernel } from './src/kernel/index.js';
+
+const kernel = new Kernel();
+kernel.initialize(serverConfigs);
+kernel.setExecutorFn(executorFn);
+
+// Quick screen — 4 core servers in parallel (~1s)
+const screen = await kernel.quickScreen({ basin: "Permian" });
+
+// Full due diligence — all 14 servers, dependency-ordered
+const full = await kernel.fullAnalysis({ basin: "Permian" });
+
+// Investment decision with confirmation gate
+const invest = await kernel.shouldWeInvest({ basin: "Permian" });
+const confirmed = await kernel.confirmAction(actionId);
+```
+
 ### Production Usage
 
 ```bash
@@ -182,16 +202,19 @@ Built using the **official Anthropic MCP SDK** with full JSON-RPC 2.0 compliance
 ### System Architecture
 
 ```
-┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│   Data Ingestion    │───▶│  SHALE YEAH MCP     │───▶│   Investment        │
-│                     │    │  Client             │    │   Decision          │
-│ • LAS Well Logs     │    │  (Orchestrator)     │    │                     │
-│ • Access Databases  │    │                     │    │ • Go/No-Go          │
-│ • Shapefiles        │    │ ┌─────────────────┐ │    │ • Risk Assessment   │
-│ • Market Data       │    │ │  14 MCP Servers │ │    │ • NPV/IRR Analysis  │
-│ • Legal Documents   │    │ │  Roman Personas │ │    │ • Board Presentation│
-└─────────────────────┘    │ └─────────────────┘ │    └─────────────────────┘
-                           └─────────────────────┘
+┌─────────────────────┐    ┌─────────────────────────────────────┐    ┌─────────────────────┐
+│   Data Ingestion    │───▶│  Agent OS Kernel                    │───▶│   Investment        │
+│                     │    │  ┌───────────────────────────────┐  │    │   Decision          │
+│ • LAS Well Logs     │    │  │ Registry │ Executor │ Session │  │    │                     │
+│ • Access Databases  │    │  └───────────────────────────────┘  │    │ • Go/No-Go          │
+│ • Shapefiles        │    │  ┌───────────────────────────────┐  │    │ • Risk Assessment   │
+│ • Market Data       │    │  │ Auth │ Audit │ Resilience     │  │    │ • NPV/IRR Analysis  │
+│ • Legal Documents   │    │  └───────────────────────────────┘  │    │ • Board Presentation│
+└─────────────────────┘    │  ┌─────────────────┐               │    └─────────────────────┘
+                           │  │  14 MCP Servers  │               │
+                           │  │  Roman Personas  │               │
+                           │  └─────────────────┘               │
+                           └─────────────────────────────────────┘
 ```
 
 ### 14 MCP Server Architecture
@@ -215,27 +238,38 @@ Built using the **official Anthropic MCP SDK** with full JSON-RPC 2.0 compliance
 
 ### Data Flow Pipeline
 
+The Agent OS kernel executes servers in **parallel phases** (scatter-gather), not a sequential chain. Independent analyses run concurrently via `Promise.allSettled`, with downstream phases waiting only for their declared dependencies.
+
 ```mermaid
-graph LR
-    A[Data Ingestion] --> B[Geological Analysis]
-    B --> C[Technical Assessment] 
-    C --> D[Economic Modeling]
-    D --> E[Risk Analysis]
-    E --> F[Legal Review]
-    F --> G[Market Analysis]
-    G --> H[Investment Decision]
-    H --> I[Executive Report]
+graph TD
+    A[Data Ingestion] --> P1
+
+    subgraph P1["Phase 1 — Core Analysis (parallel)"]
+        B[Geology]
+        C[Economics]
+        D[Engineering]
+        E[Market]
+        F[Research]
+    end
+
+    P1 --> P2
+
+    subgraph P2["Phase 2 — Extended Analysis (parallel)"]
+        G[Risk]
+        H[Legal]
+        I[Title]
+        J[Drilling]
+        K[Infrastructure]
+        L[Development]
+    end
+
+    P2 --> P3[Phase 3 — QA Validation]
+    P3 --> P4a[Reporter] --> P4b[Investment Decision]
 ```
 
-1. **Data Ingestion**: Parse LAS files, Access databases, shapefiles
-2. **Geological Analysis**: Formation identification, reservoir characterization
-3. **Technical Assessment**: Drilling feasibility, completion design
-4. **Economic Modeling**: DCF analysis, NPV/IRR calculations
-5. **Risk Analysis**: Monte Carlo simulation, sensitivity analysis
-6. **Legal Review**: Contract analysis, regulatory compliance
-7. **Market Analysis**: Commodity pricing, supply/demand dynamics
-8. **Investment Decision**: Synthesis and recommendation generation
-9. **Executive Report**: Board-ready presentation materials
+**Quick Screen** (4 servers, 1 phase): Geology + Economics + Engineering + Risk in parallel — sub-second screening.
+
+**Full Due Diligence** (14 servers, 4+ phases): All experts with dependency ordering — comprehensive investment analysis.
 
 ---
 
@@ -1818,7 +1852,30 @@ export ELASTIC_API_KEY=your-token                  # Elasticsearch
 
 ---
 
+## 🔒 Security
+
+SHALE YEAH includes a role-based permission gate and append-only audit trail. See [SECURITY.md](SECURITY.md) for full details.
+
+- **Permission Gate**: 4-tier role hierarchy (analyst → engineer → executive → admin) controls tool access when `KERNEL_AUTH_ENABLED=true`
+- **Audit Trail**: All `callTool()` invocations logged as JSONL to `data/audit/YYYY-MM-DD.jsonl` with automatic sensitive value redaction
+- **Secret Handling**: API keys stored in `.env` (gitignored), never logged in plain text
+
+---
+
 ## 🚨 Troubleshooting
+
+### Error Classification
+
+All tool errors are automatically classified by the kernel's resilience middleware:
+
+| Error Type | Example | Agent Action |
+|---|---|---|
+| `retryable` | Timeout, rate limit, network error | Wait and retry |
+| `permanent` | Invalid input, schema validation | Fix request |
+| `auth_required` | 401/403, expired token | Re-authenticate |
+| `user_action` | File not found, missing data | Prompt user |
+
+Each error includes recovery steps, alternative tool suggestions, and retry delay recommendations. When running parallel analyses, partial failures (>=50% success) still produce useful degraded results.
 
 ### Common Issues
 

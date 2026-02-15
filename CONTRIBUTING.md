@@ -52,9 +52,94 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 
 1. Create a spec in `specs/<agent-name>.spec.md`
 2. Run `npm run gen` to generate agent scaffold
-3. Implement the agent logic
-4. Add tests and documentation
-5. Update pipeline if needed
+3. Implement the agent logic — inherit `MCPServer`, add Roman persona
+4. Classify all tools as `query`, `command`, or `discovery` (see `src/kernel/types.ts`)
+5. Add tests and documentation
+6. Register the server in `src/mcp-client.ts` server configs — the kernel registry picks it up automatically
+
+## Adding Kernel Middleware
+
+The kernel middleware pipeline (`src/kernel/middleware/`) supports pluggable middleware:
+
+1. Create `src/kernel/middleware/<name>.ts` implementing your middleware class
+2. Wire it into `src/kernel/index.ts` (constructor + `callTool` pipeline)
+3. Add tests in `tests/kernel-<name>.test.ts` (use the simple assert pattern, not jest)
+4. Update `docs/API_REFERENCE.md` and `docs/ARCHITECTURE.md`
+5. Append entry to `CHANGELOG.md`
+
+Existing middleware: `auth.ts` (RBAC), `audit.ts` (JSONL logging), `resilience.ts` (error classification), `output.ts` (detail levels).
+
+## Documentation Requirements
+
+Every PR must include:
+- Updated `CHANGELOG.md` entry
+- Updated docs if the change affects APIs, architecture, or user-facing behavior
+- Test coverage for new functionality
+
+## Testing
+
+### Running Tests
+
+```bash
+npm run test              # Run all test suites (original + kernel)
+npm run demo              # Integration test via demo (14 servers through kernel)
+npm run server:geowiz     # Test individual server (all 14 available)
+```
+
+### Kernel Tests
+
+Kernel tests use the **simple assert pattern** (not jest/vitest) and are self-contained with their own runner:
+
+```bash
+npx tsx tests/kernel-registry.test.ts    # Run a specific kernel test
+npx tsx tests/kernel-executor.test.ts    # Each file runs independently
+```
+
+Test files follow the naming convention `tests/kernel-<module>.test.ts`. Key conventions:
+
+- Use `node:assert` for assertions (`strictEqual`, `deepStrictEqual`, `ok`, `throws`)
+- Each test file has its own runner at the bottom
+- Mock dependencies inline — no mock framework needed
+- Test both success and failure paths
+- No network calls or external file I/O
+
+### Pre-commit Checklist
+
+Run the full validation suite before every commit:
+
+```bash
+npm run build && npm run type-check && npm run lint && npm run test && npm run demo
+```
+
+## Release Process
+
+### Version Management
+
+SHALE YEAH follows **semantic versioning** (semver):
+- **Major (X.0.0)**: Breaking changes to public API
+- **Minor (0.X.0)**: New features, backward compatible
+- **Patch (0.0.X)**: Bug fixes, backward compatible
+
+### Release Checklist
+
+```bash
+# 1. Full validation
+npm run build && npm run type-check && npm run lint && npm run test
+
+# 2. Demo works
+npm run demo
+
+# 3. Clean build test
+npm run clean && npm install --legacy-peer-deps && npm run build && npm run demo
+```
+
+Then:
+1. Update version in `package.json`
+2. Update `CHANGELOG.md` with release notes
+3. Create release branch: `git checkout -b release/vX.Y.Z`
+4. Create release tag: `git tag vX.Y.Z`
+5. Push and create GitHub release
+6. Merge to main
 
 ## Reporting Issues
 

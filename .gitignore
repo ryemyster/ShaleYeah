@@ -35,6 +35,7 @@ coverage/
 
 # SHALE YEAH - Generated Outputs
 outputs/
+data/audit/
 !data/samples/
 !data/samples/.gitkeep
 

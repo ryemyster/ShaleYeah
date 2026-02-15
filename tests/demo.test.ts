@@ -25,11 +25,7 @@ async function testDemoMode(): Promise<boolean> {
 		await demo.runCompleteDemo();
 
 		// Verify files were created
-		const requiredFiles = [
-			"INVESTMENT_DECISION.md",
-			"DETAILED_ANALYSIS.md",
-			"FINANCIAL_MODEL.json",
-		];
+		const requiredFiles = ["INVESTMENT_DECISION.md", "DETAILED_ANALYSIS.md", "FINANCIAL_MODEL.json"];
 
 		for (const file of requiredFiles) {
 			const filePath = path.join(testOutDir, file);
@@ -41,18 +37,12 @@ async function testDemoMode(): Promise<boolean> {
 		}
 
 		// Verify file contents
-		const reportContent = await fs.readFile(
-			path.join(testOutDir, "INVESTMENT_DECISION.md"),
-			"utf-8",
-		);
+		const reportContent = await fs.readFile(path.join(testOutDir, "INVESTMENT_DECISION.md"), "utf-8");
 		if (!reportContent.includes("SHALE YEAH Investment Analysis Report")) {
 			throw new Error("Report content validation failed");
 		}
 
-		const modelContent = await fs.readFile(
-			path.join(testOutDir, "FINANCIAL_MODEL.json"),
-			"utf-8",
-		);
+		const modelContent = await fs.readFile(path.join(testOutDir, "FINANCIAL_MODEL.json"), "utf-8");
 		const model = JSON.parse(modelContent);
 		if (!model.investment_summary?.npv_10_percent) {
 			throw new Error("Financial model validation failed");
@@ -81,10 +71,7 @@ async function testProductionModeDetection(): Promise<boolean> {
 }
 
 async function runAllTests(): Promise<void> {
-	const testResults = await Promise.all([
-		testDemoMode(),
-		testProductionModeDetection(),
-	]);
+	const testResults = await Promise.all([testDemoMode(), testProductionModeDetection()]);
 
 	const allPassed = testResults.every((result) => result);
 

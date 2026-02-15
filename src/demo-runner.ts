@@ -37,10 +37,7 @@ export class ShaleYeahMCPDemo {
 		if (config?.runId) {
 			this.runId = config.runId;
 		} else {
-			const timestamp = new Date()
-				.toISOString()
-				.replace(/\..+/, "")
-				.replace(/[-:]/g, "");
+			const timestamp = new Date().toISOString().replace(/\..+/, "").replace(/[-:]/g, "");
 			this.runId = `demo-${timestamp}`;
 		}
 
@@ -49,10 +46,14 @@ export class ShaleYeahMCPDemo {
 	}
 
 	async runCompleteDemo(): Promise<void> {
+		// Create a kernel session with default demo identity
+		const session = this.client.kernel.createSession();
+
 		try {
 			// Setup graceful shutdown for demo
 			process.on("SIGINT", async () => {
 				console.log("\n🛑 Demo interrupted, cleaning up...");
+				this.client.kernel.destroySession(session.id);
 				await this.client.cleanup();
 				process.exit(0);
 			});
@@ -65,34 +66,28 @@ export class ShaleYeahMCPDemo {
 				outputDir: this.outputDir,
 			};
 
-			// Execute analysis using MCP client (same as production, but with demo mode)
+			// Execute analysis via kernel-backed MCP client
 			const result = await this.client.executeAnalysis(request);
 
 			if (result.success) {
 				console.log("\n✅ Demo completed successfully!");
 				console.log(`📊 Confidence: ${result.confidence}%`);
-				console.log(
-					`⏱️  Total Time: ${(result.totalTime / 1000).toFixed(2)} seconds`,
-				);
+				console.log(`⏱️  Total Time: ${(result.totalTime / 1000).toFixed(2)} seconds`);
 				console.log(`📁 Results: ${this.outputDir}`);
 				console.log();
 				console.log("💡 This was a demonstration using realistic mock data.");
-				console.log(
-					"   For production analysis, use --mode=production with real API keys.",
-				);
+				console.log("   For production analysis, use --mode=production with real API keys.");
 			} else {
 				console.log("\n❌ Demo analysis failed or incomplete");
 				console.log(`📊 Confidence: ${result.confidence}%`);
 				process.exit(1);
 			}
 		} catch (error) {
-			console.error(
-				"💥 Demo failed:",
-				error instanceof Error ? error.message : String(error),
-			);
+			console.error("💥 Demo failed:", error instanceof Error ? error.message : String(error));
 			await this.client.cleanup();
 			process.exit(1);
 		} finally {
+			this.client.kernel.destroySession(session.id);
 			await this.client.cleanup();
 		}
 	}

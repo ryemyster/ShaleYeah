@@ -139,11 +139,7 @@ export class FileFormatDetector {
 			const format = await this.identifyFormat(filePath, buffer);
 
 			// Extract metadata
-			const metadata = await this.extractBasicMetadata(
-				filePath,
-				format,
-				buffer,
-			);
+			const metadata = await this.extractBasicMetadata(filePath, format, buffer);
 
 			return {
 				format: format.name,
@@ -172,10 +168,7 @@ export class FileFormatDetector {
 	/**
 	 * Validate file format against expected type
 	 */
-	async validateFormat(
-		filePath: string,
-		expectedFormat: string,
-	): Promise<ValidationResult> {
+	async validateFormat(filePath: string, expectedFormat: string): Promise<ValidationResult> {
 		try {
 			const detected = await this.detectFormat(filePath);
 
@@ -189,10 +182,7 @@ export class FileFormatDetector {
 
 			// Add format-specific validations
 			if (isValid) {
-				const specificValidation = await this.validateFormatSpecific(
-					filePath,
-					expectedFormat,
-				);
+				const specificValidation = await this.validateFormatSpecific(filePath, expectedFormat);
 				errors.push(...specificValidation.errors);
 				warnings.push(...specificValidation.warnings);
 			}
@@ -254,10 +244,7 @@ export class FileFormatDetector {
 		}
 	}
 
-	private async readFileHeader(
-		filePath: string,
-		bytes: number,
-	): Promise<Buffer> {
+	private async readFileHeader(filePath: string, bytes: number): Promise<Buffer> {
 		try {
 			const fileHandle = await fs.open(filePath, "r");
 			const buffer = Buffer.alloc(bytes);
@@ -283,21 +270,12 @@ export class FileFormatDetector {
 		const content = buffer.toString("utf-8", 0, Math.min(512, buffer.length));
 
 		// Check each format signature
-		for (const [formatName, signature] of Object.entries(
-			FileFormatDetector.FORMAT_SIGNATURES,
-		)) {
+		for (const [formatName, signature] of Object.entries(FileFormatDetector.FORMAT_SIGNATURES)) {
 			// Extension match
 			if (signature.extensions.includes(ext)) {
 				// Magic bytes check
-				if (
-					signature.magicBytes &&
-					buffer.length >= signature.magicBytes.length
-				) {
-					if (
-						buffer
-							.subarray(0, signature.magicBytes.length)
-							.equals(signature.magicBytes)
-					) {
+				if (signature.magicBytes && buffer.length >= signature.magicBytes.length) {
+					if (buffer.subarray(0, signature.magicBytes.length).equals(signature.magicBytes)) {
 						return { name: formatName, isValid: true, errors: [] };
 					}
 				}
@@ -313,11 +291,7 @@ export class FileFormatDetector {
 				}
 
 				// Extension match only (lower confidence)
-				if (
-					!signature.magicBytes &&
-					!signature.headerPattern &&
-					!signature.validator
-				) {
+				if (!signature.magicBytes && !signature.headerPattern && !signature.validator) {
 					return { name: formatName, isValid: true, errors: [] };
 				}
 			}
@@ -330,16 +304,11 @@ export class FileFormatDetector {
 		};
 	}
 
-	private async extractBasicMetadata(
-		_filePath: string,
-		format: any,
-		buffer: Buffer,
-	): Promise<Record<string, any>> {
+	private async extractBasicMetadata(_filePath: string, format: any, buffer: Buffer): Promise<Record<string, any>> {
 		const metadata: Record<string, any> = {
 			encoding: this.detectEncoding(buffer),
 			hasHeader: this.hasTextHeader(buffer),
-			estimatedRows:
-				format.name === "csv" ? this.estimateCSVRows(buffer) : null,
+			estimatedRows: format.name === "csv" ? this.estimateCSVRows(buffer) : null,
 		};
 
 		// Add format-specific basic metadata
@@ -370,15 +339,10 @@ export class FileFormatDetector {
 		const lines = text.split("\n").length;
 		// Rough estimate based on first chunk
 		const avgBytesPerLine = buffer.length / lines;
-		return avgBytesPerLine > 0
-			? Math.floor((1024 * 1024) / avgBytesPerLine)
-			: 0;
+		return avgBytesPerLine > 0 ? Math.floor((1024 * 1024) / avgBytesPerLine) : 0;
 	}
 
-	private calculateConfidence(
-		detected: FileMetadata,
-		expected: string,
-	): number {
+	private calculateConfidence(detected: FileMetadata, expected: string): number {
 		if (detected.format !== expected) return 0;
 		if (!detected.isValid) return 0.3;
 		if (detected.errors && detected.errors.length > 0) return 0.7;
@@ -402,9 +366,7 @@ export class FileFormatDetector {
 	}
 
 	// Placeholder metadata extractors - will be implemented with parsers
-	private async extractLASMetadata(
-		_filePath: string,
-	): Promise<Record<string, any>> {
+	private async extractLASMetadata(_filePath: string): Promise<Record<string, any>> {
 		return {
 			curves: [],
 			wellName: "Unknown",
@@ -412,21 +374,15 @@ export class FileFormatDetector {
 		};
 	}
 
-	private async extractShapefileMetadata(
-		_filePath: string,
-	): Promise<Record<string, any>> {
+	private async extractShapefileMetadata(_filePath: string): Promise<Record<string, any>> {
 		return { features: 0, geometryType: "Unknown", bounds: null };
 	}
 
-	private async extractGeoJSONMetadata(
-		_filePath: string,
-	): Promise<Record<string, any>> {
+	private async extractGeoJSONMetadata(_filePath: string): Promise<Record<string, any>> {
 		return { features: 0, crs: "Unknown" };
 	}
 
-	private async extractExcelMetadata(
-		_filePath: string,
-	): Promise<Record<string, any>> {
+	private async extractExcelMetadata(_filePath: string): Promise<Record<string, any>> {
 		return { sheets: [], rows: 0, columns: 0 };
 	}
 }

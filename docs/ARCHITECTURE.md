@@ -440,6 +440,264 @@ describe('Demo Runner', () => {
 - Server-level permission management
 - Audit logging for all operations
 
+## Agent OS Kernel Layer
+
+The kernel is the runtime layer between agents and the 14 MCP domain servers. It provides tool discovery, routing, and (progressively) execution, context, middleware, and composition.
+
+```
+┌─────────────────────────────────────────────────┐
+│                  AGENT (LLM)                     │
+│         Calls tools, receives results            │
+└───────────────────┬─────────────────────────────┘
+                    │ MCP Protocol
+┌───────────────────▼─────────────────────────────┐
+│                  KERNEL                          │
+│                                                  │
+│  ┌──────────────┐  ┌──────────────────────────┐ │
+│  │   Registry   │  │   Discovery Tools        │ │
+│  │              │  │                          │ │
+│  │ 14 servers   │  │ list_servers             │ │
+│  │ 14 tools     │  │ describe_tools           │ │
+│  │ capabilities │  │ find_capability          │ │
+│  └──────────────┘  └──────────────────────────┘ │
+└───────────────────┬─────────────────────────────┘
+                    │
+        ┌───────────┼───────────┐
+        ▼           ▼           ▼
+   ┌─────────┐ ┌─────────┐ ┌─────────┐
+   │ GeoWiz  │ │Econobot │ │  ...12  │
+   │ (query) │ │ (query) │ │  more   │
+   └─────────┘ └─────────┘ └─────────┘
+```
+
+### Key Components
+
+- **Registry** (`src/kernel/registry.ts`) — indexes all servers and tools, provides capability matching and server routing
+- **Kernel** (`src/kernel/index.ts`) — unified entry point, exposes discovery and execution methods
+- **Executor** (`src/kernel/executor.ts`) — execution engine for single, parallel (scatter-gather), and bundled tool invocations
+- **OutputShaper** (`src/kernel/middleware/output.ts`) — progressive detail levels (summary/standard/full)
+- **Types** (`src/kernel/types.ts`) — Agent OS type system (tool classification, response envelope, error types, permissions)
+
+### Tool Classification
+
+Every tool is classified as `query` (read-only, cacheable), `command` (side effects), or `discovery` (meta). This enables agents to safely parallelize queries, confirm commands, and explore capabilities dynamically.
+
+### Execution Engine (Scatter-Gather)
+
+The executor supports three execution modes:
+
+1. **Single execution** — route a request to one server, return `ToolResponse`
+2. **Parallel (scatter-gather)** — run N requests via `Promise.allSettled`, collect all results even if some fail. Respects `maxParallel` concurrency limit.
+3. **Bundle execution** — resolve a dependency graph into ordered phases, execute each phase (parallel or sequential), track per-phase and overall completeness.
+
+```
+Quick Screen (1 phase, ~20ms):
+  ┌─────────┐ ┌─────────┐ ┌────────────┐ ┌───────────────┐
+  │ GeoWiz  │ │Econobot │ │Curve-Smith │ │Risk-Analysis  │
+  └────┬────┘ └────┬────┘ └─────┬──────┘ └──────┬────────┘
+       └──────────┬┘            │               │
+              Promise.allSettled ────────────────┘
+                    │
+              GatheredResponse (completeness %)
+
+Full Due Diligence (4+ phases):
+  Phase 1:  geowiz, econobot, curve-smith, market, research  (parallel)
+  Phase 2:  risk, legal, title, drilling, infra, development  (parallel, depends on P1)
+  Phase 3:  test                                               (depends on P2)
+  Phase 4:  reporter → decision                                (sequential, depends on P3)
+```
+
+### Pre-Built Bundles
+
+| Bundle | Servers | Phases | Strategy | Detail Level |
+|--------|---------|--------|----------|-------------|
+| `quick_screen` | 4 (core) | 1 | all required | summary |
+| `full_due_diligence` | 14 (all) | 4+ | majority | standard/full |
+
+## Context & Sessions
+
+The kernel manages user sessions with identity anchoring and context injection, implementing the Arcade patterns: **Identity Anchor**, **Context Injection**, **Context Boundary**, and **Resource Referencing**.
+
+### Session Lifecycle
+
+```
+createSession(identity?, prefs?)  →  Session { id, identity, preferences }
+        │
+        ├─ storeResult("geo", response)   // Resource Referencing
+        ├─ storeResult("econ", response)
+        │
+        ├─ getResult("geo")               // Retrieve stored analysis
+        │
+        ├─ getInjectedContext()            // Context Injection
+        │       → { userId, role, sessionId, timestamp, timezone,
+        │          defaultBasin, riskTolerance, availableResults[] }
+        │
+        ├─ whoAmI(sessionId)               // Identity Anchor
+        │       → { identity, context }
+        │
+        └─ destroySession(sessionId)       // Cleanup
+```
+
+### Context Boundary (Session Isolation)
+
+Each session is an isolated context boundary. Results stored in one session are **never visible** to another:
+
+```
+Session A: storeResult("geo", ...)  →  availableResults: ["geo"]
+Session B: storeResult("econ", ...) →  availableResults: ["econ"]
+                                        // No cross-contamination
+```
+
+### Default Identity
+
+Demo mode uses a built-in identity:
+```typescript
+DEMO_IDENTITY = {
+  userId: "demo", role: "analyst",
+  permissions: ["read:analysis"],
+  organization: "SHALE YEAH Demo"
+}
+```
+
+## Error Intelligence & Resilience
+
+The kernel's `ResilienceMiddleware` classifies errors, generates recovery guides, and handles graceful degradation when parallel servers fail.
+
+### Error Classification Pipeline
+
+```
+Raw Error → Pattern Matching → ErrorType Classification → RecoveryGuide
+                                    │
+                    ┌───────────────┼───────────────┐
+                    │               │               │
+               retryable      permanent      auth_required    user_action
+              (retry w/       (fix request)   (re-auth)      (need input)
+               backoff)
+```
+
+Priority order: auth > user_action > retryable > permanent. Unknown errors default to retryable.
+
+### Graceful Degradation
+
+When scatter-gather execution encounters partial failures, the resilience middleware assesses whether the degraded result is still useful:
+
+```
+14 servers requested → 12 succeed, 2 fail
+                         │
+                    completeness: 86%  (>50% threshold)
+                    missingAnalyses: ["reporter", "decision"]
+                    suggestions: ["Partial results sufficient...",
+                                  "decision failed — try reporter.analyze"]
+```
+
+### Alternative Tool Mapping
+
+Each server has fallback suggestions based on capability overlap (e.g., geowiz → research, econobot → market).
+
+## Composition — Abstraction Ladder
+
+The kernel provides tools at three abstraction levels, implementing the [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) pattern:
+
+```
+High   ┌─────────────────────────────────────┐
+       │  shouldWeInvest()                   │  Full pipeline + confirmation gate
+       │  quickScreen() / fullAnalysis()     │  Pre-built bundles
+       ├─────────────────────────────────────┤
+Mid    │  geologicalDeepDive()               │  Domain-focused bundles (3 servers)
+       │  financialReview()                  │  Domain-focused bundles (3 servers)
+       │  executeParallel([...requests])     │  Ad-hoc scatter-gather
+       ├─────────────────────────────────────┤
+Low    │  execute(request)                   │  Single tool call
+       │  callTool(request, sessionId)       │  Single tool + auth/audit pipeline
+       └─────────────────────────────────────┘
+```
+
+### Pre-Built Bundles (from `bundles.ts`)
+
+| Bundle | Servers | Detail Levels | Strategy |
+|---|---|---|---|
+| `geological_deep_dive` | geowiz(full), curve-smith(standard), research(summary) | Mixed | all |
+| `financial_review` | econobot(full), risk-analysis(standard), market(summary) | Mixed | all |
+
+### Confirmation Gate
+
+Decision tools (`decision.make_recommendation`, `decision.analyze`) return `requires_confirmation: true` with a pending action. The agent must call `confirmAction(actionId)` or `cancelAction(actionId)` before the action executes. This implements the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern for high-impact tools.
+
+## Security Layer
+
+The kernel provides role-based access control and append-only audit logging, implementing the Arcade patterns: **Permission Gate**, **Secret Injection**, and **Audit Trail**.
+
+### Middleware Pipeline
+
+```
+callTool(request, sessionId)
+    │
+    ├─ 1. AuthMiddleware.check(tool, identity)
+    │       ├─ allowed → continue
+    │       └─ denied → audit.logDenial() → return error
+    │
+    ├─ 2. AuditMiddleware.logRequest(entry)
+    │
+    ├─ 3. Executor.execute(request)
+    │
+    └─ 4. AuditMiddleware.logResponse(entry)  — or logError(entry)
+```
+
+### Role Hierarchy
+
+| Role | Permissions | Can Call |
+|---|---|---|
+| analyst | read:analysis | All query tools (12 servers) |
+| engineer | +write:reports | + reporter tools |
+| executive | +execute:decisions | + decision tools |
+| admin | +admin:servers, admin:users | Everything |
+
+### Audit Trail
+
+- Append-only JSONL at `data/audit/YYYY-MM-DD.jsonl`
+- Sensitive values (keys matching `/key|token|secret|password|credential|auth|bearer/`) automatically redacted as `[REDACTED]`
+- Logs requests, responses, errors, and denials with who/what/when
+
+### Configuration
+
+Both features controlled by env vars (auth off by default, audit on by default):
+
+```
+KERNEL_AUTH_ENABLED=true|false   (default: false)
+KERNEL_AUDIT_ENABLED=true|false  (default: true)
+```
+
+## Composition — Abstraction Ladder
+
+The kernel provides three tiers of tool abstraction, letting agents choose the right level for their task:
+
+```
+HIGH-LEVEL (Composite)     shouldWeInvest() → full pipeline + confirmation gate
+                           geologicalDeepDive() → geowiz + curve-smith + research
+                           financialReview() → econobot + risk-analysis + market
+                           quickScreen() → 4 core servers in parallel
+                           fullAnalysis() → 14 servers, dependency-ordered
+
+MID-LEVEL (Orchestration)  executeParallel() → scatter-gather any N tools
+                           executeBundle() → phased bundle with dependencies
+
+LOW-LEVEL (Direct)         execute() → single tool call
+                           callTool() → single tool with auth + audit
+```
+
+### Pre-Built Bundles
+
+| Bundle | Servers | Strategy | Detail Levels |
+|---|---|---|---|
+| `quick_screen` | geowiz, econobot, curve-smith, risk-analysis | all (parallel) | summary |
+| `full_due_diligence` | All 14 servers | majority (5 phases) | mixed |
+| `geological_deep_dive` | geowiz(full), curve-smith(standard), research(summary) | all (parallel) | mixed |
+| `financial_review` | econobot(full), risk-analysis(standard), market(summary) | all (parallel) | mixed |
+
+### Confirmation Gate
+
+Decision tools (`decision.make_recommendation`, `decision.analyze`) are gated behind a confirmation step. When called via `shouldWeInvest()`, the decision result returns `requires_confirmation: true` with a `pending_action` containing an `actionId`. The agent must call `confirmAction(actionId)` to finalize, or `cancelAction(actionId)` to discard. Implements the Arcade **Confirmation Request** pattern.
+
 ## Deployment Architecture
 
 ### Development

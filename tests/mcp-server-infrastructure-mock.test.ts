@@ -43,7 +43,7 @@ class MockMcpServer {
 		this.resources.set(name, { name, uri, description: "", handler });
 	}
 
-	async connect(transport: any): Promise<void> {
+	async connect(_transport: any): Promise<void> {
 		this.connected = true;
 	}
 
@@ -64,9 +64,7 @@ class MockMcpServer {
 	}
 }
 
-class MockStdioServerTransport {
-	constructor() {}
-}
+class MockStdioServerTransport {}
 
 // Mock file integration manager
 class MockFileIntegrationManager {
@@ -107,20 +105,21 @@ interface MCPResource {
 const createZodType = (typeName: string, extra: any = {}) => ({
 	_def: { typeName, ...extra },
 	parse: (data: any) => data,
-	optional: () => createZodType('ZodOptional', { innerType: { _def: { typeName, ...extra } } }),
-	default: (value: any) => createZodType('ZodDefault', { innerType: { _def: { typeName, ...extra } }, defaultValue: () => value })
+	optional: () => createZodType("ZodOptional", { innerType: { _def: { typeName, ...extra } } }),
+	default: (value: any) =>
+		createZodType("ZodDefault", { innerType: { _def: { typeName, ...extra } }, defaultValue: () => value }),
 });
 
 const z = {
 	object: (shape: any) => ({
-		_def: { typeName: 'ZodObject', shape },
-		parse: (data: any) => data
+		_def: { typeName: "ZodObject", shape },
+		parse: (data: any) => data,
 	}),
-	string: () => createZodType('ZodString'),
-	number: () => createZodType('ZodNumber'),
-	boolean: () => createZodType('ZodBoolean'),
-	array: (type: any) => createZodType('ZodArray', { type }),
-	enum: (values: string[]) => createZodType('ZodEnum', { values })
+	string: () => createZodType("ZodString"),
+	number: () => createZodType("ZodNumber"),
+	boolean: () => createZodType("ZodBoolean"),
+	array: (type: any) => createZodType("ZodArray", { type }),
+	enum: (values: string[]) => createZodType("ZodEnum", { values }),
 };
 
 /**
@@ -184,41 +183,32 @@ abstract class MCPServer {
 	}
 
 	public registerTool(tool: MCPTool): void {
-		this.server.tool(
-			tool.name,
-			tool.description,
-			this.convertZodToJsonSchema(tool.inputSchema),
-			async (args: any) => {
-				try {
-					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
-					const validatedArgs = tool.inputSchema.parse(args);
-					const result = await tool.handler(validatedArgs);
-					console.log(`✅ ${tool.name} completed`);
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: JSON.stringify(this.formatResult(result), null, 2),
-							},
-						],
-					};
-				} catch (error) {
-					console.error(`❌ ${tool.name} failed:`, error);
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: JSON.stringify(
-									this.formatError(tool.name, error),
-									null,
-									2,
-								),
-							},
-						],
-					};
-				}
-			},
-		);
+		this.server.tool(tool.name, tool.description, this.convertZodToJsonSchema(tool.inputSchema), async (args: any) => {
+			try {
+				console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
+				const validatedArgs = tool.inputSchema.parse(args);
+				const result = await tool.handler(validatedArgs);
+				console.log(`✅ ${tool.name} completed`);
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: JSON.stringify(this.formatResult(result), null, 2),
+						},
+					],
+				};
+			} catch (error) {
+				console.error(`❌ ${tool.name} failed:`, error);
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: JSON.stringify(this.formatError(tool.name, error), null, 2),
+						},
+					],
+				};
+			}
+		});
 	}
 
 	public registerResource(resource: MCPResource): void {
@@ -252,7 +242,7 @@ abstract class MCPServer {
 
 	private convertZodToJsonSchema(schema: any): any {
 		try {
-			if (schema && schema._def && schema._def.shape) {
+			if (schema?._def?.shape) {
 				const shape = schema._def.shape;
 				const properties: any = {};
 				const required: string[] = [];
@@ -279,7 +269,7 @@ abstract class MCPServer {
 
 	private zodTypeToJsonSchema(zodType: any): any {
 		try {
-			if (zodType && zodType._def) {
+			if (zodType?._def) {
 				const def = zodType._def;
 				switch (def.typeName) {
 					case "ZodString":
@@ -318,7 +308,7 @@ abstract class MCPServer {
 	}
 
 	private isRequired(zodType: any): boolean {
-		if (zodType && zodType._def) {
+		if (zodType?._def) {
 			const def = zodType._def;
 			return def.typeName !== "ZodOptional" && def.typeName !== "ZodDefault";
 		}
@@ -377,21 +367,17 @@ abstract class MCPServer {
 
 // Mock concrete MCP server for testing
 class TestMCPServer extends MCPServer {
-	constructor(config: MCPServerConfig) {
-		super(config);
-	}
-
 	protected setupCapabilities(): void {
 		this.registerTool({
 			name: "test-tool",
 			description: "Test tool for validation",
 			inputSchema: z.object({
 				input: z.string(),
-				optional: z.string().optional()
+				optional: z.string().optional(),
 			}),
 			handler: async (args) => {
 				return { processed: args.input, success: true };
-			}
+			},
 		});
 
 		this.registerResource({
@@ -401,7 +387,7 @@ class TestMCPServer extends MCPServer {
 			mimeType: "application/json",
 			handler: async (uri) => {
 				return { uri: uri.toString(), data: "test" };
-			}
+			},
 		});
 	}
 
@@ -424,7 +410,7 @@ class MCPServerInfrastructureTester {
 			failed: 0,
 			total: 0,
 			coverage: new Map<string, boolean>(),
-			errorDetails: [] as string[]
+			errorDetails: [] as string[],
 		};
 
 		try {
@@ -442,7 +428,7 @@ class MCPServerInfrastructureTester {
 			console.error("❌ MCP server infrastructure test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -460,9 +446,9 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Test Expert",
 					role: "Testing Specialist",
-					expertise: ["validation", "testing", "quality-assurance"]
+					expertise: ["validation", "testing", "quality-assurance"],
 				},
-				dataPath: path.join(this.testOutputDir, "test-server")
+				dataPath: path.join(this.testOutputDir, "test-server"),
 			};
 
 			const server = new TestMCPServer(config);
@@ -501,8 +487,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Directory Expert",
 					role: "File Management",
-					expertise: ["filesystem"]
-				}
+					expertise: ["filesystem"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -550,8 +536,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Tool Expert",
 					role: "Tool Management",
-					expertise: ["tools", "execution"]
-				}
+					expertise: ["tools", "execution"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -591,8 +577,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Resource Expert",
 					role: "Resource Management",
-					expertise: ["resources", "data"]
-				}
+					expertise: ["resources", "data"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -632,8 +618,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Schema Expert",
 					role: "Schema Validation",
-					expertise: ["validation", "schemas"]
-				}
+					expertise: ["validation", "schemas"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -642,24 +628,24 @@ class MCPServerInfrastructureTester {
 			const testSchemas = [
 				{
 					name: "string-schema",
-					schema: z.object({ text: z.string() })
+					schema: z.object({ text: z.string() }),
 				},
 				{
 					name: "number-schema",
-					schema: z.object({ value: z.number() })
+					schema: z.object({ value: z.number() }),
 				},
 				{
 					name: "boolean-schema",
-					schema: z.object({ flag: z.boolean() })
+					schema: z.object({ flag: z.boolean() }),
 				},
 				{
 					name: "array-schema",
-					schema: z.object({ items: z.array(z.string()) })
+					schema: z.object({ items: z.array(z.string()) }),
 				},
 				{
 					name: "enum-schema",
-					schema: z.object({ choice: z.enum(["A", "B", "C"]) })
-				}
+					schema: z.object({ choice: z.enum(["A", "B", "C"]) }),
+				},
 			];
 
 			for (const testCase of testSchemas) {
@@ -667,7 +653,7 @@ class MCPServerInfrastructureTester {
 					name: testCase.name,
 					description: `Test tool for ${testCase.name}`,
 					inputSchema: testCase.schema,
-					handler: async (args) => ({ received: args })
+					handler: async (args) => ({ received: args }),
 				};
 
 				// This will internally test the convertZodToJsonSchema method
@@ -699,8 +685,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Error Expert",
 					role: "Error Management",
-					expertise: ["errors", "debugging"]
-				}
+					expertise: ["errors", "debugging"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -745,8 +731,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Result Expert",
 					role: "Data Formatting",
-					expertise: ["formatting", "storage"]
-				}
+					expertise: ["formatting", "storage"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -755,7 +741,7 @@ class MCPServerInfrastructureTester {
 			const testData = {
 				analysis: "complete",
 				values: [1, 2, 3, 4, 5],
-				metadata: { version: "1.0" }
+				metadata: { version: "1.0" },
 			};
 
 			const formattedResult = server.formatResult(testData);
@@ -792,8 +778,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Lifecycle Expert",
 					role: "Process Management",
-					expertise: ["lifecycle", "processes"]
-				}
+					expertise: ["lifecycle", "processes"],
+				},
 			};
 
 			const server = new TestMCPServer(config);

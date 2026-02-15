@@ -34,6 +34,459 @@ const result = await client.executeAnalysis({
 });
 ```
 
+**3. Kernel Discovery API**
+```typescript
+import { Kernel } from './src/kernel/index.js';
+import { ShaleYeahMCPClient } from './src/mcp-client.js';
+
+const client = new ShaleYeahMCPClient();
+const kernel = new Kernel();
+kernel.initialize(client.serverConfigs);
+
+// Discover available servers
+const servers = kernel.listServers();
+const geologyOnly = kernel.listServers({ domain: 'geology' });
+const commandOnly = kernel.listServers({ type: 'command' });
+
+// Describe tools on a specific server
+const tools = kernel.describeTools('geowiz');
+
+// Find tools by capability
+const matches = kernel.findCapability('formation_analysis');
+
+// Resolve which server owns a tool
+const server = kernel.resolveServer('geowiz.analyze'); // → 'geowiz'
+```
+
+---
+
+## 🧠 Kernel Discovery API
+
+The kernel provides discovery tools that allow agents to dynamically explore available capabilities before taking action. Based on the [Arcade.dev Discovery Tool pattern](https://www.arcade.dev/patterns/discovery-tool).
+
+### `kernel.list_servers`
+
+List all available MCP servers with optional filtering by domain, tool type, or capability.
+
+**Input Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `domain` | string | No | Filter by domain (e.g., "geology", "economics", "risk") |
+| `type` | string | No | Filter by tool type: "query", "command", or "discovery" |
+| `capability` | string | No | Filter by capability keyword (case-insensitive) |
+
+**Response:**
+```json
+[
+  {
+    "name": "geowiz",
+    "description": "Geological Analysis Server",
+    "domain": "geology",
+    "persona": "Marcus Aurelius Geologicus",
+    "toolCount": 1,
+    "capabilities": ["formation_analysis", "gis_processing", "well_log_analysis"],
+    "status": "connected"
+  }
+]
+```
+
+### `kernel.describe_tools`
+
+Get detailed tool descriptors for a specific server or all servers.
+
+**Input Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `serverName` | string | No | Server name to scope results. Omit for all tools. |
+
+**Response:**
+```json
+[
+  {
+    "name": "geowiz.analyze",
+    "server": "geowiz",
+    "type": "query",
+    "description": "Geological Analysis Server — powered by Marcus Aurelius Geologicus",
+    "capabilities": ["formation_analysis", "gis_processing", "well_log_analysis"],
+    "readOnly": true,
+    "destructive": false,
+    "requiresConfirmation": false,
+    "detailLevels": ["summary", "standard", "full"]
+  }
+]
+```
+
+### `kernel.find_capability`
+
+Find tools that match a capability string. Case-insensitive substring matching.
+
+**Input Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `capability` | string | Yes | Capability to search for (e.g., "formation_analysis", "monte_carlo") |
+
+**Response:** Array of matching `ToolDescriptor` objects (same shape as `describe_tools`).
+
+### Session & Context Tools
+
+Sessions provide identity anchoring and context injection. Based on the [Arcade.dev Identity Anchor](https://www.arcade.dev/patterns/identity-anchor) and [Context Injection](https://www.arcade.dev/patterns/context-injection) patterns.
+
+#### `kernel.create_session`
+
+Create a new session with optional identity and preferences. Defaults to demo identity (`analyst` role, `read:analysis` permission).
+
+```typescript
+// Default demo session
+const session = kernel.createSession();
+
+// Custom identity
+const session = kernel.createSession(
+  { userId: "eng-456", role: "engineer", permissions: ["read:analysis", "write:reports"] },
+  { defaultBasin: "Permian", riskTolerance: "moderate" }
+);
+```
+
+**Returns:** `Session` object with UUID `id`, `identity`, `preferences`, and methods for storing/retrieving analysis results.
+
+#### `kernel.who_am_i`
+
+Return the identity and injected context for a session. The context includes user preferences, timezone, and a list of previously stored analysis results.
+
+```typescript
+const info = kernel.whoAmI(sessionId);
+// info.identity → { userId, role, permissions, ... }
+// info.context  → { userId, role, sessionId, timestamp, timezone, defaultBasin, riskTolerance, availableResults }
+```
+
+#### `kernel.get_session`
+
+Get session metadata including creation time, last activity, and available result keys.
+
+```typescript
+const info = kernel.getSession(sessionId);
+// info → { id, identity, createdAt, lastActivity, availableResults: ["geo", "econ"] }
+```
+
+#### Session Lifecycle
+
+1. **Create** — `kernel.createSession(identity?, preferences?)`
+2. **Use** — execute tools; store results via `session.storeResult(key, response)`
+3. **Query** — `kernel.whoAmI(id)` for context, `session.getResult(key)` for prior results
+4. **Destroy** — `kernel.destroySession(id)` releases all session resources
+
+Sessions are isolated — results stored in one session are not visible to others. Context is automatically injected into tool calls when a `sessionId` is provided in `ToolRequest`.
+
+### Error Intelligence & Resilience
+
+All tool errors are classified with type, recovery guidance, and alternative tool suggestions. Based on [Arcade.dev Error Classification](https://www.arcade.dev/patterns/error-classification) and [Recovery Guide](https://www.arcade.dev/patterns/recovery-guide) patterns.
+
+#### Error Classification Table
+
+| Error Type | Trigger Patterns | Agent Strategy |
+|---|---|---|
+| `retryable` | timeout, rate limit, 429, 503, ECONNREFUSED, network | Wait and retry (with `retryAfterMs`) |
+| `permanent` | invalid, validation, schema, zod, malformed, 400 | Fix request parameters |
+| `auth_required` | unauthorized, 401, 403, api key, token expired | Re-authenticate or check permissions |
+| `user_action` | file not found, ENOENT, missing data, no data | Prompt user for required input |
+
+Priority order: auth > user_action > retryable > permanent. Unknown errors default to `retryable` (optimistic).
+
+#### Error Response Format
+
+```typescript
+// Failed tool response includes:
+{
+  success: false,
+  error: {
+    type: "retryable",              // ErrorType classification
+    message: "Connection timeout",   // Original error message
+    reason: "Transient failure...",   // Human-readable explanation
+    recoverySteps: [                 // Actionable steps
+      "Wait briefly and retry the request.",
+      "Check network connectivity and server status.",
+      "If geowiz remains unavailable, consider alternative tools."
+    ],
+    alternativeTools: ["research.analyze"],  // Fallback suggestions
+    retryAfterMs: 2000              // Suggested retry delay (retryable only)
+  }
+}
+```
+
+#### Graceful Degradation
+
+When executing parallel tool bundles, partial failures produce useful degraded results instead of total failure:
+
+```typescript
+const degraded = resilience.handleDegradation(results, expectedTools);
+// degraded → {
+//   completeness: 86,        // 12/14 succeeded
+//   missingAnalyses: ["reporter.analyze", "decision.analyze"],
+//   suggestions: ["Partial results are available and may be sufficient..."],
+//   degradationReason: "2 of 14 analyses failed or were unavailable."
+// }
+```
+
+- **>=50% completeness**: Results are useful for initial assessment
+- **<50% completeness**: Insufficient data, suggests retrying failed servers
+- Missing tools include alternative suggestions based on capability overlap
+
+#### Retry Delay Recommendations
+
+| Error Pattern | Suggested Delay |
+|---|---|
+| Rate limit (429) | 5000ms |
+| Timeout | 2000ms |
+| Connection error | 1000ms |
+
+### Composition — High-Level Composite Tools
+
+Pre-built multi-server workflows based on [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) and [Task Bundle](https://www.arcade.dev/patterns/task-bundle) patterns. Each composite tool orchestrates multiple servers into a single call.
+
+#### Available Composite Tools
+
+| Tool | Servers | Phases | Description |
+|---|---|---|---|
+| `kernel.quickScreen()` | 4 (geowiz, econobot, curve-smith, risk-analysis) | 1 parallel | Fast go/no-go screening |
+| `kernel.fullAnalysis()` | 14 | 4+ dependency-ordered | Comprehensive due diligence |
+| `kernel.geologicalDeepDive()` | 3 (geowiz, curve-smith, research) | 1 parallel | Focused geological assessment |
+| `kernel.financialReview()` | 3 (econobot, risk-analysis, market) | 1 parallel | Focused financial assessment |
+| `kernel.shouldWeInvest()` | 14 + confirmation gate | 4+ phases + gate | Full analysis ending with gated investment decision |
+
+#### Quick Screen
+
+```typescript
+const result = await kernel.quickScreen({ basin: "Permian", county: "Midland" });
+// result → BundleResponse with 4 parallel results, ~100% completeness
+// result.results.get("geowiz.analyze")   → geological assessment
+// result.results.get("econobot.analyze")  → economic assessment
+```
+
+#### Should We Invest (Confirmation Gate)
+
+```typescript
+const result = await kernel.shouldWeInvest({ basin: "Permian" });
+// Full 14-server analysis, then decision requires confirmation:
+const decision = result.results.get("decision.analyze");
+// decision.data.requires_confirmation → true
+// decision.data.pending_action.actionId → "abc-123"
+
+// Agent must explicitly confirm or cancel:
+const confirmed = await kernel.confirmAction("abc-123");
+// OR
+kernel.cancelAction("abc-123");
+```
+
+The confirmation gate implements the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern — high-impact actions (investment decisions) require explicit agent confirmation before execution.
+
+#### Listing All Bundles
+
+```typescript
+const bundles = kernel.listBundles();
+// → { quick_screen: { name, description, stepCount: 4 },
+//     full_due_diligence: { name, description, stepCount: 14 },
+//     geological_deep_dive: { name, description, stepCount: 3 },
+//     financial_review: { name, description, stepCount: 3 } }
+```
+
+### Security — Permission Gates & Audit Trail
+
+#### Permission Model
+
+Tool access is controlled by role-based permissions. When `KERNEL_AUTH_ENABLED=true`, the kernel checks each `callTool()` invocation against the session identity's role.
+
+| Role | Permissions | Tool Access |
+|---|---|---|
+| `analyst` | `read:analysis` | All 12 query servers |
+| `engineer` | + `write:reports` | + reporter tools |
+| `executive` | + `execute:decisions` | + decision tools |
+| `admin` | + `admin:servers`, `admin:users` | Everything |
+
+**Tool → Permission Mapping:**
+- Query tools (geowiz, econobot, etc.) → `read:analysis`
+- `reporter.*` → `write:reports`
+- `decision.*` → `execute:decisions`
+- `admin.*` → `admin:servers`
+
+```typescript
+// Pre-flight check (no execution)
+const result = kernel.authCheck("decision.make_recommendation", sessionId);
+// result → { allowed: false, reason: "...", requiredRole: "executive", requiredPermissions: ["execute:decisions"] }
+
+// Full pipeline: auth → audit → execute → audit
+const response = await kernel.callTool(
+  { toolName: "geowiz.analyze", args: { basin: "Permian" } },
+  sessionId,
+);
+```
+
+#### Audit Trail
+
+All `callTool()` invocations produce structured JSONL audit entries at `data/audit/YYYY-MM-DD.jsonl`:
+
+```json
+{"tool":"geowiz.analyze","action":"request","parameters":{"basin":"Permian","apiKey":"[REDACTED]"},"userId":"demo","sessionId":"abc-123","role":"analyst","timestamp":"2026-02-13T..."}
+{"tool":"geowiz.analyze","action":"response","parameters":{"basin":"Permian","apiKey":"[REDACTED]"},"userId":"demo","sessionId":"abc-123","role":"analyst","timestamp":"2026-02-13T...","success":true,"durationMs":42}
+```
+
+Sensitive values (keys matching `/key|token|secret|password|credential|auth|bearer/`) are automatically redacted. Denial entries use `action: "denied"`.
+
+### Composition — High-Level Tools
+
+Pre-built composite tools that orchestrate multiple servers into single operations. Based on the [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) and [Task Bundle](https://www.arcade.dev/patterns/task-bundle) patterns.
+
+#### Available Bundles
+
+| Bundle | Description | Servers | Phases |
+|---|---|---|---|
+| `quick_screen` | Fast parallel assessment | 4 (geowiz, econobot, curve-smith, risk-analysis) | 1 |
+| `full_due_diligence` | Comprehensive analysis | 14 (all servers) | 5 |
+| `geological_deep_dive` | Focused geology | 3 (geowiz, curve-smith, research) | 1 |
+| `financial_review` | Focused finance | 3 (econobot, risk-analysis, market) | 1 |
+
+```typescript
+// List all available bundles
+const bundles = kernel.listBundles();
+// → { quick_screen: { name, description, stepCount: 4 }, ... }
+
+// Quick screening — 4 servers in parallel
+const screen = await kernel.quickScreen({ basin: "Permian", county: "Reeves" });
+// screen → { bundleName: "quick_screen", completeness: 100, results: Map(4) }
+
+// Geological deep dive — geowiz(full) + curve-smith(standard) + research(summary)
+const geo = await kernel.geologicalDeepDive({ basin: "Permian" });
+
+// Financial review — econobot(full) + risk-analysis(standard) + market(summary)
+const fin = await kernel.financialReview({ basin: "Permian" });
+
+// Full due diligence — all 14 servers, dependency-ordered phases
+const full = await kernel.fullAnalysis({ basin: "Permian" });
+```
+
+#### Confirmation Gate (Investment Decisions)
+
+The `shouldWeInvest()` method runs full due diligence and gates the final investment decision behind a confirmation step. Based on the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern.
+
+```typescript
+// Run full analysis — decision result requires confirmation
+const result = await kernel.shouldWeInvest({ basin: "Permian" });
+
+// Decision result has requires_confirmation: true
+const decision = result.results.get("decision.analyze");
+// decision.data → { requires_confirmation: true, pending_action: { actionId: "uuid-...", ... } }
+
+// Agent presents results to user, then confirms:
+const confirmed = await kernel.confirmAction(decision.data.pending_action.actionId);
+// confirmed → { success: true, data: { recommendation: "proceed", confidence: 87 } }
+
+// Or cancel:
+kernel.cancelAction(actionId);
+```
+
+Tools requiring confirmation: `decision.make_recommendation`, `decision.analyze`.
+
+### Progressive Detail Levels
+
+All tool responses support three detail levels via the `detail_level` parameter, based on the [Arcade.dev Token-Efficient Response pattern](https://www.arcade.dev/patterns/token-efficient-response). Use lower levels to save tokens when only key metrics are needed.
+
+**Parameter:** `detail_level` — `"summary"` | `"standard"` (default) | `"full"`
+
+| Level | Description | Use Case |
+|-------|-------------|----------|
+| **summary** | Key metrics only (3-6 fields per domain) | Quick screening, dashboards, multi-tool orchestration |
+| **standard** | All fields except verbose arrays/raw data | Normal analysis, reports |
+| **full** | Complete data including sensitivity analysis, Monte Carlo, raw curves | Deep dives, audits, data export |
+
+**Example — Economic analysis at each level:**
+
+```jsonc
+// summary: 4 fields
+{
+  "economic": { "npv": 3500000, "irr": 28.5, "paybackMonths": 10, "confidence": 82 }
+}
+
+// standard: all fields except sensitivityAnalysis, monteCarloResults
+{
+  "economic": { "npv": 3500000, "irr": 28.5, "roi": 1.8, "paybackMonths": 10,
+    "assumptions": { "oilPrice": 78, "gasPrice": 3.5, "drillingCost": 9000000, "completionCost": 4500000 },
+    "confidence": 82 }
+}
+
+// full: everything
+{
+  "economic": { "npv": 3500000, "irr": 28.5, "roi": 1.8, "paybackMonths": 10,
+    "assumptions": { ... },
+    "sensitivityAnalysis": [ { "variable": "oil_price", "scenarios": { "low": 1500000, "base": 3500000, "high": 5000000 } } ],
+    "confidence": 82 }
+}
+```
+
+**Summary fields per domain:**
+
+| Domain | Summary Fields |
+|--------|---------------|
+| geological | reservoirQuality, hydrocarbonPotential, recommendedAction, geologicalConfidence, professionalSummary |
+| economic | npv, irr, paybackMonths, confidence |
+| curve | eur, initialRate, qualityGrade, confidence |
+| risk | overallRiskScore, overallRisk, confidence |
+
+**Natural language summary** — Every `AgentOSResponse` includes a human-readable `summary` string:
+- Geological: `"Good reservoir quality. Recommended action: drill. Confidence: 87%."`
+- Economic: `"NPV: $3.5M, IRR: 28.5%. Confidence: 82%."`
+- Curve: `"EUR: 520K BOE, grade: Good. Confidence: 90%."`
+- Risk: `"Overall risk score: 45/100. Confidence: 78%."`
+
+### Tool Type Classification
+
+All tools are classified into three types that determine execution semantics:
+
+| Type | Behavior | Servers |
+|------|----------|---------|
+| **query** | Read-only, cacheable, safe to parallelize | geowiz, econobot, curve-smith, risk-analysis, market, research, legal, title, drilling, infrastructure, development, test |
+| **command** | Side effects (file writes, decisions), may require confirmation | reporter, decision |
+| **discovery** | Meta-tools for exploring capabilities (kernel-provided) | kernel |
+
+### Composite Execution Tools
+
+High-level tools that orchestrate multiple servers in a single call. Based on the [Arcade.dev Task Bundle](https://www.arcade.dev/patterns/task-bundle) and [Scatter-Gather](https://www.arcade.dev/patterns/scatter-gather) patterns.
+
+#### `kernel.quick_screen`
+
+Fast parallel screening of a tract using 4 core servers (geology, economics, engineering, risk). All run in parallel via `Promise.allSettled`.
+
+**Input Parameters:**
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `tractArgs` | object | No | Arguments merged into every server call (e.g., tract name, location) |
+
+**Response:** `BundleResponse` with results from all 4 servers, completeness %, and phase timing.
+
+```typescript
+const result = await kernel.quickScreen({ tract: "Permian-123" });
+// result.completeness → 100 (all 4 succeeded)
+// result.results.get("geowiz.analyze") → geological analysis
+```
+
+#### `kernel.full_due_diligence`
+
+Comprehensive 14-server analysis in 4+ phases with dependency ordering:
+1. Core analysis (5 servers, parallel)
+2. Extended analysis (6 servers, parallel, depends on phase 1)
+3. QA validation (depends on phase 2)
+4. Reporting + decision (sequential, depends on all)
+
+**Input Parameters:** Same as `quick_screen`.
+
+**Response:** `BundleResponse` with per-phase results, overall completeness, and success evaluation using `majority` strategy.
+
+#### `kernel.generateIdempotencyKey`
+
+Generate a deterministic SHA-256 hash from tool name, args, and session ID. Use for deduplication and caching.
+
+```typescript
+const key = kernel.generateIdempotencyKey("geowiz.analyze", { tract: "P-123" }, "session-1");
+// key → "a3f2b1c9d4e5f678" (16 hex chars, deterministic)
+```
+
 ---
 
 ## 🏛️ Expert Server APIs
