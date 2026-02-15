@@ -1096,7 +1096,7 @@ class ShaleYeahAPIClient {
 
 ```bash
 # Required for production AI analysis
-ANTHROPIC_API_KEY=sk-ant-your-api-key-here
+ANTHROPIC_API_KEY=your-api-key-here
 
 # Optional external integrations
 EIA_API_KEY=your-eia-api-key

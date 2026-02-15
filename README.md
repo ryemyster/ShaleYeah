@@ -189,7 +189,7 @@ For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITE
 
 ```bash
 # 1. Add API key for real AI analysis
-echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" >> .env
+echo "ANTHROPIC_API_KEY=your-key-here" >> .env
 
 # 2. Add your data files
 cp your-well-logs.las data/samples/

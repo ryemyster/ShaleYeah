@@ -12,6 +12,11 @@ paths = [
     '''.*results\.sarif''',
     '''gitleaks-report\.json''',
 ]
+regexes = [
+    '''your-.*-key''',
+    '''your-.*-here''',
+    '''your-.*-api-key''',
+]
 
 [[rules]]
 description = "Generic API Key"
