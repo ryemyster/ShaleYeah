@@ -73,10 +73,7 @@ export class FileUtils {
 	/**
 	 * Get all files in directory with optional extension filter
 	 */
-	static async getFiles(
-		dirPath: string,
-		extension?: string,
-	): Promise<string[]> {
+	static async getFiles(dirPath: string, extension?: string): Promise<string[]> {
 		try {
 			const files = await fs.readdir(dirPath);
 			if (extension) {
@@ -91,10 +88,7 @@ export class FileUtils {
 	/**
 	 * Create multiple directories at once
 	 */
-	static async createDirectories(
-		basePath: string,
-		dirNames: string[],
-	): Promise<void> {
+	static async createDirectories(basePath: string, dirNames: string[]): Promise<void> {
 		for (const dirName of dirNames) {
 			await FileUtils.ensureDirectory(path.join(basePath, dirName));
 		}

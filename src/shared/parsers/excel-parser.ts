@@ -146,10 +146,7 @@ export class ExcelParser {
 				data: actualData,
 				headers,
 				rowCount: actualData.length,
-				columnCount:
-					actualData.length > 0
-						? Math.max(...actualData.map((row) => row.length))
-						: 0,
+				columnCount: actualData.length > 0 ? Math.max(...actualData.map((row) => row.length)) : 0,
 				range: `A1:${this.columnIndexToLetter(actualData[0]?.length || 0)}${actualData.length}`,
 				metadata: {
 					hasHeaders: !!headers,
@@ -172,28 +169,10 @@ export class ExcelParser {
 		if (!sheet.headers) return pricingData;
 
 		// Find relevant columns
-		const dateCol = this.findColumnIndex(sheet.headers, [
-			"date",
-			"time",
-			"timestamp",
-		]);
-		const priceCol = this.findColumnIndex(sheet.headers, [
-			"price",
-			"value",
-			"cost",
-			"rate",
-		]);
-		const commodityCol = this.findColumnIndex(sheet.headers, [
-			"commodity",
-			"product",
-			"item",
-			"type",
-		]);
-		const unitCol = this.findColumnIndex(sheet.headers, [
-			"unit",
-			"units",
-			"uom",
-		]);
+		const dateCol = this.findColumnIndex(sheet.headers, ["date", "time", "timestamp"]);
+		const priceCol = this.findColumnIndex(sheet.headers, ["price", "value", "cost", "rate"]);
+		const commodityCol = this.findColumnIndex(sheet.headers, ["commodity", "product", "item", "type"]);
+		const unitCol = this.findColumnIndex(sheet.headers, ["unit", "units", "uom"]);
 
 		if (dateCol === -1 || priceCol === -1) {
 			return pricingData; // Must have date and price
@@ -208,8 +187,7 @@ export class ExcelParser {
 
 				if (dateValue && !Number.isNaN(priceValue)) {
 					pricingData.push({
-						commodity:
-							commodityCol >= 0 ? String(row[commodityCol]) : "Unknown",
+						commodity: commodityCol >= 0 ? String(row[commodityCol]) : "Unknown",
 						date: dateValue,
 						price: priceValue,
 						unit: unitCol >= 0 ? String(row[unitCol]) : "",
@@ -232,37 +210,12 @@ export class ExcelParser {
 
 		if (!sheet.headers) return costData;
 
-		const categoryCol = this.findColumnIndex(sheet.headers, [
-			"category",
-			"type",
-			"classification",
-		]);
-		const itemCol = this.findColumnIndex(sheet.headers, [
-			"item",
-			"description",
-			"name",
-		]);
-		const valueCol = this.findColumnIndex(sheet.headers, [
-			"value",
-			"cost",
-			"price",
-			"amount",
-		]);
-		const unitCol = this.findColumnIndex(sheet.headers, [
-			"unit",
-			"units",
-			"uom",
-		]);
-		const regionCol = this.findColumnIndex(sheet.headers, [
-			"region",
-			"area",
-			"location",
-		]);
-		const dateCol = this.findColumnIndex(sheet.headers, [
-			"date",
-			"effective",
-			"updated",
-		]);
+		const categoryCol = this.findColumnIndex(sheet.headers, ["category", "type", "classification"]);
+		const itemCol = this.findColumnIndex(sheet.headers, ["item", "description", "name"]);
+		const valueCol = this.findColumnIndex(sheet.headers, ["value", "cost", "price", "amount"]);
+		const unitCol = this.findColumnIndex(sheet.headers, ["unit", "units", "uom"]);
+		const regionCol = this.findColumnIndex(sheet.headers, ["region", "area", "location"]);
+		const dateCol = this.findColumnIndex(sheet.headers, ["date", "effective", "updated"]);
 
 		if (valueCol === -1) return costData; // Must have value
 
@@ -279,10 +232,7 @@ export class ExcelParser {
 						value: value,
 						unit: unitCol >= 0 ? String(row[unitCol]) : "",
 						region: regionCol >= 0 ? String(row[regionCol]) : undefined,
-						effectiveDate:
-							dateCol >= 0
-								? this.parseDate(row[dateCol]) || undefined
-								: undefined,
+						effectiveDate: dateCol >= 0 ? this.parseDate(row[dateCol]) || undefined : undefined,
 					});
 				}
 			} catch (_error) {
@@ -293,10 +243,7 @@ export class ExcelParser {
 		return costData;
 	}
 
-	private parseWorksheet(
-		worksheet: ExcelJS.Worksheet,
-		sheetName: string,
-	): ExcelSheet {
+	private parseWorksheet(worksheet: ExcelJS.Worksheet, sheetName: string): ExcelSheet {
 		const data: any[][] = [];
 		let columnCount = 0;
 
@@ -355,9 +302,7 @@ export class ExcelParser {
 		// Heuristics to detect header row
 		if (!row || row.length === 0) return false;
 
-		const nonEmptyCount = row.filter(
-			(cell) => cell != null && String(cell).trim() !== "",
-		).length;
+		const nonEmptyCount = row.filter((cell) => cell != null && String(cell).trim() !== "").length;
 		if (nonEmptyCount === 0) return false;
 
 		const stringCount = row.filter((cell) => {
@@ -384,12 +329,8 @@ export class ExcelParser {
 				continue;
 			}
 
-			const numericCount = values.filter(
-				(val) => !Number.isNaN(Number(val)),
-			).length;
-			const dateCount = values.filter(
-				(val) => this.parseDate(val) != null,
-			).length;
+			const numericCount = values.filter((val) => !Number.isNaN(Number(val))).length;
+			const dateCount = values.filter((val) => this.parseDate(val) != null).length;
 
 			if (dateCount / values.length > 0.7) {
 				types.push("date");
@@ -430,9 +371,7 @@ export class ExcelParser {
 		const hasValidData = sheets.some((sheet) => sheet.rowCount > 0);
 		const hasMultipleSheets = sheets.length > 1;
 		const hasFormulas = sheets.some((sheet) => sheet.metadata.formulaCells > 0);
-		const structuredData = sheets.some(
-			(sheet) => sheet.headers && sheet.headers.length > 0,
-		);
+		const structuredData = sheets.some((sheet) => sheet.headers && sheet.headers.length > 0);
 
 		return {
 			hasValidData,
@@ -450,8 +389,7 @@ export class ExcelParser {
 		let bestDelimiter = ",";
 
 		for (const delimiter of delimiters) {
-			const count = (sample.match(new RegExp(`\\${delimiter}`, "g")) || [])
-				.length;
+			const count = (sample.match(new RegExp(`\\${delimiter}`, "g")) || []).length;
 			if (count > maxCount) {
 				maxCount = count;
 				bestDelimiter = delimiter;
@@ -492,9 +430,7 @@ export class ExcelParser {
 		const lowerHeaders = headers.map((h) => h.toLowerCase());
 
 		for (const candidate of candidates) {
-			const index = lowerHeaders.findIndex((h) =>
-				h.includes(candidate.toLowerCase()),
-			);
+			const index = lowerHeaders.findIndex((h) => h.includes(candidate.toLowerCase()));
 			if (index >= 0) return index;
 		}
 
@@ -512,9 +448,7 @@ export class ExcelParser {
 				// Excel epoch is 1900-01-01, but Excel treats 1900 as leap year
 				const excelEpoch = new Date(1900, 0, 1);
 				const days = num - 2; // Adjust for Excel's leap year bug
-				const result = new Date(
-					excelEpoch.getTime() + days * 24 * 60 * 60 * 1000,
-				);
+				const result = new Date(excelEpoch.getTime() + days * 24 * 60 * 60 * 1000);
 				return Number.isNaN(result.getTime()) ? null : result;
 			}
 			return null;

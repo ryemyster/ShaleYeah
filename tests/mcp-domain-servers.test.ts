@@ -4,14 +4,10 @@
  * Tests initialization, tool registration, and business logic execution
  */
 
-import fs from "node:fs/promises";
-import path from "node:path";
-
 // Mock MCP SDK components
 class MockMcpServer {
 	private tools: Map<string, any> = new Map();
 	private resources: Map<string, any> = new Map();
-	private connected = false;
 
 	constructor(public config: any) {}
 
@@ -40,9 +36,9 @@ class MockMcpServer {
 	}
 }
 
-class MockStdioServerTransport {}
+class _MockStdioServerTransport {}
 
-class MockFileIntegrationManager {
+class _MockFileIntegrationManager {
 	async processFile(filepath: string): Promise<any> {
 		return { processed: filepath, success: true };
 	}
@@ -52,20 +48,21 @@ class MockFileIntegrationManager {
 const createZodType = (typeName: string, extra: any = {}) => ({
 	_def: { typeName, ...extra },
 	parse: (data: any) => data,
-	optional: () => createZodType('ZodOptional', { innerType: { _def: { typeName, ...extra } } }),
-	default: (value: any) => createZodType('ZodDefault', { innerType: { _def: { typeName, ...extra } }, defaultValue: () => value })
+	optional: () => createZodType("ZodOptional", { innerType: { _def: { typeName, ...extra } } }),
+	default: (value: any) =>
+		createZodType("ZodDefault", { innerType: { _def: { typeName, ...extra } }, defaultValue: () => value }),
 });
 
 const z = {
 	object: (shape: any) => ({
-		_def: { typeName: 'ZodObject', shape },
-		parse: (data: any) => data
+		_def: { typeName: "ZodObject", shape },
+		parse: (data: any) => data,
 	}),
-	string: () => createZodType('ZodString'),
-	number: () => createZodType('ZodNumber'),
-	boolean: () => createZodType('ZodBoolean'),
-	array: (type: any) => createZodType('ZodArray', { type }),
-	enum: (values: string[]) => createZodType('ZodEnum', { values })
+	string: () => createZodType("ZodString"),
+	number: () => createZodType("ZodNumber"),
+	boolean: () => createZodType("ZodBoolean"),
+	array: (type: any) => createZodType("ZodArray", { type }),
+	enum: (values: string[]) => createZodType("ZodEnum", { values }),
 };
 
 // Domain server configurations
@@ -76,10 +73,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "EconBot",
 			role: "Economic Analysis Expert",
-			expertise: ["financial modeling", "NPV analysis", "cost estimation", "sensitivity analysis"]
+			expertise: ["financial modeling", "NPV analysis", "cost estimation", "sensitivity analysis"],
 		},
 		expectedTools: ["analyze_economics", "calculate_npv", "sensitivity_analysis", "cost_estimation"],
-		businessLogic: "Economics and financial modeling"
+		businessLogic: "Economics and financial modeling",
 	},
 	{
 		name: "curve-smith",
@@ -87,10 +84,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Curve Smith",
 			role: "Reservoir Engineering Expert",
-			expertise: ["decline curves", "EUR estimation", "type curves", "reservoir analysis"]
+			expertise: ["decline curves", "EUR estimation", "type curves", "reservoir analysis"],
 		},
 		expectedTools: ["analyze_decline_curves", "estimate_eur", "fit_type_curve", "reservoir_analysis"],
-		businessLogic: "Reservoir engineering and production forecasting"
+		businessLogic: "Reservoir engineering and production forecasting",
 	},
 	{
 		name: "reporter",
@@ -98,10 +95,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "The Reporter",
 			role: "Executive Reporting Expert",
-			expertise: ["report generation", "data synthesis", "executive summaries", "document processing"]
+			expertise: ["report generation", "data synthesis", "executive summaries", "document processing"],
 		},
 		expectedTools: ["generate_report", "synthesize_data", "create_summary", "process_documents"],
-		businessLogic: "Report generation and executive summaries"
+		businessLogic: "Report generation and executive summaries",
 	},
 	{
 		name: "decision",
@@ -109,10 +106,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Decision Maker",
 			role: "Investment Decision Expert",
-			expertise: ["investment analysis", "risk assessment", "decision trees", "recommendations"]
+			expertise: ["investment analysis", "risk assessment", "decision trees", "recommendations"],
 		},
 		expectedTools: ["analyze_investment", "assess_risk", "make_recommendation", "decision_analysis"],
-		businessLogic: "Investment decisions and risk analysis"
+		businessLogic: "Investment decisions and risk analysis",
 	},
 	{
 		name: "geowiz",
@@ -120,10 +117,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "GeoWiz",
 			role: "Geological Analysis Expert",
-			expertise: ["formation analysis", "well log interpretation", "geological modeling", "GIS analysis"]
+			expertise: ["formation analysis", "well log interpretation", "geological modeling", "GIS analysis"],
 		},
 		expectedTools: ["analyze_geology", "interpret_logs", "process_gis", "formation_analysis"],
-		businessLogic: "Geological analysis and formation evaluation"
+		businessLogic: "Geological analysis and formation evaluation",
 	},
 	{
 		name: "risk-analysis",
@@ -131,10 +128,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Risk Ranger",
 			role: "Risk Analysis Expert",
-			expertise: ["risk assessment", "mitigation strategies", "probability analysis", "scenario modeling"]
+			expertise: ["risk assessment", "mitigation strategies", "probability analysis", "scenario modeling"],
 		},
 		expectedTools: ["assess_risk", "mitigate_risk", "scenario_analysis", "probability_modeling"],
-		businessLogic: "Risk assessment and mitigation planning"
+		businessLogic: "Risk assessment and mitigation planning",
 	},
 	{
 		name: "market",
@@ -142,10 +139,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Market Maven",
 			role: "Market Analysis Expert",
-			expertise: ["market analysis", "price forecasting", "commodity trends", "competitive analysis"]
+			expertise: ["market analysis", "price forecasting", "commodity trends", "competitive analysis"],
 		},
 		expectedTools: ["analyze_market", "forecast_prices", "trend_analysis", "competitive_intel"],
-		businessLogic: "Market analysis and price forecasting"
+		businessLogic: "Market analysis and price forecasting",
 	},
 	{
 		name: "legal",
@@ -153,10 +150,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Legal Eagle",
 			role: "Legal Analysis Expert",
-			expertise: ["regulatory compliance", "contract analysis", "legal risk", "permit requirements"]
+			expertise: ["regulatory compliance", "contract analysis", "legal risk", "permit requirements"],
 		},
 		expectedTools: ["analyze_legal", "check_compliance", "review_contracts", "permit_analysis"],
-		businessLogic: "Legal compliance and contract analysis"
+		businessLogic: "Legal compliance and contract analysis",
 	},
 	{
 		name: "title",
@@ -164,10 +161,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Title Tracker",
 			role: "Title Analysis Expert",
-			expertise: ["title verification", "ownership analysis", "mineral rights", "lease evaluation"]
+			expertise: ["title verification", "ownership analysis", "mineral rights", "lease evaluation"],
 		},
 		expectedTools: ["verify_title", "analyze_ownership", "evaluate_lease", "mineral_rights"],
-		businessLogic: "Title verification and ownership analysis"
+		businessLogic: "Title verification and ownership analysis",
 	},
 	{
 		name: "development",
@@ -175,10 +172,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Dev Expert",
 			role: "Development Planning Expert",
-			expertise: ["development planning", "operations management", "project coordination", "timeline analysis"]
+			expertise: ["development planning", "operations management", "project coordination", "timeline analysis"],
 		},
 		expectedTools: ["plan_development", "manage_operations", "coordinate_project", "timeline_analysis"],
-		businessLogic: "Development planning and project management"
+		businessLogic: "Development planning and project management",
 	},
 	{
 		name: "drilling",
@@ -186,10 +183,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Drill Master",
 			role: "Drilling Operations Expert",
-			expertise: ["drilling operations", "wellbore design", "completion strategies", "drilling optimization"]
+			expertise: ["drilling operations", "wellbore design", "completion strategies", "drilling optimization"],
 		},
 		expectedTools: ["plan_drilling", "design_wellbore", "optimize_completion", "drilling_analysis"],
-		businessLogic: "Drilling operations and wellbore optimization"
+		businessLogic: "Drilling operations and wellbore optimization",
 	},
 	{
 		name: "infrastructure",
@@ -197,10 +194,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Infra Expert",
 			role: "Infrastructure Expert",
-			expertise: ["facility design", "pipeline planning", "infrastructure optimization", "system integration"]
+			expertise: ["facility design", "pipeline planning", "infrastructure optimization", "system integration"],
 		},
 		expectedTools: ["design_facilities", "plan_pipelines", "optimize_infrastructure", "system_integration"],
-		businessLogic: "Infrastructure planning and facility design"
+		businessLogic: "Infrastructure planning and facility design",
 	},
 	{
 		name: "test",
@@ -208,10 +205,10 @@ const domainServerConfigs = [
 		persona: {
 			name: "Test Expert",
 			role: "Quality Assurance Expert",
-			expertise: ["quality testing", "validation", "performance analysis", "system verification"]
+			expertise: ["quality testing", "validation", "performance analysis", "system verification"],
 		},
 		expectedTools: ["run_tests", "validate_quality", "analyze_performance", "verify_system"],
-		businessLogic: "Quality assurance and system testing"
+		businessLogic: "Quality assurance and system testing",
 	},
 	{
 		name: "research",
@@ -219,16 +216,14 @@ const domainServerConfigs = [
 		persona: {
 			name: "Research Hub",
 			role: "Research Analysis Expert",
-			expertise: ["research analysis", "technology assessment", "innovation tracking", "trend identification"]
+			expertise: ["research analysis", "technology assessment", "innovation tracking", "trend identification"],
 		},
 		expectedTools: ["conduct_research", "assess_technology", "track_innovation", "identify_trends"],
-		businessLogic: "Research analysis and technology assessment"
-	}
+		businessLogic: "Research analysis and technology assessment",
+	},
 ];
 
 class MCPDomainServersTester {
-	private testOutputDir = "tests/temp/mcp-domain-servers";
-
 	async runAllTests(): Promise<void> {
 		console.log("🧪 Starting MCP Domain Servers Tests (All 14 Servers)\n");
 
@@ -238,7 +233,7 @@ class MCPDomainServersTester {
 			total: 0,
 			coverage: new Map<string, boolean>(),
 			errorDetails: [] as string[],
-			serverResults: new Map<string, any>()
+			serverResults: new Map<string, any>(),
 		};
 
 		try {
@@ -259,7 +254,7 @@ class MCPDomainServersTester {
 			console.error("❌ MCP domain servers test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -307,7 +302,7 @@ class MCPDomainServersTester {
 		const server = new MockMcpServer({
 			name: config.name,
 			version: "1.0.0",
-			persona: config.persona
+			persona: config.persona,
 		});
 
 		// Register expected tools based on server type
@@ -318,7 +313,7 @@ class MCPDomainServersTester {
 				z.object({
 					input: z.string(),
 					confidence: z.number().optional(),
-					format: z.string().optional()
+					format: z.string().optional(),
 				}),
 				async (args: any) => {
 					return {
@@ -326,25 +321,21 @@ class MCPDomainServersTester {
 						server: config.name,
 						result: `Processed ${args.input}`,
 						confidence: args.confidence || 0.85,
-						timestamp: new Date().toISOString()
+						timestamp: new Date().toISOString(),
 					};
-				}
+				},
 			);
 		}
 
 		// Register resources
-		server.resource(
-			`${config.name}-data`,
-			`file://${config.name}/data`,
-			async (uri: URL) => {
-				return {
-					server: config.name,
-					uri: uri.toString(),
-					data: `Mock data for ${config.name}`,
-					timestamp: new Date().toISOString()
-				};
-			}
-		);
+		server.resource(`${config.name}-data`, `file://${config.name}/data`, async (uri: URL) => {
+			return {
+				server: config.name,
+				uri: uri.toString(),
+				data: `Mock data for ${config.name}`,
+				timestamp: new Date().toISOString(),
+			};
+		});
 
 		return server;
 	}
@@ -360,8 +351,8 @@ class MCPDomainServersTester {
 		const firstTool = tools[0];
 		const mockArgs = {
 			input: `Test data for ${config.name}`,
-			confidence: 0.90,
-			format: "json"
+			confidence: 0.9,
+			format: "json",
 		};
 
 		try {
@@ -371,13 +362,13 @@ class MCPDomainServersTester {
 				server: config.name,
 				tool: firstTool.name,
 				result: result,
-				confidence: result.confidence || 0.85
+				confidence: result.confidence || 0.85,
 			};
 		} catch (error) {
 			return {
 				success: false,
 				server: config.name,
-				error: error.message
+				error: error.message,
 			};
 		}
 	}
@@ -389,18 +380,18 @@ class MCPDomainServersTester {
 			if (tools.length > 0) {
 				const errorTool = tools[0];
 				// Simulate tool execution with invalid input
-				const result = await errorTool.handler({ invalid: "data" });
+				const _result = await errorTool.handler({ invalid: "data" });
 				return {
 					success: false,
 					server: config.name,
 					message: "Should have failed but didn't",
-					unexpectedSuccess: true
+					unexpectedSuccess: true,
 				};
 			}
 			return {
 				success: false,
 				server: config.name,
-				message: "No tools available for error testing"
+				message: "No tools available for error testing",
 			};
 		} catch (error) {
 			// Expected error - this means error handling is working
@@ -408,7 +399,7 @@ class MCPDomainServersTester {
 				success: false,
 				server: config.name,
 				error: error.message,
-				errorHandled: true
+				errorHandled: true,
 			};
 		}
 	}
@@ -437,7 +428,7 @@ class MCPDomainServersTester {
 				workflow: "curve-smith → econbot → reporter",
 				steps: [curveResult, econResult, reportResult],
 				overallConfidence: (curveResult.confidence + econResult.confidence + reportResult.confidence) / 3,
-				success: curveResult.success && econResult.success && reportResult.success
+				success: curveResult.success && econResult.success && reportResult.success,
 			};
 
 			this.assert(coordinationResult.success === true, "Multi-server workflow should succeed");
@@ -461,19 +452,14 @@ class MCPDomainServersTester {
 
 		try {
 			// Test error propagation between servers
-			const servers = domainServerConfigs.slice(0, 3).map(config =>
-				this.createMockDomainServer(config)
-			);
+			const servers = domainServerConfigs.slice(0, 3).map((config) => this.createMockDomainServer(config));
 
 			let errorsPropagated = 0;
 			let errorsHandled = 0;
 
 			for (const server of servers) {
 				try {
-					const errorResult = await this.simulateServerError(
-						domainServerConfigs[servers.indexOf(server)],
-						server
-					);
+					const errorResult = await this.simulateServerError(domainServerConfigs[servers.indexOf(server)], server);
 
 					if (errorResult.errorHandled) {
 						errorsHandled++;
@@ -481,7 +467,7 @@ class MCPDomainServersTester {
 					if (errorResult.success === false) {
 						errorsPropagated++;
 					}
-				} catch (error) {
+				} catch (_error) {
 					errorsHandled++;
 					errorsPropagated++;
 				}
@@ -523,7 +509,7 @@ class MCPDomainServersTester {
 
 		console.log("\n📦 DOMAIN SERVER COVERAGE:");
 		const serversPassed = Array.from(results.coverage.entries())
-			.filter(([key]) => key !== 'server-coordination' && key !== 'cross-server-errors')
+			.filter(([key]) => key !== "server-coordination" && key !== "cross-server-errors")
 			.filter(([, passed]) => passed);
 
 		for (const config of domainServerConfigs) {
@@ -542,7 +528,7 @@ class MCPDomainServersTester {
 
 		const coverageRate = (Array.from(results.coverage.values()).filter(Boolean).length / results.coverage.size) * 100;
 		console.log(`\n🎯 Overall Coverage: ${coverageRate.toFixed(1)}%`);
-		console.log(`🏢 Domain Servers: ${serversPassed.length}/14 (${(serversPassed.length/14*100).toFixed(1)}%)`);
+		console.log(`🏢 Domain Servers: ${serversPassed.length}/14 (${((serversPassed.length / 14) * 100).toFixed(1)}%)`);
 
 		if (results.failed > 0) {
 			console.log("\n❌ SOME TESTS FAILED - Review errors above");

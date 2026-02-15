@@ -266,10 +266,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseLAS(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseLAS(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.lasParser.parseLASFile(filePath);
 
@@ -278,10 +275,7 @@ export class FileIntegrationManager {
 				data,
 				format: "las",
 				success: true,
-				warnings:
-					data.metadata.quality.completeness < 0.8
-						? ["Data completeness below 80%"]
-						: undefined,
+				warnings: data.metadata.quality.completeness < 0.8 ? ["Data completeness below 80%"] : undefined,
 			};
 		} catch (error) {
 			return {
@@ -294,10 +288,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseShapefile(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseShapefile(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.gisParser.parseShapefile(filePath);
 
@@ -306,9 +297,7 @@ export class FileIntegrationManager {
 				data,
 				format: "shapefile",
 				success: true,
-				warnings: !data.metadata.quality.coordinateSystemDefined
-					? ["No coordinate system defined"]
-					: undefined,
+				warnings: !data.metadata.quality.coordinateSystemDefined ? ["No coordinate system defined"] : undefined,
 			};
 		} catch (error) {
 			return {
@@ -321,10 +310,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseGeoJSON(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseGeoJSON(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.gisParser.parseGeoJSON(filePath);
 
@@ -345,10 +331,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseKML(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseKML(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.gisParser.parseKML(filePath);
 
@@ -369,10 +352,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseExcel(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseExcel(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.excelParser.parseExcelFile(filePath);
 
@@ -381,9 +361,7 @@ export class FileIntegrationManager {
 				data,
 				format: "excel",
 				success: true,
-				warnings: !data.metadata.quality.structuredData
-					? ["No structured data detected"]
-					: undefined,
+				warnings: !data.metadata.quality.structuredData ? ["No structured data detected"] : undefined,
 			};
 		} catch (error) {
 			return {
@@ -396,10 +374,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseCSV(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseCSV(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.excelParser.parseCSVFile(filePath);
 
@@ -420,10 +395,7 @@ export class FileIntegrationManager {
 		}
 	}
 
-	private async parseSEGY(
-		filePath: string,
-		metadata: FileMetadata,
-	): Promise<ParsedFileResult> {
+	private async parseSEGY(filePath: string, metadata: FileMetadata): Promise<ParsedFileResult> {
 		try {
 			const data = await this.segyParser.parseSEGYFile(filePath);
 
@@ -432,10 +404,7 @@ export class FileIntegrationManager {
 				data,
 				format: "segy",
 				success: true,
-				warnings:
-					data.metadata.quality.dataIntegrity < 0.9
-						? ["Data integrity below 90%"]
-						: undefined,
+				warnings: data.metadata.quality.dataIntegrity < 0.9 ? ["Data integrity below 90%"] : undefined,
 			};
 		} catch (error) {
 			return {
@@ -454,27 +423,12 @@ export class FileIntegrationManager {
 	getExtractionCapabilities(format: string): string[] {
 		const capabilities: Record<string, string[]> = {
 			las: ["well-logs", "curves", "depth-data", "formation-tops"],
-			shapefile: [
-				"spatial-features",
-				"attribute-data",
-				"geometry",
-				"coordinate-systems",
-			],
+			shapefile: ["spatial-features", "attribute-data", "geometry", "coordinate-systems"],
 			geojson: ["geographic-features", "properties", "coordinate-data"],
 			kml: ["placemarks", "geographic-data", "descriptions"],
-			excel: [
-				"tabular-data",
-				"pricing-data",
-				"cost-assumptions",
-				"calculations",
-			],
+			excel: ["tabular-data", "pricing-data", "cost-assumptions", "calculations"],
 			csv: ["structured-data", "time-series", "tabular-data"],
-			segy: [
-				"seismic-traces",
-				"survey-geometry",
-				"acquisition-parameters",
-				"trace-headers",
-			],
+			segy: ["seismic-traces", "survey-geometry", "acquisition-parameters", "trace-headers"],
 		};
 
 		return capabilities[format] || [];

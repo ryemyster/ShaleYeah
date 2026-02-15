@@ -10,11 +10,7 @@ import path from "node:path";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface EconomicAnalysis {
 	npv: number;
@@ -52,19 +48,14 @@ const econobotTemplate: ServerTemplate = {
 				filePath: z.string().describe("Path to economic data file"),
 				dataType: z.enum(["pricing", "costs", "production", "mixed"]),
 				discountRate: z.number().min(0).max(1).default(0.1),
-				analysisType: z
-					.enum(["basic", "standard", "comprehensive"])
-					.default("standard"),
+				analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const analysis = await performEconomicAnalysis(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -89,9 +80,7 @@ const econobotTemplate: ServerTemplate = {
 					irr,
 					paybackPeriod,
 					cashFlows: args.cashFlows,
-					periods:
-						args.periods ||
-						args.cashFlows.map((_: number, i: number) => `Period ${i}`),
+					periods: args.periods || args.cashFlows.map((_: number, i: number) => `Period ${i}`),
 				};
 			},
 		),
@@ -124,9 +113,7 @@ const econobotTemplate: ServerTemplate = {
 };
 
 // Domain-specific economic analysis functions
-async function performEconomicAnalysis(args: {
-	filePath: string;
-}): Promise<EconomicAnalysis> {
+async function performEconomicAnalysis(args: { filePath: string }): Promise<EconomicAnalysis> {
 	try {
 		const fileExt = path.extname(args.filePath).toLowerCase();
 		let economicData: Record<string, unknown>;
@@ -146,9 +133,7 @@ async function performEconomicAnalysis(args: {
 	}
 }
 
-async function processExcelFile(
-	filePath: string,
-): Promise<Record<string, unknown>> {
+async function processExcelFile(filePath: string): Promise<Record<string, unknown>> {
 	try {
 		const workbook = new ExcelJS.Workbook();
 		await workbook.xlsx.readFile(filePath);
@@ -239,12 +224,7 @@ function analyzeEconomicData(data: any, args: any): EconomicAnalysis {
 			}
 		}
 
-		const { npv, irr, payback } = calculateDCFMetrics(
-			pricingData,
-			costData,
-			productionData,
-			args.discountRate,
-		);
+		const { npv, irr, payback } = calculateDCFMetrics(pricingData, costData, productionData, args.discountRate);
 		const breakeven = calculateBreakeven(costData, pricingData);
 		const confidence = assessDataQuality(pricingData, costData, productionData);
 
@@ -271,14 +251,10 @@ function calculateDCFMetrics(
 	production: any[],
 	discountRate: number,
 ): { npv: number; irr: number; payback: number } {
-	const avgOilPrice =
-		extractAverage(pricing, ["oil_price", "oil", "brent", "wti"]) || 75;
-	const _avgGasPrice =
-		extractAverage(pricing, ["gas_price", "gas", "henry_hub"]) || 3.5;
-	const avgOpex =
-		extractAverage(costs, ["opex", "operating_cost", "cost"]) || 25;
-	const avgProduction =
-		extractAverage(production, ["production", "volume", "rate"]) || 500;
+	const avgOilPrice = extractAverage(pricing, ["oil_price", "oil", "brent", "wti"]) || 75;
+	const _avgGasPrice = extractAverage(pricing, ["gas_price", "gas", "henry_hub"]) || 3.5;
+	const avgOpex = extractAverage(costs, ["opex", "operating_cost", "cost"]) || 25;
+	const avgProduction = extractAverage(production, ["production", "volume", "rate"]) || 500;
 
 	const years = 10;
 	let npv = 0;
@@ -310,14 +286,9 @@ function calculateDCFMetrics(
 	};
 }
 
-function calculateBreakeven(
-	costs: any[],
-	pricing: any[],
-): { oil: number; gas: number } {
-	const avgOpex =
-		extractAverage(costs, ["opex", "operating_cost", "cost"]) || 25;
-	const avgGasPrice =
-		extractAverage(pricing, ["gas_price", "gas", "henry_hub"]) || 3.5;
+function calculateBreakeven(costs: any[], pricing: any[]): { oil: number; gas: number } {
+	const avgOpex = extractAverage(costs, ["opex", "operating_cost", "cost"]) || 25;
+	const avgGasPrice = extractAverage(pricing, ["gas_price", "gas", "henry_hub"]) || 3.5;
 
 	return {
 		oil: Math.round(avgOpex * 1.2 * 100) / 100,
@@ -331,10 +302,7 @@ function extractAverage(data: any[], fieldNames: string[]): number | null {
 	for (const fieldName of fieldNames) {
 		const values = data
 			.map((row) => {
-				const value =
-					row[fieldName] ||
-					row[fieldName.toUpperCase()] ||
-					row[fieldName.toLowerCase()];
+				const value = row[fieldName] || row[fieldName.toUpperCase()] || row[fieldName.toLowerCase()];
 				return typeof value === "number" ? value : parseFloat(value);
 			})
 			.filter((v) => !Number.isNaN(v));
@@ -347,11 +315,7 @@ function extractAverage(data: any[], fieldNames: string[]): number | null {
 	return null;
 }
 
-function assessDataQuality(
-	pricing: any[],
-	costs: any[],
-	production: any[],
-): number {
+function assessDataQuality(pricing: any[], costs: any[], production: any[]): number {
 	let score = 50;
 	if (pricing.length > 0) score += 15;
 	if (costs.length > 0) score += 15;
@@ -362,11 +326,7 @@ function assessDataQuality(
 	return Math.min(95, score);
 }
 
-function generateRecommendation(
-	npv: number,
-	irr: number,
-	confidence: number,
-): string {
+function generateRecommendation(npv: number, irr: number, confidence: number): string {
 	if (npv > 1000000 && irr > 0.15 && confidence > 80) {
 		return "PROCEED";
 	} else if (npv > 0 && irr > 0.1 && confidence > 70) {

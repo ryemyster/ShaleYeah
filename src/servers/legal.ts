@@ -8,11 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const legalTemplate: ServerTemplate = {
 	name: "legal",
@@ -35,63 +31,34 @@ const legalTemplate: ServerTemplate = {
 			"Analyze legal framework and compliance requirements",
 			z.object({
 				jurisdiction: z.string(),
-				projectType: z.enum([
-					"exploration",
-					"development",
-					"production",
-					"abandonment",
-				]),
+				projectType: z.enum(["exploration", "development", "production", "abandonment"]),
 				assets: z.array(z.string()),
 				timeline: z.string().optional(),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const riskLevel =
-					args.projectType === "exploration"
-						? "High"
-						: args.projectType === "development"
-							? "Medium"
-							: "Low";
+					args.projectType === "exploration" ? "High" : args.projectType === "development" ? "Medium" : "Low";
 
 				const analysis = {
 					jurisdiction: args.jurisdiction,
 					project: args.projectType,
 					legal: {
 						permits: {
-							required: [
-								"Drilling permits",
-								"Environmental clearances",
-								"Land use approvals",
-								"Water usage permits",
-							],
+							required: ["Drilling permits", "Environmental clearances", "Land use approvals", "Water usage permits"],
 							timeline: "4-6 months for standard approvals",
 							complexity: riskLevel,
 						},
 						compliance: {
-							environmental: [
-								"NEPA review",
-								"State environmental laws",
-								"Local ordinances",
-							],
-							safety: [
-								"OSHA requirements",
-								"DOT regulations",
-								"State safety codes",
-							],
-							taxation: [
-								"Severance taxes",
-								"Property taxes",
-								"Income tax implications",
-							],
+							environmental: ["NEPA review", "State environmental laws", "Local ordinances"],
+							safety: ["OSHA requirements", "DOT regulations", "State safety codes"],
+							taxation: ["Severance taxes", "Property taxes", "Income tax implications"],
 						},
 						risks: {
 							regulatory: `${riskLevel} - ${args.projectType} projects in ${args.jurisdiction}`,
 							contractual: "Standard oil & gas contract risks",
 							environmental: "Manageable with proper compliance",
-							title:
-								args.assets.length > 1
-									? "Complex - multiple assets"
-									: "Standard",
+							title: args.assets.length > 1 ? "Complex - multiple assets" : "Standard",
 						},
 					},
 					recommendations: [
@@ -104,10 +71,7 @@ const legalTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -117,18 +81,10 @@ const legalTemplate: ServerTemplate = {
 			"review_contract",
 			"Review and analyze contract terms",
 			z.object({
-				contractType: z.enum([
-					"lease",
-					"JOA",
-					"purchase",
-					"service",
-					"farmout",
-				]),
+				contractType: z.enum(["lease", "JOA", "purchase", "service", "farmout"]),
 				keyTerms: z.array(z.string()),
 				parties: z.array(z.string()),
-				riskProfile: z
-					.enum(["conservative", "moderate", "aggressive"])
-					.default("moderate"),
+				riskProfile: z.enum(["conservative", "moderate", "aggressive"]).default("moderate"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -146,14 +102,10 @@ const legalTemplate: ServerTemplate = {
 								t.toLowerCase().includes("bonus"),
 						),
 						operational: args.keyTerms.filter(
-							(t: string) =>
-								t.toLowerCase().includes("drilling") ||
-								t.toLowerCase().includes("operation"),
+							(t: string) => t.toLowerCase().includes("drilling") || t.toLowerCase().includes("operation"),
 						),
 						legal: args.keyTerms.filter(
-							(t: string) =>
-								t.toLowerCase().includes("liability") ||
-								t.toLowerCase().includes("indemnity"),
+							(t: string) => t.toLowerCase().includes("liability") || t.toLowerCase().includes("indemnity"),
 						),
 					},
 					assessment: {
@@ -174,10 +126,7 @@ const legalTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;

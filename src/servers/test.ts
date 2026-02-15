@@ -8,11 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const testTemplate: ServerTemplate = {
 	name: "test",
@@ -34,15 +30,7 @@ const testTemplate: ServerTemplate = {
 			"run_quality_tests",
 			"Execute comprehensive quality assurance tests",
 			z.object({
-				testSuite: z
-					.enum([
-						"functional",
-						"performance",
-						"integration",
-						"compliance",
-						"all",
-					])
-					.default("all"),
+				testSuite: z.enum(["functional", "performance", "integration", "compliance", "all"]).default("all"),
 				targets: z.array(z.string()),
 				criteria: z
 					.object({
@@ -73,42 +61,30 @@ const testTemplate: ServerTemplate = {
 						functional: {
 							passed: testResults.functional,
 							score: Math.round((0.85 + Math.random() * 0.1) * 100),
-							issues: testResults.functional
-								? []
-								: ["Minor validation error in edge case"],
+							issues: testResults.functional ? [] : ["Minor validation error in edge case"],
 						},
 						performance: {
 							passed: testResults.performance,
 							responseTime: `${Math.round(Math.random() * 200 + 100)}ms`,
 							throughput: `${Math.round(Math.random() * 500 + 200)} requests/min`,
-							issues: testResults.performance
-								? []
-								: ["Slight latency increase under load"],
+							issues: testResults.performance ? [] : ["Slight latency increase under load"],
 						},
 						integration: {
 							passed: testResults.integration,
 							endpoints: args.targets.length,
 							coverage: Math.round((0.88 + Math.random() * 0.1) * 100),
-							issues: testResults.integration
-								? []
-								: ["Timeout in external service call"],
+							issues: testResults.integration ? [] : ["Timeout in external service call"],
 						},
 						compliance: {
 							passed: testResults.compliance,
 							standards: args.criteria?.compliance || ["ISO-9001", "SOX"],
 							coverage: Math.round((0.92 + Math.random() * 0.05) * 100),
-							issues: testResults.compliance
-								? []
-								: ["Documentation gap identified"],
+							issues: testResults.compliance ? [] : ["Documentation gap identified"],
 						},
 					},
 					summary: {
-						overallStatus: Object.values(testResults).every((r) => r)
-							? "PASS"
-							: "CONDITIONAL PASS",
-						passRate: Math.round(
-							(Object.values(testResults).filter((r) => r).length / 4) * 100,
-						),
+						overallStatus: Object.values(testResults).every((r) => r) ? "PASS" : "CONDITIONAL PASS",
+						passRate: Math.round((Object.values(testResults).filter((r) => r).length / 4) * 100),
 						criticalIssues: Object.values(testResults).every((r) => r) ? 0 : 1,
 						recommendations: [
 							"Address identified issues in next iteration",
@@ -120,10 +96,7 @@ const testTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -133,13 +106,9 @@ const testTemplate: ServerTemplate = {
 			"generate_quality_report",
 			"Generate comprehensive quality assurance report",
 			z.object({
-				reportType: z
-					.enum(["summary", "detailed", "executive", "compliance"])
-					.default("summary"),
+				reportType: z.enum(["summary", "detailed", "executive", "compliance"]).default("summary"),
 				period: z.string().default("current"),
-				metrics: z
-					.array(z.string())
-					.default(["accuracy", "performance", "reliability"]),
+				metrics: z.array(z.string()).default(["accuracy", "performance", "reliability"]),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -170,8 +139,7 @@ const testTemplate: ServerTemplate = {
 						status: "Compliant",
 						lastAudit: "2024-Q2",
 						nextReview: "2024-Q4",
-						gaps:
-							Math.random() > 0.8 ? ["Minor documentation update needed"] : [],
+						gaps: Math.random() > 0.8 ? ["Minor documentation update needed"] : [],
 					},
 					recommendations: [
 						"Maintain current quality standards",
@@ -182,10 +150,7 @@ const testTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;

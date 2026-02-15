@@ -22,3 +22,26 @@ export interface MCPServerInfo {
 	initialized: boolean;
 	dataPath: string;
 }
+
+// Re-export kernel types for convenience
+export type {
+	AgentOSResponse,
+	AuditEntry,
+	BundleStep,
+	DetailLevel,
+	ErrorDetail,
+	KernelConfig,
+	Permission,
+	RecoveryGuide,
+	ServerFilter,
+	ServerInfo,
+	SessionInfo,
+	TaskBundle,
+	ToolDescriptor,
+	ToolRequest,
+	ToolResponse,
+	ToolType,
+	UserIdentity,
+} from "../kernel/types.js";
+
+export { DEFAULT_KERNEL_CONFIG, ErrorType } from "../kernel/types.js";

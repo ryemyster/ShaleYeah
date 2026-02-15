@@ -11,7 +11,7 @@ Welcome to SHALE YEAH! This guide will help junior engineers and contributors ge
 
 ### 1. Clone and Install
 ```bash
-git clone https://github.com/your-org/ShaleYeah.git
+git clone https://github.com/rmcdonald/ShaleYeah.git
 cd ShaleYeah
 npm install --legacy-peer-deps
 ```
@@ -23,6 +23,7 @@ npm run demo
 
 **What happens:**
 - 14 AI expert agents analyze a Permian Basin tract
+- The Agent OS kernel executes servers in parallel with dependency ordering
 - Complete analysis finishes in ~6 seconds
 - Professional reports generated in `outputs/demo/`
 - Executive summary, detailed analysis, and financial model created
@@ -171,14 +172,72 @@ ls outputs/reports/              # Should contain timestamped analysis
 
 **⚠️ Important**: Production mode requires the sample files in `data/samples/`. Demo mode works without them.
 
+### Critical Sample Files
+
+#### `data/samples/demo.las`
+- **Format**: LAS 2.0 (Log ASCII Standard)
+- **Used by**: `geowiz` (geological analysis) and `curve-smith` (engineering analysis)
+- **Required curves**: DEPT, GR, NPHI, RHOB, PEF
+- **Example structure**:
+```
+~VERSION INFORMATION
+VERS.                    2.0 : CWLS LOG ASCII STANDARD -VERSION 2.0
+~WELL INFORMATION
+STRT .FT               5000.0000 : START DEPTH
+STOP .FT               5100.0000 : STOP DEPTH
+~CURVE INFORMATION
+DEPT .FT                        : DEPTH
+GR   .GAPI                      : GAMMA RAY
+NPHI .V/V                       : NEUTRON POROSITY
+RHOB .G/C3                      : BULK DENSITY
+~ASCII
+[depth] [gr] [nphi] [rhob] [...]
+```
+
+#### `data/samples/economics.csv`
+- **Format**: CSV (Excel `.xlsx` also supported)
+- **Used by**: `econobot` (economic analysis)
+- **Required columns**: Parameter, Value, Unit, Description
+- **Example structure**:
+```csv
+Parameter,Value,Unit,Description
+Oil Price,75.00,$/bbl,WTI Crude Oil Price
+Gas Price,3.50,$/MCF,Natural Gas Price
+Drilling Cost,8500000,$,Total Drilling & Completion Cost
+Operating Cost,25000,$/month,Monthly Operating Expenses
+Discount Rate,0.10,decimal,NPV Discount Rate
+```
+
 ### Troubleshooting Production Setup
-- **"No such file" errors**: Check [DIRECTORY_STRUCTURE.md](./DIRECTORY_STRUCTURE.md) for required files
-- **"Invalid format" errors**: Ensure LAS files are valid and CSV has required economic parameters
-- **Production vs Demo**: Demo uses mock data, production needs real files
+
+**"No such file or directory" errors:**
+1. Verify `data/samples/demo.las` exists
+2. Verify `data/samples/economics.csv` exists
+3. Check file permissions (should be readable)
+4. Ensure exact file names (case-sensitive)
+
+**"Invalid file format" errors:**
+1. Validate LAS file with an online LAS checker
+2. Ensure CSV has header row with required columns
+3. Check for special characters or encoding issues
+
+**Production mode fails but demo works:**
+1. Demo mode uses mock data — production requires real files
+2. Check that sample files contain valid, realistic data
+3. Verify file formats match the requirements above
+
+## Workspace Cleanup
+
+```bash
+npm run clean              # Clean build artifacts, cache, and old demos
+npm run clean:outputs      # Remove all generated outputs
+npm run clean:all          # Nuclear option: clean everything including node_modules (requires npm install --legacy-peer-deps after)
+```
+
+Kernel audit logs are written to `data/audit/YYYY-MM-DD.jsonl` when `KERNEL_AUDIT_ENABLED=true`.
 
 ## Next Steps
 
-- **Production setup**: See [DIRECTORY_STRUCTURE.md](./DIRECTORY_STRUCTURE.md) for detailed requirements
 - **Explore the code**: Start with `src/demo-runner.ts` to understand the flow
 - **Read the architecture docs**: See [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Try modifying an agent**: Start with simple changes to confidence levels
@@ -187,13 +246,12 @@ ls outputs/reports/              # Should contain timestamped analysis
 ## Getting Help
 
 - **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Ask questions in GitHub Discussions
 - **Documentation**: Check the `/docs` folder for detailed guides
 - **Code Questions**: All code is extensively commented
 
 ## Contributing
 
-Ready to contribute? See [DEVELOPMENT.md](./DEVELOPMENT.md) for the full contributor guide.
+Ready to contribute? See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full contributor guide.
 
 ---
 

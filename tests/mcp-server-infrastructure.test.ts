@@ -6,29 +6,29 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { MCPServer, MCPServerConfig, MCPTool, MCPResource, runMCPServer } from "../src/shared/mcp-server.js";
+import { type MCPResource, MCPServer, type MCPServerConfig, type MCPTool } from "../src/shared/mcp-server.js";
 
 // Mock Zod for testing (since it's not available in test environment)
 const z = {
 	object: (shape: any) => ({
-		_def: { typeName: 'ZodObject', shape },
-		parse: (data: any) => data
+		_def: { typeName: "ZodObject", shape },
+		parse: (data: any) => data,
 	}),
-	string: () => ({ _def: { typeName: 'ZodString' } }),
-	number: () => ({ _def: { typeName: 'ZodNumber' } }),
-	boolean: () => ({ _def: { typeName: 'ZodBoolean' } }),
-	array: (type: any) => ({ _def: { typeName: 'ZodArray', type } }),
-	enum: (values: string[]) => ({ _def: { typeName: 'ZodEnum', values } }),
-	optional: function() { return { _def: { typeName: 'ZodOptional', innerType: this } }; },
-	default: function(value: any) { return { _def: { typeName: 'ZodDefault', innerType: this, defaultValue: () => value } }; }
+	string: () => ({ _def: { typeName: "ZodString" } }),
+	number: () => ({ _def: { typeName: "ZodNumber" } }),
+	boolean: () => ({ _def: { typeName: "ZodBoolean" } }),
+	array: (type: any) => ({ _def: { typeName: "ZodArray", type } }),
+	enum: (values: string[]) => ({ _def: { typeName: "ZodEnum", values } }),
+	optional: function () {
+		return { _def: { typeName: "ZodOptional", innerType: this } };
+	},
+	default: function (value: any) {
+		return { _def: { typeName: "ZodDefault", innerType: this, defaultValue: () => value } };
+	},
 };
 
 // Mock concrete MCP server for testing
 class TestMCPServer extends MCPServer {
-	constructor(config: MCPServerConfig) {
-		super(config);
-	}
-
 	protected setupCapabilities(): void {
 		// Mock implementation
 		this.registerTool({
@@ -36,11 +36,11 @@ class TestMCPServer extends MCPServer {
 			description: "Test tool for validation",
 			inputSchema: z.object({
 				input: z.string(),
-				optional: z.string().optional()
+				optional: z.string().optional(),
 			}),
 			handler: async (args) => {
 				return { processed: args.input, success: true };
-			}
+			},
 		});
 
 		this.registerResource({
@@ -50,7 +50,7 @@ class TestMCPServer extends MCPServer {
 			mimeType: "application/json",
 			handler: async (uri) => {
 				return { uri: uri.toString(), data: "test" };
-			}
+			},
 		});
 	}
 
@@ -73,7 +73,7 @@ class MCPServerInfrastructureTester {
 			failed: 0,
 			total: 0,
 			coverage: new Map<string, boolean>(),
-			errorDetails: [] as string[]
+			errorDetails: [] as string[],
 		};
 
 		try {
@@ -110,7 +110,7 @@ class MCPServerInfrastructureTester {
 			console.error("❌ MCP server infrastructure test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -128,9 +128,9 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Test Expert",
 					role: "Testing Specialist",
-					expertise: ["validation", "testing", "quality-assurance"]
+					expertise: ["validation", "testing", "quality-assurance"],
 				},
-				dataPath: path.join(this.testOutputDir, "test-server")
+				dataPath: path.join(this.testOutputDir, "test-server"),
 			};
 
 			const server = new TestMCPServer(config);
@@ -170,8 +170,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Directory Expert",
 					role: "File Management",
-					expertise: ["filesystem"]
-				}
+					expertise: ["filesystem"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -219,8 +219,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Tool Expert",
 					role: "Tool Management",
-					expertise: ["tools", "execution"]
-				}
+					expertise: ["tools", "execution"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -232,10 +232,12 @@ class MCPServerInfrastructureTester {
 				inputSchema: z.object({
 					data: z.array(z.number()),
 					method: z.enum(["mean", "median", "mode"]),
-					options: z.object({
-						precision: z.number().default(2),
-						validate: z.boolean().optional()
-					}).optional()
+					options: z
+						.object({
+							precision: z.number().default(2),
+							validate: z.boolean().optional(),
+						})
+						.optional(),
 				}),
 				handler: async (args) => {
 					const { data, method, options } = args;
@@ -244,10 +246,11 @@ class MCPServerInfrastructureTester {
 						case "mean":
 							result = data.reduce((a: number, b: number) => a + b, 0) / data.length;
 							break;
-						case "median":
+						case "median": {
 							const sorted = [...data].sort((a, b) => a - b);
 							result = sorted[Math.floor(sorted.length / 2)];
 							break;
+						}
 						case "mode":
 							result = data[0]; // Simplified
 							break;
@@ -255,9 +258,9 @@ class MCPServerInfrastructureTester {
 					return {
 						method,
 						result: Number(result.toFixed(options?.precision || 2)),
-						dataPoints: data.length
+						dataPoints: data.length,
 					};
-				}
+				},
 			};
 
 			server.registerTool(complexTool);
@@ -267,14 +270,14 @@ class MCPServerInfrastructureTester {
 				name: "error-tool",
 				description: "Tool that demonstrates error handling",
 				inputSchema: z.object({
-					shouldFail: z.boolean()
+					shouldFail: z.boolean(),
 				}),
 				handler: async (args) => {
 					if (args.shouldFail) {
 						throw new Error("Intentional test error");
 					}
 					return { success: true };
-				}
+				},
 			};
 
 			server.registerTool(errorTool);
@@ -303,8 +306,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Resource Expert",
 					role: "Resource Management",
-					expertise: ["resources", "data"]
-				}
+					expertise: ["resources", "data"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -317,7 +320,7 @@ class MCPServerInfrastructureTester {
 				mimeType: "text/plain",
 				handler: async (uri) => {
 					return `String data from ${uri.toString()}`;
-				}
+				},
 			};
 
 			server.registerResource(stringResource);
@@ -331,9 +334,9 @@ class MCPServerInfrastructureTester {
 					return {
 						uri: uri.toString(),
 						data: [1, 2, 3, 4, 5],
-						timestamp: new Date().toISOString()
+						timestamp: new Date().toISOString(),
 					};
-				}
+				},
 			};
 
 			server.registerResource(jsonResource);
@@ -345,7 +348,7 @@ class MCPServerInfrastructureTester {
 				description: "Resource that demonstrates error handling",
 				handler: async (_uri) => {
 					throw new Error("Resource not found");
-				}
+				},
 			};
 
 			server.registerResource(errorResource);
@@ -374,8 +377,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Schema Expert",
 					role: "Schema Validation",
-					expertise: ["validation", "schemas"]
-				}
+					expertise: ["validation", "schemas"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -385,38 +388,38 @@ class MCPServerInfrastructureTester {
 				{
 					name: "string-schema",
 					schema: z.object({ text: z.string() }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "number-schema",
 					schema: z.object({ value: z.number() }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "boolean-schema",
 					schema: z.object({ flag: z.boolean() }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "array-schema",
 					schema: z.object({ items: z.array(z.string()) }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "enum-schema",
 					schema: z.object({ choice: z.enum(["A", "B", "C"]) }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "optional-schema",
 					schema: z.object({ optional: z.string().optional() }),
-					expectedType: "object"
+					expectedType: "object",
 				},
 				{
 					name: "default-schema",
 					schema: z.object({ withDefault: z.number().default(42) }),
-					expectedType: "object"
-				}
+					expectedType: "object",
+				},
 			];
 
 			for (const testCase of testSchemas) {
@@ -424,7 +427,7 @@ class MCPServerInfrastructureTester {
 					name: testCase.name,
 					description: `Test tool for ${testCase.name}`,
 					inputSchema: testCase.schema,
-					handler: async (args) => ({ received: args })
+					handler: async (args) => ({ received: args }),
 				};
 
 				// This will internally test the convertZodToJsonSchema method
@@ -456,11 +459,11 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Error Expert",
 					role: "Error Management",
-					expertise: ["errors", "debugging"]
-				}
+					expertise: ["errors", "debugging"],
+				},
 			};
 
-			const server = new TestMCPServer(config);
+			const _server = new TestMCPServer(config);
 
 			// Test formatError method by accessing it through inheritance
 			class TestableServer extends TestMCPServer {
@@ -511,8 +514,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Result Expert",
 					role: "Data Formatting",
-					expertise: ["formatting", "storage"]
-				}
+					expertise: ["formatting", "storage"],
+				},
 			};
 
 			// Test formatResult method by accessing it through inheritance
@@ -528,7 +531,7 @@ class MCPServerInfrastructureTester {
 			const testData = {
 				analysis: "complete",
 				values: [1, 2, 3, 4, 5],
-				metadata: { version: "1.0" }
+				metadata: { version: "1.0" },
 			};
 
 			const formattedResult = testableServer.testFormatResult(testData);
@@ -565,8 +568,8 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Lifecycle Expert",
 					role: "Process Management",
-					expertise: ["lifecycle", "processes"]
-				}
+					expertise: ["lifecycle", "processes"],
+				},
 			};
 
 			const server = new TestMCPServer(config);
@@ -624,11 +627,11 @@ class MCPServerInfrastructureTester {
 				persona: {
 					name: "Signal Expert",
 					role: "Process Signal Handler",
-					expertise: ["signals", "cleanup"]
-				}
+					expertise: ["signals", "cleanup"],
+				},
 			};
 
-			const server = new TestMCPServer(config);
+			const _server = new TestMCPServer(config);
 
 			// Test that signal handlers can be set up
 			// (We can't easily test the actual signal handling without complex mocking)
@@ -636,8 +639,8 @@ class MCPServerInfrastructureTester {
 
 			// Mock process event listeners to verify they would be called
 			const originalOn = process.on;
-			process.on = ((event: any, handler: any) => {
-				if (event === 'SIGINT' || event === 'SIGTERM') {
+			process.on = ((event: any, _handler: any) => {
+				if (event === "SIGINT" || event === "SIGTERM") {
 					signalHandlersCalled++;
 				}
 				return process;
@@ -646,15 +649,15 @@ class MCPServerInfrastructureTester {
 			const originalStdoutOn = process.stdout.on;
 			const originalStderrOn = process.stderr.on;
 
-			process.stdout.on = ((event: any, handler: any) => {
-				if (event === 'error') {
+			process.stdout.on = ((event: any, _handler: any) => {
+				if (event === "error") {
 					signalHandlersCalled++;
 				}
 				return process.stdout;
 			}) as any;
 
-			process.stderr.on = ((event: any, handler: any) => {
-				if (event === 'error') {
+			process.stderr.on = ((event: any, _handler: any) => {
+				if (event === "error") {
 					signalHandlersCalled++;
 				}
 				return process.stderr;
@@ -664,11 +667,11 @@ class MCPServerInfrastructureTester {
 			// We'll simulate the setup without actually running the infinite loop
 			try {
 				// Simulate signal handler setup from runMCPServer
-				process.on('SIGINT', async () => {});
-				process.on('SIGTERM', async () => {});
-				process.stdout.on('error', () => {});
-				process.stderr.on('error', () => {});
-			} catch (error) {
+				process.on("SIGINT", async () => {});
+				process.on("SIGTERM", async () => {});
+				process.stdout.on("error", () => {});
+				process.stderr.on("error", () => {});
+			} catch (_error) {
 				// Expected in test environment
 			}
 

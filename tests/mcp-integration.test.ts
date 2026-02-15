@@ -106,10 +106,7 @@ RT.OHMM                     : RESISTIVITY
 			],
 		});
 
-		await fs.writeFile(
-			path.join(this.testDir, "mcp-test.geojson"),
-			geojsonContent,
-		);
+		await fs.writeFile(path.join(this.testDir, "mcp-test.geojson"), geojsonContent);
 
 		// Create sample economic data CSV
 		const economicCsv = `Date,WTI_Price,Natural_Gas_Price,Production_BOE,Drilling_Cost,Completion_Cost
@@ -118,10 +115,7 @@ RT.OHMM                     : RESISTIVITY
 2024-01-03,74.80,3.18,1220,500000,750000
 2024-01-04,77.15,3.42,1195,500000,750000`;
 
-		await fs.writeFile(
-			path.join(this.testDir, "mcp-economic-test.csv"),
-			economicCsv,
-		);
+		await fs.writeFile(path.join(this.testDir, "mcp-economic-test.csv"), economicCsv);
 
 		console.log("📁 MCP test files created successfully");
 	}
@@ -145,16 +139,12 @@ RT.OHMM                     : RESISTIVITY
 		const gisOutputPath = path.join(this.outputDir, "geowiz-gis-result.json");
 
 		// Simulate MCP tool call for GIS processing
-		const _gisResult = await this.simulateMCPToolCall(
-			geowiz,
-			"parse_gis_file",
-			{
-				filePath: gisFilePath,
-				outputPath: gisOutputPath,
-				extractFeatures: true,
-				calculateAreas: true,
-			},
-		);
+		const _gisResult = await this.simulateMCPToolCall(geowiz, "parse_gis_file", {
+			filePath: gisFilePath,
+			outputPath: gisOutputPath,
+			extractFeatures: true,
+			calculateAreas: true,
+		});
 
 		console.log("  ✓ GIS file processing completed");
 
@@ -166,16 +156,12 @@ RT.OHMM                     : RESISTIVITY
 		const lasFilePath = path.join(this.testDir, "mcp-test.las");
 		const lasOutputPath = path.join(this.outputDir, "geowiz-las-result.json");
 
-		const _lasResult = await this.simulateMCPToolCall(
-			geowiz,
-			"parse_well_log",
-			{
-				filePath: lasFilePath,
-				outputPath: lasOutputPath,
-				extractCurves: ["GR", "RHOB", "NPHI"],
-				qualityCheck: true,
-			},
-		);
+		const _lasResult = await this.simulateMCPToolCall(geowiz, "parse_well_log", {
+			filePath: lasFilePath,
+			outputPath: lasOutputPath,
+			extractCurves: ["GR", "RHOB", "NPHI"],
+			qualityCheck: true,
+		});
 
 		console.log("  ✓ Well log processing completed");
 
@@ -184,14 +170,10 @@ RT.OHMM                     : RESISTIVITY
 		console.log(`  ✓ LAS output file created: ${lasOutputExists}`);
 
 		// Test file format detection
-		const _detectionResult = await this.simulateMCPToolCall(
-			geowiz,
-			"detect_file_format",
-			{
-				filePath: lasFilePath,
-				expectedFormat: "las",
-			},
-		);
+		const _detectionResult = await this.simulateMCPToolCall(geowiz, "detect_file_format", {
+			filePath: lasFilePath,
+			expectedFormat: "las",
+		});
 
 		console.log("  ✓ File format detection completed");
 
@@ -208,36 +190,25 @@ RT.OHMM                     : RESISTIVITY
 
 		// Test LAS file processing
 		const lasFilePath = path.join(this.testDir, "mcp-test.las");
-		const curveOutputPath = path.join(
-			this.outputDir,
-			"curve-smith-result.json",
-		);
+		const curveOutputPath = path.join(this.outputDir, "curve-smith-result.json");
 
-		const _processingResult = await this.simulateMCPToolCall(
-			curveSmith,
-			"process_las_file",
-			{
-				filePath: lasFilePath,
-				outputPath: curveOutputPath,
-				targetCurves: ["GR", "RHOB", "NPHI", "RT"],
-				qualityControl: true,
-				fillNulls: false,
-			},
-		);
+		const _processingResult = await this.simulateMCPToolCall(curveSmith, "process_las_file", {
+			filePath: lasFilePath,
+			outputPath: curveOutputPath,
+			targetCurves: ["GR", "RHOB", "NPHI", "RT"],
+			qualityControl: true,
+			fillNulls: false,
+		});
 
 		console.log("  ✓ LAS file processing completed");
 
 		// Test curve statistics analysis
-		const _statsResult = await this.simulateMCPToolCall(
-			curveSmith,
-			"analyze_curve_statistics",
-			{
-				filePath: lasFilePath,
-				curveName: "GR",
-				analysisType: "detailed",
-				outputPath: path.join(this.outputDir, "curve-stats-result.json"),
-			},
-		);
+		const _statsResult = await this.simulateMCPToolCall(curveSmith, "analyze_curve_statistics", {
+			filePath: lasFilePath,
+			curveName: "GR",
+			analysisType: "detailed",
+			outputPath: path.join(this.outputDir, "curve-stats-result.json"),
+		});
 
 		console.log("  ✓ Curve statistics analysis completed");
 
@@ -258,22 +229,15 @@ RT.OHMM                     : RESISTIVITY
 
 		// Test economic data processing
 		const economicFilePath = path.join(this.testDir, "mcp-economic-test.csv");
-		const economicOutputPath = path.join(
-			this.outputDir,
-			"econobot-data-result.json",
-		);
+		const economicOutputPath = path.join(this.outputDir, "econobot-data-result.json");
 
-		const _dataProcessingResult = await this.simulateMCPToolCall(
-			econobot,
-			"process_economic_data",
-			{
-				filePath: economicFilePath,
-				dataType: "mixed",
-				outputPath: economicOutputPath,
-				extractPricing: true,
-				extractCosts: true,
-			},
-		);
+		const _dataProcessingResult = await this.simulateMCPToolCall(econobot, "process_economic_data", {
+			filePath: economicFilePath,
+			dataType: "mixed",
+			outputPath: economicOutputPath,
+			extractPricing: true,
+			extractCosts: true,
+		});
 
 		console.log("  ✓ Economic data processing completed");
 
@@ -284,11 +248,7 @@ RT.OHMM                     : RESISTIVITY
 		// No explicit stop method needed for test
 	}
 
-	private async simulateMCPToolCall(
-		server: any,
-		toolName: string,
-		args: any,
-	): Promise<any> {
+	private async simulateMCPToolCall(server: any, toolName: string, args: any): Promise<any> {
 		// This is a simplified simulation of an MCP tool call
 		// In practice, this would go through the MCP protocol
 		try {
@@ -306,9 +266,7 @@ RT.OHMM                     : RESISTIVITY
 			const result = await toolHandler.handler(args, {});
 			return result;
 		} catch (error) {
-			console.warn(
-				`  ⚠️  Tool call simulation failed for ${toolName}: ${error}`,
-			);
+			console.warn(`  ⚠️  Tool call simulation failed for ${toolName}: ${error}`);
 			return {
 				content: [
 					{

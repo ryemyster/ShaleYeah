@@ -10,7 +10,6 @@ import { processAccessDatabase } from "../tools/access-processor.js";
 import { processAriesDatabase } from "../tools/aries-processor.js";
 import { processDocument } from "../tools/document-processor.js";
 import { EnhancedGISProcessor } from "../tools/gis-processor.js";
-import { processSeismicFile } from "../tools/seismic-processor.js";
 import { processWellLogFile } from "../tools/well-log-processor.js";
 import { processWITSMLFile } from "../tools/witsml-processor.js";
 
@@ -66,7 +65,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.curves.length >= 6, "Should have at least 6 curves"),
 					(data) => this.assert(data.depthStart === 8400.0, "Depth start should be 8400.0"),
 					(data) => this.assert(data.qualityMetrics.completeness >= 0.0, "Should have completeness metrics"),
-				]
+				],
 			},
 			{
 				name: "GIS Processor (Shapefiles/GeoJSON/KML)",
@@ -78,7 +77,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.featureCollection?.features?.length >= 3, "Should have at least 3 features"),
 					(data) => this.assert(data.oilGasMetrics?.wellLocations >= 2, "Should identify well locations"),
 					(data) => this.assert(data.qualityMetrics?.overallQuality >= 0.0, "Should have quality metrics"),
-				]
+				],
 			},
 			{
 				name: "Access Database Processor (.accdb/.mdb)",
@@ -89,7 +88,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.format === "ACCESS", "Format should be ACCESS"),
 					(data) => this.assert(data.tables.length >= 2, "Should have at least 2 demo tables"),
 					(data) => this.assert(data.qualityMetrics.completeness >= 0, "Should have quality metrics"),
-				]
+				],
 			},
 			{
 				name: "Document Processor (PDF/DOCX/PPTX)",
@@ -100,7 +99,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.format === "PDF", "Format should be PDF"),
 					(data) => this.assert(data.content.sections?.length >= 1, "Should have sections"),
 					(data) => this.assert(data.qualityMetrics.completeness > 0, "Should have quality metrics"),
-				]
+				],
 			},
 			{
 				name: "Seismic Processor (SEGY/SGY)",
@@ -111,7 +110,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.format === "SEGY", "Format should be SEGY"),
 					(data) => this.assert(data.traces >= 0, "Should have trace count"),
 					(data) => this.assert(data.qualityMetrics?.confidence >= 0, "Should have quality metrics"),
-				]
+				],
 			},
 			{
 				name: "ARIES Processor (.adb)",
@@ -123,7 +122,7 @@ class FileProcessorTester {
 					(data) => this.assert(data.projects.length >= 1, "Should have projects"),
 					(data) => this.assert(data.wells.length >= 1, "Should have wells"),
 					(data) => this.assert(data.oilGasAnalysis?.portfolioSummary.totalNPV > 0, "Should have positive NPV"),
-				]
+				],
 			},
 			{
 				name: "WITSML Processor (.xml)",
@@ -135,8 +134,8 @@ class FileProcessorTester {
 					(data) => this.assert(data.curves.length >= 1, "Should have curves"),
 					(data) => this.assert(data.qualityMetrics.completeness >= 0, "Should have quality metrics"),
 					(data) => this.assert(data.version.length > 0, "Should have version"),
-				]
-			}
+				],
+			},
 		];
 	}
 
@@ -148,7 +147,7 @@ class FileProcessorTester {
 			failed: 0,
 			total: 0,
 			coverage: new Map<string, boolean>(),
-			errorDetails: []
+			errorDetails: [],
 		};
 
 		try {
@@ -163,7 +162,7 @@ class FileProcessorTester {
 			console.error("❌ Test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -268,9 +267,10 @@ class FileProcessorTester {
 		switch (processorType) {
 			case "well-log-processor":
 				return await processWellLogFile(filePath);
-			case "gis-processor":
+			case "gis-processor": {
 				const gisProcessor = new EnhancedGISProcessor();
 				return await gisProcessor.processGISFile(filePath);
+			}
 			case "access-processor":
 				return await processAccessDatabase(filePath);
 			case "document-processor":
@@ -328,7 +328,9 @@ class FileProcessorTester {
 				console.log(`  ✅ ARIES database processed successfully`);
 				console.log(`  ✅ Projects: ${data.projects?.length || 0}`);
 				console.log(`  ✅ Wells: ${data.wells?.length || 0}`);
-				console.log(`  ✅ Total NPV: $${((data.oilGasAnalysis?.portfolioSummary?.totalNPV || 0) / 1000000).toFixed(1)}M`);
+				console.log(
+					`  ✅ Total NPV: $${((data.oilGasAnalysis?.portfolioSummary?.totalNPV || 0) / 1000000).toFixed(1)}M`,
+				);
 				break;
 			case "witsml-processor":
 				console.log(`  ✅ WITSML file processed successfully`);
@@ -365,10 +367,7 @@ class FileProcessorTester {
 			console.log(`  ${status} ${name} PROCESSOR`);
 		}
 
-		const coverageRate =
-			(Array.from(results.coverage.values()).filter(Boolean).length /
-				results.coverage.size) *
-			100;
+		const coverageRate = (Array.from(results.coverage.values()).filter(Boolean).length / results.coverage.size) * 100;
 		console.log(`\n🎯 Code Coverage: ${coverageRate.toFixed(1)}%`);
 		console.log(`📁 Output Directory: ${this.outputDir}`);
 		console.log(`🗂️ Total Processors Tested: ${results.coverage.size}`);

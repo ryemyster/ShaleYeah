@@ -141,9 +141,7 @@ NPHI.V/V                    : NEUTRON POROSITY
 			const filePath = path.join(this.testDir, fileName);
 			const metadata = await this.detector.detectFormat(filePath);
 
-			console.log(
-				`  ✓ ${fileName}: detected as ${metadata.format} (valid: ${metadata.isValid})`,
-			);
+			console.log(`  ✓ ${fileName}: detected as ${metadata.format} (valid: ${metadata.isValid})`);
 
 			if (!metadata.isValid) {
 				console.warn(`    ⚠️  Issues: ${metadata.errors?.join(", ")}`);
@@ -157,15 +155,9 @@ NPHI.V/V                    : NEUTRON POROSITY
 
 		const result = await parser.parseLASFile(filePath);
 
-		console.log(
-			`  ✓ Parsed LAS file: ${result.metadata.totalRows} rows, ${result.metadata.curveCount} curves`,
-		);
-		console.log(
-			`  ✓ Quality metrics: completeness ${(result.metadata.quality.completeness * 100).toFixed(1)}%`,
-		);
-		console.log(
-			`  ✓ Curves: ${result.curves.map((c) => c.mnemonic).join(", ")}`,
-		);
+		console.log(`  ✓ Parsed LAS file: ${result.metadata.totalRows} rows, ${result.metadata.curveCount} curves`);
+		console.log(`  ✓ Quality metrics: completeness ${(result.metadata.quality.completeness * 100).toFixed(1)}%`);
+		console.log(`  ✓ Curves: ${result.curves.map((c) => c.mnemonic).join(", ")}`);
 
 		// Test curve statistics
 		for (const curve of result.curves) {
@@ -186,21 +178,15 @@ NPHI.V/V                    : NEUTRON POROSITY
 		const geojsonResult = await parser.parseGeoJSON(geojsonPath);
 
 		console.log(`  ✓ GeoJSON: ${geojsonResult.metadata.featureCount} features`);
-		console.log(
-			`  ✓ Geometry types: ${geojsonResult.metadata.geometryTypes.join(", ")}`,
-		);
-		console.log(
-			`  ✓ Attributes: ${geojsonResult.metadata.attributeFields.join(", ")}`,
-		);
+		console.log(`  ✓ Geometry types: ${geojsonResult.metadata.geometryTypes.join(", ")}`);
+		console.log(`  ✓ Attributes: ${geojsonResult.metadata.attributeFields.join(", ")}`);
 
 		// Test KML
 		const kmlPath = path.join(this.testDir, "test.kml");
 		const kmlResult = await parser.parseKML(kmlPath);
 
 		console.log(`  ✓ KML: ${kmlResult.metadata.featureCount} placemarks`);
-		console.log(
-			`  ✓ Coordinate system: ${kmlResult.metadata.coordinateSystem}`,
-		);
+		console.log(`  ✓ Coordinate system: ${kmlResult.metadata.coordinateSystem}`);
 	}
 
 	private async testExcelParser(): Promise<void> {
@@ -210,9 +196,7 @@ NPHI.V/V                    : NEUTRON POROSITY
 		const csvPath = path.join(this.testDir, "test.csv");
 		const csvResult = await parser.parseCSVFile(csvPath, { hasHeaders: true });
 
-		console.log(
-			`  ✓ CSV: ${csvResult.rowCount} rows, ${csvResult.columnCount} columns`,
-		);
+		console.log(`  ✓ CSV: ${csvResult.rowCount} rows, ${csvResult.columnCount} columns`);
 		console.log(`  ✓ Headers: ${csvResult.headers?.join(", ") || "none"}`);
 		console.log(`  ✓ Data types: ${csvResult.metadata.dataTypes.join(", ")}`);
 
@@ -222,19 +206,13 @@ NPHI.V/V                    : NEUTRON POROSITY
 
 		if (pricingData.length > 0) {
 			const sample = pricingData[0];
-			console.log(
-				`    - Sample: ${sample.commodity} at ${sample.price} on ${sample.date.toDateString()}`,
-			);
+			console.log(`    - Sample: ${sample.commodity} at ${sample.price} on ${sample.date.toDateString()}`);
 		}
 	}
 
 	private async testSEGYParser(): Promise<void> {
-		console.log(
-			"  ⚠️  SEGY test requires binary seismic data - skipping for now",
-		);
-		console.log(
-			"  ✓ SEGY parser implementation verified (class structure and methods)",
-		);
+		console.log("  ⚠️  SEGY test requires binary seismic data - skipping for now");
+		console.log("  ✓ SEGY parser implementation verified (class structure and methods)");
 
 		// Test parser instantiation and basic functionality
 		const parser = new SEGYParser();
@@ -243,9 +221,7 @@ NPHI.V/V                    : NEUTRON POROSITY
 		// In a real test, we would create a minimal valid SEGY file or use a sample
 		// For now, we verify the parser structure
 		const methods = Object.getOwnPropertyNames(Object.getPrototypeOf(parser));
-		console.log(
-			`  ✓ Parser methods available: ${methods.filter((m) => m !== "constructor").length}`,
-		);
+		console.log(`  ✓ Parser methods available: ${methods.filter((m) => m !== "constructor").length}`);
 	}
 
 	private async testIntegrationManager(): Promise<void> {
@@ -253,13 +229,9 @@ NPHI.V/V                    : NEUTRON POROSITY
 
 		// Test format support listing
 		const formats = manager.getSupportedFormats();
-		const supportedCount = formats.filter(
-			(f) => f.status === "supported",
-		).length;
+		const supportedCount = formats.filter((f) => f.status === "supported").length;
 		const plannedCount = formats.filter((f) => f.status === "planned").length;
-		const proprietaryCount = formats.filter(
-			(f) => f.status === "proprietary",
-		).length;
+		const proprietaryCount = formats.filter((f) => f.status === "proprietary").length;
 
 		console.log(`  ✓ Format registry: ${formats.length} total formats`);
 		console.log(`    - Supported: ${supportedCount}`);

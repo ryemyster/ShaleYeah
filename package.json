@@ -1,7 +1,7 @@
 {
 	"name": "shale-yeah",
-	"version": "0.1.0",
-	"description": "Democratize oil & gas investing through AI agent flows that replace 100+ employees",
+	"version": "2.0.0",
+	"description": "Agent OS for oil & gas investment analysis — 14 MCP servers with kernel-based discovery, parallel execution, and composition",
 	"private": false,
 	"type": "module",
 	"main": "dist/main.js",
@@ -19,7 +19,7 @@
 		"pipeline:prod": "npx tsx src/main.ts --mode=production",
 		"pipeline:batch": "npx tsx src/main.ts --mode=batch",
 		"pipeline:research": "npx tsx src/main.ts --mode=research",
-		"lint": "biome check . || true",
+		"lint": "biome check .",
 		"type-check": "tsc --noEmit",
 		"clean": "npm run clean:dist && npm run clean:cache && npm run clean:demo",
 		"clean:dist": "rm -rf dist/",
@@ -30,7 +30,7 @@
 		"clean:repo-push": "npm run clean && npm run clean:outputs && rm -rf node_modules/",
 		"clean:all": "npm run clean && npm run clean:outputs && rm -rf node_modules/ package-lock.json",
 		"clean:workspace": "bash scripts/cleanup-workspace.sh",
-		"test": "npm run test:demo && npm run test:files && npm run test:mcp && npm run test:processors && npm run test:main && npm run test:mcp-infrastructure && npm run test:mcp-domain-servers && npm run test:remaining-tools && npm run test:final-integration",
+		"test": "npm run test:demo && npm run test:files && npm run test:mcp && npm run test:processors && npm run test:main && npm run test:mcp-infrastructure && npm run test:mcp-domain-servers && npm run test:remaining-tools && npm run test:final-integration && npm run test:kernel-registry && npm run test:kernel-executor && npm run test:kernel-context && npm run test:kernel-output && npm run test:kernel-resilience && npm run test:kernel-auth && npm run test:kernel-audit && npm run test:kernel-bundles",
 		"test:demo": "npx tsx tests/demo.test.ts",
 		"test:files": "npx tsx tests/file-formats.test.ts",
 		"test:mcp": "npx tsx tests/mcp-simple.test.ts",
@@ -40,6 +40,14 @@
 		"test:mcp-domain-servers": "npx tsx tests/mcp-domain-servers.test.ts",
 		"test:remaining-tools": "npx tsx tests/remaining-tools.test.ts",
 		"test:final-integration": "npx tsx tests/final-integration.test.ts",
+		"test:kernel-registry": "npx tsx tests/kernel-registry.test.ts",
+		"test:kernel-executor": "npx tsx tests/kernel-executor.test.ts",
+		"test:kernel-context": "npx tsx tests/kernel-context.test.ts",
+		"test:kernel-output": "npx tsx tests/kernel-output.test.ts",
+		"test:kernel-resilience": "npx tsx tests/kernel-resilience.test.ts",
+		"test:kernel-auth": "npx tsx tests/kernel-auth.test.ts",
+		"test:kernel-audit": "npx tsx tests/kernel-audit.test.ts",
+		"test:kernel-bundles": "npx tsx tests/kernel-bundles.test.ts",
 		"test:all": "npm run test",
 		"test:coverage": "npm run test",
 		"server:geowiz": "npx tsx src/servers/geowiz.ts",
@@ -82,6 +90,10 @@
 		"node": ">=18.0.0"
 	},
 	"keywords": [
+		"agent-os",
+		"mcp",
+		"tool-registry",
+		"scatter-gather",
 		"oil-gas",
 		"investment",
 		"ai-agents",
@@ -90,6 +102,10 @@
 		"geological-analysis",
 		"typescript"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/rmcdonald/ShaleYeah.git"
+	},
 	"author": "Ryan McDonald / Ascendvent LLC",
 	"license": "Apache-2.0"
 }

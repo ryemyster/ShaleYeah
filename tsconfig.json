@@ -29,15 +29,7 @@
 		}
 	},
 	"include": ["src/**/*", "tools/**/*", "scripts/**/*.ts"],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"**/*.test.ts",
-		"**/*.spec.ts",
-		"data/**/*",
-		"*.py",
-		"**/*.py"
-	],
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "data/**/*", "*.py", "**/*.py"],
 	"ts-node": {
 		"esm": true
 	}

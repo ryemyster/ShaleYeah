@@ -11,6 +11,12 @@ paths = [
     '''.*leaks.*\.json''',
     '''.*results\.sarif''',
     '''gitleaks-report\.json''',
+    '''tests/.*''',
+]
+regexes = [
+    '''your-.*-key''',
+    '''your-.*-here''',
+    '''your-.*-api-key''',
 ]
 
 [[rules]]

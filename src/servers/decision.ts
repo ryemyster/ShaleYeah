@@ -8,15 +8,8 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-} from "../shared/server-factory.js";
-import type {
-	AnalysisInputs,
-	InvestmentCriteria,
-	PortfolioAsset,
-} from "../shared/types.js";
+import { ServerFactory, type ServerTemplate } from "../shared/server-factory.js";
+import type { AnalysisInputs, InvestmentCriteria, PortfolioAsset } from "../shared/types.js";
 
 interface InvestmentDecision {
 	decision: "INVEST" | "PASS" | "CONDITIONAL";
@@ -95,10 +88,7 @@ const decisionTemplate: ServerTemplate = {
 				const decision = evaluateInvestmentOpportunity(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(decision, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(decision, null, 2));
 				}
 
 				return decision;
@@ -122,19 +112,14 @@ const decisionTemplate: ServerTemplate = {
 						acreageAvailability: z.string().optional(),
 					})
 					.optional(),
-				strategy: z
-					.enum(["AGGRESSIVE", "CONSERVATIVE", "OPPORTUNISTIC"])
-					.default("CONSERVATIVE"),
+				strategy: z.enum(["AGGRESSIVE", "CONSERVATIVE", "OPPORTUNISTIC"]).default("CONSERVATIVE"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const strategy = developBidStrategy(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(strategy, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(strategy, null, 2));
 				}
 
 				return strategy;
@@ -206,20 +191,12 @@ function evaluateInvestmentOpportunity(args: {
 	const conditions: string[] = [];
 
 	// Evaluate against criteria
-	if (
-		npv >= (criteria?.minNPV ?? 0) &&
-		irr >= (criteria?.minIRR ?? 0) &&
-		payback <= (criteria?.maxPayback ?? 999)
-	) {
+	if (npv >= (criteria?.minNPV ?? 0) && irr >= (criteria?.minIRR ?? 0) && payback <= (criteria?.maxPayback ?? 999)) {
 		if (riskScore <= (criteria?.maxRisk ?? 1)) {
 			decision = "INVEST";
 			confidence = 85;
-			reasoning.push(
-				`Strong economics: NPV $${(npv / 1000000).toFixed(1)}M, IRR ${(irr * 100).toFixed(1)}%`,
-			);
-			reasoning.push(
-				`Acceptable risk profile: ${(riskScore * 100).toFixed(1)}% risk score`,
-			);
+			reasoning.push(`Strong economics: NPV $${(npv / 1000000).toFixed(1)}M, IRR ${(irr * 100).toFixed(1)}%`);
+			reasoning.push(`Acceptable risk profile: ${(riskScore * 100).toFixed(1)}% risk score`);
 		} else {
 			decision = "CONDITIONAL";
 			confidence = 70;
@@ -247,8 +224,7 @@ function evaluateInvestmentOpportunity(args: {
 	if (!inputs.geological) riskFactors.push("Limited geological data available");
 
 	// Identify upside potential
-	if (irr > 0.25)
-		upside.push("Strong IRR indicates significant upside potential");
+	if (irr > 0.25) upside.push("Strong IRR indicates significant upside potential");
 	if (
 		inputs.geological &&
 		"confidence" in inputs.geological &&
@@ -313,10 +289,7 @@ function developBidStrategy(args: {
 	};
 }
 
-function assessPortfolioFit(args: {
-	opportunity: PortfolioAsset;
-	currentPortfolio?: PortfolioAsset[];
-}): PortfolioFit {
+function assessPortfolioFit(args: { opportunity: PortfolioAsset; currentPortfolio?: PortfolioAsset[] }): PortfolioFit {
 	const opportunity = args.opportunity;
 	const portfolio = args.currentPortfolio || [];
 
@@ -324,9 +297,7 @@ function assessPortfolioFit(args: {
 	const formations = portfolio.map((p: PortfolioAsset) => p.formation);
 	const locations = portfolio.map((p: PortfolioAsset) => p.location);
 
-	const formationDiversity = !formations.includes(opportunity.formation)
-		? 20
-		: 0;
+	const formationDiversity = !formations.includes(opportunity.formation) ? 20 : 0;
 	const locationDiversity = !locations.includes(opportunity.location) ? 20 : 0;
 
 	// Calculate strategic value
@@ -345,19 +316,14 @@ function assessPortfolioFit(args: {
 
 	portfolio.forEach((asset: PortfolioAsset) => {
 		if (asset.location === opportunity.location) {
-			synergies.push(
-				`Operational synergies with existing ${asset.location} operations`,
-			);
+			synergies.push(`Operational synergies with existing ${asset.location} operations`);
 		}
 		if (asset.formation === opportunity.formation) {
-			synergies.push(
-				`Technical expertise transfer from ${asset.formation} experience`,
-			);
+			synergies.push(`Technical expertise transfer from ${asset.formation} experience`);
 		}
 	});
 
-	const totalScore =
-		formationDiversity + locationDiversity + strategicScore + 30; // Base score
+	const totalScore = formationDiversity + locationDiversity + strategicScore + 30; // Base score
 
 	return {
 		score: Math.min(totalScore, 100),
@@ -383,29 +349,17 @@ function calculateMaxBid(npv: number, decision: string): number {
 function determineTimeline(decision: string, riskScore: number): string {
 	if (decision === "PASS") return "No timeline - opportunity declined";
 	if (decision === "CONDITIONAL") return "60-90 days pending risk mitigation";
-	return riskScore > 0.6
-		? "45-60 days with enhanced due diligence"
-		: "30-45 days standard timeline";
+	return riskScore > 0.6 ? "45-60 days with enhanced due diligence" : "30-45 days standard timeline";
 }
 
-function generateBidReasoning(
-	valuation: { npv: number; irr: number },
-	strategy: string,
-	multiplier: number,
-): string {
+function generateBidReasoning(valuation: { npv: number; irr: number }, strategy: string, multiplier: number): string {
 	return `${strategy} strategy applies ${(multiplier * 100).toFixed(0)}% of NPV ($${(valuation.npv / 1000000).toFixed(1)}M) with IRR of ${(valuation.irr * 100).toFixed(1)}%`;
 }
 
-function generatePortfolioRecommendation(
-	score: number,
-	strategic: boolean,
-): string {
-	if (score >= 80)
-		return "Strong fit - high recommendation for portfolio inclusion";
-	if (score >= 60)
-		return "Good fit - recommend inclusion with standard evaluation";
-	if (strategic)
-		return "Strategic value despite lower fit score - consider for inclusion";
+function generatePortfolioRecommendation(score: number, strategic: boolean): string {
+	if (score >= 80) return "Strong fit - high recommendation for portfolio inclusion";
+	if (score >= 60) return "Good fit - recommend inclusion with standard evaluation";
+	if (strategic) return "Strategic value despite lower fit score - consider for inclusion";
 	return "Limited portfolio fit - requires exceptional economics to justify";
 }
 

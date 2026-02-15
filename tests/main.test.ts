@@ -4,9 +4,6 @@
  * Covers CLI parsing, validation, execution modes, and error handling
  */
 
-import fs from "node:fs/promises";
-import path from "node:path";
-
 class MainEntryPointTester {
 	async runAllTests(): Promise<void> {
 		console.log("🧪 Starting Main Entry Point Tests (100% Coverage)\n");
@@ -16,7 +13,7 @@ class MainEntryPointTester {
 			failed: 0,
 			total: 0,
 			coverage: new Map<string, boolean>(),
-			errorDetails: [] as string[]
+			errorDetails: [] as string[],
 		};
 
 		try {
@@ -50,7 +47,7 @@ class MainEntryPointTester {
 			console.error("❌ Main entry point test suite failed:", error);
 			if (testResults.errorDetails.length > 0) {
 				console.error("\nDetailed errors:");
-				testResults.errorDetails.forEach(error => console.error(" -", error));
+				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
 		}
@@ -64,16 +61,16 @@ class MainEntryPointTester {
 			const testCases = [
 				{
 					args: ["--mode=production", "--tract=Test Tract"],
-					expected: { mode: "production", tract: "Test Tract" }
+					expected: { mode: "production", tract: "Test Tract" },
 				},
 				{
 					args: ["--mode", "demo", "--files", "test1.las,test2.csv"],
-					expected: { mode: "demo", files: ["test1.las", "test2.csv"] }
+					expected: { mode: "demo", files: ["test1.las", "test2.csv"] },
 				},
 				{
 					args: ["--help"],
-					expected: { mode: "production", help: true }
-				}
+					expected: { mode: "production", help: true },
+				},
 			];
 
 			for (const testCase of testCases) {
@@ -122,7 +119,7 @@ class MainEntryPointTester {
 			const validationTests = [
 				{ files: ["existing.las"], shouldPass: true },
 				{ files: ["nonexistent.las"], shouldPass: false },
-				{ files: [], shouldPass: true }
+				{ files: [], shouldPass: true },
 			];
 
 			for (const test of validationTests) {
@@ -131,11 +128,11 @@ class MainEntryPointTester {
 					tractName: "Test Tract",
 					mode: "demo" as const,
 					inputFiles: test.files,
-					outputDir: "/tmp/test"
+					outputDir: "/tmp/test",
 				});
 
-				if (test.shouldPass && test.files.length === 0 || !test.files[0].includes("nonexistent")) {
-					this.assert(result.valid === true, `Validation should pass for files: ${test.files.join(', ')}`);
+				if ((test.shouldPass && test.files.length === 0) || !test.files[0].includes("nonexistent")) {
+					this.assert(result.valid === true, `Validation should pass for files: ${test.files.join(", ")}`);
 				}
 			}
 
@@ -163,10 +160,13 @@ class MainEntryPointTester {
 					mode,
 					tract: "Test Tract",
 					files: ["test.las"],
-					output: undefined
+					output: undefined,
 				});
 
-				this.assert(request.mode === (mode === "demo" ? "demo" : "production"), "Request mode should be correctly mapped");
+				this.assert(
+					request.mode === (mode === "demo" ? "demo" : "production"),
+					"Request mode should be correctly mapped",
+				);
 				this.assert(request.runId.includes(mode), `Run ID should include mode: ${mode}`);
 				this.assert(request.tractName === "Test Tract", "Tract name should be preserved");
 			}
@@ -194,7 +194,7 @@ class MainEntryPointTester {
 				const result = await this.simulateExecution({
 					mode,
 					tract: `${mode} Test Tract`,
-					files: ["test.las"]
+					files: ["test.las"],
 				});
 
 				this.assert(result.success === true, `${mode} mode should execute successfully`);
@@ -243,12 +243,15 @@ class MainEntryPointTester {
 				{ mode: "demo", expected: "outputs/demo/" },
 				{ mode: "production", expected: "outputs/reports/" },
 				{ mode: "batch", expected: "outputs/processing/" },
-				{ mode: "research", expected: "outputs/processing/" }
+				{ mode: "research", expected: "outputs/processing/" },
 			];
 
 			for (const testCase of testCases) {
 				const outputDir = this.determineOutputDirectory(testCase.mode as any, undefined);
-				this.assert(outputDir.includes(testCase.expected), `${testCase.mode} mode should use ${testCase.expected} directory`);
+				this.assert(
+					outputDir.includes(testCase.expected),
+					`${testCase.mode} mode should use ${testCase.expected} directory`,
+				);
 			}
 
 			console.log("  ✅ Output directory management works correctly");
@@ -273,7 +276,7 @@ class MainEntryPointTester {
 				tractName: "Test Tract",
 				mode: "demo" as const,
 				inputFiles: ["test.las"],
-				outputDir: "/tmp/test"
+				outputDir: "/tmp/test",
 			};
 
 			const validResult = await this.validateAnalysisRequest(validRequest);
@@ -302,18 +305,36 @@ class MainEntryPointTester {
 			if (arg.includes("=")) {
 				const [key, value] = arg.split("=", 2);
 				switch (key) {
-					case "--mode": options.mode = value; continue;
-					case "--files": options.files = value.split(","); continue;
-					case "--tract": options.tract = value; continue;
-					case "--output": options.output = value; continue;
+					case "--mode":
+						options.mode = value;
+						continue;
+					case "--files":
+						options.files = value.split(",");
+						continue;
+					case "--tract":
+						options.tract = value;
+						continue;
+					case "--output":
+						options.output = value;
+						continue;
 				}
 			}
 			switch (arg) {
-				case "--mode": options.mode = args[++i]; break;
-				case "--files": options.files = args[++i].split(","); break;
-				case "--tract": options.tract = args[++i]; break;
-				case "--output": options.output = args[++i]; break;
-				case "--help": options.help = true; break;
+				case "--mode":
+					options.mode = args[++i];
+					break;
+				case "--files":
+					options.files = args[++i].split(",");
+					break;
+				case "--tract":
+					options.tract = args[++i];
+					break;
+				case "--output":
+					options.output = args[++i];
+					break;
+				case "--help":
+					options.help = true;
+					break;
 			}
 		}
 		return options;
@@ -351,7 +372,7 @@ Options:
 		const timestamp = new Date().toISOString().replace(/[:.]/g, "").slice(0, -5);
 		const runId = `${options.mode}-${timestamp}`;
 
-		let outputDir;
+		let outputDir: string;
 		if (options.output) {
 			outputDir = options.output;
 		} else if (options.mode === "demo") {
@@ -368,7 +389,7 @@ Options:
 			mode: options.mode === "demo" ? "demo" : "production",
 			inputFiles: options.files,
 			outputDir,
-			workflow: options.workflow
+			workflow: options.workflow,
 		};
 	}
 
@@ -387,7 +408,7 @@ Options:
 			totalTime: 5000,
 			runId: `${options.mode}-test-123`,
 			results: [],
-			recommendation: "PROCEED"
+			recommendation: "PROCEED",
 		};
 	}
 
@@ -398,7 +419,7 @@ Options:
 			totalTime: 1000,
 			runId: "failed-test-123",
 			results: [],
-			recommendation: "ANALYSIS_FAILED"
+			recommendation: "ANALYSIS_FAILED",
 		};
 	}
 

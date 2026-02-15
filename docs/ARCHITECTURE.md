@@ -4,69 +4,252 @@ This document explains the technical architecture of SHALE YEAH for developers a
 
 ## High-Level Architecture
 
-SHALE YEAH implements a **two-tier architecture** with demo mode currently operational and MCP server infrastructure ready for production integration:
+SHALE YEAH is an **Agent OS** for oil and gas investment analysis. At its core is a **kernel** that routes all execution through **14 MCP domain servers**, providing tool discovery, parallel scatter-gather execution, session management, and a middleware pipeline (auth, audit, resilience, output shaping).
 
-### Current Demo Architecture
-- **Demo Runner** (`src/demo-runner.ts`) - Orchestrates 6 AI agents with realistic mock data
-- **Professional Analysis Workflow** - Complete investment analysis in ~6 seconds
-- **No API Dependencies** - Perfect for presentations and evaluation
-
-### MCP Server Infrastructure (Ready for Production)
-- **14 Active MCP Servers** - Standards-compliant specialized analysis servers
-- **File Processing Foundation** - Comprehensive industry format support
-- **Enterprise Architecture** - Built on official Anthropic MCP SDK
+Both demo and production modes run through the same kernel-backed pipeline:
+- **Demo** (`npm run demo`) — Mock data, no API keys, ~6s execution via kernel
+- **Production** (`npm run prod`) — Real data + Anthropic API via kernel
 
 ```mermaid
 graph TB
-    subgraph "Demo Mode (Current)"
-        Demo[Demo Runner] --> A1[Marcus Aurelius Geologicus]
-        Demo --> A2[Lucius Technicus Engineer]
-        Demo --> A3[Caesar Augustus Economicus]
-        Demo --> A4[Gaius Probabilis Assessor]
-        Demo --> A5[Legatus Titulus Tracker]
-        Demo --> A6[Scriptor Reporticus Maximus]
-        A1 --> Report[Investment Decision]
-        A2 --> Report
-        A3 --> Report
-        A4 --> Report
-        A5 --> Report
-        A6 --> Report
+    Agent[Agent / Client] --> Kernel[Kernel]
+
+    subgraph "Kernel Layer"
+        Kernel --> Registry[Registry<br/>14 servers, capability matching]
+        Kernel --> Executor[Executor<br/>single, scatter-gather, bundles]
+        Kernel --> Sessions[Session Manager<br/>identity, context injection]
+        Kernel --> MW[Middleware Pipeline<br/>auth, audit, resilience, output]
     end
 
-    subgraph "MCP Infrastructure (Ready)"
-        Base[MCPServer Base Class] --> G[geowiz Server]
-        Base --> E[econobot Server]
-        Base --> C[curve-smith Server]
-        Base --> D[decision Server]
-        Base --> R[research Server]
-        Base --> Risk[risk-analysis Server]
-        Base --> L[legal Server]
-        Base --> M[market Server]
-        Base --> Dev[development Server]
-        Base --> Dr[drilling Server]
-        Base --> I[infrastructure Server]
-        Base --> T[title Server]
-        Base --> Test[test Server]
-        Base --> Rep[reporter Server]
+    Executor --> S1[geowiz]
+    Executor --> S2[econobot]
+    Executor --> S3[curve-smith]
+    Executor --> S4[decision]
+    Executor --> S5[reporter]
+    Executor --> S6[risk-analysis]
+    Executor --> S7[research]
+    Executor --> S8[legal]
+    Executor --> S9[market]
+    Executor --> S10[title]
+    Executor --> S11[development]
+    Executor --> S12[drilling]
+    Executor --> S13[infrastructure]
+    Executor --> S14[test]
 
-        G --> FileManager[FileIntegrationManager]
-        E --> FileManager
-        C --> FileManager
+    S1 --> FM[FileIntegrationManager]
+    S2 --> FM
+    S3 --> FM
 
-        FileManager --> LAS[LAS Parser]
-        FileManager --> Excel[Excel Parser]
-        FileManager --> GIS[GIS Parser]
-        FileManager --> SEGY[SEGY Parser]
-    end
+    FM --> LAS[LAS Parser]
+    FM --> Excel[Excel Parser]
+    FM --> GIS[GIS Parser]
+    FM --> SEGY[SEGY Parser]
+```
+
+## Kernel Architecture
+
+**Location**: `src/kernel/`
+
+The kernel is the single entry point between agents and the 14 MCP domain servers. It wraps discovery, routing, execution, context, and middleware into a unified runtime based on [Arcade.dev's agentic tool patterns](https://www.arcade.dev/patterns).
+
+### Key Components
+
+| File | Responsibility |
+|---|---|
+| `index.ts` | Kernel class — entry point, middleware pipeline, high-level methods |
+| `registry.ts` | Tool registry — 14 servers, capability matching, type classification |
+| `executor.ts` | Execution engine — single, parallel scatter-gather, bundle execution |
+| `context.ts` | Session manager — identity anchoring, context injection, result storage |
+| `bundles.ts` | Pre-built task bundles (QUICK_SCREEN, FULL_DUE_DILIGENCE, GEO_DEEP_DIVE, FINANCIAL_REVIEW) |
+| `types.ts` | All kernel type definitions |
+| `middleware/auth.ts` | RBAC (analyst, engineer, executive, admin) |
+| `middleware/audit.ts` | JSONL audit trail with sensitive value redaction |
+| `middleware/resilience.ts` | Error classification + recovery guides |
+| `middleware/output.ts` | Progressive detail levels (summary/standard/full) |
+
+### Tool Classification
+
+Every tool is classified as `query` (read-only, cacheable), `command` (side effects), or `discovery` (meta). This enables agents to safely parallelize queries, confirm commands, and explore capabilities dynamically.
+
+### Execution Engine (Scatter-Gather)
+
+The executor supports three execution modes:
+
+1. **Single execution** — route a request to one server, return `ToolResponse`
+2. **Parallel (scatter-gather)** — run N requests via `Promise.allSettled`, collect all results even if some fail. Respects `maxParallel` concurrency limit.
+3. **Bundle execution** — resolve a dependency graph into ordered phases, execute each phase (parallel or sequential), track per-phase and overall completeness.
+
+```
+Quick Screen (1 phase, ~20ms):
+  ┌─────────┐ ┌─────────┐ ┌────────────┐ ┌───────────────┐
+  │ GeoWiz  │ │Econobot │ │Curve-Smith │ │Risk-Analysis  │
+  └────┬────┘ └────┬────┘ └─────┬──────┘ └──────┬────────┘
+       └──────────┬┘            │               │
+              Promise.allSettled ────────────────┘
+                    │
+              GatheredResponse (completeness %)
+
+Full Due Diligence (4+ phases):
+  Phase 1:  geowiz, econobot, curve-smith, market, research  (parallel)
+  Phase 2:  risk, legal, title, drilling, infra, development  (parallel, depends on P1)
+  Phase 3:  test                                               (depends on P2)
+  Phase 4:  reporter → decision                                (sequential, depends on P3)
+```
+
+### Pre-Built Bundles
+
+| Bundle | Servers | Phases | Strategy | Detail Level |
+|--------|---------|--------|----------|-------------|
+| `quick_screen` | 4 (core) | 1 | all required | summary |
+| `full_due_diligence` | 14 (all) | 4+ | majority | standard/full |
+| `geological_deep_dive` | geowiz(full), curve-smith(standard), research(summary) | 1 | all | mixed |
+| `financial_review` | econobot(full), risk-analysis(standard), market(summary) | 1 | all | mixed |
+
+### Composition — Abstraction Ladder
+
+The kernel provides tools at three abstraction levels, implementing the [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) pattern:
+
+```
+High   ┌─────────────────────────────────────┐
+       │  shouldWeInvest()                   │  Full pipeline + confirmation gate
+       │  quickScreen() / fullAnalysis()     │  Pre-built bundles
+       ├─────────────────────────────────────┤
+Mid    │  geologicalDeepDive()               │  Domain-focused bundles (3 servers)
+       │  financialReview()                  │  Domain-focused bundles (3 servers)
+       │  executeParallel([...requests])     │  Ad-hoc scatter-gather
+       ├─────────────────────────────────────┤
+Low    │  execute(request)                   │  Single tool call
+       │  callTool(request, sessionId)       │  Single tool + auth/audit pipeline
+       └─────────────────────────────────────┘
+```
+
+### Confirmation Gate
+
+Decision tools (`decision.make_recommendation`, `decision.analyze`) return `requires_confirmation: true` with a pending action. The agent must call `confirmAction(actionId)` or `cancelAction(actionId)` before the action executes. This implements the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern for high-impact tools.
+
+## Context and Sessions
+
+The kernel manages user sessions with identity anchoring and context injection, implementing the Arcade patterns: **Identity Anchor**, **Context Injection**, **Context Boundary**, and **Resource Referencing**.
+
+### Session Lifecycle
+
+```
+createSession(identity?, prefs?)  →  Session { id, identity, preferences }
+        │
+        ├─ storeResult("geo", response)   // Resource Referencing
+        ├─ storeResult("econ", response)
+        │
+        ├─ getResult("geo")               // Retrieve stored analysis
+        │
+        ├─ getInjectedContext()            // Context Injection
+        │       → { userId, role, sessionId, timestamp, timezone,
+        │          defaultBasin, riskTolerance, availableResults[] }
+        │
+        ├─ whoAmI(sessionId)               // Identity Anchor
+        │       → { identity, context }
+        │
+        └─ destroySession(sessionId)       // Cleanup
+```
+
+### Context Boundary (Session Isolation)
+
+Each session is an isolated context boundary. Results stored in one session are never visible to another:
+
+```
+Session A: storeResult("geo", ...)  →  availableResults: ["geo"]
+Session B: storeResult("econ", ...) →  availableResults: ["econ"]
+                                        // No cross-contamination
+```
+
+### Default Identity
+
+Demo mode uses a built-in identity:
+```typescript
+DEMO_IDENTITY = {
+  userId: "demo", role: "analyst",
+  permissions: ["read:analysis"],
+  organization: "SHALE YEAH Demo"
+}
+```
+
+## Middleware Pipeline
+
+### Request Flow
+
+```
+callTool(request, sessionId)
+    │
+    ├─ 1. AuthMiddleware.check(tool, identity)
+    │       ├─ allowed → continue
+    │       └─ denied → audit.logDenial() → return error
+    │
+    ├─ 2. AuditMiddleware.logRequest(entry)
+    │
+    ├─ 3. Executor.execute(request)
+    │
+    └─ 4. AuditMiddleware.logResponse(entry)  — or logError(entry)
+```
+
+### Role-Based Access Control
+
+| Role | Permissions | Can Call |
+|---|---|---|
+| analyst | read:analysis | All query tools (12 servers) |
+| engineer | +write:reports | + reporter tools |
+| executive | +execute:decisions | + decision tools |
+| admin | +admin:servers, admin:users | Everything |
+
+### Audit Trail
+
+- Append-only JSONL at `data/audit/YYYY-MM-DD.jsonl`
+- Sensitive values (keys matching `/key|token|secret|password|credential|auth|bearer/`) automatically redacted as `[REDACTED]`
+- Logs requests, responses, errors, and denials with who/what/when
+
+### Error Intelligence and Resilience
+
+The kernel's `ResilienceMiddleware` classifies errors, generates recovery guides, and handles graceful degradation when parallel servers fail.
+
+```
+Raw Error → Pattern Matching → ErrorType Classification → RecoveryGuide
+                                    │
+                    ┌───────────────┼───────────────┐
+                    │               │               │
+               retryable      permanent      auth_required    user_action
+              (retry w/       (fix request)   (re-auth)      (need input)
+               backoff)
+```
+
+Priority order: auth > user_action > retryable > permanent. Unknown errors default to retryable.
+
+When scatter-gather execution encounters partial failures, the resilience middleware assesses whether the degraded result is still useful:
+
+```
+14 servers requested → 12 succeed, 2 fail
+                         │
+                    completeness: 86%  (>50% threshold)
+                    missingAnalyses: ["reporter", "decision"]
+                    suggestions: ["Partial results sufficient...",
+                                  "decision failed — try reporter.analyze"]
+```
+
+Each server has fallback suggestions based on capability overlap (e.g., geowiz to research, econobot to market).
+
+### Configuration
+
+Both auth and audit are controlled by environment variables:
+
+```
+KERNEL_AUTH_ENABLED=true|false   (default: false)
+KERNEL_AUDIT_ENABLED=true|false  (default: true)
 ```
 
 ## Core Components
 
-### 1. MCPServer Base Class
+### MCPServer Base Class
 
 **Location**: `src/shared/mcp-server.ts`
 
-The foundation for all AI agents. Provides:
+The foundation for all 14 domain servers. Provides:
 
 ```typescript
 export abstract class MCPServer {
@@ -91,7 +274,7 @@ export abstract class MCPServer {
 - **Error Handling**: Structured error responses with detailed logging
 - **Resource Management**: Automatic data directory setup and file management
 
-### 2. Domain Expert Servers
+### Domain Expert Servers
 
 Each server inherits from `MCPServer` and specializes in a specific domain:
 
@@ -122,9 +305,9 @@ class DecisionServer extends MCPServer {
 }
 ```
 
-*...and 11 more specialized servers*
+*...and 11 more specialized servers (curve-smith, reporter, risk-analysis, research, legal, market, title, development, drilling, infrastructure, test)*
 
-### 3. File Processing System
+### File Processing System
 
 **Location**: `src/shared/file-integration.ts`
 
@@ -146,17 +329,17 @@ class FileIntegrationManager {
 - **Seismic**: SEGY/SGY files
 - **Documents**: PDF, Word (architecture ready)
 
-### 4. Demo Orchestration
+### Client and Demo Orchestration
 
-**Location**: `src/demo-runner.ts`
+**`ShaleYeahMCPClient`** (`src/mcp-client.ts`) coordinates the 14 servers. It wraps a `Kernel` instance internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()`.
 
-Simulates a complete investment analysis workflow:
+**`ShaleYeahMCPDemo`** (`src/demo-runner.ts`) creates a kernel session and runs the full investment analysis workflow through the kernel. All 14 servers execute in parallel phases via the kernel's scatter-gather executor, completing in ~6 seconds with mock data.
 
 ```typescript
-class ShaleYeahDemo {
+class ShaleYeahMCPDemo {
   async runCompleteDemo(): Promise<void> {
-    // 1. Setup analysis environment
-    // 2. Execute 6 core agents in sequence
+    // 1. Create kernel session with demo identity
+    // 2. Execute all 14 servers in parallel phases via kernel
     // 3. Generate professional reports
     // 4. Provide investment recommendation
   }
@@ -213,37 +396,39 @@ await runMCPServer(server);
 
 ## Data Flow
 
-### 1. Demo Analysis Flow
+### Analysis Flow (Demo and Production)
+
+Both modes flow through the kernel. The kernel's executor runs servers in parallel phases via scatter-gather, not sequentially:
 
 ```
-Demo Runner
+Client / Demo Runner
     ↓
-[Setup Output Directory]
+Kernel.createSession(identity)
     ↓
-[Execute Agents Sequentially]
-    ↓ (for each agent)
-[Generate Mock Analysis] → [Save Results] → [Log Progress]
+Kernel.fullAnalysis(request, sessionId)
     ↓
-[Generate Reports]
+Executor: scatter-gather in dependency-ordered phases
+    Phase 1:  geowiz, econobot, curve-smith, market, research  (parallel)
+    Phase 2:  risk, legal, title, drilling, infra, development  (parallel)
+    Phase 3:  test                                               (parallel)
+    Phase 4:  reporter → decision                                (sequential)
     ↓
-[Final Recommendation]
+Results stored in session (Resource Referencing)
+    ↓
+Final Recommendation + Reports
 ```
 
-### 2. Production Analysis Flow
+In production mode, file processing occurs before execution:
 
 ```
-Client Request (MCP)
+Input Files → FileIntegrationManager → Detect Format → LAS/Excel/GIS/SEGY Parser
     ↓
-[Parse Input Files] → [FileIntegrationManager]
-    ↓                        ↓
-[Route to Agent] ← [Detect Format] → [LAS/Excel/GIS/SEGY Parser]
+Parsed data injected into analysis request
     ↓
-[Execute Analysis] → [Save Results]
-    ↓
-[Return Structured Response]
+(Same kernel execution flow as above)
 ```
 
-### 3. Data Storage
+### Data Storage
 
 ```
 data/
@@ -252,6 +437,8 @@ data/
 │       ├── INVESTMENT_DECISION.md
 │       ├── DETAILED_ANALYSIS.md
 │       └── FINANCIAL_MODEL.json
+├── audit/                # Audit trail (JSONL)
+│   └── YYYY-MM-DD.jsonl
 └── {server-name}/        # Server-specific data
     ├── analyses/         # Analysis results
     ├── reports/          # Generated reports
@@ -387,40 +574,56 @@ interface ParseResult {
 
 ## Testing Strategy
 
-### 1. Unit Tests
+Tests use a simple assert pattern (not jest/vitest), run via `npx tsx tests/<name>.test.ts`. There are 8 kernel test suites (627 tests) plus demo integration and file processing tests.
+
+### Kernel Tests
+
 ```typescript
-// Test individual server methods
-describe('GeowizServer', () => {
-  it('should analyze formation data correctly', async () => {
-    const server = new GeowizServer();
-    const result = await server.analyzeFormation(mockData);
-    expect(result.confidence).toBeGreaterThan(0.7);
-  });
-});
+// tests/kernel-registry.test.ts
+import { Kernel } from "../src/kernel/index.js";
+import { ShaleYeahMCPClient } from "../src/mcp-client.js";
+
+let passed = 0;
+let failed = 0;
+
+function assert(condition: boolean, message: string): void {
+  if (condition) {
+    console.log(`  ✅ ${message}`);
+    passed++;
+  } else {
+    console.error(`  ❌ ${message}`);
+    failed++;
+  }
+}
+
+const client = new ShaleYeahMCPClient();
+const kernel = new Kernel();
+kernel.initialize(client.serverConfigs);
+
+assert(kernel.initialized, "Kernel is initialized");
+assert(kernel.registry.serverCount === 14, "Registry has 14 servers");
+assert(kernel.registry.toolCount === 14, "Registry has 14 tools");
 ```
 
-### 2. Integration Tests
-```typescript
-// Test MCP protocol compliance
-describe('MCP Integration', () => {
-  it('should register tools correctly', async () => {
-    const server = new GeowizServer();
-    await server.initialize();
-    expect(server.getToolCount()).toBe(4);
-  });
-});
-```
+### Test Suites
 
-### 3. Demo Tests
-```typescript
-// Test end-to-end demo functionality
-describe('Demo Runner', () => {
-  it('should complete full analysis', async () => {
-    const demo = new ShaleYeahDemo(config);
-    await demo.runCompleteDemo();
-    expect(outputFiles).toContain('INVESTMENT_DECISION.md');
-  });
-});
+| Suite | File | Tests |
+|---|---|---|
+| Registry | `tests/kernel-registry.test.ts` | 60 |
+| Output | `tests/kernel-output.test.ts` | 56 |
+| Executor | `tests/kernel-executor.test.ts` | 83 |
+| Context | `tests/kernel-context.test.ts` | 87 |
+| Resilience | `tests/kernel-resilience.test.ts` | 108 |
+| Auth | `tests/kernel-auth.test.ts` | 63 |
+| Audit | `tests/kernel-audit.test.ts` | 58 |
+| Bundles | `tests/kernel-bundles.test.ts` | 112 |
+
+### Running Tests
+
+```bash
+npm run test                          # All suites
+npx tsx tests/kernel-registry.test.ts # Individual suite
+npm run demo                          # Demo integration test
 ```
 
 ## Security Considerations
@@ -433,33 +636,27 @@ describe('Demo Runner', () => {
 ### 2. Data Privacy
 - No sensitive data logged
 - Temporary files cleaned up automatically
-- Optional data encryption at rest
+- Audit trail redacts sensitive values automatically
 
 ### 3. Access Control
-- MCP protocol provides built-in access control
+- Role-based access control via AuthMiddleware
 - Server-level permission management
-- Audit logging for all operations
+- Append-only audit logging for all operations
 
-## Deployment Architecture
+## Running the System
 
 ### Development
 ```bash
 npm run server:geowiz    # Individual server testing
-npm run demo            # Full demonstration
+npm run demo             # Full 14-server demonstration through kernel
 ```
 
 ### Production
 ```bash
-npm run prod            # Production orchestration
-npm run pipeline:batch  # Batch processing
+npm run prod                          # Production analysis via kernel
+npm run prod -- --files="*.las,*.xlsx" # Production with file inputs
 ```
-
-### Enterprise
-- Docker containerization support
-- Kubernetes deployment ready
-- Load balancing across server instances
-- Horizontal scaling capabilities
 
 ---
 
-This architecture provides a robust, scalable foundation for AI-powered oil & gas investment analysis while maintaining clean separation of concerns and adherence to industry standards.
+*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*

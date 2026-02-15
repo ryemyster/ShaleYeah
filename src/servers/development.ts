@@ -7,11 +7,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const developmentTemplate: ServerTemplate = {
 	name: "development",
@@ -56,20 +52,12 @@ const developmentTemplate: ServerTemplate = {
 				const analysis = {
 					project: args.project,
 					development: {
-						strategy:
-							args.project.wellCount > 20
-								? "Phased development"
-								: "Single phase",
+						strategy: args.project.wellCount > 20 ? "Phased development" : "Single phase",
 						phases: Array.from({ length: phaseCount }, (_, i) => ({
 							phase: i + 1,
-							wells: Math.min(
-								wellsPerPhase,
-								args.project.wellCount - i * wellsPerPhase,
-							),
+							wells: Math.min(wellsPerPhase, args.project.wellCount - i * wellsPerPhase),
 							duration: `${6 + i * 2} months`,
-							investment: Math.round(
-								(args.constraints?.budget || 50000000) / phaseCount,
-							),
+							investment: Math.round((args.constraints?.budget || 50000000) / phaseCount),
 							keyMilestones: [
 								"Permitting and approvals",
 								"Site preparation",
@@ -80,15 +68,8 @@ const developmentTemplate: ServerTemplate = {
 						})),
 						schedule: {
 							totalDuration: `${phaseCount * 8} months`,
-							criticalPath: [
-								"Environmental approvals",
-								"Drilling permits",
-								"Equipment procurement",
-							],
-							riskFactors: args.constraints?.technical || [
-								"Weather delays",
-								"Equipment availability",
-							],
+							criticalPath: ["Environmental approvals", "Drilling permits", "Equipment procurement"],
+							riskFactors: args.constraints?.technical || ["Weather delays", "Equipment availability"],
 						},
 					},
 					resources: {
@@ -118,10 +99,7 @@ const developmentTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -132,12 +110,8 @@ const developmentTemplate: ServerTemplate = {
 			"Monitor and analyze development project progress",
 			z.object({
 				projectId: z.string(),
-				metrics: z
-					.array(z.string())
-					.default(["schedule", "budget", "safety", "quality"]),
-				reportingPeriod: z
-					.enum(["weekly", "monthly", "quarterly"])
-					.default("monthly"),
+				metrics: z.array(z.string()).default(["schedule", "budget", "safety", "quality"]),
+				reportingPeriod: z.enum(["weekly", "monthly", "quarterly"]).default("monthly"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
@@ -175,10 +149,7 @@ const developmentTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -187,8 +158,7 @@ const developmentTemplate: ServerTemplate = {
 	],
 };
 
-export const DevelopmentServer =
-	ServerFactory.createServer(developmentTemplate);
+export const DevelopmentServer = ServerFactory.createServer(developmentTemplate);
 export default DevelopmentServer;
 
 if (import.meta.url === `file://${process.argv[1]}`) {

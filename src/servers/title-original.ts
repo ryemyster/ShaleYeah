@@ -34,13 +34,7 @@ export class TitleServer extends MCPServer {
 	}
 
 	protected async setupDataDirectories(): Promise<void> {
-		const dirs = [
-			"examinations",
-			"ownership",
-			"leases",
-			"encumbrances",
-			"reports",
-		];
+		const dirs = ["examinations", "ownership", "leases", "encumbrances", "reports"];
 		for (const dir of dirs) {
 			await fs.mkdir(path.join(this.dataPath, dir), { recursive: true });
 		}
@@ -69,9 +63,7 @@ export class TitleServer extends MCPServer {
 	}
 
 	private async examineTitle(args: any): Promise<any> {
-		console.log(
-			`📋 Examining title for property in ${args.county}, ${args.state}`,
-		);
+		console.log(`📋 Examining title for property in ${args.county}, ${args.state}`);
 
 		const examination = {
 			examinationId: `title_${Date.now()}`,
@@ -88,10 +80,7 @@ export class TitleServer extends MCPServer {
 			confidence: 92,
 		};
 
-		await this.saveResult(
-			`examinations/${examination.examinationId}.json`,
-			examination,
-		);
+		await this.saveResult(`examinations/${examination.examinationId}.json`, examination);
 		return examination;
 	}
 

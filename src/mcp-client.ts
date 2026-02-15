@@ -17,6 +17,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import type { ToolExecutorFn } from "./kernel/index.js";
+import { ErrorType, Kernel } from "./kernel/index.js";
 import type { MCPAnalysisResult } from "./shared/types.js";
 
 export interface MCPServerConfig {
@@ -62,29 +64,34 @@ export interface WorkflowResult {
 export class ShaleYeahMCPClient {
 	private clients: Map<string, Client> = new Map();
 	private transports: Map<string, StdioClientTransport> = new Map();
-	private serverConfigs: MCPServerConfig[] = [];
+	private _serverConfigs: MCPServerConfig[] = [];
 	private initialized = false;
+	public readonly kernel: Kernel;
+	private currentRequest: AnalysisRequest | null = null;
 
 	constructor() {
 		this.initializeServerConfigs();
+		this.kernel = new Kernel();
+		this.kernel.initialize(this._serverConfigs);
+	}
+
+	/** Public accessor for server configs (used by kernel registry) */
+	get serverConfigs(): MCPServerConfig[] {
+		return this._serverConfigs;
 	}
 
 	/**
 	 * Initialize all server configurations
 	 */
 	private initializeServerConfigs(): void {
-		this.serverConfigs = [
+		this._serverConfigs = [
 			{
 				name: "geowiz",
 				script: "src/servers/geowiz.ts",
 				description: "Geological Analysis Server",
 				persona: "Marcus Aurelius Geologicus",
 				domain: "geology",
-				capabilities: [
-					"formation_analysis",
-					"gis_processing",
-					"well_log_analysis",
-				],
+				capabilities: ["formation_analysis", "gis_processing", "well_log_analysis"],
 			},
 			{
 				name: "econobot",
@@ -116,11 +123,7 @@ export class ShaleYeahMCPClient {
 				description: "Investment Decision Server",
 				persona: "Augustus Decidius Maximus",
 				domain: "strategy",
-				capabilities: [
-					"investment_strategy",
-					"portfolio_optimization",
-					"decision_analysis",
-				],
+				capabilities: ["investment_strategy", "portfolio_optimization", "decision_analysis"],
 			},
 			{
 				name: "risk-analysis",
@@ -136,11 +139,7 @@ export class ShaleYeahMCPClient {
 				description: "Legal Analysis Server",
 				persona: "Legatus Juridicus",
 				domain: "legal",
-				capabilities: [
-					"contract_analysis",
-					"compliance_review",
-					"legal_framework",
-				],
+				capabilities: ["contract_analysis", "compliance_review", "legal_framework"],
 			},
 			{
 				name: "market",
@@ -148,11 +147,7 @@ export class ShaleYeahMCPClient {
 				description: "Market Analysis Server",
 				persona: "Mercatus Analyticus",
 				domain: "market",
-				capabilities: [
-					"market_analysis",
-					"competitive_analysis",
-					"price_forecasting",
-				],
+				capabilities: ["market_analysis", "competitive_analysis", "price_forecasting"],
 			},
 			{
 				name: "development",
@@ -160,11 +155,7 @@ export class ShaleYeahMCPClient {
 				description: "Development Planning Server",
 				persona: "Architectus Developmentus",
 				domain: "development",
-				capabilities: [
-					"development_planning",
-					"project_management",
-					"resource_allocation",
-				],
+				capabilities: ["development_planning", "project_management", "resource_allocation"],
 			},
 			{
 				name: "drilling",
@@ -172,11 +163,7 @@ export class ShaleYeahMCPClient {
 				description: "Drilling Operations Server",
 				persona: "Perforator Maximus",
 				domain: "drilling",
-				capabilities: [
-					"drilling_program",
-					"cost_estimation",
-					"risk_assessment",
-				],
+				capabilities: ["drilling_program", "cost_estimation", "risk_assessment"],
 			},
 			{
 				name: "infrastructure",
@@ -184,11 +171,7 @@ export class ShaleYeahMCPClient {
 				description: "Infrastructure Planning Server",
 				persona: "Structura Ingenious",
 				domain: "infrastructure",
-				capabilities: [
-					"infrastructure_planning",
-					"capacity_analysis",
-					"cost_estimation",
-				],
+				capabilities: ["infrastructure_planning", "capacity_analysis", "cost_estimation"],
 			},
 			{
 				name: "title",
@@ -196,11 +179,7 @@ export class ShaleYeahMCPClient {
 				description: "Title Analysis Server",
 				persona: "Titulus Verificatus",
 				domain: "title",
-				capabilities: [
-					"title_examination",
-					"ownership_analysis",
-					"due_diligence",
-				],
+				capabilities: ["title_examination", "ownership_analysis", "due_diligence"],
 			},
 			{
 				name: "test",
@@ -216,11 +195,7 @@ export class ShaleYeahMCPClient {
 				description: "Research Server",
 				persona: "Scientius Researchicus",
 				domain: "research",
-				capabilities: [
-					"market_research",
-					"technology_analysis",
-					"competitive_intelligence",
-				],
+				capabilities: ["market_research", "technology_analysis", "competitive_intelligence"],
 			},
 		];
 	}
@@ -232,16 +207,12 @@ export class ShaleYeahMCPClient {
 		if (this.initialized) return;
 
 		console.log("🔗 Initializing MCP Client connections...");
-		console.log(
-			`📡 Connecting to ${this.serverConfigs.length} domain expert servers`,
-		);
+		console.log(`📡 Connecting to ${this._serverConfigs.length} domain expert servers`);
 
-		const connectionPromises = this.serverConfigs.map(async (config) => {
+		const connectionPromises = this._serverConfigs.map(async (config) => {
 			try {
 				await this.connectToServer(config);
-				console.log(
-					`  ✅ ${config.persona} (${config.name}) - ${config.domain}`,
-				);
+				console.log(`  ✅ ${config.persona} (${config.name}) - ${config.domain}`);
 			} catch (error) {
 				console.log(
 					`  ❌ ${config.name} - Connection failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -252,6 +223,7 @@ export class ShaleYeahMCPClient {
 
 		await Promise.all(connectionPromises);
 		this.initialized = true;
+		this.kernel.setExecutorFn(this.createExecutorFn());
 		console.log("🎯 All MCP servers connected successfully!\\n");
 	}
 
@@ -284,6 +256,62 @@ export class ShaleYeahMCPClient {
 	}
 
 	/**
+	 * Create the executor function that bridges kernel tool calls to MCP server execution.
+	 */
+	private createExecutorFn(): ToolExecutorFn {
+		return async (toolName, args) => {
+			const serverName = toolName.split(".")[0];
+			const config = this._serverConfigs.find((c) => c.name === serverName);
+
+			const request: AnalysisRequest = this.currentRequest || {
+				runId: "kernel",
+				tractName: (args.tractName as string) || "Analysis",
+				mode: "demo" as const,
+				outputDir: (args.outputDir as string) || "",
+			};
+
+			if (!config) {
+				return {
+					success: false,
+					summary: `Server ${serverName} not found`,
+					confidence: 0,
+					data: null,
+					detailLevel: "standard" as const,
+					completeness: 0,
+					metadata: {
+						server: serverName,
+						persona: "Unknown",
+						executionTimeMs: 0,
+						timestamp: new Date().toISOString(),
+					},
+					error: {
+						type: ErrorType.PERMANENT,
+						message: `Server ${serverName} not found`,
+					},
+				};
+			}
+
+			const result = await this.executeServerAnalysis(serverName, request);
+
+			return {
+				success: result.success,
+				summary: `${config.persona} analysis${result.success ? " complete" : " failed"}`,
+				confidence: result.confidence,
+				data: result.analysis,
+				detailLevel: "standard" as const,
+				completeness: result.success ? 100 : 0,
+				metadata: {
+					server: serverName,
+					persona: config.persona,
+					executionTimeMs: result.executionTime,
+					timestamp: new Date().toISOString(),
+				},
+				error: result.error ? { type: ErrorType.PERMANENT, message: result.error } : undefined,
+			};
+		};
+	}
+
+	/**
 	 * Execute comprehensive oil & gas investment analysis
 	 */
 	async executeAnalysis(request: AnalysisRequest): Promise<WorkflowResult> {
@@ -305,44 +333,48 @@ export class ShaleYeahMCPClient {
 		// Create output directory
 		await fs.mkdir(request.outputDir, { recursive: true });
 
-		// Execute complete analysis workflow with all 14 servers
-		const allServers = this.serverConfigs.map((config) => config.name);
+		// Execute via kernel — parallel, dependency-ordered analysis
+		this.currentRequest = request;
+		const bundleResult = await this.kernel.fullAnalysis({
+			tractName: request.tractName,
+			runId: request.runId,
+			mode: request.mode,
+			outputDir: request.outputDir,
+		});
 
-		for (const serverName of allServers) {
-			const result = await this.executeServerAnalysis(serverName, request);
+		for (const [toolName, toolResponse] of bundleResult.results) {
+			const serverName = toolName.split(".")[0];
+			const config = this._serverConfigs.find((c) => c.name === serverName);
+
+			const result: AnalysisResult = {
+				server: serverName,
+				persona: config?.persona || toolResponse.metadata.persona,
+				analysis: (toolResponse.data || {}) as MCPAnalysisResult,
+				confidence: toolResponse.confidence,
+				executionTime: toolResponse.metadata.executionTimeMs,
+				success: toolResponse.success,
+				error: toolResponse.error?.message,
+			};
 			results.push(result);
 
 			if (result.success) {
-				console.log(
-					`🤖 ${result.persona}: ✅ ${result.confidence}% confidence in ${result.executionTime}ms`,
-				);
+				console.log(`🤖 ${result.persona}: ✅ ${result.confidence}% confidence in ${result.executionTime}ms`);
 			} else {
-				console.log(
-					`🤖 ${result.persona}: ❌ Analysis failed - ${result.error}`,
-				);
+				console.log(`🤖 ${result.persona}: ❌ Analysis failed - ${result.error}`);
 			}
 		}
 
 		const totalTime = Date.now() - startTime;
 		const successfulResults = results.filter((r) => r.success);
 		const overallConfidence = Math.round(
-			successfulResults.reduce((sum, r) => sum + r.confidence, 0) /
-				successfulResults.length,
+			successfulResults.reduce((sum, r) => sum + r.confidence, 0) / successfulResults.length,
 		);
 
 		// Generate final recommendation
-		const recommendation = this.generateRecommendation(
-			successfulResults,
-			overallConfidence,
-		);
+		const recommendation = this.generateRecommendation(successfulResults, overallConfidence);
 
 		// Write final reports
-		await this.writeAnalysisReports(
-			request,
-			results,
-			recommendation,
-			overallConfidence,
-		);
+		await this.writeAnalysisReports(request, results, recommendation, overallConfidence);
 
 		console.log();
 		console.log(`🎯 SHALE YEAH Analysis Complete!`);
@@ -362,11 +394,8 @@ export class ShaleYeahMCPClient {
 	/**
 	 * Execute analysis on a specific server
 	 */
-	private async executeServerAnalysis(
-		serverName: string,
-		request: AnalysisRequest,
-	): Promise<AnalysisResult> {
-		const config = this.serverConfigs.find((c) => c.name === serverName);
+	private async executeServerAnalysis(serverName: string, request: AnalysisRequest): Promise<AnalysisResult> {
+		const config = this._serverConfigs.find((c) => c.name === serverName);
 		const client = this.clients.get(serverName);
 
 		if (!config || !client) {
@@ -393,10 +422,7 @@ export class ShaleYeahMCPClient {
 					server: serverName,
 					persona: config.persona,
 					analysis: mockAnalysis as MCPAnalysisResult,
-					confidence:
-						typeof mockAnalysis.confidence === "number"
-							? mockAnalysis.confidence
-							: 85,
+					confidence: typeof mockAnalysis.confidence === "number" ? mockAnalysis.confidence : 85,
 					executionTime,
 					success: true,
 				};
@@ -411,11 +437,7 @@ export class ShaleYeahMCPClient {
 			}
 
 			// Create server-specific arguments
-			const toolArguments = this.getServerSpecificArguments(
-				serverName,
-				primaryTool.name,
-				request,
-			);
+			const toolArguments = this.getServerSpecificArguments(serverName, primaryTool.name, request);
 
 			const result = await client.callTool({
 				name: primaryTool.name,
@@ -428,9 +450,7 @@ export class ShaleYeahMCPClient {
 				server: serverName,
 				persona: config.persona,
 				analysis: result.content as MCPAnalysisResult,
-				confidence:
-					((result.content as Record<string, unknown>)?.confidence as number) ||
-					85,
+				confidence: ((result.content as Record<string, unknown>)?.confidence as number) || 85,
 				executionTime,
 				success: true,
 			};
@@ -591,12 +611,7 @@ export class ShaleYeahMCPClient {
 						production: "1200 bbl/d initial",
 						area: "Permian Basin",
 					},
-					requirements: [
-						"flowlines",
-						"separators",
-						"compressors",
-						"electricity",
-					],
+					requirements: ["flowlines", "separators", "compressors", "electricity"],
 					outputPath: baseArgs.outputPath,
 				};
 
@@ -624,10 +639,7 @@ export class ShaleYeahMCPClient {
 	/**
 	 * Generate realistic mock analysis for demo mode
 	 */
-	private generateMockAnalysis(
-		serverName: string,
-		_request: AnalysisRequest,
-	): MCPAnalysisResult {
+	private generateMockAnalysis(serverName: string, _request: AnalysisRequest): MCPAnalysisResult {
 		const baseConfidence = 75 + Math.random() * 20;
 
 		const mockData: Record<string, MCPAnalysisResult> = {
@@ -726,10 +738,7 @@ export class ShaleYeahMCPClient {
 	/**
 	 * Generate investment recommendation based on analysis results
 	 */
-	private generateRecommendation(
-		_results: AnalysisResult[],
-		confidence: number,
-	): string {
+	private generateRecommendation(_results: AnalysisResult[], confidence: number): string {
 		if (confidence >= 85) {
 			return "✅ PROCEED (Strong Economics & Low Risk)";
 		} else if (confidence >= 70) {
@@ -788,36 +797,21 @@ Based on comprehensive multi-domain analysis, this investment presents ${confide
 *Generated with SHALE YEAH MCP Architecture*
 *${new Date().toISOString()}*`;
 
-		await fs.writeFile(
-			path.join(request.outputDir, "INVESTMENT_DECISION.md"),
-			investmentDecision,
-		);
+		await fs.writeFile(path.join(request.outputDir, "INVESTMENT_DECISION.md"), investmentDecision);
 
 		// Detailed Analysis Report
 		const detailedAnalysis = this.generateDetailedReport(request, results);
-		await fs.writeFile(
-			path.join(request.outputDir, "DETAILED_ANALYSIS.md"),
-			detailedAnalysis,
-		);
+		await fs.writeFile(path.join(request.outputDir, "DETAILED_ANALYSIS.md"), detailedAnalysis);
 
 		// Financial Model JSON
 		const financialModel = this.generateFinancialModel(request, results);
-		await fs.writeFile(
-			path.join(request.outputDir, "FINANCIAL_MODEL.json"),
-			JSON.stringify(financialModel, null, 2),
-		);
+		await fs.writeFile(path.join(request.outputDir, "FINANCIAL_MODEL.json"), JSON.stringify(financialModel, null, 2));
 
 		console.log();
 		console.log("📄 Reports Generated:");
-		console.log(
-			`   • Executive Summary: ${request.outputDir}/INVESTMENT_DECISION.md`,
-		);
-		console.log(
-			`   • Detailed Analysis: ${request.outputDir}/DETAILED_ANALYSIS.md`,
-		);
-		console.log(
-			`   • Financial Model: ${request.outputDir}/FINANCIAL_MODEL.json`,
-		);
+		console.log(`   • Executive Summary: ${request.outputDir}/INVESTMENT_DECISION.md`);
+		console.log(`   • Detailed Analysis: ${request.outputDir}/DETAILED_ANALYSIS.md`);
+		console.log(`   • Financial Model: ${request.outputDir}/FINANCIAL_MODEL.json`);
 	}
 
 	private generateInvestmentMetrics(results: AnalysisResult[]): string {
@@ -844,10 +838,7 @@ Based on comprehensive multi-domain analysis, this investment presents ${confide
 | **EUR** | ${(eur / 1000).toFixed(0)}K BOE | ${eur > 500000 ? "High" : "Moderate"} |`;
 	}
 
-	private generateDetailedReport(
-		request: AnalysisRequest,
-		results: AnalysisResult[],
-	): string {
+	private generateDetailedReport(request: AnalysisRequest, results: AnalysisResult[]): string {
 		return `# Detailed Investment Analysis
 
 **Analysis ID:** ${request.runId}
@@ -879,10 +870,7 @@ ${JSON.stringify(result.analysis, null, 2)}`
 *Detailed analysis generated by SHALE YEAH MCP Client*`;
 	}
 
-	private generateFinancialModel(
-		request: AnalysisRequest,
-		results: AnalysisResult[],
-	): Record<string, unknown> {
+	private generateFinancialModel(request: AnalysisRequest, results: AnalysisResult[]): Record<string, unknown> {
 		const econResult = results.find((r) => r.server === "econobot");
 		const curveResult = results.find((r) => r.server === "curve-smith");
 
@@ -909,13 +897,10 @@ ${JSON.stringify(result.analysis, null, 2)}`
 			},
 			confidence_metrics: {
 				overall_confidence: Math.round(
-					results
-						.filter((r) => r.success)
-						.reduce((sum, r) => sum + r.confidence, 0) /
+					results.filter((r) => r.success).reduce((sum, r) => sum + r.confidence, 0) /
 						results.filter((r) => r.success).length,
 				),
-				analysis_completeness:
-					(results.filter((r) => r.success).length / results.length) * 100,
+				analysis_completeness: (results.filter((r) => r.success).length / results.length) * 100,
 			},
 		};
 	}
@@ -931,9 +916,7 @@ ${JSON.stringify(result.analysis, null, 2)}`
 				await client.close();
 				console.log(`  ✅ ${name} disconnected`);
 			} catch (error) {
-				console.log(
-					`  ⚠️  ${name} disconnect error: ${error instanceof Error ? error.message : String(error)}`,
-				);
+				console.log(`  ⚠️  ${name} disconnect error: ${error instanceof Error ? error.message : String(error)}`);
 			}
 		}
 
@@ -945,12 +928,10 @@ ${JSON.stringify(result.analysis, null, 2)}`
 	/**
 	 * Get status of all connected servers
 	 */
-	async getServerStatus(): Promise<
-		Array<{ name: string; status: string; capabilities: string[] }>
-	> {
+	async getServerStatus(): Promise<Array<{ name: string; status: string; capabilities: string[] }>> {
 		const status = [];
 
-		for (const config of this.serverConfigs) {
+		for (const config of this._serverConfigs) {
 			const client = this.clients.get(config.name);
 
 			status.push({

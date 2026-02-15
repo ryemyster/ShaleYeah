@@ -27,6 +27,10 @@ export interface MCPTool {
 	description: string;
 	inputSchema: z.ZodSchema<any>;
 	handler: (args: any) => Promise<any>;
+	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
+	type?: "query" | "command" | "discovery";
+	/** Supported response detail levels */
+	detailLevel?: "summary" | "standard" | "full";
 }
 
 export interface MCPResource {
@@ -50,8 +54,7 @@ export abstract class MCPServer {
 
 	constructor(config: MCPServerConfig) {
 		this.config = config;
-		this.dataPath =
-			config.dataPath || path.join("./data", config.name.toLowerCase());
+		this.dataPath = config.dataPath || path.join("./data", config.name.toLowerCase());
 		this.fileManager = new FileIntegrationManager();
 
 		this.server = new McpServer({
@@ -99,41 +102,32 @@ export abstract class MCPServer {
 	}
 
 	public registerTool(tool: MCPTool): void {
-		this.server.tool(
-			tool.name,
-			tool.description,
-			this.convertZodToJsonSchema(tool.inputSchema),
-			async (args: any) => {
-				try {
-					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
-					const validatedArgs = tool.inputSchema.parse(args);
-					const result = await tool.handler(validatedArgs);
-					console.log(`✅ ${tool.name} completed`);
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: JSON.stringify(this.formatResult(result), null, 2),
-							},
-						],
-					};
-				} catch (error) {
-					console.error(`❌ ${tool.name} failed:`, error);
-					return {
-						content: [
-							{
-								type: "text" as const,
-								text: JSON.stringify(
-									this.formatError(tool.name, error),
-									null,
-									2,
-								),
-							},
-						],
-					};
-				}
-			},
-		);
+		this.server.tool(tool.name, tool.description, this.convertZodToJsonSchema(tool.inputSchema), async (args: any) => {
+			try {
+				console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
+				const validatedArgs = tool.inputSchema.parse(args);
+				const result = await tool.handler(validatedArgs);
+				console.log(`✅ ${tool.name} completed`);
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: JSON.stringify(this.formatResult(result), null, 2),
+						},
+					],
+				};
+			} catch (error) {
+				console.error(`❌ ${tool.name} failed:`, error);
+				return {
+					content: [
+						{
+							type: "text" as const,
+							text: JSON.stringify(this.formatError(tool.name, error), null, 2),
+						},
+					],
+				};
+			}
+		});
 	}
 
 	public registerResource(resource: MCPResource): void {
@@ -146,10 +140,7 @@ export abstract class MCPServer {
 						{
 							uri: uri.toString(),
 							mimeType: resource.mimeType || "application/json",
-							text:
-								typeof result === "string"
-									? result
-									: JSON.stringify(result, null, 2),
+							text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
 						},
 					],
 				};
@@ -160,11 +151,7 @@ export abstract class MCPServer {
 						{
 							uri: uri.toString(),
 							mimeType: "application/json",
-							text: JSON.stringify(
-								this.formatError(resource.name, error),
-								null,
-								2,
-							),
+							text: JSON.stringify(this.formatError(resource.name, error), null, 2),
 						},
 					],
 				};
@@ -247,10 +234,11 @@ export abstract class MCPServer {
 		return true;
 	}
 
-	protected formatResult(data: any): any {
+	protected formatResult(data: any, detailLevel?: "summary" | "standard" | "full"): any {
 		return {
 			success: true,
 			data,
+			...(detailLevel ? { detailLevel } : {}),
 			metadata: {
 				server: this.config.name,
 				persona: this.config.persona.name,
@@ -261,16 +249,30 @@ export abstract class MCPServer {
 	}
 
 	protected formatError(operation: string, error: any): any {
+		const message = String(error);
 		return {
 			success: false,
 			error: {
 				operation,
-				message: String(error),
+				message,
+				error_type: this.classifyErrorType(message),
 				server: this.config.name,
 				persona: this.config.persona.name,
 				timestamp: new Date().toISOString(),
 			},
 		};
+	}
+
+	/**
+	 * Basic error type classification for MCP server responses.
+	 * The kernel's ResilienceMiddleware provides more detailed classification.
+	 */
+	private classifyErrorType(message: string): string {
+		if (/unauthorized|forbidden|api.?key|401|403/i.test(message)) return "auth_required";
+		if (/file.?not.?found|missing.?data|ENOENT/i.test(message)) return "user_action";
+		if (/timeout|rate.?limit|ECONNREFUSED|429|503/i.test(message)) return "retryable";
+		if (/invalid|validation|schema|zod/i.test(message)) return "permanent";
+		return "retryable";
 	}
 
 	protected async saveResult(filename: string, data: any): Promise<string> {

@@ -8,11 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const infrastructureTemplate: ServerTemplate = {
 	name: "infrastructure",
@@ -61,9 +57,7 @@ const infrastructureTemplate: ServerTemplate = {
 						facilities: {
 							batteries: Math.ceil(args.projectScope.wellCount / 8),
 							separators: Math.ceil(args.projectScope.wellCount / 4),
-							compressors: Math.ceil(
-								args.projectScope.expectedProduction / 5000,
-							),
+							compressors: Math.ceil(args.projectScope.expectedProduction / 5000),
 						},
 						costs: {
 							pipelines: Math.round(args.projectScope.wellCount * 250000),
@@ -80,10 +74,7 @@ const infrastructureTemplate: ServerTemplate = {
 				};
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -92,9 +83,7 @@ const infrastructureTemplate: ServerTemplate = {
 	],
 };
 
-export const InfrastructureServer = ServerFactory.createServer(
-	infrastructureTemplate,
-);
+export const InfrastructureServer = ServerFactory.createServer(infrastructureTemplate);
 export default InfrastructureServer;
 
 if (import.meta.url === `file://${process.argv[1]}`) {

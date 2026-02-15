@@ -9,11 +9,7 @@ import fs from "node:fs/promises";
 import { z } from "zod";
 import { type FetchResult, fetchUrl } from "../../tools/web-fetch.js";
 import { runMCPServer } from "../shared/mcp-server.js";
-import {
-	ServerFactory,
-	type ServerTemplate,
-	ServerUtils,
-} from "../shared/server-factory.js";
+import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface MarketResearch {
 	topic: string;
@@ -48,26 +44,16 @@ const researchTemplate: ServerTemplate = {
 			"Conduct comprehensive market research on oil & gas topics",
 			z.object({
 				topic: z.string().describe("Research topic or question"),
-				scope: z
-					.enum(["local", "regional", "national", "global"])
-					.default("regional"),
-				timeframe: z
-					.enum(["current", "historical", "forecast"])
-					.default("current"),
-				sources: z
-					.array(z.string())
-					.optional()
-					.describe("Preferred data sources"),
+				scope: z.enum(["local", "regional", "national", "global"]).default("regional"),
+				timeframe: z.enum(["current", "historical", "forecast"]).default("current"),
+				sources: z.array(z.string()).optional().describe("Preferred data sources"),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
 				const research = await performMarketResearch(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(research, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(research, null, 2));
 				}
 
 				return research;
@@ -78,13 +64,8 @@ const researchTemplate: ServerTemplate = {
 			"Analyze competitive landscape and activities",
 			z.object({
 				region: z.string().describe("Geographic region of interest"),
-				competitors: z
-					.array(z.string())
-					.optional()
-					.describe("Specific competitors to analyze"),
-				analysisType: z
-					.enum(["activities", "strategy", "performance", "comprehensive"])
-					.default("comprehensive"),
+				competitors: z.array(z.string()).optional().describe("Specific competitors to analyze"),
+				analysisType: z.enum(["activities", "strategy", "performance", "comprehensive"]).default("comprehensive"),
 				timeframe: z.string().default("last 12 months"),
 				outputPath: z.string().optional(),
 			}),
@@ -92,10 +73,7 @@ const researchTemplate: ServerTemplate = {
 				const analysis = performCompetitiveAnalysis(args);
 
 				if (args.outputPath) {
-					await fs.writeFile(
-						args.outputPath,
-						JSON.stringify(analysis, null, 2),
-					);
+					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
 				return analysis;
@@ -109,7 +87,7 @@ async function performMarketResearch(args: Record<string, unknown>): Promise<Mar
 	try {
 		const topic = String(args.topic || "Market Research");
 		const scope = String(args.scope || "General");
-		const sources = Array.isArray(args.sources) ? args.sources as string[] : undefined;
+		const sources = Array.isArray(args.sources) ? (args.sources as string[]) : undefined;
 
 		// Gather web intelligence
 		const webIntelligence = await gatherWebIntelligence(topic, sources);
@@ -135,10 +113,7 @@ async function performMarketResearch(args: Record<string, unknown>): Promise<Mar
 			topic,
 			summary: "Analysis unavailable due to data access limitations",
 			sources: ["Industry databases", "Market reports"],
-			keyFindings: [
-				`${scope} market shows activity trends`,
-				"Limited data available",
-			],
+			keyFindings: [`${scope} market shows activity trends`, "Limited data available"],
 			competitiveIntelligence: [],
 			marketTrends: [{ trend: `${scope} drilling activity trends`, confidence: 0.6 }],
 			priceForecasts: [],
@@ -148,10 +123,7 @@ async function performMarketResearch(args: Record<string, unknown>): Promise<Mar
 	}
 }
 
-async function gatherWebIntelligence(
-	_topic: string,
-	sources?: string[],
-): Promise<FetchResult[]> {
+async function gatherWebIntelligence(_topic: string, sources?: string[]): Promise<FetchResult[]> {
 	const industryUrls = [
 		"https://www.eia.gov/petroleum/weekly/",
 		"https://www.bakerhughesrigcount.com/",
@@ -159,8 +131,7 @@ async function gatherWebIntelligence(
 		"https://www.offshore-mag.com/",
 	];
 
-	const urlsToFetch =
-		sources && sources.length > 0 ? sources : industryUrls.slice(0, 2);
+	const urlsToFetch = sources && sources.length > 0 ? sources : industryUrls.slice(0, 2);
 	const results: FetchResult[] = [];
 
 	for (const url of urlsToFetch) {
@@ -187,9 +158,7 @@ function extractMarketInsights(
 		if (result.text && result.text.length > 100) {
 			sources.push(result.url);
 			if (result.text.toLowerCase().includes("rig count")) {
-				findings.push(
-					"Recent rig count data indicates drilling activity trends",
-				);
+				findings.push("Recent rig count data indicates drilling activity trends");
 			}
 			if (result.text.toLowerCase().includes("production")) {
 				findings.push("Production levels show regional supply dynamics");
@@ -198,19 +167,14 @@ function extractMarketInsights(
 	}
 
 	const successfulFetches = webData.filter((r) => r.text && !r.error).length;
-	const confidence = Math.min(
-		95,
-		50 + (successfulFetches / webData.length) * 45,
-	);
+	const confidence = Math.min(95, 50 + (successfulFetches / webData.length) * 45);
 
 	return {
-		findings:
-			findings.length > 0
-				? findings
-				: ["Limited current market data available for analysis"],
+		findings: findings.length > 0 ? findings : ["Limited current market data available for analysis"],
 		sources: sources.length > 0 ? sources : ["No reliable sources accessible"],
 		confidence: Math.round(confidence),
-		summary: findings.length > 0 ? `Market analysis based on ${sources.length} sources` : "Limited market data available",
+		summary:
+			findings.length > 0 ? `Market analysis based on ${sources.length} sources` : "Limited market data available",
 	};
 }
 
@@ -225,10 +189,7 @@ function performCompetitiveAnalysis(_args: Record<string, unknown>): Array<Recor
 		},
 		{
 			competitor: "Regional Independent",
-			activities: [
-				"Joint venture with service company",
-				"Technology differentiation",
-			],
+			activities: ["Joint venture with service company", "Technology differentiation"],
 			strategy: "Technology-enabled selective development",
 			marketShare: 0.15,
 			threatLevel: "MEDIUM",
@@ -280,13 +241,9 @@ function generateRecommendations(_topic: string, confidence: number): string[] {
 	];
 
 	if (confidence > 85) {
-		recommendations.unshift(
-			"Current market conditions support accelerated development plans",
-		);
+		recommendations.unshift("Current market conditions support accelerated development plans");
 	} else if (confidence < 70) {
-		recommendations.unshift(
-			"Recommend additional data gathering before major investment decisions",
-		);
+		recommendations.unshift("Recommend additional data gathering before major investment decisions");
 	}
 
 	return recommendations;
