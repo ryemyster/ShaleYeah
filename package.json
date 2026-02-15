@@ -76,7 +76,7 @@
 		"shapefile": "^0.6.6",
 		"exceljs": "^4.4.0",
 		"xml2js": "^0.6.2",
-		"yaml": "^2.6.1",
+		"yaml": "^2.8.2",
 		"zod": "^4.1.11"
 	},
 	"devDependencies": {
