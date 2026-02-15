@@ -324,13 +324,13 @@ export async function runMCPServer(server: MCPServer): Promise<void> {
 		});
 
 		// Handle EPIPE errors gracefully
-		process.stdout.on("error", (error) => {
+		process.stdout.on("error", (error: NodeJS.ErrnoException) => {
 			if (error.code === "EPIPE") {
 				process.exit(0);
 			}
 		});
 
-		process.stderr.on("error", (error) => {
+		process.stderr.on("error", (error: NodeJS.ErrnoException) => {
 			if (error.code === "EPIPE") {
 				process.exit(0);
 			}
