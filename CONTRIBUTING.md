@@ -4,10 +4,11 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 
 ## Getting Started
 
-1. Fork the repository
-2. Clone your fork locally
-3. Install dependencies: `npm install`
-4. Run the demo: `npm run demo`
+1. Fork the repository on GitHub (click the "Fork" button in the top right)
+2. Clone your fork locally: `git clone https://github.com/YOUR-USERNAME/ShaleYeah.git`
+3. Create a branch for your work: `git checkout -b feature/your-feature-name`
+4. Install dependencies: `npm install --legacy-peer-deps`
+5. Run the demo to verify everything works: `npm run demo`
 
 ## Development Guidelines
 
@@ -31,7 +32,41 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 - No proprietary or confidential data in examples
 - Follow secure coding practices
 
-## Pull Request Process
+## Submitting Your Work
+
+When your changes are ready:
+
+1. Push your branch to **your fork**: `git push origin feature/your-feature-name`
+2. Go to the [SHALE YEAH repo](https://github.com/ryemyster/ShaleYeah) on GitHub
+3. Click **"Compare & pull request"** (GitHub will prompt you automatically)
+4. **Target the `develop` branch** — not `main`. All work merges into `develop` first.
+5. Fill in the PR description explaining what you changed and why
+6. A maintainer will review, leave feedback, and merge when it's ready
+
+If your PR addresses a specific GitHub issue, reference it in the description (e.g., "Closes #123"). This links the PR to the issue and auto-closes it on merge.
+
+## Finding Work
+
+Not sure where to start? Check the [open issues](https://github.com/ryemyster/ShaleYeah/issues) and [milestones](https://github.com/ryemyster/ShaleYeah/milestones).
+
+Issues are organized by milestone and labeled by area:
+
+| Label | Meaning |
+|-------|---------|
+| `tier-1: production` | Production hardening — resilience, caching, reliability |
+| `tier-2: dev-experience` | Developer experience — tooling, observability, composition |
+| `tier-3: integration` | External integration — APIs, plugins, webhooks |
+| `tier-4: scale` | Scale & governance — multi-tenant, permissions, versioning |
+| `resilience` | Error handling, retries, circuit breakers |
+| `composition` | Bundles, pipelines, chaining |
+| `discovery` | Registry, search, introspection |
+| `security` | Auth, permissions, audit |
+| `observability` | Analytics, lineage, logging |
+| `api` | HTTP, streaming, async |
+
+Look for issues labeled `good first issue` if you're new to the project.
+
+## Pull Request Guidelines
 
 1. **Small PRs**: Keep changes focused and reviewable
 2. **Tests**: Include tests for new functionality
@@ -39,11 +74,13 @@ Thank you for your interest in contributing to SHALE YEAH! This project aims to 
 4. **Clean**: Outputs should be readable and well-formatted
 
 ### PR Checklist
+- [ ] Branch targets `develop` (not `main`)
 - [ ] Code follows project style guidelines
-- [ ] Tests pass locally
+- [ ] Tests pass locally (`npm run build && npm run type-check && npm run lint && npm run test && npm run demo`)
 - [ ] Documentation updated
 - [ ] Attribution footer included in outputs
 - [ ] No secrets or proprietary data
+- [ ] CHANGELOG.md updated
 
 ## Adding New Agents
 
@@ -64,13 +101,6 @@ The kernel middleware pipeline (`src/kernel/middleware/`) supports pluggable mid
 5. Append entry to `CHANGELOG.md`
 
 Existing middleware: `auth.ts` (RBAC), `audit.ts` (JSONL logging), `resilience.ts` (error classification), `output.ts` (detail levels).
-
-## Documentation Requirements
-
-Every PR must include:
-- Updated `CHANGELOG.md` entry
-- Updated docs if the change affects APIs, architecture, or user-facing behavior
-- Test coverage for new functionality
 
 ## Testing
 
