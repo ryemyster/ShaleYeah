@@ -76,6 +76,8 @@ export class Kernel {
 		this.executor = new Executor({
 			maxParallel: this.config.execution.maxParallel,
 			toolTimeoutMs: this.config.execution.toolTimeoutMs,
+			maxRetries: this.config.resilience.maxRetries,
+			retryBackoffMs: this.config.resilience.retryBackoffMs,
 		});
 		this.sessions = new SessionManager();
 		this.auth = new AuthMiddleware(this.config.security.requireAuth);

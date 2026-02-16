@@ -133,6 +133,8 @@ export interface ResponseMetadata {
 	executionTimeMs: number;
 	idempotencyKey?: string;
 	timestamp: string;
+	retryAttempts?: number;
+	totalRetryDelayMs?: number;
 }
 
 /** Classified error with recovery guidance (Arcade: Recovery Guide pattern) */

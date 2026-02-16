@@ -222,12 +222,21 @@ export class Executor {
 	private executorFn: ToolExecutorFn | null = null;
 	private maxParallel: number;
 	private toolTimeoutMs: number;
+	private maxRetries: number;
+	private retryBackoffMs: number;
 	public readonly resilience: ResilienceMiddleware;
 	private pendingActions: Map<string, PendingAction> = new Map();
 
-	constructor(options?: { maxParallel?: number; toolTimeoutMs?: number }) {
+	constructor(options?: {
+		maxParallel?: number;
+		toolTimeoutMs?: number;
+		maxRetries?: number;
+		retryBackoffMs?: number;
+	}) {
 		this.maxParallel = options?.maxParallel ?? 6;
 		this.toolTimeoutMs = options?.toolTimeoutMs ?? 30000;
+		this.maxRetries = options?.maxRetries ?? 0;
+		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
 	}
 
@@ -240,7 +249,8 @@ export class Executor {
 	}
 
 	/**
-	 * Execute a single tool request.
+	 * Execute a single tool request with automatic retry for retryable errors.
+	 * Uses exponential backoff with jitter based on resilience delay recommendations.
 	 */
 	async execute(request: ToolRequest): Promise<ToolResponse> {
 		if (!this.executorFn) {
@@ -252,20 +262,77 @@ export class Executor {
 		}
 
 		const serverName = request.toolName.split(".")[0];
-		const startMs = Date.now();
+		const overallStartMs = Date.now();
+		let lastResponse: ToolResponse | null = null;
 
-		try {
-			const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
-			return result;
-		} catch (err) {
-			const elapsed = Date.now() - startMs;
-			const isTimeout = err instanceof Error && err.message === "TIMEOUT";
-			return this.errorResponse(
-				request.toolName,
-				isTimeout ? `Tool timed out after ${elapsed}ms` : `Tool execution failed: ${String(err)}`,
-				isTimeout ? ErrorType.RETRYABLE : ErrorType.PERMANENT,
-			);
+		for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+			const startMs = Date.now();
+
+			try {
+				const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
+				if (result.success) {
+					if (attempt > 0) {
+						result.metadata = {
+							...result.metadata,
+							retryAttempts: attempt,
+							totalRetryDelayMs: startMs - overallStartMs,
+						};
+					}
+					return result;
+				}
+				// Non-success response — treat as error for retry classification
+				lastResponse = result;
+				const errorMsg = result.error?.message ?? result.summary ?? "Unknown failure";
+				const errorType = this.resilience.classifyError(errorMsg, request.toolName);
+
+				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
+					break;
+				}
+
+				await this.backoffDelay(errorMsg, attempt);
+			} catch (err) {
+				const elapsed = Date.now() - startMs;
+				const isTimeout = err instanceof Error && err.message === "TIMEOUT";
+				const errorMsg = isTimeout ? `Tool timed out after ${elapsed}ms` : `Tool execution failed: ${String(err)}`;
+				const errorType = isTimeout ? ErrorType.RETRYABLE : this.resilience.classifyError(errorMsg);
+
+				lastResponse = this.errorResponse(request.toolName, errorMsg, errorType);
+
+				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
+					break;
+				}
+
+				await this.backoffDelay(errorMsg, attempt);
+			}
 		}
+
+		// Attach retry metadata to the final failure response
+		if (lastResponse && this.maxRetries > 0) {
+			const attemptsUsed = Math.min(
+				this.maxRetries,
+				Math.max(1, Math.round((Date.now() - overallStartMs) / this.retryBackoffMs)),
+			);
+			lastResponse.metadata = {
+				...lastResponse.metadata,
+				retryAttempts: attemptsUsed,
+				totalRetryDelayMs: Date.now() - overallStartMs,
+			};
+		}
+
+		return lastResponse!;
+	}
+
+	/**
+	 * Calculate and wait for exponential backoff delay with jitter.
+	 * Base delay comes from resilience recommendations, then scaled by 2^attempt.
+	 * Jitter adds 0-30% randomness to prevent thundering herd.
+	 */
+	private async backoffDelay(errorMsg: string, attempt: number): Promise<void> {
+		const baseDelay = this.resilience.suggestRetryDelay(errorMsg) || this.retryBackoffMs;
+		const exponentialDelay = baseDelay * 2 ** attempt;
+		const jitter = exponentialDelay * Math.random() * 0.3;
+		const totalDelay = Math.round(exponentialDelay + jitter);
+		await new Promise((resolve) => setTimeout(resolve, totalDelay));
 	}
 
 	/**
