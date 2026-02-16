@@ -278,6 +278,22 @@ See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for detailed troubleshoot
 
 ---
 
+## Roadmap
+
+SHALE YEAH is actively evolving from a stateless tool platform into an intelligent Agent OS. Development is tracked across five milestones:
+
+| Milestone | Focus | Priority |
+|-----------|-------|----------|
+| **Production Hardening** | Resilience, session persistence, caching, timeouts | High |
+| **Developer Experience & Composition** | Tool chaining, schema introspection, observability | High |
+| **Smart Agents v1** | Vector store memory, data connectors, feedback loops, BYOSLM | High |
+| **External Integration** | REST API, streaming, webhooks, plugin system | Medium |
+| **Scale & Governance** | Multi-tenant, fine-grained permissions, versioning | Future |
+
+See the [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) and [open issues](https://github.com/ryemyster/ShaleYeah/issues) for details.
+
+---
+
 ## Contributing
 
 We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.

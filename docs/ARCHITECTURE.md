@@ -207,7 +207,7 @@ callTool(request, sessionId)
 
 ### Error Intelligence and Resilience
 
-The kernel's `ResilienceMiddleware` classifies errors, generates recovery guides, and handles graceful degradation when parallel servers fail.
+The kernel's `ResilienceMiddleware` classifies errors and generates recovery guides. Full graceful degradation, circuit breakers, and retry with backoff are planned — see [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) (Production Hardening).
 
 ```
 Raw Error → Pattern Matching → ErrorType Classification → RecoveryGuide
@@ -559,18 +559,16 @@ interface ParseResult {
 
 ### 1. Async Processing
 - All analysis operations are fully asynchronous
-- Supports concurrent server execution
+- Supports concurrent server execution via scatter-gather
 - Memory-efficient file streaming for large files
 
-### 2. Caching Strategy
-- Results cached in server-specific data directories
-- Intelligent cache invalidation based on input changes
-- Optional in-memory caching for frequently accessed data
+### 2. Caching (Planned)
+- Result caching with idempotency keys is planned — see [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) (Production Hardening)
+- Currently, results are stored per-session but not cached across runs
 
 ### 3. Resource Management
 - Automatic cleanup of temporary files
 - Graceful server shutdown handling
-- Memory usage monitoring and optimization
 
 ## Testing Strategy
 
