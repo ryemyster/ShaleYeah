@@ -258,7 +258,7 @@ export class ResilienceMiddleware {
 		}
 	}
 
-	private suggestRetryDelay(msg: string): number {
+	suggestRetryDelay(msg: string): number {
 		// Rate limit → longer delay
 		if (/rate.?limit|429|too many requests/i.test(msg)) return 5000;
 		// Timeout → moderate delay
