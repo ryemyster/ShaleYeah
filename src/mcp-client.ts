@@ -242,10 +242,7 @@ export class ShaleYeahMCPClient {
 				version: "1.0.0",
 			},
 			{
-				capabilities: {
-					tools: {},
-					resources: {},
-				},
+				capabilities: {},
 			},
 		);
 
