@@ -15,15 +15,16 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    environment: production
     outputs:
       hashes: ${{ steps.hash.outputs.hashes }}
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
       with:
         node-version: '20.x'
         cache: 'npm'
@@ -37,7 +38,7 @@ jobs:
     - name: Run tests and type check
       run: |
         npm run type-check
-        npm run lint || echo "Linting not configured, skipping"
+        npm run lint
 
     - name: Build TypeScript project
       run: |
@@ -62,7 +63,7 @@ jobs:
         echo "hashes=$(sha256sum * | base64 -w0)" >> "$GITHUB_OUTPUT"
 
     - name: Upload release assets
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       with:
         name: release-assets
         path: dist/
@@ -73,7 +74,7 @@ jobs:
       actions: read
       id-token: write
       contents: write
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@f7dd8c54c2067bafc12ca7a55595d5ee9b75204a  # v2.1.0
     with:
       base64-subjects: "${{ needs.release.outputs.hashes }}"
       upload-assets: true
@@ -81,19 +82,20 @@ jobs:
   sign:
     needs: [release]
     runs-on: ubuntu-latest
+    environment: production
     permissions:
       contents: write
       id-token: write
 
     steps:
     - name: Download release assets
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093  # v4
       with:
         name: release-assets
         path: dist/
 
     - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.5.0
+      uses: sigstore/cosign-installer@59acb6260d9c0ba8f4a2f9d9b48431a222b68e20  # v3.5.0
 
     - name: Sign release assets
       run: |
@@ -104,7 +106,7 @@ jobs:
         done
 
     - name: Upload signed assets
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
       with:
         name: signed-assets
         path: dist/
@@ -113,7 +115,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
     - name: Verify SHALE YEAH branding
       run: |
