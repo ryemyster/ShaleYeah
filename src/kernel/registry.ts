@@ -8,7 +8,8 @@
  * and classifying each server's tools by type (query/command/discovery).
  */
 
-import type { DetailLevel, ServerFilter, ServerInfo, ToolDescriptor, ToolType } from "./types.js";
+import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
+import type { CircuitBreakerState, DetailLevel, ServerFilter, ServerInfo, ToolDescriptor, ToolType } from "./types.js";
 
 /** Minimal server config needed for registration (matches mcp-client.ts shape) */
 export interface RegistrableServerConfig {
@@ -44,6 +45,7 @@ export class Registry {
 	private servers: Map<string, RegisteredServer> = new Map();
 	private toolIndex: Map<string, ToolDescriptor> = new Map();
 	private capabilityIndex: Map<string, ToolDescriptor[]> = new Map();
+	private circuitBreaker: CircuitBreaker | null = null;
 
 	/**
 	 * Register a server and auto-generate its tool descriptors.
@@ -88,6 +90,21 @@ export class Registry {
 	}
 
 	/**
+	 * Attach a CircuitBreaker instance for health-aware server filtering.
+	 */
+	setCircuitBreaker(cb: CircuitBreaker): void {
+		this.circuitBreaker = cb;
+	}
+
+	/**
+	 * Get the circuit breaker state for a server (for observability).
+	 * Returns undefined if no circuit breaker is attached.
+	 */
+	getCircuitState(serverName: string): CircuitBreakerState | undefined {
+		return this.circuitBreaker?.getState(serverName);
+	}
+
+	/**
 	 * Update a server's connection status.
 	 */
 	setServerStatus(name: string, status: "connected" | "disconnected" | "error"): void {
@@ -104,6 +121,9 @@ export class Registry {
 		const results: ServerInfo[] = [];
 
 		for (const [, entry] of this.servers) {
+			// Exclude servers with an open circuit (unhealthy)
+			if (this.circuitBreaker?.isOpen(entry.config.name)) continue;
+
 			// Apply domain filter
 			if (filter?.domain && entry.config.domain !== filter.domain) continue;
 
