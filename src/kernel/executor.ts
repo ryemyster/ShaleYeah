@@ -9,6 +9,7 @@
  */
 
 import { createHash } from "node:crypto";
+import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
 import type {
 	BundleResponse,
@@ -222,13 +223,30 @@ export class Executor {
 	private executorFn: ToolExecutorFn | null = null;
 	private maxParallel: number;
 	private toolTimeoutMs: number;
+	private maxRetries: number;
+	private retryBackoffMs: number;
 	public readonly resilience: ResilienceMiddleware;
 	private pendingActions: Map<string, PendingAction> = new Map();
+	private circuitBreaker: CircuitBreaker | null = null;
 
-	constructor(options?: { maxParallel?: number; toolTimeoutMs?: number }) {
+	constructor(options?: {
+		maxParallel?: number;
+		toolTimeoutMs?: number;
+		maxRetries?: number;
+		retryBackoffMs?: number;
+	}) {
 		this.maxParallel = options?.maxParallel ?? 6;
 		this.toolTimeoutMs = options?.toolTimeoutMs ?? 30000;
+		this.maxRetries = options?.maxRetries ?? 0;
+		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
+	}
+
+	/**
+	 * Attach a CircuitBreaker for per-server health tracking.
+	 */
+	setCircuitBreaker(cb: CircuitBreaker): void {
+		this.circuitBreaker = cb;
 	}
 
 	/**
@@ -240,7 +258,8 @@ export class Executor {
 	}
 
 	/**
-	 * Execute a single tool request.
+	 * Execute a single tool request with automatic retry for retryable errors.
+	 * Uses exponential backoff with jitter based on resilience delay recommendations.
 	 */
 	async execute(request: ToolRequest): Promise<ToolResponse> {
 		if (!this.executorFn) {
@@ -252,20 +271,91 @@ export class Executor {
 		}
 
 		const serverName = request.toolName.split(".")[0];
-		const startMs = Date.now();
 
-		try {
-			const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
-			return result;
-		} catch (err) {
-			const elapsed = Date.now() - startMs;
-			const isTimeout = err instanceof Error && err.message === "TIMEOUT";
+		// Fast-fail if this server's circuit is open
+		if (this.circuitBreaker?.isOpen(serverName)) {
 			return this.errorResponse(
 				request.toolName,
-				isTimeout ? `Tool timed out after ${elapsed}ms` : `Tool execution failed: ${String(err)}`,
-				isTimeout ? ErrorType.RETRYABLE : ErrorType.PERMANENT,
+				`Circuit open for ${serverName} — server temporarily excluded due to repeated failures`,
+				ErrorType.RETRYABLE,
 			);
 		}
+
+		const overallStartMs = Date.now();
+		let lastResponse: ToolResponse | null = null;
+
+		for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+			const startMs = Date.now();
+
+			try {
+				const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
+				if (result.success) {
+					this.circuitBreaker?.record(serverName, true);
+					if (attempt > 0) {
+						result.metadata = {
+							...result.metadata,
+							retryAttempts: attempt,
+							totalRetryDelayMs: startMs - overallStartMs,
+						};
+					}
+					return result;
+				}
+				// Non-success response — treat as error for retry classification
+				lastResponse = result;
+				const errorMsg = result.error?.message ?? result.summary ?? "Unknown failure";
+				const errorType = this.resilience.classifyError(errorMsg, request.toolName);
+
+				this.circuitBreaker?.record(serverName, false, errorType);
+
+				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
+					break;
+				}
+
+				await this.backoffDelay(errorMsg, attempt);
+			} catch (err) {
+				const elapsed = Date.now() - startMs;
+				const isTimeout = err instanceof Error && err.message === "TIMEOUT";
+				const errorMsg = isTimeout ? `Tool timed out after ${elapsed}ms` : `Tool execution failed: ${String(err)}`;
+				const errorType = isTimeout ? ErrorType.RETRYABLE : this.resilience.classifyError(errorMsg);
+
+				this.circuitBreaker?.record(serverName, false, errorType);
+				lastResponse = this.errorResponse(request.toolName, errorMsg, errorType);
+
+				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
+					break;
+				}
+
+				await this.backoffDelay(errorMsg, attempt);
+			}
+		}
+
+		// Attach retry metadata to the final failure response
+		if (lastResponse && this.maxRetries > 0) {
+			const attemptsUsed = Math.min(
+				this.maxRetries,
+				Math.max(1, Math.round((Date.now() - overallStartMs) / this.retryBackoffMs)),
+			);
+			lastResponse.metadata = {
+				...lastResponse.metadata,
+				retryAttempts: attemptsUsed,
+				totalRetryDelayMs: Date.now() - overallStartMs,
+			};
+		}
+
+		return lastResponse!;
+	}
+
+	/**
+	 * Calculate and wait for exponential backoff delay with jitter.
+	 * Base delay comes from resilience recommendations, then scaled by 2^attempt.
+	 * Jitter adds 0-30% randomness to prevent thundering herd.
+	 */
+	private async backoffDelay(errorMsg: string, attempt: number): Promise<void> {
+		const baseDelay = this.resilience.suggestRetryDelay(errorMsg) || this.retryBackoffMs;
+		const exponentialDelay = baseDelay * 2 ** attempt;
+		const jitter = exponentialDelay * Math.random() * 0.3;
+		const totalDelay = Math.round(exponentialDelay + jitter);
+		await new Promise((resolve) => setTimeout(resolve, totalDelay));
 	}
 
 	/**
@@ -277,8 +367,23 @@ export class Executor {
 		const results = new Map<string, ToolResponse>();
 		const failures: FailureDetail[] = [];
 
+		// Pre-filter: fast-fail any requests whose server circuit is open
+		const activeRequests: ToolRequest[] = [];
+		for (const req of requests) {
+			const serverName = req.toolName.split(".")[0];
+			if (this.circuitBreaker?.isOpen(serverName)) {
+				const errorDetail = {
+					type: ErrorType.RETRYABLE,
+					message: `Circuit open for ${serverName} — server temporarily excluded due to repeated failures`,
+				};
+				failures.push({ toolName: req.toolName, error: errorDetail });
+			} else {
+				activeRequests.push(req);
+			}
+		}
+
 		// Batch into chunks of maxParallel
-		const chunks = this.chunk(requests, this.maxParallel);
+		const chunks = this.chunk(activeRequests, this.maxParallel);
 
 		for (const chunk of chunks) {
 			const settled = await Promise.allSettled(chunk.map((req) => this.execute(req)));

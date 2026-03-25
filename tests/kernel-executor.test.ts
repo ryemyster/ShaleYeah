@@ -510,6 +510,438 @@ console.log("\n📦 Testing maxParallel chunking...");
 }
 
 // ==========================================
+// Test: Retry — retryable error retried up to maxRetries then fails
+// ==========================================
+
+console.log("\n🔄 Testing retry — retryable error exhausts max retries...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 2, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		return {
+			success: false,
+			summary: `${serverName} rate limit exceeded`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "retryable" as any,
+				message: "429 too many requests",
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === false, "Retry-exhausted execution returns failure");
+	assert(callCount === 3, `Called 3 times (1 initial + 2 retries), got ${callCount}`);
+	assert(result.metadata.retryAttempts !== undefined, "Retry metadata is present on failure");
+	assert((result.metadata.totalRetryDelayMs ?? 0) > 0, "Total retry delay tracked");
+}
+
+// ==========================================
+// Test: Retry — succeeds on 2nd attempt
+// ==========================================
+
+console.log("\n🔄 Testing retry — succeeds on second attempt...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 3, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		if (callCount === 1) {
+			return {
+				success: false,
+				summary: `${serverName} timeout`,
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: {
+					server: serverName,
+					persona: serverName,
+					executionTimeMs: 0,
+					timestamp: new Date().toISOString(),
+				},
+				error: {
+					type: "retryable" as any,
+					message: "timeout connecting to server",
+				},
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} analysis complete`,
+			confidence: 90,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === true, "Succeeds after retry");
+	assert(callCount === 2, `Called exactly 2 times, got ${callCount}`);
+	assert(result.metadata.retryAttempts === 1, `retryAttempts is 1, got ${result.metadata.retryAttempts}`);
+	assert((result.metadata.totalRetryDelayMs ?? 0) > 0, "Total retry delay tracked on success");
+}
+
+// ==========================================
+// Test: Retry — permanent errors NOT retried
+// ==========================================
+
+console.log("\n🔄 Testing retry — permanent errors not retried...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 3, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		return {
+			success: false,
+			summary: `${serverName} validation error`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "permanent" as any,
+				message: "invalid schema: missing required field",
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === false, "Permanent error returns failure");
+	assert(callCount === 1, `Permanent error not retried — called ${callCount} time(s)`);
+}
+
+// ==========================================
+// Test: Retry — auth errors NOT retried
+// ==========================================
+
+console.log("\n🔄 Testing retry — auth errors not retried...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 3, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		return {
+			success: false,
+			summary: `${serverName} auth failed`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "auth_required" as any,
+				message: "401 unauthorized — api key expired",
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === false, "Auth error returns failure");
+	assert(callCount === 1, `Auth error not retried — called ${callCount} time(s)`);
+}
+
+// ==========================================
+// Test: Retry — user_action errors NOT retried
+// ==========================================
+
+console.log("\n🔄 Testing retry — user_action errors not retried...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 3, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		return {
+			success: false,
+			summary: `${serverName} missing data`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "user_action" as any,
+				message: "file not found — please provide input data",
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === false, "User action error returns failure");
+	assert(callCount === 1, `User action error not retried — called ${callCount} time(s)`);
+}
+
+// ==========================================
+// Test: Retry — exponential backoff timing
+// ==========================================
+
+console.log("\n🔄 Testing retry — exponential backoff increases delays...");
+{
+	const timestamps: number[] = [];
+	const executor = new Executor({ maxRetries: 2, retryBackoffMs: 50 });
+	executor.setExecutorFn(async (serverName) => {
+		timestamps.push(Date.now());
+		return {
+			success: false,
+			summary: `${serverName} connection reset`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "retryable" as any,
+				message: "ECONNRESET connection reset by peer",
+			},
+		};
+	});
+
+	await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(timestamps.length === 3, `3 attempts recorded, got ${timestamps.length}`);
+
+	// First retry delay (attempt 0): baseDelay * 2^0 + jitter = ~50-65ms
+	// Second retry delay (attempt 1): baseDelay * 2^1 + jitter = ~100-130ms
+	const delay1 = timestamps[1] - timestamps[0];
+	const delay2 = timestamps[2] - timestamps[1];
+
+	assert(delay1 >= 40, `First delay ≥ 40ms (got ${delay1}ms)`);
+	assert(
+		delay2 > delay1 * 1.3,
+		`Second delay > 1.3x first delay (${delay2}ms > ${Math.round(delay1 * 1.3)}ms) — exponential backoff`,
+	);
+}
+
+// ==========================================
+// Test: Retry — thrown errors (exceptions) retried if retryable
+// ==========================================
+
+console.log("\n🔄 Testing retry — thrown timeout exceptions retried...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 1, retryBackoffMs: 10, toolTimeoutMs: 15 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		if (callCount <= 1) {
+			// First call times out
+			await new Promise((resolve) => setTimeout(resolve, 200));
+		}
+		return {
+			success: true,
+			summary: `${serverName} done`,
+			confidence: 90,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === true, "Succeeds after timeout retry");
+	assert(callCount === 2, `Called 2 times (timeout + success), got ${callCount}`);
+}
+
+// ==========================================
+// Test: Retry — no retries when maxRetries is 0
+// ==========================================
+
+console.log("\n🔄 Testing retry — maxRetries=0 means no retries...");
+{
+	let callCount = 0;
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCount++;
+		return {
+			success: false,
+			summary: `${serverName} timeout`,
+			confidence: 0,
+			data: null,
+			detailLevel: "standard" as const,
+			completeness: 0,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 0,
+				timestamp: new Date().toISOString(),
+			},
+			error: {
+				type: "retryable" as any,
+				message: "timeout — timed out",
+			},
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === false, "Fails without retry when maxRetries=0");
+	assert(callCount === 1, `Called exactly once, got ${callCount}`);
+}
+
+// ==========================================
+// Test: Retry — Kernel wires retry config from resilience config
+// ==========================================
+
+console.log("\n🔄 Testing retry — Kernel passes resilience config to executor...");
+{
+	let callCount = 0;
+	const kernel = new Kernel({
+		resilience: { maxRetries: 1, retryBackoffMs: 10, gracefulDegradation: true, minCompleteness: 0.5 },
+	});
+	kernel.setExecutorFn(async (serverName) => {
+		callCount++;
+		if (callCount === 1) {
+			return {
+				success: false,
+				summary: `${serverName} unavailable`,
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: {
+					server: serverName,
+					persona: serverName,
+					executionTimeMs: 0,
+					timestamp: new Date().toISOString(),
+				},
+				error: {
+					type: "retryable" as any,
+					message: "503 service unavailable",
+				},
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} done`,
+			confidence: 85,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const result = await kernel.execute({ toolName: "geowiz.analyze", args: {} });
+
+	assert(result.success === true, "Kernel retries via executor and succeeds");
+	assert(callCount === 2, `Kernel executor retried — called ${callCount} times`);
+}
+
+// ==========================================
+// Test: Retry — parallel execution retries individual failures
+// ==========================================
+
+console.log("\n🔄 Testing retry — parallel retries individual tool failures...");
+{
+	const callCounts: Record<string, number> = {};
+	const executor = new Executor({ maxRetries: 1, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => {
+		callCounts[serverName] = (callCounts[serverName] ?? 0) + 1;
+		// econobot fails once then succeeds, geowiz always succeeds
+		if (serverName === "econobot" && callCounts[serverName] === 1) {
+			return {
+				success: false,
+				summary: `${serverName} timeout`,
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: {
+					server: serverName,
+					persona: serverName,
+					executionTimeMs: 0,
+					timestamp: new Date().toISOString(),
+				},
+				error: {
+					type: "retryable" as any,
+					message: "timeout connecting",
+				},
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} done`,
+			confidence: 90,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: serverName,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const requests: ToolRequest[] = [
+		{ toolName: "geowiz.analyze", args: {} },
+		{ toolName: "econobot.analyze", args: {} },
+	];
+
+	const gathered = await executor.executeParallel(requests);
+
+	assert(gathered.completeness === 100, `Both succeed after retry — completeness ${gathered.completeness}%`);
+	assert(gathered.failures.length === 0, `No failures after retry, got ${gathered.failures.length}`);
+	assert(callCounts.geowiz === 1, "Geowiz called once (no retry needed)");
+	assert(callCounts.econobot === 2, `Econobot retried — called ${callCounts.econobot} times`);
+}
+
+// ==========================================
 // Summary
 // ==========================================
 
