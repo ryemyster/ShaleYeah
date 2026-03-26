@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main, develop ]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -15,10 +18,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
     - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
@@ -33,7 +36,7 @@ jobs:
       run: npm run type-check
 
     - name: Lint TypeScript
-      run: npm run lint || echo "Linting warnings found, continuing with build"
+      run: npm run lint
 
     - name: Test TypeScript tools
       run: |
@@ -202,10 +205,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v6
+      uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5  # v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020  # v4
       with:
         node-version: '20.x'
         cache: 'npm'
@@ -214,12 +217,12 @@ jobs:
       run: npm ci --legacy-peer-deps
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
+      uses: github/codeql-action/init@480db559a14342288b67e54bd959dd52dc3ee68f  # v3
       with:
         languages: javascript-typescript
 
     - name: Autobuild
-      uses: github/codeql-action/autobuild@v3
+      uses: github/codeql-action/autobuild@480db559a14342288b67e54bd959dd52dc3ee68f  # v3
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
+      uses: github/codeql-action/analyze@480db559a14342288b67e54bd959dd52dc3ee68f  # v3
