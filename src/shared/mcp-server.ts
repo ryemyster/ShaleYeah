@@ -25,7 +25,7 @@ export interface MCPServerConfig {
 export interface MCPTool {
 	name: string;
 	description: string;
-	inputSchema: z.ZodSchema<any>;
+	inputSchema: z.ZodObject<z.ZodRawShape>;
 	handler: (args: any) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
@@ -102,7 +102,7 @@ export abstract class MCPServer {
 	}
 
 	public registerTool(tool: MCPTool): void {
-		this.server.tool(tool.name, tool.description, this.convertZodToJsonSchema(tool.inputSchema), async (args: any) => {
+		this.server.tool(tool.name, tool.description, tool.inputSchema.shape, async (args: any) => {
 			try {
 				console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
 				const validatedArgs = tool.inputSchema.parse(args);
@@ -157,81 +157,6 @@ export abstract class MCPServer {
 				};
 			}
 		});
-	}
-
-	private convertZodToJsonSchema(schema: z.ZodSchema<any>): any {
-		try {
-			if ("_def" in schema && schema._def && "shape" in schema._def) {
-				const shape = (schema._def as any).shape;
-				const properties: any = {};
-				const required: string[] = [];
-
-				for (const [key, value] of Object.entries(shape)) {
-					const zodType = value as z.ZodType;
-					properties[key] = this.zodTypeToJsonSchema(zodType);
-					if (this.isRequired(zodType)) {
-						required.push(key);
-					}
-				}
-
-				return {
-					type: "object",
-					properties,
-					required: required.length > 0 ? required : undefined,
-				};
-			}
-			return { type: "object" };
-		} catch (_error) {
-			return { type: "object" };
-		}
-	}
-
-	private zodTypeToJsonSchema(zodType: z.ZodType): any {
-		try {
-			if ("_def" in zodType && zodType._def) {
-				const def = zodType._def as any;
-				switch (def.typeName) {
-					case "ZodString":
-						return { type: "string", description: def.description || "" };
-					case "ZodNumber":
-						return { type: "number", description: def.description || "" };
-					case "ZodBoolean":
-						return { type: "boolean", description: def.description || "" };
-					case "ZodArray":
-						return {
-							type: "array",
-							items: this.zodTypeToJsonSchema(def.type),
-							description: def.description || "",
-						};
-					case "ZodEnum":
-						return {
-							type: "string",
-							enum: def.values,
-							description: def.description || "",
-						};
-					case "ZodOptional":
-						return this.zodTypeToJsonSchema(def.innerType);
-					case "ZodDefault": {
-						const defaultSchema = this.zodTypeToJsonSchema(def.innerType);
-						defaultSchema.default = def.defaultValue();
-						return defaultSchema;
-					}
-					default:
-						return { type: "string", description: def.description || "" };
-				}
-			}
-			return { type: "string" };
-		} catch (_error) {
-			return { type: "string" };
-		}
-	}
-
-	private isRequired(zodType: z.ZodType): boolean {
-		if ("_def" in zodType && zodType._def) {
-			const def = zodType._def as any;
-			return def.typeName !== "ZodOptional" && def.typeName !== "ZodDefault";
-		}
-		return true;
 	}
 
 	protected formatResult(data: any, detailLevel?: "summary" | "standard" | "full"): any {
