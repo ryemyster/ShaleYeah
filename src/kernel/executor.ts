@@ -9,6 +9,7 @@
  */
 
 import { createHash } from "node:crypto";
+import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
 import type {
 	BundleResponse,
@@ -226,6 +227,7 @@ export class Executor {
 	private retryBackoffMs: number;
 	public readonly resilience: ResilienceMiddleware;
 	private pendingActions: Map<string, PendingAction> = new Map();
+	private circuitBreaker: CircuitBreaker | null = null;
 
 	constructor(options?: {
 		maxParallel?: number;
@@ -238,6 +240,13 @@ export class Executor {
 		this.maxRetries = options?.maxRetries ?? 0;
 		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
+	}
+
+	/**
+	 * Attach a CircuitBreaker for per-server health tracking.
+	 */
+	setCircuitBreaker(cb: CircuitBreaker): void {
+		this.circuitBreaker = cb;
 	}
 
 	/**
@@ -262,6 +271,16 @@ export class Executor {
 		}
 
 		const serverName = request.toolName.split(".")[0];
+
+		// Fast-fail if this server's circuit is open
+		if (this.circuitBreaker?.isOpen(serverName)) {
+			return this.errorResponse(
+				request.toolName,
+				`Circuit open for ${serverName} — server temporarily excluded due to repeated failures`,
+				ErrorType.RETRYABLE,
+			);
+		}
+
 		const overallStartMs = Date.now();
 		let lastResponse: ToolResponse | null = null;
 
@@ -271,6 +290,7 @@ export class Executor {
 			try {
 				const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
 				if (result.success) {
+					this.circuitBreaker?.record(serverName, true);
 					if (attempt > 0) {
 						result.metadata = {
 							...result.metadata,
@@ -285,6 +305,8 @@ export class Executor {
 				const errorMsg = result.error?.message ?? result.summary ?? "Unknown failure";
 				const errorType = this.resilience.classifyError(errorMsg, request.toolName);
 
+				this.circuitBreaker?.record(serverName, false, errorType);
+
 				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
 					break;
 				}
@@ -296,6 +318,7 @@ export class Executor {
 				const errorMsg = isTimeout ? `Tool timed out after ${elapsed}ms` : `Tool execution failed: ${String(err)}`;
 				const errorType = isTimeout ? ErrorType.RETRYABLE : this.resilience.classifyError(errorMsg);
 
+				this.circuitBreaker?.record(serverName, false, errorType);
 				lastResponse = this.errorResponse(request.toolName, errorMsg, errorType);
 
 				if (errorType !== ErrorType.RETRYABLE || attempt >= this.maxRetries) {
@@ -344,8 +367,23 @@ export class Executor {
 		const results = new Map<string, ToolResponse>();
 		const failures: FailureDetail[] = [];
 
+		// Pre-filter: fast-fail any requests whose server circuit is open
+		const activeRequests: ToolRequest[] = [];
+		for (const req of requests) {
+			const serverName = req.toolName.split(".")[0];
+			if (this.circuitBreaker?.isOpen(serverName)) {
+				const errorDetail = {
+					type: ErrorType.RETRYABLE,
+					message: `Circuit open for ${serverName} — server temporarily excluded due to repeated failures`,
+				};
+				failures.push({ toolName: req.toolName, error: errorDetail });
+			} else {
+				activeRequests.push(req);
+			}
+		}
+
 		// Batch into chunks of maxParallel
-		const chunks = this.chunk(requests, this.maxParallel);
+		const chunks = this.chunk(activeRequests, this.maxParallel);
 
 		for (const chunk of chunks) {
 			const settled = await Promise.allSettled(chunk.map((req) => this.execute(req)));

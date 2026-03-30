@@ -151,6 +151,24 @@ export interface ErrorDetail {
 export type ToolResponse = AgentOSResponse;
 
 // ==========================================
+// Circuit Breaker (Arcade: Circuit Breaker pattern)
+// ==========================================
+
+/** Circuit breaker state machine states */
+export type CircuitState = "closed" | "open" | "half-open";
+
+/** Per-server circuit breaker runtime state */
+export interface CircuitBreakerState {
+	state: CircuitState;
+	/** Consecutive RETRYABLE failure count (resets on success) */
+	failureCount: number;
+	/** Timestamp of the last RETRYABLE failure */
+	lastFailureMs: number;
+	/** Number of half-open probe attempts made */
+	halfOpenAttempts: number;
+}
+
+// ==========================================
 // Recovery & Resilience (Arcade: Recovery Guide + Graceful Degradation)
 // ==========================================
 
@@ -348,6 +366,14 @@ export interface KernelConfig {
 		retryBackoffMs: number;
 		gracefulDegradation: boolean;
 		minCompleteness: number;
+		circuitBreaker?: {
+			/** Consecutive RETRYABLE failures before opening circuit (default: 3) */
+			failureThreshold: number;
+			/** Ms to wait in open state before half-open probe (default: 30000) */
+			resetTimeoutMs: number;
+			/** Max probe attempts in half-open before re-opening (default: 1) */
+			halfOpenMaxAttempts: number;
+		};
 	};
 }
 
@@ -369,5 +395,10 @@ export const DEFAULT_KERNEL_CONFIG: KernelConfig = {
 		retryBackoffMs: 1000,
 		gracefulDegradation: true,
 		minCompleteness: 0.5,
+		circuitBreaker: {
+			failureThreshold: 3,
+			resetTimeoutMs: 30000,
+			halfOpenMaxAttempts: 1,
+		},
 	},
 };

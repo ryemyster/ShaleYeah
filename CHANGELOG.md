@@ -7,7 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- **CI/CD Supply Chain Hardening** — all GitHub Actions pinned to full commit SHAs (previously used mutable tags like `@v6`/`@v4`/`@v3`); added `permissions: contents: read` default to `ci.yml` and `demo.yml` to prevent over-privileged tokens on PR/push runs; added `environment: production` gate (requires reviewer approval) to `release` and `sign` jobs in `release.yml`; pinned SLSA generator to SHA; removed lint-suppression hacks (`|| echo ...`) from `ci.yml` and `release.yml`; renamed `gitleaks.yml` → `codeql.yml` to match its actual content (CodeQL, not Gitleaks)
+
 ### Added
+- **Circuit Breaker Pattern** (`src/kernel/middleware/circuit-breaker.ts`) — per-server state machine (closed → open → half-open) that automatically excludes repeatedly-failing servers from scatter-gather and bundle execution. Configurable failure threshold (default 3 consecutive RETRYABLE failures), reset timeout (default 30s), and half-open probe attempts (default 1). Only RETRYABLE errors trip the breaker — PERMANENT, AUTH_REQUIRED, and USER_ACTION errors are request-level issues and do not affect server health. Integrated into `Executor` (fast-fail + outcome recording) and `Registry` (`listServers()` filters open-circuit servers). Exposed on `Kernel` via `getCircuitState(serverName)` for observability. Configurable via `KernelConfig.resilience.circuitBreaker`. 43 tests in `tests/kernel-circuit-breaker.test.ts`. (issue #111)
 - **Retry with Exponential Backoff** (`src/kernel/executor.ts`) — automatic retry for retryable errors (rate limit, timeout, connection) using existing `ResilienceMiddleware.classifyError()` classification. Exponential backoff with jitter (`baseDelay * 2^attempt + 0-30% jitter`) prevents thundering herd. Base delays from resilience recommendations (rate limit: 5s, timeout: 2s, connection: 1s). Configurable via `KernelConfig.resilience.maxRetries` (default 2) and `retryBackoffMs` (default 1000ms). Permanent, auth, and user_action errors are never retried. Retry metadata (`retryAttempts`, `totalRetryDelayMs`) attached to responses.
 
 ### Changed

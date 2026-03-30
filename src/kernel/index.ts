@@ -22,10 +22,12 @@ import type { ToolExecutorFn } from "./executor.js";
 import { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./executor.js";
 import { AuditMiddleware } from "./middleware/audit.js";
 import { AuthMiddleware } from "./middleware/auth.js";
+import { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { Registry } from "./registry.js";
 import type {
 	AuthResult,
 	BundleResponse,
+	CircuitBreakerState,
 	GatheredResponse,
 	InjectedContext,
 	KernelConfig,
@@ -72,13 +74,21 @@ export class Kernel {
 
 	constructor(config?: Partial<KernelConfig>) {
 		this.config = { ...DEFAULT_KERNEL_CONFIG, ...config };
+
+		const cbConfig = this.config.resilience.circuitBreaker;
+		const circuitBreaker = new CircuitBreaker(cbConfig);
+
 		this.registry = new Registry();
+		this.registry.setCircuitBreaker(circuitBreaker);
+
 		this.executor = new Executor({
 			maxParallel: this.config.execution.maxParallel,
 			toolTimeoutMs: this.config.execution.toolTimeoutMs,
 			maxRetries: this.config.resilience.maxRetries,
 			retryBackoffMs: this.config.resilience.retryBackoffMs,
 		});
+		this.executor.setCircuitBreaker(circuitBreaker);
+
 		this.sessions = new SessionManager();
 		this.auth = new AuthMiddleware(this.config.security.requireAuth);
 		this.audit = new AuditMiddleware({
@@ -287,6 +297,14 @@ export class Kernel {
 		return this.executor.generateIdempotencyKey(toolName, args, sessionId);
 	}
 
+	/**
+	 * Get the circuit breaker state for a server (for observability/debugging).
+	 * Returns undefined if the server is unknown.
+	 */
+	getCircuitState(serverName: string): CircuitBreakerState | undefined {
+		return this.registry.getCircuitState(serverName);
+	}
+
 	// ==========================================
 	// Composition — High-Level Tools (Arcade: Abstraction Ladder + Confirmation Request)
 	// ==========================================
@@ -424,6 +442,7 @@ export type { PendingAction, ToolExecutorFn } from "./executor.js";
 export { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./executor.js";
 export { AuditMiddleware } from "./middleware/audit.js";
 export { AuthMiddleware, ROLE_PERMISSIONS } from "./middleware/auth.js";
+export { CircuitBreaker } from "./middleware/circuit-breaker.js";
 export { ResilienceMiddleware } from "./middleware/resilience.js";
 // Re-export for convenience
 export { Registry } from "./registry.js";
