@@ -2,7 +2,7 @@
 	"compilerOptions": {
 		"target": "ES2022",
 		"module": "ESNext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
@@ -20,7 +20,6 @@
 		"lib": ["ES2022", "DOM"],
 		"types": ["node"],
 		"typeRoots": ["./node_modules/@types"],
-		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"],
 			"@/agents/*": ["./src/agents/*"],
