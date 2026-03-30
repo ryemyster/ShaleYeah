@@ -26,7 +26,7 @@ export interface ServerTemplate {
 export interface ServerToolTemplate {
 	name: string;
 	description: string;
-	inputSchema: z.ZodSchema;
+	inputSchema: z.ZodObject<z.ZodRawShape>;
 	handler: (args: any) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
@@ -92,7 +92,7 @@ export class ServerFactory {
 	static createAnalysisTool(
 		name: string,
 		description: string,
-		inputSchema: z.ZodSchema,
+		inputSchema: z.ZodObject<z.ZodRawShape>,
 		analyzeFunction: (args: any) => Promise<any>,
 	): ServerToolTemplate {
 		return {
