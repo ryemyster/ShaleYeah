@@ -18,7 +18,7 @@ import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import type { ToolExecutorFn } from "./kernel/index.js";
-import { ErrorType, Kernel } from "./kernel/index.js";
+import { ErrorType, Kernel, type Session } from "./kernel/index.js";
 import type { MCPAnalysisResult } from "./shared/types.js";
 
 export interface MCPServerConfig {
@@ -311,7 +311,7 @@ export class ShaleYeahMCPClient {
 	/**
 	 * Execute comprehensive oil & gas investment analysis
 	 */
-	async executeAnalysis(request: AnalysisRequest): Promise<WorkflowResult> {
+	async executeAnalysis(request: AnalysisRequest, session?: Session): Promise<WorkflowResult> {
 		if (!this.initialized) {
 			await this.initialize();
 		}
@@ -337,7 +337,7 @@ export class ShaleYeahMCPClient {
 			runId: request.runId,
 			mode: request.mode,
 			outputDir: request.outputDir,
-		});
+		}, session);
 
 		for (const [toolName, toolResponse] of bundleResult.results) {
 			const serverName = toolName.split(".")[0];

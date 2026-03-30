@@ -218,7 +218,7 @@ function generatePriceForecasts(_scope: string): Array<Record<string, unknown>> 
 	];
 }
 
-function generateCompetitiveLandscape(scope: string): any[] {
+function generateCompetitiveLandscape(scope: string): Array<{ company: string; activity: string; impact: string }> {
 	return [
 		{
 			company: "Major Operator A",

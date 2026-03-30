@@ -13,8 +13,6 @@
  */
 
 import fs from "node:fs/promises";
-import path from "node:path";
-import { glob } from "glob";
 import { type AnalysisRequest, ShaleYeahMCPClient } from "./mcp-client.js";
 
 interface CLIOptions {
@@ -187,8 +185,8 @@ async function main(): Promise<void> {
 			process.exit(0);
 		});
 
-		// Execute analysis workflow via kernel
-		const result = await client.executeAnalysis(request);
+		// Execute analysis workflow via kernel — session enables result forwarding between agents
+		const result = await client.executeAnalysis(request, session);
 
 		if (result.success) {
 			console.log("\n✅ Analysis completed successfully!");
@@ -214,47 +212,6 @@ async function main(): Promise<void> {
 		client.kernel.destroySession(session.id);
 		await client.cleanup();
 	}
-}
-
-// Handle file input processing
-async function _processInputFiles(
-	files: string[],
-): Promise<{ las: string[]; excel: string[]; gis: string[]; other: string[] }> {
-	const categorized = {
-		las: [] as string[],
-		excel: [] as string[],
-		gis: [] as string[],
-		other: [] as string[],
-	};
-
-	for (const filePattern of files) {
-		// Expand glob patterns
-		const expandedFiles = await glob(filePattern);
-
-		for (const file of expandedFiles) {
-			const ext = path.extname(file).toLowerCase();
-
-			switch (ext) {
-				case ".las":
-					categorized.las.push(file);
-					break;
-				case ".xlsx":
-				case ".xls":
-				case ".csv":
-					categorized.excel.push(file);
-					break;
-				case ".shp":
-				case ".geojson":
-				case ".kml":
-					categorized.gis.push(file);
-					break;
-				default:
-					categorized.other.push(file);
-			}
-		}
-	}
-
-	return categorized;
 }
 
 // Validate analysis requirements

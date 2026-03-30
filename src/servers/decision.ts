@@ -61,11 +61,11 @@ const decisionTemplate: ServerTemplate = {
 			"Make final investment decision based on all analysis inputs",
 			z.object({
 				analysisInputs: z.object({
-					geological: z.any().optional(),
-					economic: z.any().optional(),
-					engineering: z.any().optional(),
-					risk: z.any().optional(),
-					legal: z.any().optional(),
+					geological: z.object({ confidence: z.number().optional() }).passthrough().optional(),
+					economic: z.object({ npv: z.number().optional(), irr: z.number().optional(), paybackMonths: z.number().optional() }).passthrough().optional(),
+					engineering: z.object({}).passthrough().optional(),
+					risk: z.object({ overallRisk: z.number().optional() }).passthrough().optional(),
+					legal: z.object({}).passthrough().optional(),
 				}),
 				investmentCriteria: z
 					.object({

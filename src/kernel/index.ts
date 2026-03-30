@@ -15,11 +15,11 @@
  * - Identity Anchor + Context Injection (sessions)
  */
 
-import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE } from "./bundles.js";
+import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./bundles.js";
 import type { Session } from "./context.js";
 import { DEMO_IDENTITY, SessionManager } from "./context.js";
 import type { ToolExecutorFn } from "./executor.js";
-import { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./executor.js";
+import { Executor } from "./executor.js";
 import { AuditMiddleware } from "./middleware/audit.js";
 import { AuthMiddleware } from "./middleware/auth.js";
 import { CircuitBreaker } from "./middleware/circuit-breaker.js";
@@ -34,6 +34,7 @@ import type {
 	ServerFilter,
 	ServerInfo,
 	SessionInfo,
+	TaskBundle,
 	ToolDescriptor,
 	ToolRequest,
 	ToolResponse,
@@ -278,16 +279,16 @@ export class Kernel {
 	 * Quick Screen — fast parallel assessment using 4 core servers.
 	 * Returns geology, economics, engineering, and risk in one pass.
 	 */
-	async quickScreen(tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
-		return this.executor.executeBundle(QUICK_SCREEN_BUNDLE, tractArgs);
+	async quickScreen(tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+		return this.executor.executeBundle(QUICK_SCREEN_BUNDLE, tractArgs, session);
 	}
 
 	/**
 	 * Full Due Diligence — comprehensive 14-server analysis in 4 phases.
 	 * Respects dependency ordering between phases.
 	 */
-	async fullAnalysis(tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
-		return this.executor.executeBundle(FULL_DUE_DILIGENCE_BUNDLE, tractArgs);
+	async fullAnalysis(tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+		return this.executor.executeBundle(FULL_DUE_DILIGENCE_BUNDLE, tractArgs, session);
 	}
 
 	/**
@@ -313,40 +314,46 @@ export class Kernel {
 	 * Geological Deep Dive — focused geological analysis.
 	 * geowiz(full) + curve-smith(standard) + research(summary).
 	 */
-	async geologicalDeepDive(tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
-		return this.executor.executeBundle(GEOLOGICAL_DEEP_DIVE_BUNDLE, tractArgs);
+	async geologicalDeepDive(tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+		return this.executor.executeBundle(GEOLOGICAL_DEEP_DIVE_BUNDLE, tractArgs, session);
 	}
 
 	/**
 	 * Financial Review — focused financial and risk analysis.
 	 * econobot(full) + risk-analysis(standard) + market(summary).
 	 */
-	async financialReview(tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
-		return this.executor.executeBundle(FINANCIAL_REVIEW_BUNDLE, tractArgs);
+	async financialReview(tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+		return this.executor.executeBundle(FINANCIAL_REVIEW_BUNDLE, tractArgs, session);
 	}
 
 	/**
 	 * Should We Invest — full due diligence pipeline ending with a decision.
-	 * Runs all 14 servers, then returns the decision with confirmation gate.
-	 * The decision step returns `requires_confirmation: true` — the agent must
-	 * call `confirmAction(actionId)` to finalize the recommendation.
+	 * Runs the 13 pre-decision servers, then runs decision ONCE via the
+	 * confirmation gate with actual prior results injected. This avoids the
+	 * previous double-execution of decision.analyze.
+	 * The agent must call `confirmAction(actionId)` to finalize the recommendation.
 	 */
-	async shouldWeInvest(tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
-		// Execute full analysis (phases 1-3, reporter)
-		const result = await this.executor.executeBundle(FULL_DUE_DILIGENCE_BUNDLE, tractArgs);
+	async shouldWeInvest(tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+		// Run all steps except decision so we collect prior results first
+		const bundleWithoutDecision: TaskBundle = {
+			...FULL_DUE_DILIGENCE_BUNDLE,
+			steps: FULL_DUE_DILIGENCE_BUNDLE.steps.filter((s) => s.toolName !== "decision.analyze"),
+		};
 
-		// The decision step within the bundle is the last step.
-		// Check if it produced a result — if so, wrap it with confirmation gate.
-		const decisionResult = result.results.get("decision.analyze");
-		if (decisionResult?.success) {
-			// Replace the decision result with a confirmation-gated version
-			const confirmResult = await this.executor.executeWithConfirmation({
-				toolName: "decision.analyze",
-				args: { ...tractArgs, analysisResults: "from_bundle" },
-			});
-			result.results.set("decision.analyze", confirmResult);
-		}
+		const result = await this.executor.executeBundle(bundleWithoutDecision, tractArgs, session);
 
+		// Run decision once via confirmation gate with actual reporter output injected
+		const reporterResult = result.results.get("reporter.analyze");
+		const confirmResult = await this.executor.executeWithConfirmation({
+			toolName: "decision.analyze",
+			args: {
+				...tractArgs,
+				analysisResults: reporterResult?.data ?? null,
+				priorResultKeys: session?.getInjectedContext().availableResults ?? [],
+			},
+		});
+
+		result.results.set("decision.analyze", confirmResult);
 		return result;
 	}
 
@@ -436,10 +443,10 @@ export class Kernel {
 	}
 }
 
-export { BUNDLES, FINANCIAL_REVIEW_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE } from "./bundles.js";
+export { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./bundles.js";
 export { DEMO_IDENTITY, Session, SessionManager } from "./context.js";
 export type { PendingAction, ToolExecutorFn } from "./executor.js";
-export { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./executor.js";
+export { Executor } from "./executor.js";
 export { AuditMiddleware } from "./middleware/audit.js";
 export { AuthMiddleware, ROLE_PERMISSIONS } from "./middleware/auth.js";
 export { CircuitBreaker } from "./middleware/circuit-breaker.js";

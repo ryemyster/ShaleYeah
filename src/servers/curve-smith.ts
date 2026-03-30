@@ -133,7 +133,15 @@ const curveSmithTemplate: ServerTemplate = {
 			"assess_curve_quality",
 			"Assess quality of decline curve analysis",
 			z.object({
-				curveData: z.any().describe("Decline curve analysis data"),
+				curveData: z.object({
+					initialRate: z.object({ oil: z.number(), gas: z.number(), water: z.number() }),
+					declineRate: z.number(),
+					bFactor: z.number(),
+					eur: z.object({ oil: z.number(), gas: z.number() }),
+					typeCurve: z.string(),
+					confidence: z.number(),
+					qualityGrade: z.enum(["Excellent", "Good", "Fair", "Poor"]),
+				}).describe("Decline curve analysis data"),
 				thresholds: z
 					.object({
 						minR2: z.number().min(0).max(1).default(0.8),

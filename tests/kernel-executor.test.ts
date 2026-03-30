@@ -5,7 +5,8 @@
  * task bundles, phase resolution, and idempotency keys.
  */
 
-import { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/executor.js";
+import { FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/bundles.js";
+import { Executor } from "../src/kernel/executor.js";
 import { Kernel } from "../src/kernel/index.js";
 import type { ToolRequest, ToolResponse } from "../src/kernel/types.js";
 

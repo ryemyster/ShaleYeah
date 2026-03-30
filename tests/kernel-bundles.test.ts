@@ -5,8 +5,8 @@
  * confirmation gate, and abstraction ladder.
  */
 
-import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE } from "../src/kernel/bundles.js";
-import { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/executor.js";
+import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/bundles.js";
+import { Executor } from "../src/kernel/executor.js";
 import { Kernel } from "../src/kernel/index.js";
 import type { ToolResponse } from "../src/kernel/types.js";
 
@@ -166,9 +166,11 @@ console.log("\n💰 Testing FINANCIAL_REVIEW_BUNDLE structure...");
 
 console.log("\n📚 Testing BUNDLES index...");
 {
+	assert(BUNDLES.quick_screen === QUICK_SCREEN_BUNDLE, "BUNDLES has quick_screen");
+	assert(BUNDLES.full_due_diligence === FULL_DUE_DILIGENCE_BUNDLE, "BUNDLES has full_due_diligence");
 	assert(BUNDLES.geological_deep_dive === GEOLOGICAL_DEEP_DIVE_BUNDLE, "BUNDLES has geological_deep_dive");
 	assert(BUNDLES.financial_review === FINANCIAL_REVIEW_BUNDLE, "BUNDLES has financial_review");
-	assert(Object.keys(BUNDLES).length === 2, "BUNDLES has 2 entries (domain bundles)");
+	assert(Object.keys(BUNDLES).length === 4, "BUNDLES has 4 entries (all bundles)");
 }
 
 // ==========================================

@@ -146,7 +146,10 @@ const riskAnalysisTemplate: ServerTemplate = {
 };
 
 // Domain-specific analysis functions
-function performRiskAssessment(args: any): RiskAssessment {
+function performRiskAssessment(args: {
+	projectData: { geological?: { confidence?: number }; technical?: Record<string, unknown>; economic?: { irr?: number }; regulatory?: Record<string, unknown> };
+	riskProfile: string;
+}): RiskAssessment {
 	const projectData = args.projectData;
 
 	// Calculate risk scores for each category
@@ -188,7 +191,7 @@ function performRiskAssessment(args: any): RiskAssessment {
 	};
 }
 
-function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
+function performMonteCarloAnalysis(args: { iterations: number; targetIRR: number }): MonteCarloAnalysis {
 	// Essential Monte Carlo simulation logic
 	const iterations = args.iterations;
 	const npvResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 10000000 - 2000000);
@@ -242,30 +245,30 @@ function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
 }
 
 // Helper functions for risk assessment
-function assessGeologicalRisk(geoData: any): number {
+function assessGeologicalRisk(geoData: { confidence?: number } | null | undefined): number {
 	if (!geoData) return 0.6;
 	const confidence = geoData.confidence || 75;
 	return Math.max(0.1, (100 - confidence) / 100);
 }
 
-function assessTechnicalRisk(techData: any): number {
+function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
 	if (!techData) return 0.5;
 	return Math.random() * 0.4 + 0.1;
 }
 
-function assessEconomicRisk(econData: any): number {
+function assessEconomicRisk(econData: { irr?: number } | null | undefined): number {
 	if (!econData) return 0.7;
 	const irr = econData.irr || 0.1;
 	return Math.max(0.1, Math.min(0.8, (0.25 - irr) / 0.15));
 }
 
-function assessRegulatoryRisk(_regData: any): number {
+function assessRegulatoryRisk(_regData: Record<string, unknown> | null | undefined): number {
 	return Math.random() * 0.3 + 0.1;
 }
 
-function identifyKeyRisks(riskCategories: any, _projectData: any): Array<any> {
-	const risks: Array<any> = [];
-	Object.entries(riskCategories).forEach(([category, risk]: [string, any]) => {
+function identifyKeyRisks(riskCategories: Record<string, number>, _projectData: Record<string, unknown>): Array<{ category: string; risk: string; probability: number; impact: number; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }> {
+	const risks: Array<{ category: string; risk: string; probability: number; impact: number; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }> = [];
+	Object.entries(riskCategories).forEach(([category, risk]) => {
 		if (risk > 0.5) {
 			risks.push({
 				category,
@@ -279,7 +282,7 @@ function identifyKeyRisks(riskCategories: any, _projectData: any): Array<any> {
 	return risks;
 }
 
-function generateMitigationStrategies(_keyRisks: any[]): string[] {
+function generateMitigationStrategies(_keyRisks: Array<{ category: string; risk: string; probability: number; impact: number; severity: string }>): string[] {
 	return [
 		"Implement comprehensive monitoring and surveillance programs",
 		"Develop contingency plans for identified risk scenarios",
