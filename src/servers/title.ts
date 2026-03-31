@@ -8,7 +8,7 @@
  */
 
 import { z } from "zod";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 // Define server template with no duplication
@@ -45,11 +45,11 @@ const titleServerTemplate: ServerTemplate = {
 					jurisdiction: `${args.county}, ${args.state}`,
 					examPeriod: args.examPeriod,
 					findings: {
-						clearTitle: Math.random() > 0.3,
-						encumbrances: Math.floor(Math.random() * 3),
-						ownershipPercentage: 100 - Math.random() * 25,
+						clearTitle: true, // stub: assumed clear — replace with county recorder lookup
+						encumbrances: 1, // stub: 1 standard mortgage — replace with lien search
+						ownershipPercentage: 87.5, // stub: 87.5% NPI — replace with title chain analysis
 						legalDescription: "Legal description based on examination",
-						riskLevel: Math.random() > 0.7 ? "high" : Math.random() > 0.4 ? "medium" : "low",
+						riskLevel: "low", // stub — replace with title defect scoring
 					},
 					confidence: ServerUtils.calculateConfidence(0.9, 0.8),
 				};
@@ -68,6 +68,6 @@ export default TitleServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (TitleServer as any)();
+	const server = new (TitleServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }

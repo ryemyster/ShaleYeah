@@ -9,22 +9,6 @@ import path from "node:path";
 // Tool configurations for comprehensive testing
 const toolConfigs = [
 	{
-		name: "access-ingest",
-		description: "Access database ingestion tool",
-		expectedFunctions: ["processAccessDatabase", "extractTables", "convertToCSV"],
-		inputTypes: [".mdb", ".accdb"],
-		outputFormat: "CSV files per table",
-		testData: { database: "test.accdb", tables: ["wells", "production", "economics"] },
-	},
-	{
-		name: "curve-fit",
-		description: "Decline curve fitting tool",
-		expectedFunctions: ["fitDeclineCurve", "calculateEUR", "generateForecast"],
-		inputTypes: [".csv", ".las"],
-		outputFormat: "Enhanced CSV with fitted curves",
-		testData: { curves: ["oil_rate", "gas_rate", "water_rate"], order: 2 },
-	},
-	{
 		name: "curve-qc",
 		description: "Curve quality control analysis",
 		expectedFunctions: ["calculateRMSE", "assessQuality", "generateQCReport"],
@@ -317,10 +301,10 @@ class RemainingToolsTester {
 		results.total++;
 
 		try {
-			// Test workflow: las-parse → curve-qc → curve-fit
-			const lasParse = this.createMockTool(toolConfigs[4]); // las-parse
-			const curveQC = this.createMockTool(toolConfigs[2]); // curve-qc
-			const curveFit = this.createMockTool(toolConfigs[1]); // curve-fit
+			// Test workflow: las-parse → curve-qc → decline-curve-analysis
+			const lasParse = this.createMockTool(toolConfigs.find((c) => c.name === "las-parse")!);
+			const curveQC = this.createMockTool(toolConfigs.find((c) => c.name === "curve-qc")!);
+			const curveFit = this.createMockTool(toolConfigs.find((c) => c.name === "decline-curve-analysis")!);
 
 			// Simulate workflow
 			const parseResult = await lasParse.processInput("test.las", { curves: ["GR", "RHOB"] });
@@ -334,7 +318,7 @@ class RemainingToolsTester {
 
 			// Test integration result
 			const integrationResult = {
-				workflow: "las-parse → curve-qc → curve-fit",
+				workflow: "las-parse → curve-qc → decline-curve-analysis",
 				steps: [parseResult, qcResult, fitResult],
 				overallSuccess: parseResult.success && qcResult.success && fitResult.success,
 				confidence: (parseResult.confidence + qcResult.confidence + fitResult.confidence) / 3,

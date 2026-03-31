@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface RiskAssessment {
@@ -147,7 +147,12 @@ const riskAnalysisTemplate: ServerTemplate = {
 
 // Domain-specific analysis functions
 function performRiskAssessment(args: {
-	projectData: { geological?: { confidence?: number }; technical?: Record<string, unknown>; economic?: { irr?: number }; regulatory?: Record<string, unknown> };
+	projectData: {
+		geological?: { confidence?: number };
+		technical?: Record<string, unknown>;
+		economic?: { irr?: number };
+		regulatory?: Record<string, unknown>;
+	};
 	riskProfile: string;
 }): RiskAssessment {
 	const projectData = args.projectData;
@@ -158,8 +163,8 @@ function performRiskAssessment(args: {
 		technical: assessTechnicalRisk(projectData.technical),
 		economic: assessEconomicRisk(projectData.economic),
 		regulatory: assessRegulatoryRisk(projectData.regulatory),
-		environmental: Math.random() * 0.4 + 0.1, // 0.1-0.5
-		operational: Math.random() * 0.3 + 0.2, // 0.2-0.5
+		environmental: 0.25, // stub: mid-range — replace with regulatory/site data
+		operational: 0.35, // stub: mid-range — replace with operational history data
 	};
 
 	// Calculate overall risk (weighted average)
@@ -194,8 +199,17 @@ function performRiskAssessment(args: {
 function performMonteCarloAnalysis(args: { iterations: number; targetIRR: number }): MonteCarloAnalysis {
 	// Essential Monte Carlo simulation logic
 	const iterations = args.iterations;
-	const npvResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 10000000 - 2000000);
-	const irrResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 0.5);
+	// Stub: deterministic representative distribution centered on typical well economics
+	// Replace with real Monte Carlo using input variable distributions
+	const sampleCount = Math.min(iterations, 1000);
+	const npvResults = Array.from({ length: sampleCount }, (_, i) => {
+		const t = sampleCount === 1 ? 0 : (i / (sampleCount - 1)) * 2 - 1; // -1 to +1
+		return 3500000 + t * 2500000; // $1M–$6M uniform spread around $3.5M
+	});
+	const irrResults = Array.from({ length: sampleCount }, (_, i) => {
+		const t = sampleCount === 1 ? 0 : (i / (sampleCount - 1)) * 2 - 1;
+		return 0.18 + t * 0.12; // 6%–30% spread around 18%
+	});
 
 	return {
 		iterations,
@@ -253,7 +267,7 @@ function assessGeologicalRisk(geoData: { confidence?: number } | null | undefine
 
 function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
 	if (!techData) return 0.5;
-	return Math.random() * 0.4 + 0.1;
+	return 0.3; // stub: mid-range — replace with well complexity/technology maturity scoring
 }
 
 function assessEconomicRisk(econData: { irr?: number } | null | undefined): number {
@@ -263,11 +277,26 @@ function assessEconomicRisk(econData: { irr?: number } | null | undefined): numb
 }
 
 function assessRegulatoryRisk(_regData: Record<string, unknown> | null | undefined): number {
-	return Math.random() * 0.3 + 0.1;
+	return 0.2; // stub: low-mid — replace with jurisdiction/permit status lookup
 }
 
-function identifyKeyRisks(riskCategories: Record<string, number>, _projectData: Record<string, unknown>): Array<{ category: string; risk: string; probability: number; impact: number; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }> {
-	const risks: Array<{ category: string; risk: string; probability: number; impact: number; severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" }> = [];
+function identifyKeyRisks(
+	riskCategories: Record<string, number>,
+	_projectData: Record<string, unknown>,
+): Array<{
+	category: string;
+	risk: string;
+	probability: number;
+	impact: number;
+	severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+}> {
+	const risks: Array<{
+		category: string;
+		risk: string;
+		probability: number;
+		impact: number;
+		severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+	}> = [];
 	Object.entries(riskCategories).forEach(([category, risk]) => {
 		if (risk > 0.5) {
 			risks.push({
@@ -282,7 +311,9 @@ function identifyKeyRisks(riskCategories: Record<string, number>, _projectData: 
 	return risks;
 }
 
-function generateMitigationStrategies(_keyRisks: Array<{ category: string; risk: string; probability: number; impact: number; severity: string }>): string[] {
+function generateMitigationStrategies(
+	_keyRisks: Array<{ category: string; risk: string; probability: number; impact: number; severity: string }>,
+): string[] {
 	return [
 		"Implement comprehensive monitoring and surveillance programs",
 		"Develop contingency plans for identified risk scenarios",
@@ -303,6 +334,6 @@ export default RiskAnalysisServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (RiskAnalysisServer as any)();
+	const server = new (RiskAnalysisServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }
