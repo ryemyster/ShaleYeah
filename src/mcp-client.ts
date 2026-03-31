@@ -332,12 +332,15 @@ export class ShaleYeahMCPClient {
 
 		// Execute via kernel — parallel, dependency-ordered analysis
 		this.currentRequest = request;
-		const bundleResult = await this.kernel.fullAnalysis({
-			tractName: request.tractName,
-			runId: request.runId,
-			mode: request.mode,
-			outputDir: request.outputDir,
-		}, session);
+		const bundleResult = await this.kernel.fullAnalysis(
+			{
+				tractName: request.tractName,
+				runId: request.runId,
+				mode: request.mode,
+				outputDir: request.outputDir,
+			},
+			session,
+		);
 
 		for (const [toolName, toolResponse] of bundleResult.results) {
 			const serverName = toolName.split(".")[0];

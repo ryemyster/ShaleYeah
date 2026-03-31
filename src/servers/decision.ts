@@ -62,7 +62,10 @@ const decisionTemplate: ServerTemplate = {
 			z.object({
 				analysisInputs: z.object({
 					geological: z.object({ confidence: z.number().optional() }).passthrough().optional(),
-					economic: z.object({ npv: z.number().optional(), irr: z.number().optional(), paybackMonths: z.number().optional() }).passthrough().optional(),
+					economic: z
+						.object({ npv: z.number().optional(), irr: z.number().optional(), paybackMonths: z.number().optional() })
+						.passthrough()
+						.optional(),
 					engineering: z.object({}).passthrough().optional(),
 					risk: z.object({ overallRisk: z.number().optional() }).passthrough().optional(),
 					legal: z.object({}).passthrough().optional(),

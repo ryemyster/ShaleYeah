@@ -5,7 +5,13 @@
  * confirmation gate, and abstraction ladder.
  */
 
-import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/bundles.js";
+import {
+	BUNDLES,
+	FINANCIAL_REVIEW_BUNDLE,
+	FULL_DUE_DILIGENCE_BUNDLE,
+	GEOLOGICAL_DEEP_DIVE_BUNDLE,
+	QUICK_SCREEN_BUNDLE,
+} from "../src/kernel/bundles.js";
 import { Executor } from "../src/kernel/executor.js";
 import { Kernel } from "../src/kernel/index.js";
 import type { ToolResponse } from "../src/kernel/types.js";

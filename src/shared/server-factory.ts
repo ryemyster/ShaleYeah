@@ -77,14 +77,6 @@ export class ServerFactory {
 						handler: tool.handler,
 					});
 				}
-
-				// Register all resources from template
-				if (template.resources) {
-					for (const _resource of template.resources) {
-						// Resources implementation would need to match MCPServer interface
-						// this.registerResource(resource.pattern, resource.description, resource.handler);
-					}
-				}
 			}
 		};
 	}
@@ -227,7 +219,10 @@ export class ServerUtils {
 	/**
 	 * Standard error response
 	 */
-	static createErrorResponse(message: string, details?: string[]): { success: false; error: string; details: string[]; timestamp: string; suggestions: string[] } {
+	static createErrorResponse(
+		message: string,
+		details?: string[],
+	): { success: false; error: string; details: string[]; timestamp: string; suggestions: string[] } {
 		return {
 			success: false,
 			error: message,
@@ -244,7 +239,10 @@ export class ServerUtils {
 	/**
 	 * Standard success response
 	 */
-	static createSuccessResponse(data: Record<string, unknown>, metadata?: Record<string, unknown>): { success: true; data: Record<string, unknown>; metadata: Record<string, unknown> } {
+	static createSuccessResponse(
+		data: Record<string, unknown>,
+		metadata?: Record<string, unknown>,
+	): { success: true; data: Record<string, unknown>; metadata: Record<string, unknown> } {
 		return {
 			success: true,
 			data,

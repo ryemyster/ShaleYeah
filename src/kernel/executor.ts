@@ -278,7 +278,11 @@ export class Executor {
 	 * Results are stored in the session after each successful step so downstream
 	 * agents receive prior-phase outputs via _context.availableResults.
 	 */
-	async executeBundle(bundle: TaskBundle, tractArgs?: Record<string, unknown>, session?: Session): Promise<BundleResponse> {
+	async executeBundle(
+		bundle: TaskBundle,
+		tractArgs?: Record<string, unknown>,
+		session?: Session,
+	): Promise<BundleResponse> {
 		const startMs = Date.now();
 		const allResults = new Map<string, ToolResponse>();
 		const phases: PhaseResult[] = [];
@@ -366,7 +370,10 @@ export class Executor {
 				}
 			}
 
-			const phaseSucceeded = phaseSteps.length - phaseFailures.length - [...skippedSteps].filter((s) => phaseSteps.some((ps) => ps.toolName === s)).length;
+			const phaseSucceeded =
+				phaseSteps.length -
+				phaseFailures.length -
+				[...skippedSteps].filter((s) => phaseSteps.some((ps) => ps.toolName === s)).length;
 			phases.push({
 				phase: phaseIdx + 1,
 				tools: phaseSteps.map((s) => s.toolName),

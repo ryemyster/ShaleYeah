@@ -15,7 +15,13 @@
  * - Identity Anchor + Context Injection (sessions)
  */
 
-import { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./bundles.js";
+import {
+	BUNDLES,
+	FINANCIAL_REVIEW_BUNDLE,
+	FULL_DUE_DILIGENCE_BUNDLE,
+	GEOLOGICAL_DEEP_DIVE_BUNDLE,
+	QUICK_SCREEN_BUNDLE,
+} from "./bundles.js";
 import type { Session } from "./context.js";
 import { DEMO_IDENTITY, SessionManager } from "./context.js";
 import type { ToolExecutorFn } from "./executor.js";
@@ -443,7 +449,13 @@ export class Kernel {
 	}
 }
 
-export { BUNDLES, FINANCIAL_REVIEW_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE, GEOLOGICAL_DEEP_DIVE_BUNDLE, QUICK_SCREEN_BUNDLE } from "./bundles.js";
+export {
+	BUNDLES,
+	FINANCIAL_REVIEW_BUNDLE,
+	FULL_DUE_DILIGENCE_BUNDLE,
+	GEOLOGICAL_DEEP_DIVE_BUNDLE,
+	QUICK_SCREEN_BUNDLE,
+} from "./bundles.js";
 export { DEMO_IDENTITY, Session, SessionManager } from "./context.js";
 export type { PendingAction, ToolExecutorFn } from "./executor.js";
 export { Executor } from "./executor.js";
