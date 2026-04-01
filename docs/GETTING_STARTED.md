@@ -158,6 +158,20 @@ The demo simulates a real investment analysis:
 Ready to analyze real oil & gas prospects? Follow this checklist:
 
 ### Prerequisites for Production Mode
+
+**API Keys** (both optional — app falls back to stubs without them):
+
+| Key                 | Purpose                                   | How to get                                                    |
+| ------------------- | ----------------------------------------- | ------------------------------------------------------------- |
+| `ANTHROPIC_API_KEY` | LLM synthesis in all 14 servers           | [console.anthropic.com](https://console.anthropic.com)        |
+| `EIA_API_KEY`       | Real WTI/Henry Hub prices in `market.ts`  | Free — see [docs/EIA_API_SETUP.md](EIA_API_SETUP.md)          |
+
+```bash
+# .env (never commit)
+ANTHROPIC_API_KEY=sk-ant-...
+EIA_API_KEY=your_eia_key_here
+```
+
 ```bash
 # 1. Verify required sample files exist
 ls data/samples/demo.las         # Should exist
