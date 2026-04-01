@@ -1,59 +1,64 @@
-# SHALE YEAH - Claude Code Development Instructions
+# SHALE YEAH — Claude Code Instructions
 
-Claude Code is the dev/QA organization for SHALE YEAH's MCP-powered oil & gas investment platform.
+Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel. Apache-2.0 / Ryan McDonald / Ascendvent LLC.
 
 ## Architecture
 
-**Agent OS Kernel** (`src/kernel/`) wraps **14 MCP servers** with Roman personas:
-- **Kernel** routes all execution: discovery, parallel scatter-gather, bundles, sessions, auth, audit
-- **Demo** (`npm run demo`) - Mock data, $0 cost, ~6s via kernel
-- **Production** (`npm run prod`) - Real data + Anthropic API via kernel
+**Kernel** (`src/kernel/`) is the runtime — routes all execution: discovery, scatter-gather, bundles, sessions, RBAC, audit.
 
-**Core Servers:** `geowiz`, `econobot`, `curve-smith`, `decision`, `reporter`, `risk-analysis`, `research`
-**Support:** `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test`
+**14 MCP Servers** — all inherit `MCPServer` (`src/shared/mcp-server.ts`), have Roman personas, use `registerTool()`:
+- Core: `geowiz`, `econobot`, `curve-smith`, `decision`, `reporter`, `risk-analysis`, `research`
+- Support: `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test`
 
-All inherit `MCPServer` (`src/shared/mcp-server.ts`) with file processing, personas, tools, validation.
-`ShaleYeahMCPClient` wraps Kernel internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()`.
+**Entry points:**
+- `src/demo-runner.ts` — demo mode, fixture inputs, no API key required
+- `src/main.ts` — production CLI, requires `ANTHROPIC_API_KEY`
+- `src/mcp-client.ts` — `ShaleYeahMCPClient` wraps Kernel, `executeAnalysis()` → `kernel.fullAnalysis()`
 
-## Development
+**LLM calls:** Only via `src/shared/llm-client.ts` (shared utility, wraps `@anthropic-ai/sdk`).
 
-**Setup:** `npm install --legacy-peer-deps && npm run build && npm run demo`
+## SDLC
 
-**Key Commands:**
-- `npm run demo` - 6s full system test
-- `npm run server:geowiz` - Test individual server (all 14 available)
-- `npm run prod -- --files="*.las,*.xlsx"` - Production analysis
-- `npm run test` - Complete test suite
+**Branch flow:** `main` ← `develop` ← `<issue-number>-<slug>` (always branch off develop, PR targets develop)
 
-**File Processing:** LAS, Excel/CSV, GIS, SEGY via `FileIntegrationManager` with quality scoring.
+**Per-issue workflow:**
+1. `/new-issue-branch <n> <slug>` — cut branch off develop
+2. Write failing test first (TDD)
+3. Implement — no `Math.random()`, no mock bypasses, no silent fallbacks
+4. `/pre-commit` — must pass before committing
+5. `/finish-issue <n>` — CHANGELOG → commit → PR → compact
+
+**Skills:** `/create-issue` `/new-issue-branch` `/pre-commit` `/finish-issue` `/compact` `/test-kernel`
 
 ## Standards
 
-**TypeScript:** Strict mode, no `any`, explicit interfaces, async/await, Zod validation
-**MCP Pattern:** Inherit `MCPServer`, Roman persona, `registerTool()`, standardized errors
-**Files:** `src/servers/` (14 MCP), `src/shared/` (base classes), `docs/` (maintained)
+- TypeScript strict mode — no `any`, explicit interfaces, Zod at all boundaries
+- No `Math.random()` in business logic — deterministic constants or real computation only
+- Tests use simple assert pattern (not jest/vitest) — run via `npx tsx tests/<name>.test.ts`
+- CI requires no API key — mock the Anthropic SDK in tests
+- New servers: inherit `MCPServer`, add Roman persona, use `registerTool()`
 
-## Quality Assurance
+## Key Commands
 
-**Pre-commit:** `npm run build && npm run type-check && npm run lint && npm run test && npm run demo`
-**Tests:** Demo integration, file processing, MCP infrastructure, domain servers, cross-server coordination
+```bash
+npm run demo                          # smoke test — all 14 servers must complete
+npm run test                          # 16 suites (~700+ tests)
+npm run build && npm run type-check   # compile gate
+npm run lint                          # Biome
+npm run server:geowiz                 # test individual server (all 14 available)
+npm run prod -- --files="*.las"       # production analysis
+```
 
-## Modes
-
-**Demo:** Mock data, no API keys, 6s execution, perfect for dev/presentations (`ShaleYeahMCPDemo`)
-**Production:** Real files + `ANTHROPIC_API_KEY`, variable time, investment decisions (`ShaleYeahMCPClient`)
+**Pre-commit gate (all must pass):** `npm run build && npm run type-check && npm run lint && npm run test && npm run demo`
 
 ## Key Files
 
-- `src/main.ts` - Production CLI (creates kernel session)
-- `src/demo-runner.ts` - Demo orchestration (creates kernel session)
-- `src/mcp-client.ts` - Server coordination (wraps Kernel, delegates to kernel.fullAnalysis)
-- `src/kernel/` - Agent OS kernel (registry, executor, sessions, middleware)
-- `src/shared/mcp-server.ts` - Base class
-- `docs/` - Documentation
-
----
-
-**Focus:** Prioritize demo mode, use comprehensive tests, leverage MCP architecture for new capabilities.
-
-*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*
+| Path | Purpose |
+|------|---------|
+| `src/kernel/` | Registry, executor, context, bundles, middleware |
+| `src/servers/` | 14 MCP domain servers |
+| `src/shared/mcp-server.ts` | Base class for all servers |
+| `src/shared/llm-client.ts` | Shared Anthropic SDK wrapper (source of truth for LLM calls) |
+| `tests/kernel-*.test.ts` | 8 kernel test suites |
+| `docs/ARCHITECTURE.md` | Living architecture reference |
+| `CHANGELOG.md` | Updated per issue before PR |
