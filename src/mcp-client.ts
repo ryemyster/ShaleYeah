@@ -263,7 +263,7 @@ export class ShaleYeahMCPClient {
 			const request: AnalysisRequest = this.currentRequest || {
 				runId: "kernel",
 				tractName: (args.tractName as string) || "Analysis",
-				mode: "demo" as const,
+				mode: "production" as const,
 				outputDir: (args.outputDir as string) || "",
 			};
 

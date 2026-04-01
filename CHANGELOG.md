@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Demo bypass removed** (`src/mcp-client.ts`) — `createExecutorFn()` no longer hardcodes `mode: "demo"` as the fallback default; production mode is now the default when no `currentRequest` is set. Demo mode remains valid but is explicitly opt-in via `mode: "demo"` on the `AnalysisRequest`. (closes #221)
+
 ### Security
 - **CI/CD Supply Chain Hardening** — all GitHub Actions pinned to full commit SHAs (previously used mutable tags like `@v6`/`@v4`/`@v3`); added `permissions: contents: read` default to `ci.yml` and `demo.yml` to prevent over-privileged tokens on PR/push runs; added `environment: production` gate (requires reviewer approval) to `release` and `sign` jobs in `release.yml`; pinned SLSA generator to SHA; removed lint-suppression hacks (`|| echo ...`) from `ci.yml` and `release.yml`; renamed `gitleaks.yml` → `codeql.yml` to match its actual content (CodeQL, not Gitleaks)
 
@@ -15,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Retry with Exponential Backoff** (`src/kernel/executor.ts`) — automatic retry for retryable errors (rate limit, timeout, connection) using existing `ResilienceMiddleware.classifyError()` classification. Exponential backoff with jitter (`baseDelay * 2^attempt + 0-30% jitter`) prevents thundering herd. Base delays from resilience recommendations (rate limit: 5s, timeout: 2s, connection: 1s). Configurable via `KernelConfig.resilience.maxRetries` (default 2) and `retryBackoffMs` (default 1000ms). Permanent, auth, and user_action errors are never retried. Retry metadata (`retryAttempts`, `totalRetryDelayMs`) attached to responses.
 
 ### Changed
+
+- **`demo.yml` workflow trimmed** — removed redundant steps (triple demo runs, performance timeout test, doc file checks); workflow now runs `npm run demo` once and verifies outputs. (closes #221)
 - **README.md**: Full rewrite from 2,401 to ~360 lines targeting O&G investment professionals — removed ~1,200 lines of TypeScript code examples, aspirational features (Docker, WebSocket, SIEM), duplicate sections, and developer implementation guides; fixed factual errors (server counts, output paths, persona names, non-existent npm scripts)
 - **ARCHITECTURE.md**: Integrated kernel as main narrative instead of appendix — removed outdated "two-tier" / "6 agents" framing, duplicate "Composition — Abstraction Ladder" section, jest test examples, and aspirational Docker/Kubernetes deployment claims
 - **API_REFERENCE.md**: Removed duplicate "Composition — High-Level Tools" section and non-existent community links (GitHub Discussions, Discord, examples directory)
