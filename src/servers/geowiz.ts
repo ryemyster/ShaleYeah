@@ -552,7 +552,7 @@ function estimatePermeability(porosity: number): number {
 }
 
 function estimateTOC(_lasData: LASData): number {
-	return Math.round((3 + Math.random() * 3) * 10) / 10; // 3-6%
+	return 4.2; // stub: 4.2% TOC mid-range — replace with pyrolysis/log-derived TOC calculation
 }
 
 function assessMaturity(lasData: LASData): string {

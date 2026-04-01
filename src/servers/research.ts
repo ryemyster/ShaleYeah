@@ -8,7 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { type FetchResult, fetchUrl } from "../../tools/web-fetch.js";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface MarketResearch {
@@ -218,7 +218,7 @@ function generatePriceForecasts(_scope: string): Array<Record<string, unknown>> 
 	];
 }
 
-function generateCompetitiveLandscape(scope: string): any[] {
+function generateCompetitiveLandscape(scope: string): Array<{ company: string; activity: string; impact: string }> {
 	return [
 		{
 			company: "Major Operator A",
@@ -255,6 +255,6 @@ export default ResearchServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (ResearchServer as any)();
+	const server = new (ResearchServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }

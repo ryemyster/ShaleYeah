@@ -5,9 +5,11 @@
  * task bundles, phase resolution, and idempotency keys.
  */
 
-import { Executor, FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/executor.js";
+import { FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/bundles.js";
+import { DEMO_IDENTITY, Session } from "../src/kernel/context.js";
+import { Executor } from "../src/kernel/executor.js";
 import { Kernel } from "../src/kernel/index.js";
-import type { ToolRequest, ToolResponse } from "../src/kernel/types.js";
+import type { TaskBundle, ToolRequest, ToolResponse } from "../src/kernel/types.js";
 
 let passed = 0;
 let failed = 0;
@@ -939,6 +941,291 @@ console.log("\n🔄 Testing retry — parallel retries individual tool failures.
 	assert(gathered.failures.length === 0, `No failures after retry, got ${gathered.failures.length}`);
 	assert(callCounts.geowiz === 1, "Geowiz called once (no retry needed)");
 	assert(callCounts.econobot === 2, `Econobot retried — called ${callCounts.econobot} times`);
+}
+
+// ==========================================
+// Test A: Session result forwarding — sequential phases
+// ==========================================
+
+console.log("\n🔗 Test A: Session result forwarding — sequential phase sees prior results...");
+{
+	const capturedArgs: Record<string, Record<string, unknown>> = {};
+
+	const executor = new Executor();
+	executor.setExecutorFn(async (serverName, args) => {
+		capturedArgs[serverName] = { ...args };
+		return {
+			success: true,
+			summary: `${serverName} complete`,
+			confidence: 90,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: `${serverName}-persona`,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const session = new Session(DEMO_IDENTITY);
+	const twoStepBundle: TaskBundle = {
+		name: "test_forward",
+		gatherStrategy: "all",
+		steps: [
+			{ toolName: "geowiz.analyze", args: {}, parallel: false },
+			{ toolName: "econobot.analyze", args: {}, parallel: false, dependsOn: ["geowiz.analyze"] },
+		],
+	};
+
+	await executor.executeBundle(twoStepBundle, { tract: "forward-test" }, session);
+
+	// Session stored both results
+	assert(session.getResult("geowiz.analyze") !== undefined, "Session stored geowiz result");
+	assert(session.getResult("econobot.analyze") !== undefined, "Session stored econobot result");
+	assert(session.availableResults.includes("geowiz.analyze"), "availableResults includes geowiz");
+
+	// Step 2 received _context with step 1 in availableResults
+	const econobotContext = capturedArgs.econobot as Record<string, unknown> | undefined;
+	const ctx = econobotContext?._context as Record<string, unknown> | undefined;
+	assert(ctx !== undefined, "econobot received _context in args");
+	const available = ctx?.availableResults as string[] | undefined;
+	assert(
+		Array.isArray(available) && available.includes("geowiz.analyze"),
+		"_context.availableResults contains geowiz.analyze",
+	);
+}
+
+// ==========================================
+// Test B: Session result forwarding — parallel phase stores all results
+// ==========================================
+
+console.log("\n🔗 Test B: Session result forwarding — parallel phase stores all results...");
+{
+	const executor = new Executor();
+	executor.setExecutorFn(mockExecutorFn());
+
+	const session = new Session(DEMO_IDENTITY);
+	await executor.executeBundle(QUICK_SCREEN_BUNDLE, {}, session);
+
+	const expectedTools = ["geowiz.analyze", "econobot.analyze", "curve-smith.analyze", "risk-analysis.analyze"];
+	for (const tool of expectedTools) {
+		assert(session.getResult(tool) !== undefined, `Session stored result for ${tool}`);
+	}
+	assert(
+		session.availableResults.length === 4,
+		`Session has 4 stored results (got ${session.availableResults.length})`,
+	);
+}
+
+// ==========================================
+// Test C: Context injection — _context shape in step args
+// ==========================================
+
+console.log("\n🔗 Test C: Context injection — _context has sessionId and availableResults...");
+{
+	const capturedArgs: Record<string, Record<string, unknown>> = {};
+
+	const executor = new Executor();
+	executor.setExecutorFn(async (serverName, args) => {
+		capturedArgs[serverName] = { ...args };
+		return {
+			success: true,
+			summary: `${serverName} complete`,
+			confidence: 90,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: {
+				server: serverName,
+				persona: `${serverName}-persona`,
+				executionTimeMs: 5,
+				timestamp: new Date().toISOString(),
+			},
+		};
+	});
+
+	const session = new Session(DEMO_IDENTITY);
+	const twoStepBundle: TaskBundle = {
+		name: "test_context_shape",
+		gatherStrategy: "all",
+		steps: [
+			{ toolName: "geowiz.analyze", args: {}, parallel: false },
+			{ toolName: "econobot.analyze", args: {}, parallel: false, dependsOn: ["geowiz.analyze"] },
+		],
+	};
+
+	await executor.executeBundle(twoStepBundle, {}, session);
+
+	const ctx = (capturedArgs.econobot as Record<string, unknown>)?._context as Record<string, unknown> | undefined;
+	assert(ctx !== undefined, "econobot received _context");
+	assert(typeof ctx?.sessionId === "string" && ctx.sessionId.length > 0, "_context.sessionId is a non-empty string");
+	assert(typeof ctx?.role === "string", "_context.role is present");
+	assert(Array.isArray(ctx?.availableResults), "_context.availableResults is an array");
+}
+
+// ==========================================
+// Test D: BundleStep.condition — step skipped when condition returns false
+// ==========================================
+
+console.log("\n🔀 Test D: BundleStep.condition — step skipped when condition is false...");
+{
+	const executor = new Executor();
+	executor.setExecutorFn(mockExecutorFn());
+
+	const conditionalBundle: TaskBundle = {
+		name: "test_condition_skip",
+		gatherStrategy: "all",
+		steps: [
+			{ toolName: "geowiz.analyze", args: {}, parallel: false },
+			{
+				toolName: "econobot.analyze",
+				args: {},
+				parallel: false,
+				condition: () => false,
+			},
+		],
+	};
+
+	const result = await executor.executeBundle(conditionalBundle);
+
+	assert(result.results.has("geowiz.analyze"), "geowiz ran normally");
+	assert(!result.results.has("econobot.analyze"), "econobot was skipped (condition false)");
+	assert(result.completeness === 100, `Completeness is 100% — skipped step excluded (got ${result.completeness})`);
+	assert(result.overallSuccess === true, "Bundle succeeds despite skipped step");
+}
+
+// ==========================================
+// Test E: BundleStep.condition — step runs when condition returns true
+// ==========================================
+
+console.log("\n🔀 Test E: BundleStep.condition — step runs when condition is satisfied...");
+{
+	const executor = new Executor();
+	executor.setExecutorFn(mockExecutorFn());
+
+	const conditionalBundle: TaskBundle = {
+		name: "test_condition_pass",
+		gatherStrategy: "all",
+		steps: [
+			{ toolName: "geowiz.analyze", args: {}, parallel: false },
+			{
+				toolName: "econobot.analyze",
+				args: {},
+				parallel: false,
+				dependsOn: ["geowiz.analyze"],
+				condition: (priorResults) => priorResults.has("geowiz.analyze"),
+			},
+		],
+	};
+
+	const result = await executor.executeBundle(conditionalBundle);
+
+	assert(result.results.has("geowiz.analyze"), "geowiz ran");
+	assert(result.results.has("econobot.analyze"), "econobot ran — condition was satisfied");
+	assert(result.completeness === 100, `Both steps completed — completeness 100% (got ${result.completeness})`);
+}
+
+// ==========================================
+// Test F: BundleStep.condition — conditional skip in parallel phase
+// ==========================================
+
+console.log("\n🔀 Test F: BundleStep.condition — parallel step skipped when prior result absent...");
+{
+	const executor = new Executor();
+	executor.setExecutorFn(mockExecutorFn());
+
+	// 3 parallel steps in phase 1 — one is gated on a result that doesn't exist yet
+	const conditionalParallelBundle: TaskBundle = {
+		name: "test_parallel_condition",
+		gatherStrategy: "all",
+		steps: [
+			{ toolName: "geowiz.analyze", args: {}, parallel: true },
+			{ toolName: "curve-smith.analyze", args: {}, parallel: true },
+			{
+				toolName: "econobot.analyze",
+				args: {},
+				parallel: true,
+				// allResults is empty at parallel phase start — this will never be satisfied
+				condition: (priorResults) => priorResults.has("nonexistent.step"),
+			},
+		],
+	};
+
+	const result = await executor.executeBundle(conditionalParallelBundle);
+
+	assert(result.results.has("geowiz.analyze"), "geowiz ran in parallel phase");
+	assert(result.results.has("curve-smith.analyze"), "curve-smith ran in parallel phase");
+	assert(!result.results.has("econobot.analyze"), "econobot was skipped (condition unsatisfied at parallel start)");
+	assert(result.completeness === 100, `Completeness 100% — skipped step excluded (got ${result.completeness})`);
+}
+
+// ==========================================
+// Test G: Response marshaling round-trip
+// ==========================================
+
+console.log("\n📦 Test G: Response marshaling — ToolResponse fields preserved through session store/retrieve...");
+{
+	const session = new Session(DEMO_IDENTITY);
+	const original: ToolResponse = {
+		success: true,
+		summary: "Geological analysis complete",
+		confidence: 92,
+		data: { formation: "Wolfcamp", depth: 8500, porosity: 0.12 },
+		detailLevel: "full",
+		completeness: 100,
+		metadata: {
+			server: "geowiz",
+			persona: "Marcus Aurelius Geologicus",
+			executionTimeMs: 42,
+			timestamp: "2026-03-30T12:00:00.000Z",
+		},
+	};
+
+	session.storeResult("geowiz.analyze", original);
+	const retrieved = session.getResult("geowiz.analyze");
+
+	assert(retrieved !== undefined, "Retrieved result is defined");
+	assert(retrieved?.success === original.success, "success field preserved");
+	assert(retrieved?.summary === original.summary, "summary field preserved");
+	assert(retrieved?.confidence === original.confidence, "confidence field preserved");
+	assert(retrieved?.detailLevel === original.detailLevel, "detailLevel field preserved");
+	assert(retrieved?.completeness === original.completeness, "completeness field preserved");
+	assert((retrieved?.data as Record<string, unknown>)?.formation === "Wolfcamp", "data payload preserved");
+	assert(retrieved?.metadata.server === "geowiz", "metadata.server preserved");
+	assert(retrieved?.metadata.persona === "Marcus Aurelius Geologicus", "metadata.persona preserved");
+	assert(retrieved?.metadata.executionTimeMs === 42, "metadata.executionTimeMs preserved");
+	assert(retrieved?.metadata.timestamp === "2026-03-30T12:00:00.000Z", "metadata.timestamp preserved");
+}
+
+// ==========================================
+// Test H: shouldWeInvest() — decision.analyze in results exactly once
+// ==========================================
+
+console.log("\n⚖️ Test H: shouldWeInvest() — decision.analyze present once via confirmation gate...");
+{
+	const kernel = new Kernel();
+	kernel.setExecutorFn(mockExecutorFn());
+
+	const result = await kernel.shouldWeInvest({ tract: "investment-test" });
+
+	assert(result.bundleName === "full_due_diligence", "Bundle name is full_due_diligence");
+	assert(result.results.has("decision.analyze"), "decision.analyze is present in results");
+
+	// decision.analyze goes through the confirmation gate, which returns requires_confirmation: true
+	// without actually executing the tool — it is then added to results.set() by shouldWeInvest()
+	const decisionResult = result.results.get("decision.analyze");
+	assert(decisionResult !== undefined, "decision result is defined");
+	const decisionData = decisionResult?.data as Record<string, unknown> | null | undefined;
+	assert(
+		decisionData?.requires_confirmation === true,
+		"decision result has requires_confirmation: true (pending gate)",
+	);
+
+	// Verify total result count: 13 bundle steps + 1 decision = 14
+	assert(result.results.size === 14, `Result map has 14 entries (13 bundle + 1 decision), got ${result.results.size}`);
 }
 
 // ==========================================

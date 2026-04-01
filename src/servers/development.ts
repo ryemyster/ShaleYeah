@@ -119,24 +119,25 @@ const developmentTemplate: ServerTemplate = {
 					project: args.projectId,
 					period: args.reportingPeriod,
 					performance: {
+						// Stub: representative healthy project — replace with real project management data
 						schedule: {
-							status: Math.random() > 0.3 ? "On track" : "Behind schedule",
-							variance: Math.round((Math.random() - 0.5) * 20),
-							criticalIssues: Math.random() > 0.7 ? ["Weather delays"] : [],
+							status: "On track", // stub — replace with project schedule data
+							variance: 3, // stub: 3 days ahead — replace with actual vs planned dates
+							criticalIssues: [], // stub — replace with open issue tracking
 						},
 						budget: {
-							status: Math.random() > 0.2 ? "Within budget" : "Over budget",
-							variance: Math.round((Math.random() - 0.5) * 15),
-							majorVariances: Math.random() > 0.8 ? ["Equipment costs"] : [],
+							status: "Within budget", // stub — replace with AFE tracking data
+							variance: 2, // stub: 2% under — replace with actual vs AFE
+							majorVariances: [], // stub — replace with variance analysis
 						},
 						safety: {
-							incidents: Math.floor(Math.random() * 3),
-							daysWithoutIncident: Math.floor(Math.random() * 90),
+							incidents: 0, // stub: zero incidents — replace with safety management system
+							daysWithoutIncident: 45, // stub: 45 days — replace with actual safety log
 							complianceStatus: "Full compliance",
 						},
 						quality: {
-							wellSuccess: Math.round((0.85 + Math.random() * 0.1) * 100),
-							reworkRequired: Math.floor(Math.random() * 2),
+							wellSuccess: 92, // stub: 92% — replace with actual well completion results
+							reworkRequired: 0, // stub — replace with QC tracking data
 							standards: "Meeting all specifications",
 						},
 					},

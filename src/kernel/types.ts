@@ -308,6 +308,12 @@ export interface BundleStep {
 	dependsOn?: string[];
 	/** Override detail level for this step */
 	detailLevel?: DetailLevel;
+	/**
+	 * Optional guard evaluated before execution.
+	 * Receives the map of all prior completed results.
+	 * Return false to skip this step (treated as neither success nor failure).
+	 */
+	condition?: (priorResults: Map<string, ToolResponse>) => boolean;
 }
 
 /** Result of scatter-gather parallel execution */

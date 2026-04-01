@@ -9,7 +9,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface EconomicAnalysis {
@@ -338,13 +338,13 @@ function generateRecommendation(npv: number, irr: number, confidence: number): s
 
 function generateDefaultAnalysis(): EconomicAnalysis {
 	return {
-		npv: Math.round((Math.random() * 5 + 2) * 1000000),
-		irr: Math.round((Math.random() * 0.2 + 0.15) * 10000) / 100,
-		paybackMonths: Math.floor(Math.random() * 12 + 8),
-		roiMultiple: Math.round((Math.random() * 2 + 2) * 100) / 100,
+		npv: 4500000, // stub: mid-range $4.5M — replace with DCF from real inputs
+		irr: 22.5, // stub: 22.5% — replace with Newton-Raphson from cash flows
+		paybackMonths: 14, // stub: 14 months — replace with cumulative cash flow calc
+		roiMultiple: 3.0, // stub: 3x — replace with total return / invested capital
 		breakeven: {
-			oilPrice: Math.round((Math.random() * 20 + 45) * 100) / 100,
-			gasPrice: Math.round((Math.random() * 1.5 + 2.5) * 100) / 100,
+			oilPrice: 55.0, // stub: $55/bbl — replace with cost-stack analysis
+			gasPrice: 3.25, // stub: $3.25/mcf — replace with cost-stack analysis
 		},
 		confidence: ServerUtils.calculateConfidence(0.6, 0.8),
 		recommendation: "CONDITIONAL",
@@ -389,8 +389,13 @@ function performSensitivityAnalysis(args: any): any {
 	const baseCase = args.baseCase;
 	const scenarios = generateScenarios(baseCase, args.ranges, args.scenarios);
 
-	const npvs = scenarios.map(() => Math.random() * 10000000);
-	const irrs = scenarios.map(() => Math.random() * 0.5);
+	const npvs = scenarios.map(
+		(s: { oilPrice: number; gasPrice: number }) =>
+			s.oilPrice * 100000 - baseCase.costs.drilling - baseCase.costs.completion,
+	);
+	const irrs = scenarios.map((s: { oilPrice: number; gasPrice: number }) =>
+		Math.max(0, Math.min(0.5, (s.oilPrice - 45) / 100)),
+	);
 
 	return {
 		baseCase,
@@ -415,11 +420,10 @@ function generateScenarios(baseCase: any, ranges: any, count: number): any[] {
 
 	for (let i = 0; i < count; i++) {
 		const scenario = { ...baseCase };
-		const oilVariation = (Math.random() - 0.5) * 2 * ranges.oilPriceVariance;
-		scenario.oilPrice = baseCase.oilPrice * (1 + oilVariation);
-
-		const gasVariation = (Math.random() - 0.5) * 2 * ranges.gasPriceVariance;
-		scenario.gasPrice = baseCase.gasPrice * (1 + gasVariation);
+		// Deterministic variation: evenly spaced across the variance range
+		const t = count === 1 ? 0 : (i / (count - 1)) * 2 - 1; // -1 to +1
+		scenario.oilPrice = baseCase.oilPrice * (1 + t * ranges.oilPriceVariance);
+		scenario.gasPrice = baseCase.gasPrice * (1 + t * ranges.gasPriceVariance);
 
 		scenarios.push(scenario);
 	}
@@ -443,6 +447,6 @@ export default EconobotServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (EconobotServer as any)();
+	const server = new (EconobotServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }

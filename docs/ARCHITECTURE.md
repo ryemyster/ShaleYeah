@@ -6,9 +6,10 @@ This document explains the technical architecture of SHALE YEAH for developers a
 
 SHALE YEAH is an **Agent OS** for oil and gas investment analysis. At its core is a **kernel** that routes all execution through **14 MCP domain servers**, providing tool discovery, parallel scatter-gather execution, session management, and a middleware pipeline (auth, audit, resilience, output shaping).
 
-Both demo and production modes run through the same kernel-backed pipeline:
-- **Demo** (`npm run demo`) — Mock data, no API keys, ~6s execution via kernel
-- **Production** (`npm run prod`) — Real data + Anthropic API via kernel
+Both modes share the same kernel layer (registry, executor, sessions, middleware), but diverge at server execution:
+
+- **Demo** (`npm run demo`) — `mcp-client.ts` returns fixture data immediately without calling server processes; deterministic, no API keys, ~6s
+- **Production** (`npm run prod`) — Kernel spawns real MCP server processes via stdio, calls actual tool handlers with real data and Anthropic API
 
 ```mermaid
 graph TB
@@ -95,6 +96,48 @@ Full Due Diligence (4+ phases):
   Phase 3:  test                                               (depends on P2)
   Phase 4:  reporter → decision                                (sequential, depends on P3)
 ```
+
+### Agent OS Data Flow — Phase-to-Phase Result Forwarding
+
+Each bundle phase is both a **consumer and producer**. After a step succeeds, its `ToolResponse` is stored in the session via `storeResult(toolName, response)`. Downstream steps receive a fresh context snapshot via `getInjectedContext()`, which includes `availableResults: string[]` — the names of all results stored so far. This snapshot is injected into every step's args as `_context`.
+
+**Sequential phases** recompute context per step so each step sees everything stored by prior steps in the same phase. **Parallel phases** compute context once before scatter-gather (all steps launch simultaneously, so they share the same snapshot).
+
+```
+Phase 1 (parallel): geowiz, econobot, curve-smith  →  storeResult() × 3
+                                                              │
+                                              session.availableResults:
+                                                ["geowiz.analyze",
+                                                 "econobot.analyze",
+                                                 "curve-smith.analyze"]
+                                                              │
+Phase 2 (sequential, each step gets fresh snapshot):
+  risk-analysis  ← _context.availableResults = ["geowiz.analyze", "econobot.analyze", "curve-smith.analyze"]
+  reporter       ← _context.availableResults = [..., "risk-analysis.analyze"]
+  decision       ← _context.availableResults = [..., "reporter.analyze"]
+```
+
+### Conditional Execution (`BundleStep.condition`)
+
+Steps can declare an optional `condition` predicate that receives all prior completed results:
+
+```typescript
+condition?: (priorResults: Map<string, ToolResponse>) => boolean;
+```
+
+If `condition` returns `false`, the step is skipped and **excluded from the completeness calculation** — skipping a required step does not penalize the bundle score. This enables branching workflows where later steps only run if earlier steps produced usable results.
+
+```typescript
+// Example: only run econobot if geowiz succeeded
+{
+  toolName: "econobot.analyze",
+  condition: (prior) => prior.get("geowiz.analyze")?.success === true,
+}
+```
+
+### `shouldWeInvest()` — Confirmation Gate Split
+
+`shouldWeInvest()` runs the 13 non-decision steps as a standard bundle, then routes `decision.analyze` through the confirmation gate separately. This prevents double-execution: the confirmation gate returns `requires_confirmation: true` without calling the tool — the agent must explicitly call `confirmAction(actionId)` to proceed. The pending decision result is added to `result.results` immediately so callers can inspect it and act on the confirmation ID.
 
 ### Pre-Built Bundles
 

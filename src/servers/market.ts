@@ -37,8 +37,9 @@ const marketTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const baseOilPrice = 75 + (Math.random() - 0.5) * 20;
-				const baseGasPrice = 3.5 + (Math.random() - 0.5) * 1.5;
+				// Stub: representative mid-cycle pricing — replace with EIA API data
+				const baseOilPrice = 75.0; // stub: $75/bbl WTI
+				const baseGasPrice = 3.5; // stub: $3.50/mcf Henry Hub
 
 				const analysis = {
 					market: {
@@ -51,17 +52,17 @@ const marketTemplate: ServerTemplate = {
 						oil:
 							args.commodity !== "gas"
 								? {
-										price: Math.round(baseOilPrice * 100) / 100,
-										trend: Math.random() > 0.5 ? "bullish" : "bearish",
-										volatility: Math.round((Math.random() * 0.3 + 0.1) * 100) / 100,
+										price: baseOilPrice,
+										trend: "neutral", // stub — replace with EIA trend data
+										volatility: 0.18, // stub: 18% annualized vol — replace with realized vol calc
 									}
 								: undefined,
 						gas:
 							args.commodity !== "oil"
 								? {
-										price: Math.round(baseGasPrice * 100) / 100,
-										trend: Math.random() > 0.5 ? "bullish" : "bearish",
-										volatility: Math.round((Math.random() * 0.4 + 0.15) * 100) / 100,
+										price: baseGasPrice,
+										trend: "neutral", // stub — replace with EIA trend data
+										volatility: 0.22, // stub: 22% annualized vol — replace with realized vol calc
 									}
 								: undefined,
 					},
@@ -98,13 +99,14 @@ const marketTemplate: ServerTemplate = {
 			async (args) => {
 				const analysis = {
 					market: args.market,
+					// Stub: representative competitor profile — replace with real operator database
 					competitors: args.competitors.map((comp: string) => ({
 						name: comp,
-						marketShare: Math.round(Math.random() * 25 * 100) / 100,
-						production: Math.round(Math.random() * 50000),
-						avgCosts: Math.round((30 + Math.random() * 40) * 100) / 100,
-						strategy: ["growth", "optimization", "consolidation"][Math.floor(Math.random() * 3)],
-						strengths: ["operational efficiency", "technology", "portfolio"][Math.floor(Math.random() * 3)],
+						marketShare: 15.0, // stub: 15% — replace with production data lookup
+						production: 25000, // stub: 25,000 BOE/d — replace with operator data
+						avgCosts: 22.5, // stub: $22.50/BOE — replace with public filing data
+						strategy: "optimization", // stub — replace with operator activity analysis
+						strengths: "operational efficiency", // stub — replace with operator analysis
 					})),
 					landscape: {
 						concentration: "Moderately concentrated",

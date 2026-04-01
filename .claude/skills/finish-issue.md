@@ -8,7 +8,7 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
 ## Steps
 
-1. **Pre-commit checks** — Run `/pre-commit`. Stop if anything fails.
+1. **Pre-commit checks** — Run `/pre-commit`. Stop if anything fails. This includes `npm run type-check` — fix any type errors before proceeding.
 
 2. **CHANGELOG.md** — Add an entry under `[Unreleased]` describing the change. Use the format:
    ```
@@ -31,5 +31,7 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
    PR body should include: Summary bullets, Test plan checklist, closes #<issue-number>.
 
 6. **Close issue** — The PR closing via `closes #<number>` in the body handles this automatically when merged. Confirm the PR URL.
+
+7. **Compact context** — After confirming the PR URL, run `/compact <focused instructions for next phase>` to reset context.
 
 Report the PR URL when done.
