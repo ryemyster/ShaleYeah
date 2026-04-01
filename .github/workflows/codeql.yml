@@ -1,5 +1,9 @@
 name: CodeQL Security Analysis
-on: [push, pull_request, schedule]
+on:
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 3 * * 1'  # weekly Monday 3am UTC
 jobs:
   analyze:
     runs-on: ubuntu-latest
