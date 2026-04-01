@@ -380,6 +380,12 @@ export interface KernelConfig {
 			/** Max probe attempts in half-open before re-opening (default: 1) */
 			halfOpenMaxAttempts: number;
 		};
+		healthCheck?: {
+			/** Ms between probeAll() cycles (default: 60_000) */
+			intervalMs: number;
+			/** Ms before an individual probe is abandoned and counted as "down" (default: 5_000) */
+			probeTimeoutMs: number;
+		};
 	};
 }
 

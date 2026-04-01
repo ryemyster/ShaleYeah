@@ -26,6 +26,7 @@ import type { Session } from "./context.js";
 import { DEMO_IDENTITY, SessionManager } from "./context.js";
 import type { ToolExecutorFn } from "./executor.js";
 import { Executor } from "./executor.js";
+import { HealthMonitor, type HealthStatus, type ProbeFn } from "./health-monitor.js";
 import { AuditMiddleware } from "./middleware/audit.js";
 import { AuthMiddleware } from "./middleware/auth.js";
 import { CircuitBreaker } from "./middleware/circuit-breaker.js";
@@ -77,6 +78,7 @@ export class Kernel {
 	public readonly auth: AuthMiddleware;
 	public readonly audit: AuditMiddleware;
 	public readonly config: KernelConfig;
+	public readonly healthMonitor: HealthMonitor;
 	private _initialized = false;
 
 	constructor(config?: Partial<KernelConfig>) {
@@ -102,6 +104,11 @@ export class Kernel {
 			enabled: this.config.security.auditEnabled,
 			auditPath: this.config.security.auditPath,
 		});
+
+		// Health monitor — probe function defaults to a no-op stub;
+		// callers supply a real probe via startHealthMonitor().
+		const hcConfig = this.config.resilience.healthCheck;
+		this.healthMonitor = new HealthMonitor(this.registry, async () => "up", hcConfig);
 	}
 
 	/**
@@ -312,6 +319,29 @@ export class Kernel {
 		return this.registry.getCircuitState(serverName);
 	}
 
+	/**
+	 * Get the current health monitor status for a server.
+	 * Returns "unknown" until the first probe has run.
+	 */
+	getServerHealth(serverName: string): HealthStatus {
+		return this.healthMonitor.getStatus(serverName);
+	}
+
+	/**
+	 * Start periodic health probing with a real probe function.
+	 * The probeFn receives a server name and should return "up" | "down".
+	 * Call stop() on the returned HealthMonitor (or kernel.healthMonitor.stop())
+	 * to halt probing.
+	 */
+	startHealthMonitor(probeFn: ProbeFn): void {
+		this.healthMonitor.stop(); // stop default no-op monitor if running
+		const hcConfig = this.config.resilience.healthCheck;
+		const fresh = new HealthMonitor(this.registry, probeFn, hcConfig);
+		// Replace the instance backing getServerHealth — assign via cast to bypass readonly
+		(this as { healthMonitor: HealthMonitor }).healthMonitor = fresh;
+		fresh.start();
+	}
+
 	// ==========================================
 	// Composition — High-Level Tools (Arcade: Abstraction Ladder + Confirmation Request)
 	// ==========================================
@@ -459,6 +489,8 @@ export {
 export { DEMO_IDENTITY, Session, SessionManager } from "./context.js";
 export type { PendingAction, ToolExecutorFn } from "./executor.js";
 export { Executor } from "./executor.js";
+export type { HealthMonitorConfig, HealthStatus, ProbeFn } from "./health-monitor.js";
+export { HealthMonitor } from "./health-monitor.js";
 export { AuditMiddleware } from "./middleware/audit.js";
 export { AuthMiddleware, ROLE_PERMISSIONS } from "./middleware/auth.js";
 export { CircuitBreaker } from "./middleware/circuit-breaker.js";
