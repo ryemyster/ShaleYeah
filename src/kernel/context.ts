@@ -82,15 +82,17 @@ export class FileSessionStorage implements SessionStorageBackend {
 	}
 
 	/**
-	 * Build the file path for a session and verify it stays within this.dir.
-	 * Throws if the resolved path would escape the storage directory.
+	 * Build the file path for a session ID.
+	 * Validates that the ID is a standard UUID (hex + dashes only) before
+	 * using it in a path — this breaks any taint from user-controlled input
+	 * and prevents path traversal.
 	 */
 	private filePath(id: string): string {
-		const resolved = resolve(join(this.dir, `${id}.json`));
-		if (!resolved.startsWith(`${this.dir}/`) && resolved !== this.dir) {
-			throw new Error(`Invalid session id — path escapes storage directory: ${id}`);
+		const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+		if (!UUID_RE.test(id)) {
+			throw new Error(`Invalid session id — must be a UUID: ${id}`);
 		}
-		return resolved;
+		return join(this.dir, `${id}.json`);
 	}
 
 	async save(session: Session): Promise<void> {

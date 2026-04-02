@@ -79,7 +79,7 @@ async function runTests(): Promise<void> {
 	await test("FileSessionStorage: load() returns undefined for unknown id", async () => {
 		const dir = makeTempDir();
 		const storage = new FileSessionStorage(dir);
-		const result = await storage.load("nonexistent-id");
+		const result = await storage.load("00000000-0000-0000-0000-000000000000");
 		assert.strictEqual(result, undefined);
 		rmSync(dir, { recursive: true });
 	});
