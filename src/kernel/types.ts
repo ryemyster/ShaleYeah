@@ -389,6 +389,11 @@ export interface KernelConfig {
 			probeTimeoutMs: number;
 		};
 	};
+	/** Session persistence configuration (optional) */
+	sessionStorage?: {
+		/** Directory for file-based session storage */
+		path: string;
+	};
 }
 
 /** Default kernel configuration */
