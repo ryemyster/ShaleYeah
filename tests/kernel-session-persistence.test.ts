@@ -20,8 +20,7 @@
 import assert from "node:assert";
 import { randomUUID } from "node:crypto";
 import { mkdirSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { FileSessionStorage, SessionManager } from "../src/kernel/context.js";
 import type { UserIdentity } from "../src/kernel/types.js";
 
@@ -50,8 +49,12 @@ const TEST_IDENTITY: UserIdentity = {
 	displayName: "Test User",
 };
 
+// Use a project-local temp directory to avoid CodeQL's js/insecure-temporary-file
+// rule, which flags files written under os.tmpdir().
+const TEST_TEMP_BASE = resolve(join("tests", "temp", "session-persistence"));
+
 function makeTempDir(): string {
-	const dir = join(tmpdir(), `shale-sessions-${randomUUID()}`);
+	const dir = join(TEST_TEMP_BASE, randomUUID());
 	mkdirSync(dir, { recursive: true });
 	return dir;
 }
@@ -147,14 +150,14 @@ async function runTests(): Promise<void> {
 	});
 
 	await test("FileSessionStorage: creates storage directory if it does not exist", async () => {
-		const dir = join(tmpdir(), `shale-sessions-new-${randomUUID()}`, "nested");
+		const dir = join(TEST_TEMP_BASE, randomUUID(), "nested");
 		const storage = new FileSessionStorage(dir);
 		const mgr = new SessionManager();
 		const session = mgr.createSession(TEST_IDENTITY);
 		await storage.save(session);
 		const loaded = await storage.load(session.id);
 		assert.ok(loaded, "Expected session to be saved even when dir didn't exist");
-		rmSync(join(tmpdir(), dir.split("/").at(-2)!), { recursive: true });
+		rmSync(join(TEST_TEMP_BASE, dir.split("/").at(-2)!), { recursive: true });
 	});
 
 	// ---------------------------------------------------------------------------
