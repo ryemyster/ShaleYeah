@@ -17,7 +17,7 @@
 
 import { randomUUID } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import type { InjectedContext, Permission, SessionInfo, ToolResponse, UserIdentity, UserPreferences } from "./types.js";
 
 // ==========================================
@@ -72,15 +72,25 @@ export class FileSessionStorage implements SessionStorageBackend {
 	private readonly dir: string;
 
 	constructor(dir: string) {
-		this.dir = dir;
+		// Resolve to an absolute path at construction time so all subsequent
+		// path operations are anchored to a known, canonical root.
+		this.dir = resolve(dir);
 	}
 
 	private ensureDir(): void {
 		mkdirSync(this.dir, { recursive: true });
 	}
 
+	/**
+	 * Build the file path for a session and verify it stays within this.dir.
+	 * Throws if the resolved path would escape the storage directory.
+	 */
 	private filePath(id: string): string {
-		return join(this.dir, `${id}.json`);
+		const resolved = resolve(join(this.dir, `${id}.json`));
+		if (!resolved.startsWith(`${this.dir}/`) && resolved !== this.dir) {
+			throw new Error(`Invalid session id — path escapes storage directory: ${id}`);
+		}
+		return resolved;
 	}
 
 	async save(session: Session): Promise<void> {
