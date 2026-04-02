@@ -95,6 +95,7 @@ export class Kernel {
 			toolTimeoutMs: this.config.execution.toolTimeoutMs,
 			maxRetries: this.config.resilience.maxRetries,
 			retryBackoffMs: this.config.resilience.retryBackoffMs,
+			cacheTtlMs: this.config.execution.idempotencyTtlMs,
 		});
 		this.executor.setCircuitBreaker(circuitBreaker);
 
@@ -342,6 +343,25 @@ export class Kernel {
 		fresh.start();
 	}
 
+	/**
+	 * Direct access to the result cache for observability (metrics, manual invalidation).
+	 */
+	get resultCache() {
+		return this.executor.resultCache;
+	}
+
+	/**
+	 * Invalidate a specific cache entry by idempotency key, or clear all entries.
+	 * Pass no argument (or undefined) to invalidate everything.
+	 */
+	invalidateCache(key?: string): void {
+		if (key !== undefined) {
+			this.executor.resultCache.invalidate(key);
+		} else {
+			this.executor.resultCache.invalidateAll();
+		}
+	}
+
 	// ==========================================
 	// Composition — High-Level Tools (Arcade: Abstraction Ladder + Confirmation Request)
 	// ==========================================
@@ -497,4 +517,6 @@ export { CircuitBreaker } from "./middleware/circuit-breaker.js";
 export { ResilienceMiddleware } from "./middleware/resilience.js";
 // Re-export for convenience
 export { Registry } from "./registry.js";
+export type { CacheMetrics, ResultCacheConfig } from "./result-cache.js";
+export { ResultCache } from "./result-cache.js";
 export * from "./types.js";
