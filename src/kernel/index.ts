@@ -23,7 +23,7 @@ import {
 	QUICK_SCREEN_BUNDLE,
 } from "./bundles.js";
 import type { Session } from "./context.js";
-import { DEMO_IDENTITY, SessionManager } from "./context.js";
+import { DEMO_IDENTITY, FileSessionStorage, SessionManager } from "./context.js";
 import type { ToolExecutorFn } from "./executor.js";
 import { Executor } from "./executor.js";
 import { HealthMonitor, type HealthStatus, type ProbeFn } from "./health-monitor.js";
@@ -99,7 +99,10 @@ export class Kernel {
 		});
 		this.executor.setCircuitBreaker(circuitBreaker);
 
-		this.sessions = new SessionManager();
+		const storageBackend = this.config.sessionStorage
+			? new FileSessionStorage(this.config.sessionStorage.path)
+			: undefined;
+		this.sessions = new SessionManager(storageBackend);
 		this.auth = new AuthMiddleware(this.config.security.requireAuth);
 		this.audit = new AuditMiddleware({
 			enabled: this.config.security.auditEnabled,
@@ -497,6 +500,15 @@ export class Kernel {
 	destroySession(sessionId: string): boolean {
 		return this.sessions.destroySession(sessionId);
 	}
+
+	/**
+	 * Recover all sessions from the configured storage backend.
+	 * Call once at startup after initialize() when session persistence is enabled.
+	 * No-op if no storage backend is configured.
+	 */
+	async recoverSessions(): Promise<void> {
+		await this.sessions.recoverSessions();
+	}
 }
 
 export {
@@ -506,7 +518,8 @@ export {
 	GEOLOGICAL_DEEP_DIVE_BUNDLE,
 	QUICK_SCREEN_BUNDLE,
 } from "./bundles.js";
-export { DEMO_IDENTITY, Session, SessionManager } from "./context.js";
+export type { SerializedSession, SessionStorageBackend } from "./context.js";
+export { DEMO_IDENTITY, FileSessionStorage, Session, SessionManager } from "./context.js";
 export type { PendingAction, ToolExecutorFn } from "./executor.js";
 export { Executor } from "./executor.js";
 export type { HealthMonitorConfig, HealthStatus, ProbeFn } from "./health-monitor.js";
