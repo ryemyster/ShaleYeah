@@ -12,6 +12,7 @@ import { createHash } from "node:crypto";
 import type { Session } from "./context.js";
 import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
+import { ResultCache } from "./result-cache.js";
 import type {
 	BundleResponse,
 	BundleStep,
@@ -53,6 +54,9 @@ export interface PendingAction {
 /** Tools that require explicit confirmation before execution */
 const CONFIRMATION_REQUIRED_TOOLS = new Set(["decision.make_recommendation", "decision.analyze"]);
 
+/** Servers whose responses must never be cached (command tools with side effects). */
+const NON_CACHEABLE_SERVERS = new Set(["reporter", "decision"]);
+
 export class Executor {
 	private executorFn: ToolExecutorFn | null = null;
 	private maxParallel: number;
@@ -62,18 +66,21 @@ export class Executor {
 	public readonly resilience: ResilienceMiddleware;
 	private pendingActions: Map<string, PendingAction> = new Map();
 	private circuitBreaker: CircuitBreaker | null = null;
+	public readonly resultCache: ResultCache;
 
 	constructor(options?: {
 		maxParallel?: number;
 		toolTimeoutMs?: number;
 		maxRetries?: number;
 		retryBackoffMs?: number;
+		cacheTtlMs?: number;
 	}) {
 		this.maxParallel = options?.maxParallel ?? 6;
 		this.toolTimeoutMs = options?.toolTimeoutMs ?? 30000;
 		this.maxRetries = options?.maxRetries ?? 0;
 		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
+		this.resultCache = new ResultCache({ ttlMs: options?.cacheTtlMs ?? 300_000 });
 	}
 
 	/**
@@ -105,6 +112,16 @@ export class Executor {
 		}
 
 		const serverName = request.toolName.split(".")[0];
+		const cacheable = !NON_CACHEABLE_SERVERS.has(serverName);
+
+		// Check result cache before executing (query tools only)
+		if (cacheable) {
+			const cacheKey = this.generateIdempotencyKey(request.toolName, request.args, request.sessionId);
+			const cached = this.resultCache.get(cacheKey);
+			if (cached) {
+				return { ...cached, metadata: { ...cached.metadata, fromCache: true } };
+			}
+		}
 
 		// Fast-fail if this server's circuit is open
 		if (this.circuitBreaker?.isOpen(serverName)) {
@@ -131,6 +148,11 @@ export class Executor {
 							retryAttempts: attempt,
 							totalRetryDelayMs: startMs - overallStartMs,
 						};
+					}
+					// Populate cache for query tools
+					if (cacheable) {
+						const cacheKey = this.generateIdempotencyKey(request.toolName, request.args, request.sessionId);
+						this.resultCache.set(cacheKey, result, true);
 					}
 					return result;
 				}

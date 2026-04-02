@@ -135,6 +135,8 @@ export interface ResponseMetadata {
 	timestamp: string;
 	retryAttempts?: number;
 	totalRetryDelayMs?: number;
+	/** True when this response was served from the result cache. */
+	fromCache?: boolean;
 }
 
 /** Classified error with recovery guidance (Arcade: Recovery Guide pattern) */
