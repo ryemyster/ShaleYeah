@@ -324,6 +324,8 @@ export interface GatheredResponse {
 	completeness: number;
 	totalTimeMs: number;
 	failures: FailureDetail[];
+	/** True when the operation was stopped early by a CancellationToken. */
+	cancelled?: boolean;
 }
 
 /** Detail about a failed tool in a gathered response */
@@ -341,6 +343,8 @@ export interface BundleResponse {
 	totalTimeMs: number;
 	phases: PhaseResult[];
 	overallSuccess: boolean;
+	/** True when the operation was stopped early by a CancellationToken. */
+	cancelled?: boolean;
 }
 
 /** Result of a single execution phase within a bundle */
@@ -350,6 +354,38 @@ export interface PhaseResult {
 	completeness: number;
 	timeMs: number;
 	failures: FailureDetail[];
+}
+
+// ==========================================
+// Cancellation (Arcade: Cancellation Token pattern)
+// ==========================================
+
+/**
+ * Lightweight cancellation token.
+ * Passed to execute / executeParallel / executeBundle to abort in-flight operations
+ * between logical checkpoints (before execution, between chunks, between phases).
+ * Operations that have already started are allowed to finish; the token stops the
+ * next unit of work from starting.
+ */
+export class CancellationToken {
+	private _cancelled = false;
+
+	/** True once cancel() has been called. */
+	get isCancelled(): boolean {
+		return this._cancelled;
+	}
+
+	/** Signal cancellation. Idempotent — safe to call multiple times. */
+	cancel(): void {
+		this._cancelled = true;
+	}
+
+	/** Throw an error if this token has been cancelled. */
+	throwIfCancelled(): void {
+		if (this._cancelled) {
+			throw new Error("Operation cancelled");
+		}
+	}
 }
 
 // ==========================================

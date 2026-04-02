@@ -23,7 +23,7 @@ import type {
 	ToolRequest,
 	ToolResponse,
 } from "./types.js";
-import { ErrorType } from "./types.js";
+import { type CancellationToken, ErrorType } from "./types.js";
 
 // ==========================================
 // Tool executor function type
@@ -101,8 +101,13 @@ export class Executor {
 	/**
 	 * Execute a single tool request with automatic retry for retryable errors.
 	 * Uses exponential backoff with jitter based on resilience delay recommendations.
+	 * Pass an optional CancellationToken to abort before execution starts.
 	 */
-	async execute(request: ToolRequest): Promise<ToolResponse> {
+	async execute(request: ToolRequest, token?: CancellationToken): Promise<ToolResponse> {
+		if (token?.isCancelled) {
+			return this.cancelledResponse(request.toolName);
+		}
+
 		if (!this.executorFn) {
 			return this.errorResponse(
 				request.toolName,
@@ -217,11 +222,24 @@ export class Executor {
 	/**
 	 * Execute multiple tool requests in parallel (scatter-gather).
 	 * Uses Promise.allSettled so individual failures don't block others.
+	 * Pass an optional CancellationToken to abort between chunks.
 	 */
-	async executeParallel(requests: ToolRequest[]): Promise<GatheredResponse> {
+	async executeParallel(requests: ToolRequest[], token?: CancellationToken): Promise<GatheredResponse> {
 		const startMs = Date.now();
 		const results = new Map<string, ToolResponse>();
 		const failures: FailureDetail[] = [];
+		let wasCancelled = false;
+
+		// Short-circuit if already cancelled
+		if (token?.isCancelled) {
+			return {
+				results,
+				completeness: 0,
+				totalTimeMs: 0,
+				failures,
+				cancelled: true,
+			};
+		}
 
 		// Pre-filter: fast-fail any requests whose server circuit is open
 		const activeRequests: ToolRequest[] = [];
@@ -242,6 +260,12 @@ export class Executor {
 		const chunks = this.chunk(activeRequests, this.maxParallel);
 
 		for (const chunk of chunks) {
+			// Check cancellation between chunks
+			if (token?.isCancelled) {
+				wasCancelled = true;
+				break;
+			}
+
 			const settled = await Promise.allSettled(chunk.map((req) => this.execute(req)));
 
 			for (let i = 0; i < settled.length; i++) {
@@ -291,6 +315,7 @@ export class Executor {
 			completeness,
 			totalTimeMs: Date.now() - startMs,
 			failures,
+			...(wasCancelled ? { cancelled: true } : {}),
 		};
 	}
 
@@ -299,22 +324,30 @@ export class Executor {
 	 * Steps are grouped into phases based on their dependency graph.
 	 * Results are stored in the session after each successful step so downstream
 	 * agents receive prior-phase outputs via _context.availableResults.
+	 * Pass an optional CancellationToken to stop between phases.
 	 */
 	async executeBundle(
 		bundle: TaskBundle,
 		tractArgs?: Record<string, unknown>,
 		session?: Session,
+		token?: CancellationToken,
 	): Promise<BundleResponse> {
 		const startMs = Date.now();
 		const allResults = new Map<string, ToolResponse>();
 		const phases: PhaseResult[] = [];
 		const completedSteps = new Set<string>();
 		const skippedSteps = new Set<string>();
+		let wasCancelled = false;
 
 		// Resolve execution phases from the dependency graph
 		const phaseGroups = this.resolvePhases(bundle.steps);
 
 		for (let phaseIdx = 0; phaseIdx < phaseGroups.length; phaseIdx++) {
+			// Check cancellation between phases
+			if (token?.isCancelled) {
+				wasCancelled = true;
+				break;
+			}
 			const phaseSteps = phaseGroups[phaseIdx];
 			const phaseStart = Date.now();
 			const phaseFailures: FailureDetail[] = [];
@@ -342,7 +375,7 @@ export class Executor {
 					detailLevel: step.detailLevel,
 				}));
 
-				const gathered = await this.executeParallel(requests);
+				const gathered = await this.executeParallel(requests, token);
 				for (const [name, resp] of gathered.results) {
 					allResults.set(name, resp);
 					if (resp.success) {
@@ -425,6 +458,7 @@ export class Executor {
 			totalTimeMs: Date.now() - startMs,
 			phases,
 			overallSuccess,
+			...(wasCancelled ? { cancelled: true } : {}),
 		};
 	}
 
@@ -585,6 +619,10 @@ export class Executor {
 			case "any":
 				return completedSteps > 0;
 		}
+	}
+
+	private cancelledResponse(toolName: string): ToolResponse {
+		return this.errorResponse(toolName, "Operation cancelled", ErrorType.PERMANENT);
 	}
 
 	private errorResponse(toolName: string, message: string, errorType: ErrorType): ToolResponse {
