@@ -398,7 +398,6 @@ const main = async () => {
 				metadata: {
 					fileSize: accessData.metadata.fileSize,
 					modifiedDate: accessData.metadata.modifiedDate,
-					hasPassword: accessData.metadata.hasPassword,
 				},
 			};
 			console.log(JSON.stringify(summary, null, 2));
