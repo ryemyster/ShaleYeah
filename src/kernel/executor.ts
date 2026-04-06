@@ -16,6 +16,7 @@ import { ResultCache } from "./result-cache.js";
 import type {
 	BundleResponse,
 	BundleStep,
+	ExecutionOptions,
 	FailureDetail,
 	GatheredResponse,
 	PhaseResult,
@@ -61,6 +62,7 @@ export class Executor {
 	private executorFn: ToolExecutorFn | null = null;
 	private maxParallel: number;
 	private toolTimeoutMs: number;
+	private serverTimeouts: Record<string, number>;
 	private maxRetries: number;
 	private retryBackoffMs: number;
 	public readonly resilience: ResilienceMiddleware;
@@ -71,12 +73,17 @@ export class Executor {
 	constructor(options?: {
 		maxParallel?: number;
 		toolTimeoutMs?: number;
+		/** Per-server timeout overrides. Key is server name (e.g. "econobot"). */
+		serverTimeouts?: Record<string, number>;
 		maxRetries?: number;
 		retryBackoffMs?: number;
 		cacheTtlMs?: number;
 	}) {
 		this.maxParallel = options?.maxParallel ?? 6;
-		this.toolTimeoutMs = options?.toolTimeoutMs ?? 30000;
+		// KERNEL_TIMEOUT_MS env var sets the default when no explicit option provided
+		const envTimeoutMs = process.env.KERNEL_TIMEOUT_MS ? Number(process.env.KERNEL_TIMEOUT_MS) : undefined;
+		this.toolTimeoutMs = options?.toolTimeoutMs ?? envTimeoutMs ?? 30000;
+		this.serverTimeouts = options?.serverTimeouts ?? {};
 		this.maxRetries = options?.maxRetries ?? 0;
 		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
@@ -139,12 +146,14 @@ export class Executor {
 
 		const overallStartMs = Date.now();
 		let lastResponse: ToolResponse | null = null;
+		// Use per-server timeout if configured, else fall back to global
+		const effectiveTimeoutMs = this.serverTimeouts[serverName] ?? this.toolTimeoutMs;
 
 		for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
 			const startMs = Date.now();
 
 			try {
-				const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
+				const result = await this.withTimeout(this.executorFn(serverName, request.args), effectiveTimeoutMs);
 				if (result.success) {
 					this.circuitBreaker?.record(serverName, true);
 					if (attempt > 0) {
@@ -223,12 +232,20 @@ export class Executor {
 	 * Execute multiple tool requests in parallel (scatter-gather).
 	 * Uses Promise.allSettled so individual failures don't block others.
 	 * Pass an optional CancellationToken to abort between chunks.
+	 * Pass ExecutionOptions.aggregateTimeoutMs to cap total wall-clock time.
 	 */
-	async executeParallel(requests: ToolRequest[], token?: CancellationToken): Promise<GatheredResponse> {
+	async executeParallel(
+		requests: ToolRequest[],
+		token?: CancellationToken,
+		options?: ExecutionOptions,
+	): Promise<GatheredResponse> {
 		const startMs = Date.now();
 		const results = new Map<string, ToolResponse>();
 		const failures: FailureDetail[] = [];
 		let wasCancelled = false;
+		let wasTimedOut = false;
+
+		const deadlineMs = options?.aggregateTimeoutMs ? startMs + options.aggregateTimeoutMs : undefined;
 
 		// Short-circuit if already cancelled
 		if (token?.isCancelled) {
@@ -263,6 +280,12 @@ export class Executor {
 			// Check cancellation between chunks
 			if (token?.isCancelled) {
 				wasCancelled = true;
+				break;
+			}
+
+			// Check aggregate deadline between chunks
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
 				break;
 			}
 
@@ -304,6 +327,12 @@ export class Executor {
 					});
 				}
 			}
+
+			// Post-chunk deadline check — stop before starting the next chunk
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
 		}
 
 		const totalRequested = requests.length;
@@ -316,6 +345,7 @@ export class Executor {
 			totalTimeMs: Date.now() - startMs,
 			failures,
 			...(wasCancelled ? { cancelled: true } : {}),
+			...(wasTimedOut ? { timedOut: true } : {}),
 		};
 	}
 
@@ -331,6 +361,7 @@ export class Executor {
 		tractArgs?: Record<string, unknown>,
 		session?: Session,
 		token?: CancellationToken,
+		options?: ExecutionOptions,
 	): Promise<BundleResponse> {
 		const startMs = Date.now();
 		const allResults = new Map<string, ToolResponse>();
@@ -338,6 +369,9 @@ export class Executor {
 		const completedSteps = new Set<string>();
 		const skippedSteps = new Set<string>();
 		let wasCancelled = false;
+		let wasTimedOut = false;
+
+		const deadlineMs = options?.aggregateTimeoutMs ? startMs + options.aggregateTimeoutMs : undefined;
 
 		// Resolve execution phases from the dependency graph
 		const phaseGroups = this.resolvePhases(bundle.steps);
@@ -346,6 +380,12 @@ export class Executor {
 			// Check cancellation between phases
 			if (token?.isCancelled) {
 				wasCancelled = true;
+				break;
+			}
+
+			// Check aggregate deadline between phases
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
 				break;
 			}
 			const phaseSteps = phaseGroups[phaseIdx];
@@ -436,6 +476,12 @@ export class Executor {
 				timeMs: Date.now() - phaseStart,
 				failures: phaseFailures,
 			});
+
+			// Post-phase deadline check — stop before starting the next phase
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
 		}
 
 		// Calculate overall completeness — skipped steps are excluded from required count
@@ -459,6 +505,7 @@ export class Executor {
 			phases,
 			overallSuccess,
 			...(wasCancelled ? { cancelled: true } : {}),
+			...(wasTimedOut ? { timedOut: true } : {}),
 		};
 	}
 
