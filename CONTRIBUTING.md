@@ -129,6 +129,56 @@ Test files follow the naming convention `tests/kernel-<module>.test.ts`. Key con
 - Test both success and failure paths
 - No network calls or external file I/O
 
+### Testing Standards — Anti-Stub Pattern
+
+Every server that calls the LLM **must** have three test types. These exist because servers
+were previously ghost-closed with hardcoded stubs while `npm run test` passed (#211–#217).
+
+See `tests/geowiz-anti-stub.test.ts` for the reference implementation.
+
+#### Type 1: Mock-SDK test — prove messages.create is called
+
+Set a syntactically valid but auth-invalid key; call `callLLM` (or the server's tool handler
+once wired); assert the error is a SDK auth/network error, not our missing-key guard.
+This proves the SDK was actually invoked.
+
+```typescript
+process.env.ANTHROPIC_API_KEY = "sk-ant-api03-fake-key-...";
+let err: Error | null = null;
+try { await callLLM({ prompt: "..." }); } catch (e) { err = e as Error; }
+assert.ok(err !== null);
+assert.ok(!err.message.includes("environment variable is not set")); // SDK was reached
+```
+
+#### Type 2: Determinism test — different inputs → different outputs
+
+Two different inputs must produce different outputs. Hardcoded returns fail this.
+
+```typescript
+const r1 = await performAnalysis({ filePath: "wolfcamp_b.las", formations: ["Wolfcamp B"] });
+const r2 = await performAnalysis({ filePath: "austin_chalk.las", formations: ["Austin Chalk"] });
+assert.notStrictEqual(r1.recommendation, r2.recommendation);
+```
+
+#### Type 3: Demo-fallback test — no key → fixture data, not a crash
+
+Without `ANTHROPIC_API_KEY`, the server must catch the `callLLM` error and return valid fixture data.
+
+```typescript
+delete process.env.ANTHROPIC_API_KEY;
+const result = await performAnalysis({ filePath: "test.las" });
+assert.ok(result.formations.length > 0); // fixture data returned, not a crash
+```
+
+#### Ghost-close guard
+
+Before closing any server issue, grep must confirm implementation exists:
+
+```bash
+grep -n "callLLM" src/servers/<name>.ts   # must return at least one result
+grep -rn "messages.create" tests/         # must return at least one result per server
+```
+
 ### Pre-commit Checklist
 
 Run the full validation suite before every commit:
