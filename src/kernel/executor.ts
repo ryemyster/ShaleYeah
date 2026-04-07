@@ -16,6 +16,7 @@ import { ResultCache } from "./result-cache.js";
 import type {
 	BundleResponse,
 	BundleStep,
+	DegradationManifest,
 	ExecutionOptions,
 	FailureDetail,
 	GatheredResponse,
@@ -339,6 +340,19 @@ export class Executor {
 		const succeeded = totalRequested - failures.length;
 		const completeness = totalRequested > 0 ? Math.round((succeeded / totalRequested) * 100) : 100;
 
+		const isDegraded = failures.length > 0;
+		const degradationManifest: DegradationManifest | undefined = isDegraded
+			? {
+					missingSections: failures.map((f) => f.toolName),
+					reasons: failures.map((f) => f.error.message),
+					completeness,
+				}
+			: undefined;
+
+		const minSuccessRatio = options?.minSuccessRatio;
+		const successRatio = totalRequested > 0 ? succeeded / totalRequested : 1;
+		const isOverallFailure = isDegraded && minSuccessRatio !== undefined && successRatio < minSuccessRatio;
+
 		return {
 			results,
 			completeness,
@@ -346,6 +360,8 @@ export class Executor {
 			failures,
 			...(wasCancelled ? { cancelled: true } : {}),
 			...(wasTimedOut ? { timedOut: true } : {}),
+			...(isDegraded ? { degraded: true, degradationManifest } : {}),
+			...(isOverallFailure ? { overallFailure: true } : {}),
 		};
 	}
 
@@ -497,6 +513,17 @@ export class Executor {
 			requiredCompleted,
 		);
 
+		// Collect all failures across phases for the degradation manifest
+		const allFailures = phases.flatMap((p) => p.failures);
+		const isDegraded = allFailures.length > 0;
+		const degradationManifest: DegradationManifest | undefined = isDegraded
+			? {
+					missingSections: allFailures.map((f) => f.toolName),
+					reasons: allFailures.map((f) => f.error.message),
+					completeness,
+				}
+			: undefined;
+
 		return {
 			bundleName: bundle.name,
 			results: allResults,
@@ -506,6 +533,7 @@ export class Executor {
 			overallSuccess,
 			...(wasCancelled ? { cancelled: true } : {}),
 			...(wasTimedOut ? { timedOut: true } : {}),
+			...(isDegraded ? { degraded: true, degradationManifest } : {}),
 		};
 	}
 

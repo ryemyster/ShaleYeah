@@ -318,11 +318,25 @@ export interface BundleStep {
 	condition?: (priorResults: Map<string, ToolResponse>) => boolean;
 }
 
+/** Manifest describing what is missing in a degraded response. */
+export interface DegradationManifest {
+	/** Tool names that failed or were not executed. */
+	missingSections: string[];
+	/** Human-readable failure reasons (one per missing section). */
+	reasons: string[];
+	/** Completeness percentage (0–100) based on successful results. */
+	completeness: number;
+}
+
 /** Options for a single executeParallel or executeBundle call. */
 export interface ExecutionOptions {
 	/** Wall-clock deadline for the entire operation. When exceeded, returns
 	 *  completed results so far with timedOut: true. */
 	aggregateTimeoutMs?: number;
+	/** Minimum ratio (0–1) of tools that must succeed for the result to be
+	 *  considered non-failure. Defaults to 0 (any partial result is acceptable).
+	 *  When the success ratio falls below this threshold, overallFailure is set. */
+	minSuccessRatio?: number;
 }
 
 /** Result of scatter-gather parallel execution */
@@ -335,6 +349,12 @@ export interface GatheredResponse {
 	cancelled?: boolean;
 	/** True when the aggregate timeout fired before all requests completed. */
 	timedOut?: boolean;
+	/** True when some tools failed but the operation returned partial results. */
+	degraded?: boolean;
+	/** Present when degraded — describes what is missing and why. */
+	degradationManifest?: DegradationManifest;
+	/** True when failures exceeded the minSuccessRatio threshold. */
+	overallFailure?: boolean;
 }
 
 /** Detail about a failed tool in a gathered response */
@@ -356,6 +376,10 @@ export interface BundleResponse {
 	cancelled?: boolean;
 	/** True when the aggregate timeout fired before all phases completed. */
 	timedOut?: boolean;
+	/** True when some steps failed but the bundle returned partial results. */
+	degraded?: boolean;
+	/** Present when degraded — describes what is missing and why. */
+	degradationManifest?: DegradationManifest;
 }
 
 /** Result of a single execution phase within a bundle */
