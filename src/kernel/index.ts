@@ -521,12 +521,13 @@ export {
 export type { SerializedSession, SessionStorageBackend } from "./context.js";
 export { DEMO_IDENTITY, FileSessionStorage, Session, SessionManager } from "./context.js";
 export type { PendingAction, ToolExecutorFn } from "./executor.js";
-export { Executor } from "./executor.js";
+export { Executor, toBundlePartialSuccessResult, toPartialSuccessResult } from "./executor.js";
 export type { HealthMonitorConfig, HealthStatus, ProbeFn } from "./health-monitor.js";
 export { HealthMonitor } from "./health-monitor.js";
 export { AuditMiddleware } from "./middleware/audit.js";
 export { AuthMiddleware, ROLE_PERMISSIONS } from "./middleware/auth.js";
 export { CircuitBreaker } from "./middleware/circuit-breaker.js";
+export { OutputShaper } from "./middleware/output.js";
 export { ResilienceMiddleware } from "./middleware/resilience.js";
 // Re-export for convenience
 export { Registry } from "./registry.js";

@@ -18,9 +18,12 @@ import type {
 	BundleStep,
 	DegradationManifest,
 	ExecutionOptions,
+	FailedItem,
 	FailureDetail,
 	GatheredResponse,
+	PartialSuccessResult,
 	PhaseResult,
+	SucceededItem,
 	TaskBundle,
 	ToolRequest,
 	ToolResponse,
@@ -751,4 +754,62 @@ export class Executor {
 		}
 		return sorted;
 	}
+}
+
+// ==========================================
+// Partial Success Result Helpers (Issue #148)
+// ==========================================
+
+/**
+ * Convert a GatheredResponse into a PartialSuccessResult with flat
+ * succeeded[] / failed[] / errors[] arrays so agents can iterate
+ * results without working with Maps.
+ */
+export function toPartialSuccessResult(gathered: GatheredResponse): PartialSuccessResult {
+	const succeeded: SucceededItem[] = [];
+	for (const [toolName, response] of gathered.results) {
+		if (response.success) {
+			succeeded.push({ toolName, serverName: toolName.split(".")[0], response });
+		}
+	}
+
+	const failed: FailedItem[] = gathered.failures.map((f) => ({
+		toolName: f.toolName,
+		serverName: f.toolName.split(".")[0],
+		errorType: f.error.type,
+		message: f.error.message,
+		recoveryHint: f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message,
+	}));
+
+	const total = succeeded.length + failed.length;
+	const completeness = total > 0 ? Math.round((succeeded.length / total) * 100) : 100;
+
+	return { succeeded, failed, errors: failed, total, completeness };
+}
+
+/**
+ * Convert a BundleResponse into a PartialSuccessResult.
+ * Successes come from bundle.results; failures are collected from all phase failures.
+ */
+export function toBundlePartialSuccessResult(bundle: BundleResponse): PartialSuccessResult {
+	const succeeded: SucceededItem[] = [];
+	for (const [toolName, response] of bundle.results) {
+		if (response.success) {
+			succeeded.push({ toolName, serverName: toolName.split(".")[0], response });
+		}
+	}
+
+	const allPhaseFailures = bundle.phases.flatMap((p) => p.failures);
+	const failed: FailedItem[] = allPhaseFailures.map((f) => ({
+		toolName: f.toolName,
+		serverName: f.toolName.split(".")[0],
+		errorType: f.error.type,
+		message: f.error.message,
+		recoveryHint: f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message,
+	}));
+
+	const total = succeeded.length + failed.length;
+	const completeness = total > 0 ? Math.round((succeeded.length / total) * 100) : 100;
+
+	return { succeeded, failed, errors: failed, total, completeness };
 }

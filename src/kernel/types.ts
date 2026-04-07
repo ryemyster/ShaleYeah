@@ -328,6 +328,38 @@ export interface DegradationManifest {
 	completeness: number;
 }
 
+/** A single successful item in a PartialSuccessResult. */
+export interface SucceededItem {
+	toolName: string;
+	serverName: string;
+	response: ToolResponse;
+}
+
+/** A single failed item in a PartialSuccessResult, with agent-actionable retry info. */
+export interface FailedItem {
+	toolName: string;
+	serverName: string;
+	errorType: ErrorType;
+	message: string;
+	/** First recovery step from the RecoveryGuide, or the error message as fallback. */
+	recoveryHint: string;
+}
+
+/** Structured mixed-result schema for batch/scatter-gather operations.
+ *  Enables agents to programmatically identify which items succeeded
+ *  and which to retry, without iterating Maps. */
+export interface PartialSuccessResult {
+	succeeded: SucceededItem[];
+	/** Items that failed — same reference as errors[]. */
+	failed: FailedItem[];
+	/** Alias for failed[] — structured error details per failed item. */
+	errors: FailedItem[];
+	/** Total items attempted (succeeded + failed). */
+	total: number;
+	/** Completeness percentage (0–100). */
+	completeness: number;
+}
+
 /** Options for a single executeParallel or executeBundle call. */
 export interface ExecutionOptions {
 	/** Wall-clock deadline for the entire operation. When exceeded, returns
