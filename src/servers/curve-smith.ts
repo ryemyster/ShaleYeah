@@ -133,7 +133,17 @@ const curveSmithTemplate: ServerTemplate = {
 			"assess_curve_quality",
 			"Assess quality of decline curve analysis",
 			z.object({
-				curveData: z.any().describe("Decline curve analysis data"),
+				curveData: z
+					.object({
+						initialRate: z.object({ oil: z.number(), gas: z.number(), water: z.number() }),
+						declineRate: z.number(),
+						bFactor: z.number(),
+						eur: z.object({ oil: z.number(), gas: z.number() }),
+						typeCurve: z.string(),
+						confidence: z.number(),
+						qualityGrade: z.enum(["Excellent", "Good", "Fair", "Poor"]),
+					})
+					.describe("Decline curve analysis data"),
 				thresholds: z
 					.object({
 						minR2: z.number().min(0).max(1).default(0.8),
@@ -142,8 +152,8 @@ const curveSmithTemplate: ServerTemplate = {
 					.optional(),
 			}),
 			async (args) => {
-				const r2 = Math.random() * 0.3 + 0.7; // 0.7-1.0
-				const dataPoints = Math.floor(Math.random() * 20) + 6; // 6-26
+				const r2 = 0.92; // stub: good fit — replace with actual regression R² from input data
+				const dataPoints = 12; // stub: 12 months — replace with actual data point count
 
 				return {
 					r2,
@@ -180,21 +190,22 @@ async function performDeclineCurveAnalysis(args: {
 		return convertToDeclineAnalysis(oilResult, gasResult, productionData);
 	} catch (_error) {
 		// Return default analysis if curve fitting fails
+		// Stub: representative Wolfcamp Tier 1 well — replace with real curve fit from file data
 		return {
 			initialRate: {
-				oil: Math.floor(Math.random() * 1000) + 500,
-				gas: Math.floor(Math.random() * 2000) + 1000,
-				water: Math.floor(Math.random() * 100) + 10,
+				oil: 750, // stub: 750 bbl/d IP — replace with regression qi
+				gas: 1500, // stub: 1500 mcf/d — replace with regression qi
+				water: 50, // stub: 50 bbl/d — replace with regression qi
 			},
-			declineRate: Math.round((Math.random() * 0.05 + 0.05) * 1000) / 1000,
-			bFactor: Math.round((Math.random() * 0.5 + 0.5) * 100) / 100,
+			declineRate: 0.075, // stub: 7.5%/month — replace with fitted Di
+			bFactor: 1.2, // stub: hyperbolic b=1.2 — replace with fitted b
 			eur: {
-				oil: Math.floor(Math.random() * 100000) + 50000,
-				gas: Math.floor(Math.random() * 500000) + 200000,
+				oil: 85000, // stub: 85 Mbbl — replace with EUR integral
+				gas: 350000, // stub: 350 MMcf — replace with EUR integral
 			},
 			typeCurve: "Tier 1 Wolfcamp",
 			confidence: ServerUtils.calculateConfidence(0.75, 0.95),
-			qualityGrade: ["Excellent", "Good", "Fair"][Math.floor(Math.random() * 3)] as "Excellent" | "Good" | "Fair",
+			qualityGrade: "Good",
 		};
 	}
 }

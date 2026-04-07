@@ -9,19 +9,26 @@
  */
 
 import { createHash } from "node:crypto";
+import type { Session } from "./context.js";
 import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
+import { ResultCache } from "./result-cache.js";
 import type {
 	BundleResponse,
 	BundleStep,
+	DegradationManifest,
+	ExecutionOptions,
+	FailedItem,
 	FailureDetail,
 	GatheredResponse,
+	PartialSuccessResult,
 	PhaseResult,
+	SucceededItem,
 	TaskBundle,
 	ToolRequest,
 	ToolResponse,
 } from "./types.js";
-import { ErrorType } from "./types.js";
+import { type CancellationToken, ErrorType } from "./types.js";
 
 // ==========================================
 // Tool executor function type
@@ -32,173 +39,6 @@ import { ErrorType } from "./types.js";
  * The kernel injects this — the executor doesn't know about MCP transport.
  */
 export type ToolExecutorFn = (serverName: string, args: Record<string, unknown>) => Promise<ToolResponse>;
-
-// ==========================================
-// Bundle Definitions
-// ==========================================
-
-/**
- * Quick Screen bundle — 4 core servers in parallel.
- * Fast first-pass assessment for go/no-go screening.
- */
-export const QUICK_SCREEN_BUNDLE: TaskBundle = {
-	name: "quick_screen",
-	description: "Fast parallel screening: geology, economics, engineering, and risk in one pass.",
-	steps: [
-		{
-			toolName: "geowiz.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "summary",
-		},
-		{
-			toolName: "econobot.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "summary",
-		},
-		{
-			toolName: "curve-smith.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "summary",
-		},
-		{
-			toolName: "risk-analysis.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "summary",
-		},
-	],
-	gatherStrategy: "all",
-};
-
-/**
- * Full Due Diligence bundle — all 14 servers in 4 phases.
- * Complete investment analysis with dependency ordering.
- */
-export const FULL_DUE_DILIGENCE_BUNDLE: TaskBundle = {
-	name: "full_due_diligence",
-	description: "Comprehensive investment analysis across all 14 domain experts with phased execution.",
-	steps: [
-		// Phase 1: Core analysis (parallel)
-		{
-			toolName: "geowiz.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "standard",
-		},
-		{
-			toolName: "econobot.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "standard",
-		},
-		{
-			toolName: "curve-smith.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			detailLevel: "standard",
-		},
-		{
-			toolName: "market.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			detailLevel: "standard",
-		},
-		{
-			toolName: "research.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			detailLevel: "standard",
-		},
-		// Phase 2: Extended analysis (parallel, depends on phase 1)
-		{
-			toolName: "risk-analysis.analyze",
-			args: {},
-			parallel: true,
-			optional: false,
-			dependsOn: ["geowiz.analyze", "econobot.analyze", "curve-smith.analyze"],
-			detailLevel: "standard",
-		},
-		{
-			toolName: "legal.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			dependsOn: ["geowiz.analyze"],
-			detailLevel: "standard",
-		},
-		{
-			toolName: "title.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			dependsOn: ["geowiz.analyze"],
-			detailLevel: "standard",
-		},
-		{
-			toolName: "drilling.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			dependsOn: ["geowiz.analyze"],
-			detailLevel: "standard",
-		},
-		{
-			toolName: "infrastructure.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			dependsOn: ["geowiz.analyze"],
-			detailLevel: "standard",
-		},
-		{
-			toolName: "development.analyze",
-			args: {},
-			parallel: true,
-			optional: true,
-			dependsOn: ["geowiz.analyze", "econobot.analyze"],
-			detailLevel: "standard",
-		},
-		// Phase 3: QA (depends on phase 2)
-		{
-			toolName: "test.analyze",
-			args: {},
-			parallel: false,
-			optional: true,
-			dependsOn: ["risk-analysis.analyze"],
-			detailLevel: "standard",
-		},
-		// Phase 4: Reporting & decision (sequential, depends on all)
-		{
-			toolName: "reporter.analyze",
-			args: {},
-			parallel: false,
-			optional: false,
-			dependsOn: ["test.analyze"],
-			detailLevel: "full",
-		},
-		{
-			toolName: "decision.analyze",
-			args: {},
-			parallel: false,
-			optional: false,
-			dependsOn: ["reporter.analyze"],
-			detailLevel: "full",
-		},
-	],
-	gatherStrategy: "majority",
-};
 
 // ==========================================
 // Executor
@@ -219,27 +59,39 @@ export interface PendingAction {
 /** Tools that require explicit confirmation before execution */
 const CONFIRMATION_REQUIRED_TOOLS = new Set(["decision.make_recommendation", "decision.analyze"]);
 
+/** Servers whose responses must never be cached (command tools with side effects). */
+const NON_CACHEABLE_SERVERS = new Set(["reporter", "decision"]);
+
 export class Executor {
 	private executorFn: ToolExecutorFn | null = null;
 	private maxParallel: number;
 	private toolTimeoutMs: number;
+	private serverTimeouts: Record<string, number>;
 	private maxRetries: number;
 	private retryBackoffMs: number;
 	public readonly resilience: ResilienceMiddleware;
 	private pendingActions: Map<string, PendingAction> = new Map();
 	private circuitBreaker: CircuitBreaker | null = null;
+	public readonly resultCache: ResultCache;
 
 	constructor(options?: {
 		maxParallel?: number;
 		toolTimeoutMs?: number;
+		/** Per-server timeout overrides. Key is server name (e.g. "econobot"). */
+		serverTimeouts?: Record<string, number>;
 		maxRetries?: number;
 		retryBackoffMs?: number;
+		cacheTtlMs?: number;
 	}) {
 		this.maxParallel = options?.maxParallel ?? 6;
-		this.toolTimeoutMs = options?.toolTimeoutMs ?? 30000;
+		// KERNEL_TIMEOUT_MS env var sets the default when no explicit option provided
+		const envTimeoutMs = process.env.KERNEL_TIMEOUT_MS ? Number(process.env.KERNEL_TIMEOUT_MS) : undefined;
+		this.toolTimeoutMs = options?.toolTimeoutMs ?? envTimeoutMs ?? 30000;
+		this.serverTimeouts = options?.serverTimeouts ?? {};
 		this.maxRetries = options?.maxRetries ?? 0;
 		this.retryBackoffMs = options?.retryBackoffMs ?? 1000;
 		this.resilience = new ResilienceMiddleware();
+		this.resultCache = new ResultCache({ ttlMs: options?.cacheTtlMs ?? 300_000 });
 	}
 
 	/**
@@ -260,8 +112,13 @@ export class Executor {
 	/**
 	 * Execute a single tool request with automatic retry for retryable errors.
 	 * Uses exponential backoff with jitter based on resilience delay recommendations.
+	 * Pass an optional CancellationToken to abort before execution starts.
 	 */
-	async execute(request: ToolRequest): Promise<ToolResponse> {
+	async execute(request: ToolRequest, token?: CancellationToken): Promise<ToolResponse> {
+		if (token?.isCancelled) {
+			return this.cancelledResponse(request.toolName);
+		}
+
 		if (!this.executorFn) {
 			return this.errorResponse(
 				request.toolName,
@@ -271,6 +128,16 @@ export class Executor {
 		}
 
 		const serverName = request.toolName.split(".")[0];
+		const cacheable = !NON_CACHEABLE_SERVERS.has(serverName);
+
+		// Check result cache before executing (query tools only)
+		if (cacheable) {
+			const cacheKey = this.generateIdempotencyKey(request.toolName, request.args, request.sessionId);
+			const cached = this.resultCache.get(cacheKey);
+			if (cached) {
+				return { ...cached, metadata: { ...cached.metadata, fromCache: true } };
+			}
+		}
 
 		// Fast-fail if this server's circuit is open
 		if (this.circuitBreaker?.isOpen(serverName)) {
@@ -283,12 +150,14 @@ export class Executor {
 
 		const overallStartMs = Date.now();
 		let lastResponse: ToolResponse | null = null;
+		// Use per-server timeout if configured, else fall back to global
+		const effectiveTimeoutMs = this.serverTimeouts[serverName] ?? this.toolTimeoutMs;
 
 		for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
 			const startMs = Date.now();
 
 			try {
-				const result = await this.withTimeout(this.executorFn(serverName, request.args), this.toolTimeoutMs);
+				const result = await this.withTimeout(this.executorFn(serverName, request.args), effectiveTimeoutMs);
 				if (result.success) {
 					this.circuitBreaker?.record(serverName, true);
 					if (attempt > 0) {
@@ -297,6 +166,11 @@ export class Executor {
 							retryAttempts: attempt,
 							totalRetryDelayMs: startMs - overallStartMs,
 						};
+					}
+					// Populate cache for query tools
+					if (cacheable) {
+						const cacheKey = this.generateIdempotencyKey(request.toolName, request.args, request.sessionId);
+						this.resultCache.set(cacheKey, result, true);
 					}
 					return result;
 				}
@@ -361,11 +235,32 @@ export class Executor {
 	/**
 	 * Execute multiple tool requests in parallel (scatter-gather).
 	 * Uses Promise.allSettled so individual failures don't block others.
+	 * Pass an optional CancellationToken to abort between chunks.
+	 * Pass ExecutionOptions.aggregateTimeoutMs to cap total wall-clock time.
 	 */
-	async executeParallel(requests: ToolRequest[]): Promise<GatheredResponse> {
+	async executeParallel(
+		requests: ToolRequest[],
+		token?: CancellationToken,
+		options?: ExecutionOptions,
+	): Promise<GatheredResponse> {
 		const startMs = Date.now();
 		const results = new Map<string, ToolResponse>();
 		const failures: FailureDetail[] = [];
+		let wasCancelled = false;
+		let wasTimedOut = false;
+
+		const deadlineMs = options?.aggregateTimeoutMs ? startMs + options.aggregateTimeoutMs : undefined;
+
+		// Short-circuit if already cancelled
+		if (token?.isCancelled) {
+			return {
+				results,
+				completeness: 0,
+				totalTimeMs: 0,
+				failures,
+				cancelled: true,
+			};
+		}
 
 		// Pre-filter: fast-fail any requests whose server circuit is open
 		const activeRequests: ToolRequest[] = [];
@@ -386,6 +281,18 @@ export class Executor {
 		const chunks = this.chunk(activeRequests, this.maxParallel);
 
 		for (const chunk of chunks) {
+			// Check cancellation between chunks
+			if (token?.isCancelled) {
+				wasCancelled = true;
+				break;
+			}
+
+			// Check aggregate deadline between chunks
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
+
 			const settled = await Promise.allSettled(chunk.map((req) => this.execute(req)));
 
 			for (let i = 0; i < settled.length; i++) {
@@ -424,61 +331,143 @@ export class Executor {
 					});
 				}
 			}
+
+			// Post-chunk deadline check — stop before starting the next chunk
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
 		}
 
 		const totalRequested = requests.length;
 		const succeeded = totalRequested - failures.length;
 		const completeness = totalRequested > 0 ? Math.round((succeeded / totalRequested) * 100) : 100;
 
+		const isDegraded = failures.length > 0;
+		const degradationManifest: DegradationManifest | undefined = isDegraded
+			? {
+					missingSections: failures.map((f) => f.toolName),
+					reasons: failures.map((f) => f.error.message),
+					completeness,
+				}
+			: undefined;
+
+		const minSuccessRatio = options?.minSuccessRatio;
+		const successRatio = totalRequested > 0 ? succeeded / totalRequested : 1;
+		const isOverallFailure = isDegraded && minSuccessRatio !== undefined && successRatio < minSuccessRatio;
+
 		return {
 			results,
 			completeness,
 			totalTimeMs: Date.now() - startMs,
 			failures,
+			...(wasCancelled ? { cancelled: true } : {}),
+			...(wasTimedOut ? { timedOut: true } : {}),
+			...(isDegraded ? { degraded: true, degradationManifest } : {}),
+			...(isOverallFailure ? { overallFailure: true } : {}),
 		};
 	}
 
 	/**
 	 * Execute a task bundle with phased dependency ordering.
 	 * Steps are grouped into phases based on their dependency graph.
+	 * Results are stored in the session after each successful step so downstream
+	 * agents receive prior-phase outputs via _context.availableResults.
+	 * Pass an optional CancellationToken to stop between phases.
 	 */
-	async executeBundle(bundle: TaskBundle, tractArgs?: Record<string, unknown>): Promise<BundleResponse> {
+	async executeBundle(
+		bundle: TaskBundle,
+		tractArgs?: Record<string, unknown>,
+		session?: Session,
+		token?: CancellationToken,
+		options?: ExecutionOptions,
+	): Promise<BundleResponse> {
 		const startMs = Date.now();
 		const allResults = new Map<string, ToolResponse>();
 		const phases: PhaseResult[] = [];
 		const completedSteps = new Set<string>();
+		const skippedSteps = new Set<string>();
+		let wasCancelled = false;
+		let wasTimedOut = false;
+
+		const deadlineMs = options?.aggregateTimeoutMs ? startMs + options.aggregateTimeoutMs : undefined;
 
 		// Resolve execution phases from the dependency graph
 		const phaseGroups = this.resolvePhases(bundle.steps);
 
 		for (let phaseIdx = 0; phaseIdx < phaseGroups.length; phaseIdx++) {
+			// Check cancellation between phases
+			if (token?.isCancelled) {
+				wasCancelled = true;
+				break;
+			}
+
+			// Check aggregate deadline between phases
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
 			const phaseSteps = phaseGroups[phaseIdx];
 			const phaseStart = Date.now();
 			const phaseFailures: FailureDetail[] = [];
 
-			// Build requests for this phase, merging tract args
-			const requests: ToolRequest[] = phaseSteps.map((step) => ({
-				toolName: step.toolName,
-				args: { ...step.args, ...tractArgs },
-				detailLevel: step.detailLevel,
-			}));
-
 			// Execute phase — parallel steps use scatter-gather
 			const hasParallel = phaseSteps.some((s) => s.parallel);
-			if (hasParallel && requests.length > 1) {
-				const gathered = await this.executeParallel(requests);
+			if (hasParallel && phaseSteps.length > 1) {
+				// Filter steps whose conditions are not met
+				const activeSteps = phaseSteps.filter((step) => {
+					if (!step.condition) return true;
+					const shouldRun = step.condition(allResults);
+					if (!shouldRun) skippedSteps.add(step.toolName);
+					return shouldRun;
+				});
+
+				// Inject session context once for the parallel batch (all start simultaneously)
+				const injectedContext = session?.getInjectedContext();
+				const requests: ToolRequest[] = activeSteps.map((step) => ({
+					toolName: step.toolName,
+					args: {
+						...step.args,
+						...tractArgs,
+						...(injectedContext ? { _context: injectedContext } : {}),
+					},
+					detailLevel: step.detailLevel,
+				}));
+
+				const gathered = await this.executeParallel(requests, token);
 				for (const [name, resp] of gathered.results) {
 					allResults.set(name, resp);
-					if (resp.success) completedSteps.add(name);
+					if (resp.success) {
+						completedSteps.add(name);
+						session?.storeResult(name, resp);
+					}
 				}
 				phaseFailures.push(...gathered.failures);
 			} else {
-				// Sequential execution
-				for (const req of requests) {
+				// Sequential execution — recompute context per step so each step sees
+				// results stored by the previous step
+				for (const step of phaseSteps) {
+					if (step.condition && !step.condition(allResults)) {
+						skippedSteps.add(step.toolName);
+						continue;
+					}
+
+					const freshContext = session?.getInjectedContext();
+					const req: ToolRequest = {
+						toolName: step.toolName,
+						args: {
+							...step.args,
+							...tractArgs,
+							...(freshContext ? { _context: freshContext } : {}),
+						},
+						detailLevel: step.detailLevel,
+					};
+
 					const resp = await this.execute(req);
 					allResults.set(req.toolName, resp);
 					if (resp.success) {
 						completedSteps.add(req.toolName);
+						session?.storeResult(req.toolName, resp);
 					} else {
 						const rawError = resp.error ?? {
 							type: ErrorType.PERMANENT,
@@ -495,7 +484,10 @@ export class Executor {
 				}
 			}
 
-			const phaseSucceeded = phaseSteps.length - phaseFailures.length;
+			const phaseSucceeded =
+				phaseSteps.length -
+				phaseFailures.length -
+				[...skippedSteps].filter((s) => phaseSteps.some((ps) => ps.toolName === s)).length;
 			phases.push({
 				phase: phaseIdx + 1,
 				tools: phaseSteps.map((s) => s.toolName),
@@ -503,10 +495,16 @@ export class Executor {
 				timeMs: Date.now() - phaseStart,
 				failures: phaseFailures,
 			});
+
+			// Post-phase deadline check — stop before starting the next phase
+			if (deadlineMs !== undefined && Date.now() >= deadlineMs) {
+				wasTimedOut = true;
+				break;
+			}
 		}
 
-		// Calculate overall completeness
-		const requiredSteps = bundle.steps.filter((s) => !s.optional);
+		// Calculate overall completeness — skipped steps are excluded from required count
+		const requiredSteps = bundle.steps.filter((s) => !s.optional && !skippedSteps.has(s.toolName));
 		const requiredCompleted = requiredSteps.filter((s) => completedSteps.has(s.toolName)).length;
 		const completeness = requiredSteps.length > 0 ? Math.round((requiredCompleted / requiredSteps.length) * 100) : 100;
 
@@ -518,6 +516,17 @@ export class Executor {
 			requiredCompleted,
 		);
 
+		// Collect all failures across phases for the degradation manifest
+		const allFailures = phases.flatMap((p) => p.failures);
+		const isDegraded = allFailures.length > 0;
+		const degradationManifest: DegradationManifest | undefined = isDegraded
+			? {
+					missingSections: allFailures.map((f) => f.toolName),
+					reasons: allFailures.map((f) => f.error.message),
+					completeness,
+				}
+			: undefined;
+
 		return {
 			bundleName: bundle.name,
 			results: allResults,
@@ -525,6 +534,9 @@ export class Executor {
 			totalTimeMs: Date.now() - startMs,
 			phases,
 			overallSuccess,
+			...(wasCancelled ? { cancelled: true } : {}),
+			...(wasTimedOut ? { timedOut: true } : {}),
+			...(isDegraded ? { degraded: true, degradationManifest } : {}),
 		};
 	}
 
@@ -687,6 +699,10 @@ export class Executor {
 		}
 	}
 
+	private cancelledResponse(toolName: string): ToolResponse {
+		return this.errorResponse(toolName, "Operation cancelled", ErrorType.PERMANENT);
+	}
+
 	private errorResponse(toolName: string, message: string, errorType: ErrorType): ToolResponse {
 		return {
 			success: false,
@@ -738,4 +754,62 @@ export class Executor {
 		}
 		return sorted;
 	}
+}
+
+// ==========================================
+// Partial Success Result Helpers (Issue #148)
+// ==========================================
+
+/**
+ * Convert a GatheredResponse into a PartialSuccessResult with flat
+ * succeeded[] / failed[] / errors[] arrays so agents can iterate
+ * results without working with Maps.
+ */
+export function toPartialSuccessResult(gathered: GatheredResponse): PartialSuccessResult {
+	const succeeded: SucceededItem[] = [];
+	for (const [toolName, response] of gathered.results) {
+		if (response.success) {
+			succeeded.push({ toolName, serverName: toolName.split(".")[0], response });
+		}
+	}
+
+	const failed: FailedItem[] = gathered.failures.map((f) => ({
+		toolName: f.toolName,
+		serverName: f.toolName.split(".")[0],
+		errorType: f.error.type,
+		message: f.error.message,
+		recoveryHint: f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message,
+	}));
+
+	const total = succeeded.length + failed.length;
+	const completeness = total > 0 ? Math.round((succeeded.length / total) * 100) : 100;
+
+	return { succeeded, failed, errors: failed, total, completeness };
+}
+
+/**
+ * Convert a BundleResponse into a PartialSuccessResult.
+ * Successes come from bundle.results; failures are collected from all phase failures.
+ */
+export function toBundlePartialSuccessResult(bundle: BundleResponse): PartialSuccessResult {
+	const succeeded: SucceededItem[] = [];
+	for (const [toolName, response] of bundle.results) {
+		if (response.success) {
+			succeeded.push({ toolName, serverName: toolName.split(".")[0], response });
+		}
+	}
+
+	const allPhaseFailures = bundle.phases.flatMap((p) => p.failures);
+	const failed: FailedItem[] = allPhaseFailures.map((f) => ({
+		toolName: f.toolName,
+		serverName: f.toolName.split(".")[0],
+		errorType: f.error.type,
+		message: f.error.message,
+		recoveryHint: f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message,
+	}));
+
+	const total = succeeded.length + failed.length;
+	const completeness = total > 0 ? Math.round((succeeded.length / total) * 100) : 100;
+
+	return { succeeded, failed, errors: failed, total, completeness };
 }

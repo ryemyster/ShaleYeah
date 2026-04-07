@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 const testTemplate: ServerTemplate = {
@@ -42,55 +42,45 @@ const testTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const testResults = {
-					functional: Math.random() > 0.1,
-					performance: Math.random() > 0.15,
-					integration: Math.random() > 0.05,
-					compliance: Math.random() > 0.08,
-				};
-
+				// Stub: all tests pass at target thresholds — replace with real test execution
 				const analysis = {
 					testSuite: args.testSuite,
 					targets: args.targets,
 					execution: {
 						timestamp: new Date().toISOString(),
-						duration: `${Math.round(Math.random() * 120 + 30)} seconds`,
+						duration: "45 seconds", // stub — replace with actual execution time
 						environment: "Testing environment",
 					},
 					results: {
 						functional: {
-							passed: testResults.functional,
-							score: Math.round((0.85 + Math.random() * 0.1) * 100),
-							issues: testResults.functional ? [] : ["Minor validation error in edge case"],
+							passed: true,
+							score: 95, // stub: 95% — replace with actual test pass rate
+							issues: [],
 						},
 						performance: {
-							passed: testResults.performance,
-							responseTime: `${Math.round(Math.random() * 200 + 100)}ms`,
-							throughput: `${Math.round(Math.random() * 500 + 200)} requests/min`,
-							issues: testResults.performance ? [] : ["Slight latency increase under load"],
+							passed: true,
+							responseTime: "145ms", // stub — replace with measured p95 latency
+							throughput: "420 requests/min", // stub — replace with measured throughput
+							issues: [],
 						},
 						integration: {
-							passed: testResults.integration,
+							passed: true,
 							endpoints: args.targets.length,
-							coverage: Math.round((0.88 + Math.random() * 0.1) * 100),
-							issues: testResults.integration ? [] : ["Timeout in external service call"],
+							coverage: 94, // stub: 94% — replace with actual coverage measurement
+							issues: [],
 						},
 						compliance: {
-							passed: testResults.compliance,
+							passed: true,
 							standards: args.criteria?.compliance || ["ISO-9001", "SOX"],
-							coverage: Math.round((0.92 + Math.random() * 0.05) * 100),
-							issues: testResults.compliance ? [] : ["Documentation gap identified"],
+							coverage: 97, // stub: 97% — replace with compliance audit results
+							issues: [],
 						},
 					},
 					summary: {
-						overallStatus: Object.values(testResults).every((r) => r) ? "PASS" : "CONDITIONAL PASS",
-						passRate: Math.round((Object.values(testResults).filter((r) => r).length / 4) * 100),
-						criticalIssues: Object.values(testResults).every((r) => r) ? 0 : 1,
-						recommendations: [
-							"Address identified issues in next iteration",
-							"Continue monitoring performance metrics",
-							"Schedule next compliance review",
-						],
+						overallStatus: "PASS",
+						passRate: 100, // stub — replace with actual pass/fail counts
+						criticalIssues: 0,
+						recommendations: ["Continue monitoring performance metrics", "Schedule next compliance review"],
 					},
 					confidence: ServerUtils.calculateConfidence(0.92, 0.88),
 				};
@@ -118,20 +108,21 @@ const testTemplate: ServerTemplate = {
 						period: args.period,
 						generated: new Date().toISOString(),
 					},
+					// Stub: target-state quality metrics — replace with real telemetry/audit data
 					metrics: {
 						accuracy: {
-							current: Math.round((0.92 + Math.random() * 0.05) * 100),
+							current: 95, // stub: at target — replace with measured accuracy
 							target: 95,
-							trend: Math.random() > 0.5 ? "improving" : "stable",
+							trend: "stable", // stub — replace with trend calculation
 						},
 						performance: {
-							avgResponseTime: `${Math.round(Math.random() * 50 + 120)}ms`,
-							uptime: Math.round((0.995 + Math.random() * 0.004) * 100),
+							avgResponseTime: "135ms", // stub — replace with measured p50 latency
+							uptime: 99.8, // stub: 99.8% — replace with uptime monitoring data
 							trend: "stable",
 						},
 						reliability: {
-							errorRate: Math.round(Math.random() * 0.5 * 100) / 100,
-							mtbf: `${Math.round(Math.random() * 200 + 720)} hours`,
+							errorRate: 0.12, // stub: 0.12% — replace with actual error rate
+							mtbf: "820 hours", // stub — replace with failure tracking data
 							trend: "improving",
 						},
 					},
@@ -139,7 +130,7 @@ const testTemplate: ServerTemplate = {
 						status: "Compliant",
 						lastAudit: "2024-Q2",
 						nextReview: "2024-Q4",
-						gaps: Math.random() > 0.8 ? ["Minor documentation update needed"] : [],
+						gaps: [], // stub: no gaps — replace with compliance audit results
 					},
 					recommendations: [
 						"Maintain current quality standards",
@@ -163,6 +154,6 @@ export const TestServer = ServerFactory.createServer(testTemplate);
 export default TestServer;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (TestServer as any)();
+	const server = new (TestServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }

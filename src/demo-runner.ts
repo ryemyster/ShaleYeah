@@ -66,8 +66,8 @@ export class ShaleYeahMCPDemo {
 				outputDir: this.outputDir,
 			};
 
-			// Execute analysis via kernel-backed MCP client
-			const result = await this.client.executeAnalysis(request);
+			// Execute analysis via kernel-backed MCP client — pass session for result forwarding
+			const result = await this.client.executeAnalysis(request, session);
 
 			if (result.success) {
 				console.log("\n✅ Demo completed successfully!");

@@ -27,6 +27,8 @@ export interface ServerToolTemplate {
 	name: string;
 	description: string;
 	inputSchema: z.ZodObject<z.ZodRawShape>;
+	// Handler intentionally uses any — args are validated by Zod schema before invocation
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	handler: (args: any) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
@@ -37,6 +39,7 @@ export interface ServerToolTemplate {
 export interface ServerResourceTemplate {
 	pattern: string;
 	description: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	handler: (uri: URL) => Promise<any>;
 }
 
@@ -74,14 +77,6 @@ export class ServerFactory {
 						handler: tool.handler,
 					});
 				}
-
-				// Register all resources from template
-				if (template.resources) {
-					for (const _resource of template.resources) {
-						// Resources implementation would need to match MCPServer interface
-						// this.registerResource(resource.pattern, resource.description, resource.handler);
-					}
-				}
 			}
 		};
 	}
@@ -89,16 +84,19 @@ export class ServerFactory {
 	/**
 	 * Create analysis tool with standard confidence scoring
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static createAnalysisTool(
 		name: string,
 		description: string,
 		inputSchema: z.ZodObject<z.ZodRawShape>,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		analyzeFunction: (args: any) => Promise<any>,
 	): ServerToolTemplate {
 		return {
 			name,
 			description,
 			inputSchema,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			handler: async (args: any) => {
 				try {
 					const startTime = Date.now();
@@ -128,10 +126,12 @@ export class ServerFactory {
 	/**
 	 * Create file processing tool with standard validation
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static createFileProcessingTool(
 		name: string,
 		description: string,
 		supportedFormats: string[],
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		processFunction: (filePath: string, args: any) => Promise<any>,
 	): ServerToolTemplate {
 		return {
@@ -142,6 +142,7 @@ export class ServerFactory {
 				outputPath: z.string().optional().describe("Path for output file"),
 				options: z.object({}).optional().describe("Processing options"),
 			}),
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			handler: async (args: any) => {
 				try {
 					// Validate file exists
@@ -218,7 +219,10 @@ export class ServerUtils {
 	/**
 	 * Standard error response
 	 */
-	static createErrorResponse(message: string, details?: string[]): any {
+	static createErrorResponse(
+		message: string,
+		details?: string[],
+	): { success: false; error: string; details: string[]; timestamp: string; suggestions: string[] } {
 		return {
 			success: false,
 			error: message,
@@ -235,7 +239,10 @@ export class ServerUtils {
 	/**
 	 * Standard success response
 	 */
-	static createSuccessResponse(data: any, metadata?: any): any {
+	static createSuccessResponse(
+		data: Record<string, unknown>,
+		metadata?: Record<string, unknown>,
+	): { success: true; data: Record<string, unknown>; metadata: Record<string, unknown> } {
 		return {
 			success: true,
 			data,

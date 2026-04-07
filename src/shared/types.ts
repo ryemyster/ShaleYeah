@@ -4,112 +4,6 @@
  * Core types for the agentic AI oil & gas investment platform
  */
 
-import { z } from "zod";
-
-// ==========================================
-// Agent Persona Types
-// ==========================================
-
-export interface AgentPersona {
-	name: string;
-	role: string;
-	experience: string;
-	personality: string;
-	llmInstructions: string;
-	decisionAuthority: string;
-	confidenceThreshold: number;
-	escalationCriteria?: string[];
-}
-
-export interface AgentConfig {
-	name: string;
-	persona: AgentPersona;
-	cli: {
-		entrypoint: string;
-		args: string[];
-	};
-	inputs: {
-		required: Record<string, string> | string[];
-		optional?: Record<string, string>;
-	};
-	outputs: Array<{
-		name: string;
-		path: string;
-		type: string;
-	}>;
-	nextAgents: {
-		onSuccess: string[];
-		onFailure: string[];
-	};
-	errorHandling: {
-		timeout: number;
-		retries: number;
-	};
-}
-
-// ==========================================
-// Pipeline and Orchestration Types
-// ==========================================
-
-export interface PipelineState {
-	runId: string;
-	startTime: number;
-	endTime?: number;
-	totalDuration?: number;
-	agentsCompleted: Array<{
-		name: string;
-		executionTime: number;
-		timestamp: number;
-	}>;
-	agentsFailed: Array<{
-		name: string;
-		errorCode: number;
-		errorMessage: string;
-		timestamp: number;
-	}>;
-	currentAgent?: string;
-	outputs: Record<string, Record<string, string>>;
-	metadata: Record<string, unknown>;
-	pipelineSuccess?: boolean;
-	orchestrationReasoning?: string;
-}
-
-export interface ProjectContext {
-	availableOutputs: Record<string, unknown>;
-	runState: PipelineState;
-	timestamp: number;
-}
-
-export interface OrchestrationDecision {
-	nextAgents: string[];
-	reasoning: string;
-	confidence: number;
-	escalateToHuman: boolean;
-	escalationReason?: string;
-}
-
-// ==========================================
-// LLM Integration Types
-// ==========================================
-
-export interface LLMResponse {
-	content: string;
-	usage?: {
-		promptTokens: number;
-		completionTokens: number;
-		totalTokens: number;
-	};
-}
-
-export interface LLMAnalysisResult {
-	analysis: string;
-	confidence: number;
-	insights?: Record<string, unknown>;
-	risks?: string[];
-	recommendations?: string[];
-	errors?: string[];
-}
-
 // ==========================================
 // Geological Data Types
 // ==========================================
@@ -220,22 +114,6 @@ export interface DeclineCurveAnalysis {
 	qualityGrade: "Excellent" | "Good" | "Fair" | "Poor";
 }
 
-// GIS Analysis Types
-export interface GISAnalysis {
-	type: string;
-	features: number;
-	geometryTypes: string[];
-	bounds: {
-		minX: number;
-		minY: number;
-		maxX: number;
-		maxY: number;
-	};
-	coordinateSystem: string;
-	attributes: string[];
-	quality: number;
-}
-
 // Investment Decision Types
 export interface InvestmentDecision {
 	decision: "INVEST" | "PASS" | "CONDITIONAL";
@@ -255,16 +133,6 @@ export interface InvestmentDecision {
 		netPay: number;
 	};
 	nextSteps?: string[];
-}
-
-// Executive Report Types
-export interface ExecutiveReport {
-	reportId: string;
-	title: string;
-	executiveSummary: string;
-	keyFindings: string[];
-	recommendation: InvestmentDecision;
-	appendices?: string[];
 }
 
 // Market Research Types
@@ -310,26 +178,11 @@ export interface RiskAssessment {
 	confidence?: number;
 }
 
-// ==========================================
-// Agent Result Types
-// ==========================================
-
-export interface AgentResult {
-	success: boolean;
-	confidence: number;
-	outputs: Record<string, unknown>;
-	errors?: string[];
-	escalationRequired?: boolean;
-	escalationReason?: string;
-	executionTime?: number;
-}
-
 // MCP Analysis Result Types
 export interface MCPAnalysisResult {
 	economic?: EconomicAnalysis;
 	geological?: GeologicalAnalysis;
 	curve?: DeclineCurveAnalysis;
-	gis?: GISAnalysis;
 	risk?: RiskAssessment;
 	market?: MarketResearch;
 	confidence?: number;
@@ -368,7 +221,6 @@ export interface AnalysisInputs {
 	economic?: EconomicAnalysis;
 	geological?: GeologicalAnalysis;
 	curve?: DeclineCurveAnalysis;
-	gis?: GISAnalysis;
 	risk?: RiskAssessment;
 	market?: MarketResearch;
 	filePath?: string;
@@ -390,99 +242,4 @@ export interface PortfolioAsset {
 	expectedReturns?: number;
 	acquisitionCost?: number;
 	status: string;
-}
-
-// ==========================================
-// Configuration Schema Validation
-// ==========================================
-
-export const AgentConfigSchema = z.object({
-	name: z.string(),
-	persona: z.object({
-		name: z.string(),
-		role: z.string(),
-		experience: z.string(),
-		personality: z.string(),
-		llmInstructions: z.string(),
-		decisionAuthority: z.string(),
-		confidenceThreshold: z.number().min(0).max(1),
-		escalationCriteria: z.array(z.string()).optional(),
-	}),
-	cli: z.object({
-		entrypoint: z.string(),
-		args: z.array(z.string()),
-	}),
-	inputs: z.object({
-		required: z.union([z.record(z.string(), z.string()), z.array(z.string())]),
-		optional: z.record(z.string(), z.string()).optional(),
-	}),
-	outputs: z.array(
-		z.object({
-			name: z.string(),
-			path: z.string(),
-			type: z.string(),
-		}),
-	),
-	nextAgents: z.object({
-		onSuccess: z.array(z.string()),
-		onFailure: z.array(z.string()),
-	}),
-	errorHandling: z.object({
-		timeout: z.number(),
-		retries: z.number(),
-	}),
-});
-
-export type ValidatedAgentConfig = z.infer<typeof AgentConfigSchema>;
-
-// ==========================================
-// Environment Configuration
-// ==========================================
-
-// ==========================================
-// Mode and Environment Types
-// ==========================================
-
-export type NodeEnvironment = "development" | "production" | "test";
-export type PipelineMode = "demo" | "production" | "batch" | "research";
-
-export interface ModeConfig {
-	allowMockLlm: boolean;
-	requireApiKeys: boolean;
-	strictValidation: boolean;
-	enableAuditLogging: boolean;
-	useDemoData: boolean;
-	fastExecution: boolean;
-	fullOrchestration: boolean;
-}
-
-export interface EnvironmentConfig {
-	// Core environment
-	nodeEnv: NodeEnvironment;
-	mode: PipelineMode;
-	modeConfig: ModeConfig;
-
-	// LLM Configuration
-	anthropicApiKey?: string;
-	openaiApiKey?: string;
-	llmProvider: "claude" | "openai";
-
-	// Pipeline Configuration
-	runId: string;
-	outDir: string;
-	pipelineGoal: string;
-
-	// Development Settings
-	logLevel: "debug" | "info" | "warn" | "error";
-	devMode: boolean;
-
-	// Optional integrations
-	splunkHecToken?: string;
-	sentinelBearer?: string;
-	elasticApiKey?: string;
-	cortexApiKey?: string;
-	arcgisToken?: string;
-	qgisServerUrl?: string;
-	leapfrogApiUrl?: string;
-	surpacServer?: string;
 }

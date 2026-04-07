@@ -8,7 +8,7 @@
  * - Response Shaper (per-domain formatting rules)
  */
 
-import type { AgentOSResponse, DetailLevel, ResponseMetadata } from "../types.js";
+import type { AgentOSResponse, BundleResponse, DetailLevel, GatheredResponse, ResponseMetadata } from "../types.js";
 
 /**
  * Per-domain summary field definitions.
@@ -217,6 +217,65 @@ export class OutputShaper {
 			if (d in obj) return d;
 		}
 		return null;
+	}
+
+	/**
+	 * Format a GatheredResponse as a natural language string at the requested detail level.
+	 * - summary: one-line count + missing tools list
+	 * - standard: summary + per-failure error type and recovery hint
+	 * - full: standard + succeeded tool names
+	 */
+	shapeGathered(gathered: GatheredResponse, level: DetailLevel): string {
+		const total = gathered.results.size;
+		const succeededCount = total - gathered.failures.length;
+		const missing = gathered.failures.map((f) => f.toolName.split(".")[0]);
+		const missingStr = missing.length > 0 ? ` Missing: ${missing.join(", ")}.` : "";
+		const summary = `${succeededCount}/${total} tools succeeded (${gathered.completeness}%).${missingStr}`;
+
+		if (level === "summary") return summary;
+
+		const lines: string[] = [summary];
+		for (const f of gathered.failures) {
+			const hint = f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message;
+			lines.push(`  - ${f.toolName}: [${f.error.type}] ${f.error.message}. Hint: ${hint}`);
+		}
+
+		if (level === "full") {
+			const succeeded = [...gathered.results.entries()]
+				.filter(([, r]) => r.success)
+				.map(([name]) => name.split(".")[0]);
+			if (succeeded.length > 0) {
+				lines.push(`  Succeeded: ${succeeded.join(", ")}`);
+			}
+		}
+
+		return lines.join("\n");
+	}
+
+	/**
+	 * Format a BundleResponse as a natural language string at the requested detail level.
+	 * - summary: one-line with bundle name, step counts
+	 * - standard: summary + phase breakdown with failure details
+	 * - full: standard (phase breakdown already comprehensive)
+	 */
+	shapeBundle(bundle: BundleResponse, level: DetailLevel): string {
+		const total = bundle.results.size;
+		const allFailures = bundle.phases.flatMap((p) => p.failures);
+		const succeededCount = total - allFailures.length;
+		const summary = `Bundle '${bundle.bundleName}': ${succeededCount}/${total} steps (${bundle.completeness}%).`;
+
+		if (level === "summary") return summary;
+
+		const lines: string[] = [summary];
+		for (const phase of bundle.phases) {
+			lines.push(`  Phase ${phase.phase} (${phase.tools.length} tools, ${phase.completeness}% complete):`);
+			for (const f of phase.failures) {
+				const hint = f.recoveryGuide?.recoverySteps?.[0] ?? f.error.message;
+				lines.push(`    - ${f.toolName}: [${f.error.type}] ${f.error.message}. Hint: ${hint}`);
+			}
+		}
+
+		return lines.join("\n");
 	}
 
 	/**

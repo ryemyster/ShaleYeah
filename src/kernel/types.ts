@@ -135,6 +135,8 @@ export interface ResponseMetadata {
 	timestamp: string;
 	retryAttempts?: number;
 	totalRetryDelayMs?: number;
+	/** True when this response was served from the result cache. */
+	fromCache?: boolean;
 }
 
 /** Classified error with recovery guidance (Arcade: Recovery Guide pattern) */
@@ -308,6 +310,65 @@ export interface BundleStep {
 	dependsOn?: string[];
 	/** Override detail level for this step */
 	detailLevel?: DetailLevel;
+	/**
+	 * Optional guard evaluated before execution.
+	 * Receives the map of all prior completed results.
+	 * Return false to skip this step (treated as neither success nor failure).
+	 */
+	condition?: (priorResults: Map<string, ToolResponse>) => boolean;
+}
+
+/** Manifest describing what is missing in a degraded response. */
+export interface DegradationManifest {
+	/** Tool names that failed or were not executed. */
+	missingSections: string[];
+	/** Human-readable failure reasons (one per missing section). */
+	reasons: string[];
+	/** Completeness percentage (0–100) based on successful results. */
+	completeness: number;
+}
+
+/** A single successful item in a PartialSuccessResult. */
+export interface SucceededItem {
+	toolName: string;
+	serverName: string;
+	response: ToolResponse;
+}
+
+/** A single failed item in a PartialSuccessResult, with agent-actionable retry info. */
+export interface FailedItem {
+	toolName: string;
+	serverName: string;
+	errorType: ErrorType;
+	message: string;
+	/** First recovery step from the RecoveryGuide, or the error message as fallback. */
+	recoveryHint: string;
+}
+
+/** Structured mixed-result schema for batch/scatter-gather operations.
+ *  Enables agents to programmatically identify which items succeeded
+ *  and which to retry, without iterating Maps. */
+export interface PartialSuccessResult {
+	succeeded: SucceededItem[];
+	/** Items that failed — same reference as errors[]. */
+	failed: FailedItem[];
+	/** Alias for failed[] — structured error details per failed item. */
+	errors: FailedItem[];
+	/** Total items attempted (succeeded + failed). */
+	total: number;
+	/** Completeness percentage (0–100). */
+	completeness: number;
+}
+
+/** Options for a single executeParallel or executeBundle call. */
+export interface ExecutionOptions {
+	/** Wall-clock deadline for the entire operation. When exceeded, returns
+	 *  completed results so far with timedOut: true. */
+	aggregateTimeoutMs?: number;
+	/** Minimum ratio (0–1) of tools that must succeed for the result to be
+	 *  considered non-failure. Defaults to 0 (any partial result is acceptable).
+	 *  When the success ratio falls below this threshold, overallFailure is set. */
+	minSuccessRatio?: number;
 }
 
 /** Result of scatter-gather parallel execution */
@@ -316,6 +377,16 @@ export interface GatheredResponse {
 	completeness: number;
 	totalTimeMs: number;
 	failures: FailureDetail[];
+	/** True when the operation was stopped early by a CancellationToken. */
+	cancelled?: boolean;
+	/** True when the aggregate timeout fired before all requests completed. */
+	timedOut?: boolean;
+	/** True when some tools failed but the operation returned partial results. */
+	degraded?: boolean;
+	/** Present when degraded — describes what is missing and why. */
+	degradationManifest?: DegradationManifest;
+	/** True when failures exceeded the minSuccessRatio threshold. */
+	overallFailure?: boolean;
 }
 
 /** Detail about a failed tool in a gathered response */
@@ -333,6 +404,14 @@ export interface BundleResponse {
 	totalTimeMs: number;
 	phases: PhaseResult[];
 	overallSuccess: boolean;
+	/** True when the operation was stopped early by a CancellationToken. */
+	cancelled?: boolean;
+	/** True when the aggregate timeout fired before all phases completed. */
+	timedOut?: boolean;
+	/** True when some steps failed but the bundle returned partial results. */
+	degraded?: boolean;
+	/** Present when degraded — describes what is missing and why. */
+	degradationManifest?: DegradationManifest;
 }
 
 /** Result of a single execution phase within a bundle */
@@ -342,6 +421,38 @@ export interface PhaseResult {
 	completeness: number;
 	timeMs: number;
 	failures: FailureDetail[];
+}
+
+// ==========================================
+// Cancellation (Arcade: Cancellation Token pattern)
+// ==========================================
+
+/**
+ * Lightweight cancellation token.
+ * Passed to execute / executeParallel / executeBundle to abort in-flight operations
+ * between logical checkpoints (before execution, between chunks, between phases).
+ * Operations that have already started are allowed to finish; the token stops the
+ * next unit of work from starting.
+ */
+export class CancellationToken {
+	private _cancelled = false;
+
+	/** True once cancel() has been called. */
+	get isCancelled(): boolean {
+		return this._cancelled;
+	}
+
+	/** Signal cancellation. Idempotent — safe to call multiple times. */
+	cancel(): void {
+		this._cancelled = true;
+	}
+
+	/** Throw an error if this token has been cancelled. */
+	throwIfCancelled(): void {
+		if (this._cancelled) {
+			throw new Error("Operation cancelled");
+		}
+	}
 }
 
 // ==========================================
@@ -374,6 +485,17 @@ export interface KernelConfig {
 			/** Max probe attempts in half-open before re-opening (default: 1) */
 			halfOpenMaxAttempts: number;
 		};
+		healthCheck?: {
+			/** Ms between probeAll() cycles (default: 60_000) */
+			intervalMs: number;
+			/** Ms before an individual probe is abandoned and counted as "down" (default: 5_000) */
+			probeTimeoutMs: number;
+		};
+	};
+	/** Session persistence configuration (optional) */
+	sessionStorage?: {
+		/** Directory for file-based session storage */
+		path: string;
 	};
 }
 

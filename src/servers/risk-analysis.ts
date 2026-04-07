@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
-import { runMCPServer } from "../shared/mcp-server.js";
+import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
 interface RiskAssessment {
@@ -145,8 +145,86 @@ const riskAnalysisTemplate: ServerTemplate = {
 	],
 };
 
+// ---------------------------------------------------------------------------
+// Distribution samplers — exported for unit testing
+// ---------------------------------------------------------------------------
+
+/** Uniform distribution: sample from [min, max] */
+export function sampleUniform(min: number, max: number): number {
+	return min + Math.random() * (max - min);
+}
+
+/**
+ * Triangular distribution: inverse-CDF method.
+ *   F⁻¹(u) for u < fc:  min + sqrt(u * (max-min) * (base-min))
+ *   F⁻¹(u) for u ≥ fc:  max - sqrt((1-u) * (max-min) * (max-base))
+ * where fc = (base - min) / (max - min)
+ */
+export function sampleTriangular(min: number, base: number, max: number): number {
+	const u = Math.random();
+	const fc = (base - min) / (max - min);
+	if (u < fc) {
+		return min + Math.sqrt(u * (max - min) * (base - min));
+	}
+	return max - Math.sqrt((1 - u) * (max - min) * (max - base));
+}
+
+/**
+ * Normal distribution: Box-Muller transform.
+ * Returns one sample; the paired sample is discarded for simplicity.
+ */
+export function sampleNormal(mean: number, stddev: number): number {
+	// Box-Muller: two uniform samples → one standard normal
+	const u1 = Math.random();
+	const u2 = Math.random();
+	const z0 = Math.sqrt(-2 * Math.log(u1 === 0 ? Number.EPSILON : u1)) * Math.cos(2 * Math.PI * u2);
+	return mean + z0 * stddev;
+}
+
+type DistributionSpec = {
+	base: number;
+	min: number;
+	max: number;
+	distribution: "normal" | "triangular" | "uniform";
+};
+
+function sample(spec: DistributionSpec): number {
+	const range = spec.max - spec.min;
+	const stddev = range / 6; // treat [min,max] as ±3σ for normal
+	switch (spec.distribution) {
+		case "uniform":
+			return sampleUniform(spec.min, spec.max);
+		case "triangular":
+			return sampleTriangular(spec.min, spec.base, spec.max);
+		case "normal":
+			return sampleNormal(spec.base, stddev);
+	}
+}
+
+function percentile(sorted: number[], p: number): number {
+	const idx = Math.min(Math.floor(sorted.length * p), sorted.length - 1);
+	return sorted[idx];
+}
+
+function stdDev(values: number[]): number {
+	const mean = values.reduce((a, b) => a + b, 0) / values.length;
+	const variance = values.reduce((s, v) => s + (v - mean) ** 2, 0) / values.length;
+	return Math.sqrt(variance);
+}
+
+// ---------------------------------------------------------------------------
 // Domain-specific analysis functions
-function performRiskAssessment(args: any): RiskAssessment {
+// ---------------------------------------------------------------------------
+
+function performRiskAssessment(args: {
+	projectData: {
+		geological?: { confidence?: number };
+		technical?: Record<string, unknown>;
+		economic?: { irr?: number };
+		regulatory?: Record<string, unknown>;
+	};
+	riskProfile: string;
+}): RiskAssessment {
 	const projectData = args.projectData;
 
 	// Calculate risk scores for each category
@@ -155,8 +233,8 @@ function performRiskAssessment(args: any): RiskAssessment {
 		technical: assessTechnicalRisk(projectData.technical),
 		economic: assessEconomicRisk(projectData.economic),
 		regulatory: assessRegulatoryRisk(projectData.regulatory),
-		environmental: Math.random() * 0.4 + 0.1, // 0.1-0.5
-		operational: Math.random() * 0.3 + 0.2, // 0.2-0.5
+		environmental: 0.25, // stub: mid-range — replace with regulatory/site data
+		operational: 0.35, // stub: mid-range — replace with operational history data
 	};
 
 	// Calculate overall risk (weighted average)
@@ -188,42 +266,68 @@ function performRiskAssessment(args: any): RiskAssessment {
 	};
 }
 
-function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
-	// Essential Monte Carlo simulation logic
-	const iterations = args.iterations;
-	const npvResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 10000000 - 2000000);
-	const irrResults = Array.from({ length: Math.min(iterations, 1000) }, () => Math.random() * 0.5);
+export function performMonteCarloAnalysis(args: {
+	variables: {
+		oilPrice: DistributionSpec;
+		initialProduction: DistributionSpec;
+		declineRate: DistributionSpec;
+		capex: DistributionSpec;
+	};
+	iterations: number;
+	targetIRR: number;
+}): MonteCarloAnalysis {
+	const { iterations, variables, targetIRR } = args;
+
+	// Simple DCF proxy: NPV ≈ (oilPrice * initialProduction * (1/declineRate) * 12 * 0.85) - capex
+	// IRR proxy: derived from NPV relative to capex
+	// These are representative approximations sufficient for probabilistic distribution shape.
+	const npvSamples: number[] = new Array(iterations);
+	const irrSamples: number[] = new Array(iterations);
+
+	for (let i = 0; i < iterations; i++) {
+		const price = sample(variables.oilPrice); // $/bbl
+		const ip = sample(variables.initialProduction); // bbl/month initial
+		const di = Math.max(0.01, sample(variables.declineRate)); // monthly decline (prevent div/0)
+		const capex = Math.max(1, sample(variables.capex)); // dollars
+
+		// Revenue proxy: sum of hyperbolic decline over 120 months (10yr), b=1.2
+		// Using exponential decline approximation: EUR ≈ ip / di (bbl)
+		const eur = ip / di; // equivalent EUR in months × bbl/month
+		const revenue = price * eur * 0.85; // 85% NRI / opex haircut
+
+		const npv = revenue - capex;
+		const irr = npv > 0 ? (revenue / capex - 1) * (di * 12) : -di * 12; // annualized proxy
+
+		npvSamples[i] = npv;
+		irrSamples[i] = irr;
+	}
+
+	npvSamples.sort((a, b) => a - b);
+	irrSamples.sort((a, b) => a - b);
+
+	const npvMean = npvSamples.reduce((a, b) => a + b, 0) / iterations;
+	const irrMean = irrSamples.reduce((a, b) => a + b, 0) / iterations;
 
 	return {
 		iterations,
 		results: {
 			npv: {
-				mean: npvResults.reduce((a, b) => a + b) / npvResults.length,
-				p10: npvResults.sort()[Math.floor(npvResults.length * 0.1)],
-				p50: npvResults.sort()[Math.floor(npvResults.length * 0.5)],
-				p90: npvResults.sort()[Math.floor(npvResults.length * 0.9)],
-				stdDev: Math.sqrt(
-					npvResults.reduce(
-						(sum, val) => sum + (val - npvResults.reduce((a, b) => a + b) / npvResults.length) ** 2,
-						0,
-					) / npvResults.length,
-				),
+				mean: npvMean,
+				p10: percentile(npvSamples, 0.1),
+				p50: percentile(npvSamples, 0.5),
+				p90: percentile(npvSamples, 0.9),
+				stdDev: stdDev(npvSamples),
 			},
 			irr: {
-				mean: irrResults.reduce((a, b) => a + b) / irrResults.length,
-				p10: irrResults.sort()[Math.floor(irrResults.length * 0.1)],
-				p50: irrResults.sort()[Math.floor(irrResults.length * 0.5)],
-				p90: irrResults.sort()[Math.floor(irrResults.length * 0.9)],
-				stdDev: Math.sqrt(
-					irrResults.reduce(
-						(sum, val) => sum + (val - irrResults.reduce((a, b) => a + b) / irrResults.length) ** 2,
-						0,
-					) / irrResults.length,
-				),
+				mean: irrMean,
+				p10: percentile(irrSamples, 0.1),
+				p50: percentile(irrSamples, 0.5),
+				p90: percentile(irrSamples, 0.9),
+				stdDev: stdDev(irrSamples),
 			},
 			probability: {
-				positive_npv: npvResults.filter((npv) => npv > 0).length / iterations,
-				target_irr: irrResults.filter((irr) => irr > args.targetIRR).length / iterations,
+				positive_npv: npvSamples.filter((v) => v > 0).length / iterations,
+				target_irr: irrSamples.filter((v) => v > targetIRR).length / iterations,
 			},
 		},
 		sensitivities: [
@@ -242,30 +346,45 @@ function performMonteCarloAnalysis(args: any): MonteCarloAnalysis {
 }
 
 // Helper functions for risk assessment
-function assessGeologicalRisk(geoData: any): number {
+function assessGeologicalRisk(geoData: { confidence?: number } | null | undefined): number {
 	if (!geoData) return 0.6;
 	const confidence = geoData.confidence || 75;
 	return Math.max(0.1, (100 - confidence) / 100);
 }
 
-function assessTechnicalRisk(techData: any): number {
+function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
 	if (!techData) return 0.5;
-	return Math.random() * 0.4 + 0.1;
+	return 0.3; // stub: mid-range — replace with well complexity/technology maturity scoring
 }
 
-function assessEconomicRisk(econData: any): number {
+function assessEconomicRisk(econData: { irr?: number } | null | undefined): number {
 	if (!econData) return 0.7;
 	const irr = econData.irr || 0.1;
 	return Math.max(0.1, Math.min(0.8, (0.25 - irr) / 0.15));
 }
 
-function assessRegulatoryRisk(_regData: any): number {
-	return Math.random() * 0.3 + 0.1;
+function assessRegulatoryRisk(_regData: Record<string, unknown> | null | undefined): number {
+	return 0.2; // stub: low-mid — replace with jurisdiction/permit status lookup
 }
 
-function identifyKeyRisks(riskCategories: any, _projectData: any): Array<any> {
-	const risks: Array<any> = [];
-	Object.entries(riskCategories).forEach(([category, risk]: [string, any]) => {
+function identifyKeyRisks(
+	riskCategories: Record<string, number>,
+	_projectData: Record<string, unknown>,
+): Array<{
+	category: string;
+	risk: string;
+	probability: number;
+	impact: number;
+	severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+}> {
+	const risks: Array<{
+		category: string;
+		risk: string;
+		probability: number;
+		impact: number;
+		severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+	}> = [];
+	Object.entries(riskCategories).forEach(([category, risk]) => {
 		if (risk > 0.5) {
 			risks.push({
 				category,
@@ -279,7 +398,9 @@ function identifyKeyRisks(riskCategories: any, _projectData: any): Array<any> {
 	return risks;
 }
 
-function generateMitigationStrategies(_keyRisks: any[]): string[] {
+function generateMitigationStrategies(
+	_keyRisks: Array<{ category: string; risk: string; probability: number; impact: number; severity: string }>,
+): string[] {
 	return [
 		"Implement comprehensive monitoring and surveillance programs",
 		"Develop contingency plans for identified risk scenarios",
@@ -300,6 +421,6 @@ export default RiskAnalysisServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new (RiskAnalysisServer as any)();
+	const server = new (RiskAnalysisServer as unknown as new () => MCPServer)();
 	runMCPServer(server);
 }
