@@ -63,7 +63,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 - Production forecasts by month/year
 - Whether Arps hyperbolic, exponential, or harmonic decline fits the data best
 
-**LLM status:** Planned — issue [#213](https://github.com/ryemyster/ShaleYeah/issues/213). Currently uses rule-based Arps decline equations.
+**LLM status:** ✅ Wired (issue [#213](https://github.com/ryemyster/ShaleYeah/issues/213)). After fitting Arps decline parameters (qi, Di, b) from production data, `synthesizeInterpretationWithLLM()` sends those parameters to Claude. Claude returns a plain-English description of the decline character (e.g. "hyperbolic with strong early transient flow"), the nearest basin analog, and any anomaly flags. Falls back to `deriveDefaultInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
 **Code:** [src/servers/curve-smith.ts](../src/servers/curve-smith.ts)
 
@@ -210,7 +210,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 | --- | --- | --- |
 | `geowiz` | ✅ Yes | — |
 | `econobot` | ✅ Yes | — |
-| `curve-smith` | Planned | [#213](https://github.com/ryemyster/ShaleYeah/issues/213) |
+| `curve-smith` | ✅ Yes | — |
 | `risk-analysis` | Planned | [#214](https://github.com/ryemyster/ShaleYeah/issues/214) |
 | `decision` | Planned | [#215](https://github.com/ryemyster/ShaleYeah/issues/215) |
 | `reporter` | Planned | [#216](https://github.com/ryemyster/ShaleYeah/issues/216) |
