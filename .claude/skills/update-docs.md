@@ -21,8 +21,8 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
    | Changed area | Docs to review |
    | --- | --- |
    | `src/servers/<name>.ts` | `docs/SERVERS.md` (agent entry), `docs/DEMO_VS_PRODUCTION.md` (LLM status table), `README.md` (agent quick list), `docs/MCP_INTEGRATION.md` (if server name or launch command changed) |
-   | `src/kernel/` | `docs/ARCHITECTURE.md`, `docs/API_REFERENCE.md`, `docs/GLOSSARY.md` (kernel section) |
-   | `src/shared/llm-client.ts` | `docs/GLOSSARY.md` (callLLM section), `docs/ARCHITECTURE.md` |
+   | `src/kernel/` | `docs/ARCHITECTURE.md`, `docs/API_REFERENCE.md`, `docs/GLOSSARY.md` (kernel section), `docs/ARCADE-PATTERNS.md` (if a pattern status changes) |
+   | `src/shared/llm-client.ts` | `docs/GLOSSARY.md` (callLLM section), `docs/ARCHITECTURE.md`, `docs/ARCADE-PATTERNS.md` (if provider or adapter pattern changes) |
    | `src/fixtures/` | `docs/DEMO_VS_PRODUCTION.md` |
    | `tools/` | `docs/ARCHITECTURE.md` |
    | `tests/` | `docs/ARCHITECTURE.md` (test suite table), `docs/GETTING_STARTED.md` (if test commands changed) |
@@ -35,6 +35,7 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
    - Command examples that reference removed or renamed scripts
    - Any line that says a feature is "planned" or "coming soon" when it has now shipped
    - Output directory paths — verify they match actual runtime behavior
+   - **`docs/ARCADE-PATTERNS.md`** — if this issue implements, partially implements, or removes an Arcade pattern, update that pattern's row (✅ / 🔶 / ❌), update the `Implementation` description, update the coverage summary table at the bottom, and update the `Last audited` date at the top.
 
 4. **Update only what changed.** Do not rewrite docs wholesale. Edit the specific stale sentence or table row. Preserve the existing voice and formatting around your change.
 
