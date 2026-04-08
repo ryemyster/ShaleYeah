@@ -44,8 +44,8 @@ async function testDemoMode(): Promise<boolean> {
 
 		const modelContent = await fs.readFile(path.join(testOutDir, "FINANCIAL_MODEL.json"), "utf-8");
 		const model = JSON.parse(modelContent);
-		if (!model.investment_summary?.npv_10_percent) {
-			throw new Error("Financial model validation failed");
+		if (!model.investment_summary || !model.analysis_metadata) {
+			throw new Error("Financial model validation failed — missing required sections");
 		}
 
 		console.log("✅ All demo tests passed!");

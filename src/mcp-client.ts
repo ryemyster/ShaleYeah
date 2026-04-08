@@ -37,6 +37,8 @@ export interface AnalysisRequest {
 	inputFiles?: string[];
 	outputDir: string;
 	workflow?: string;
+	/** Optional per-server fixture args — when present, used instead of getServerSpecificArguments() */
+	fixtureArgs?: Record<string, Record<string, unknown>>;
 }
 
 export interface AnalysisResult {
@@ -413,22 +415,7 @@ export class ShaleYeahMCPClient {
 		const startTime = Date.now();
 
 		try {
-			// In demo mode, use realistic mock analysis
-			if (request.mode === "demo") {
-				const mockAnalysis = this.generateMockAnalysis(serverName, request);
-				const executionTime = Date.now() - startTime;
-
-				return {
-					server: serverName,
-					persona: config.persona,
-					analysis: mockAnalysis as MCPAnalysisResult,
-					confidence: typeof mockAnalysis.confidence === "number" ? mockAnalysis.confidence : 85,
-					executionTime,
-					success: true,
-				};
-			}
-
-			// Production mode - call actual MCP server tools
+			// Call actual MCP server tools (both demo and production)
 			const tools = await client.listTools();
 			const primaryTool = tools.tools[0]; // Use first available tool
 
@@ -436,8 +423,9 @@ export class ShaleYeahMCPClient {
 				throw new Error("No tools available on server");
 			}
 
-			// Create server-specific arguments
-			const toolArguments = this.getServerSpecificArguments(serverName, primaryTool.name, request);
+			// Use fixture args when provided (demo mode), otherwise derive from request
+			const toolArguments =
+				request.fixtureArgs?.[serverName] ?? this.getServerSpecificArguments(serverName, primaryTool.name, request);
 
 			const result = await client.callTool({
 				name: primaryTool.name,
@@ -634,105 +622,6 @@ export class ShaleYeahMCPClient {
 					data: defaultProjectData,
 				};
 		}
-	}
-
-	/**
-	 * Generate realistic mock analysis for demo mode
-	 */
-	private generateMockAnalysis(serverName: string, _request: AnalysisRequest): MCPAnalysisResult {
-		const baseConfidence = 75 + Math.random() * 20;
-
-		const mockData: Record<string, MCPAnalysisResult> = {
-			geowiz: {
-				geological: {
-					formationQuality: {
-						reservoirQuality: "good",
-						porosityAssessment: "Good porosity for completion",
-						permeabilityAssessment: "Moderate permeability",
-						hydrocarbonPotential: "medium",
-						completionEffectiveness: "Standard completion recommended",
-					},
-					drillingRecommendations: {
-						optimalLandingZones: ["Wolfcamp A", "Wolfcamp B"],
-						lateralLengthRecommendation: "7500 ft lateral",
-						completionStrategy: "Standard multi-stage frac",
-						drillingRisks: ["Standard completion risk"],
-					},
-					investmentPerspective: {
-						geologicalConfidence: baseConfidence,
-						developmentPotential: "Good development potential",
-						keyRisks: ["Commodity price risk"],
-						comparableAnalogues: ["Nearby wells"],
-						recommendedAction: "drill",
-					},
-					professionalSummary: "Good geological prospect",
-					confidenceLevel: baseConfidence,
-				},
-				confidence: baseConfidence,
-			},
-			"curve-smith": {
-				curve: {
-					initialRate: {
-						oil: Math.round(800 + Math.random() * 600),
-						gas: Math.round(1500 + Math.random() * 1000),
-						water: Math.round(50 + Math.random() * 100),
-					},
-					declineRate: Math.round((8 + Math.random() * 4) * 10) / 10,
-					bFactor: Math.round((0.5 + Math.random() * 0.4) * 100) / 100,
-					eur: {
-						oil: Math.round(450000 + Math.random() * 200000),
-						gas: Math.round(900000 + Math.random() * 400000),
-					},
-					typeCurve: "Tier 1 horizontal well",
-					confidence: baseConfidence,
-					qualityGrade: "Good",
-				},
-				confidence: baseConfidence,
-			},
-			econobot: {
-				economic: {
-					npv: Math.round((2.5 + Math.random() * 2) * 1000000),
-					irr: Math.round((22 + Math.random() * 12) * 10) / 10,
-					roi: Math.round((1.5 + Math.random() * 1) * 100) / 100,
-					paybackPeriod: Math.round(8 + Math.random() * 6),
-					paybackMonths: Math.round(8 + Math.random() * 6),
-					assumptions: {
-						oilPrice: 75 + Math.random() * 10,
-						gasPrice: 3 + Math.random() * 1,
-						drillingCost: 8000000 + Math.random() * 2000000,
-						completionCost: 4000000 + Math.random() * 1000000,
-					},
-					sensitivityAnalysis: [],
-					confidence: baseConfidence,
-				},
-				confidence: baseConfidence,
-			},
-			"risk-analysis": {
-				risk: {
-					overallRiskScore: Math.round(30 + Math.random() * 40),
-					overallRisk: Math.round(30 + Math.random() * 40),
-					riskFactors: [
-						{
-							category: "Technical",
-							description: "Standard drilling risk",
-							probability: 0.3,
-							impact: 0.4,
-							mitigationStrategies: ["Use experienced drilling contractor"],
-						},
-					],
-					confidence: baseConfidence,
-				},
-				confidence: baseConfidence,
-			},
-			title: {
-				confidence: baseConfidence,
-			},
-			reporter: {
-				confidence: baseConfidence,
-			},
-		};
-
-		return mockData[serverName] || { confidence: baseConfidence };
 	}
 
 	/**
