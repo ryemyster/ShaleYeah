@@ -75,7 +75,7 @@ This table shows which servers actually call Claude and which still use rule-bas
 | `econobot` | ✅ Yes | Generates PROCEED/CONDITIONAL/DECLINE recommendation from financial metrics |
 | `curve-smith` | ✅ Yes | Interprets decline character, suggests basin analog, and flags anomalies from fitted Arps parameters |
 | `risk-analysis` | ✅ Yes | Interprets full risk profile, identifies top risk factor, and generates plain-English investment memo narrative from computed scores |
-| `decision` | Planned (#215) | Final investment recommendation synthesis |
+| `decision` | ✅ Yes | Synthesizes all upstream domain data, identifies biggest risk and upside, and generates plain-English investment verdict from NPV/IRR/risk/geological inputs |
 | `reporter` | Planned (#216) | Executive report narrative generation |
 | `research`, `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test` | Planned (#217) | Domain-specific LLM synthesis |
 

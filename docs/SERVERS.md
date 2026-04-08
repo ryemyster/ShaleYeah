@@ -98,9 +98,11 @@ These run after the core analysis is complete and synthesize everything into a f
 
 **Important:** The decision tool requires human confirmation before it finalizes — the kernel won't execute it until you call `confirmAction()`. This prevents accidentally committing to a decision without reviewing it.
 
-**LLM status:** Planned — issue [#215](https://github.com/ryemyster/ShaleYeah/issues/215).
+**LLM status:** ✅ Wired (issue [#215](https://github.com/ryemyster/ShaleYeah/issues/215)). After the rule-based scoring computes a preliminary INVEST/PASS/CONDITIONAL verdict, `synthesizeDecisionWithLLM()` sends all upstream numbers (NPV, IRR, payback, risk score, geological confidence, oil/gas price) to Claude. Claude returns a structured `{ verdict, biggestRisk, biggestUpside, rationale }` — and can upgrade or downgrade the preliminary call if the full picture warrants it. Confidence score scales with input completeness: 50% base + 10% per upstream domain present. Falls back to `deriveDefaultDecisionInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
 **Code:** [src/servers/decision.ts](../src/servers/decision.ts)
+
+**Tests:** [tests/decision-anti-stub.test.ts](../tests/decision-anti-stub.test.ts)
 
 ---
 
@@ -212,7 +214,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 | `econobot` | ✅ Yes | — |
 | `curve-smith` | ✅ Yes | — |
 | `risk-analysis` | ✅ Yes | — |
-| `decision` | Planned | [#215](https://github.com/ryemyster/ShaleYeah/issues/215) |
+| `decision` | ✅ Yes | — |
 | `reporter` | Planned | [#216](https://github.com/ryemyster/ShaleYeah/issues/216) |
 | All 8 support agents | Planned | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
 

@@ -7,9 +7,22 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate } from "../shared/server-factory.js";
 import type { AnalysisInputs, InvestmentCriteria, PortfolioAsset } from "../shared/types.js";
+
+// The shape Claude returns when it synthesizes all upstream data into a decision
+interface LLMDecisionInterpretation {
+	// Claude's final verdict — may upgrade or downgrade the rule-based preliminary call
+	verdict: "INVEST" | "PASS" | "CONDITIONAL";
+	// The single most critical risk Claude identified across all domain inputs
+	biggestRisk: string;
+	// The single most compelling upside Claude identified
+	biggestUpside: string;
+	// 2-3 sentence plain-English rationale for an investment memo
+	rationale: string;
+}
 
 interface InvestmentDecision {
 	decision: "INVEST" | "PASS" | "CONDITIONAL";
@@ -21,6 +34,8 @@ interface InvestmentDecision {
 	upside: string[];
 	conditions?: string[];
 	timeline: string;
+	// LLM-generated interpretation, present when Claude was available
+	interpretation?: LLMDecisionInterpretation;
 }
 
 interface BidStrategy {
@@ -88,7 +103,7 @@ const decisionTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const decision = evaluateInvestmentOpportunity(args);
+				const decision = await evaluateInvestmentOpportunity(args);
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(decision, null, 2));
@@ -171,11 +186,110 @@ const decisionTemplate: ServerTemplate = {
 	],
 };
 
-// Domain-specific investment decision functions
-function evaluateInvestmentOpportunity(args: {
+// Counts how many upstream domain results were actually provided.
+// More complete input → higher confidence in the final decision.
+// Checks the four domains available on AnalysisInputs: geological, economic, curve, and risk.
+// Exported so tests can verify confidence scaling directly.
+export function countDomainsPresent(inputs: AnalysisInputs): number {
+	return [inputs.geological, inputs.economic, inputs.curve, inputs.risk].filter(Boolean).length;
+}
+
+// Rule-based fallback when Claude is unavailable (no API key, network down, etc.).
+// Returns a structured interpretation derived purely from the rule-based scoring above.
+function deriveDefaultDecisionInterpretation(
+	decision: "INVEST" | "PASS" | "CONDITIONAL",
+	reasoning: string[],
+	riskFactors: string[],
+	upside: string[],
+): LLMDecisionInterpretation {
+	return {
+		verdict: decision,
+		biggestRisk: riskFactors[0] ?? "No major risks identified",
+		biggestUpside: upside[0] ?? "Standard return potential",
+		rationale: reasoning[0] ?? "Decision based on quantitative threshold analysis.",
+	};
+}
+
+// Sends all upstream analysis numbers to Claude and asks for a structured verdict.
+// Falls back to deriveDefaultDecisionInterpretation if the API is unavailable.
+async function synthesizeDecisionWithLLM(params: {
 	analysisInputs: AnalysisInputs;
 	investmentCriteria?: InvestmentCriteria;
-}): InvestmentDecision {
+	marketConditions?: { oilPrice?: number; gasPrice?: number; competitiveActivity?: string };
+	ruleBasedDecision: "INVEST" | "PASS" | "CONDITIONAL";
+	reasoning: string[];
+	riskFactors: string[];
+	upside: string[];
+}): Promise<LLMDecisionInterpretation> {
+	const {
+		analysisInputs: inputs,
+		investmentCriteria: criteria,
+		marketConditions: market,
+		ruleBasedDecision,
+		reasoning,
+		riskFactors,
+		upside,
+	} = params;
+
+	const npv = inputs.economic?.npv ?? 0;
+	const irr = inputs.economic?.irr ?? 0;
+	const payback = inputs.economic?.paybackMonths ?? 0;
+	const riskScore = inputs.risk?.overallRisk ?? 0;
+	const geoConfidence = (inputs.geological as { confidence?: number } | undefined)?.confidence ?? 0;
+
+	// Build a prompt that gives Augustus all the numbers — he must cite them, not speak generically
+	const prompt = `You are Augustus Decidius Maximus, Supreme Investment Strategist for oil and gas.
+
+Upstream analysis results:
+- NPV: $${(npv / 1_000_000).toFixed(2)}M
+- IRR: ${(irr * 100).toFixed(1)}%
+- Payback: ${payback} months
+- Overall risk score: ${(riskScore * 100).toFixed(1)}%
+- Geological confidence: ${(geoConfidence * 100).toFixed(1)}%${market?.oilPrice !== undefined ? `\n- Oil price: $${market.oilPrice}/bbl` : ""}${market?.gasPrice !== undefined ? `\n- Gas price: $${market.gasPrice}/MMBtu` : ""}${market?.competitiveActivity !== undefined ? `\n- Market: ${market.competitiveActivity}` : ""}
+
+Investment criteria thresholds:
+- Min NPV: $${((criteria?.minNPV ?? 1_000_000) / 1_000_000).toFixed(1)}M
+- Min IRR: ${((criteria?.minIRR ?? 0.15) * 100).toFixed(0)}%
+- Max payback: ${criteria?.maxPayback ?? 24} months
+- Max risk: ${((criteria?.maxRisk ?? 0.7) * 100).toFixed(0)}%
+
+Rule-based preliminary verdict: ${ruleBasedDecision}
+Rule-based reasoning: ${reasoning.join("; ")}
+Risk factors: ${riskFactors.join("; ") || "none"}
+Upside factors: ${upside.join("; ") || "none"}
+
+Weigh all domain inputs. Cite specific numbers, not generic language. You may upgrade or downgrade the preliminary verdict if the full picture warrants it.
+Return ONLY valid JSON with this exact structure:
+{
+  "verdict": "INVEST" | "PASS" | "CONDITIONAL",
+  "biggestRisk": "<single most critical risk factor in one sentence>",
+  "biggestUpside": "<single most compelling upside in one sentence>",
+  "rationale": "<2-3 sentence plain-English rationale for an investment memo>"
+}`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 350 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in LLM response");
+		const parsed = JSON.parse(match[0]) as LLMDecisionInterpretation;
+		if (!["INVEST", "PASS", "CONDITIONAL"].includes(parsed.verdict) || typeof parsed.rationale !== "string") {
+			throw new Error("Invalid LLM response shape");
+		}
+		return parsed;
+	} catch {
+		// If the LLM is unavailable (no API key, network down, etc.),
+		// fall back to the rule-based interpretation so the server still
+		// returns something useful instead of crashing.
+		return deriveDefaultDecisionInterpretation(ruleBasedDecision, reasoning, riskFactors, upside);
+	}
+}
+
+// Domain-specific investment decision functions
+async function evaluateInvestmentOpportunity(args: {
+	analysisInputs: AnalysisInputs;
+	investmentCriteria?: InvestmentCriteria;
+	marketConditions?: { oilPrice?: number; gasPrice?: number; competitiveActivity?: string };
+}): Promise<InvestmentDecision> {
 	const inputs = args.analysisInputs;
 	const criteria = args.investmentCriteria;
 
@@ -187,7 +301,6 @@ function evaluateInvestmentOpportunity(args: {
 
 	// Decision logic
 	let decision: "INVEST" | "PASS" | "CONDITIONAL" = "PASS";
-	let confidence = 75;
 	const reasoning: string[] = [];
 	const riskFactors: string[] = [];
 	const upside: string[] = [];
@@ -197,19 +310,16 @@ function evaluateInvestmentOpportunity(args: {
 	if (npv >= (criteria?.minNPV ?? 0) && irr >= (criteria?.minIRR ?? 0) && payback <= (criteria?.maxPayback ?? 999)) {
 		if (riskScore <= (criteria?.maxRisk ?? 1)) {
 			decision = "INVEST";
-			confidence = 85;
 			reasoning.push(`Strong economics: NPV $${(npv / 1000000).toFixed(1)}M, IRR ${(irr * 100).toFixed(1)}%`);
 			reasoning.push(`Acceptable risk profile: ${(riskScore * 100).toFixed(1)}% risk score`);
 		} else {
 			decision = "CONDITIONAL";
-			confidence = 70;
 			reasoning.push("Economics meet thresholds but risk is elevated");
 			conditions.push("Additional risk mitigation required");
 			conditions.push("Enhanced monitoring and contingency planning");
 		}
 	} else {
 		decision = "PASS";
-		confidence = 80;
 		reasoning.push("Economics do not meet minimum investment criteria");
 		if (npv < (criteria?.minNPV ?? 0))
 			reasoning.push(
@@ -242,16 +352,34 @@ function evaluateInvestmentOpportunity(args: {
 	)
 		upside.push("Significant upside in P10 scenario");
 
+	// Confidence scales with how many upstream domains provided data.
+	// A decision with all 4 core domains is much more trustworthy than one with only 1.
+	const domainsPresent = countDomainsPresent(inputs);
+	const confidence = Math.min(100, 50 + domainsPresent * 10);
+
+	// Call Claude to synthesize all domain data into a plain-English verdict.
+	// Falls back to rule-based defaults if the API is unavailable.
+	const interpretation = await synthesizeDecisionWithLLM({
+		analysisInputs: inputs,
+		investmentCriteria: criteria,
+		marketConditions: args.marketConditions,
+		ruleBasedDecision: decision,
+		reasoning,
+		riskFactors,
+		upside,
+	});
+
 	return {
-		decision,
+		decision: interpretation.verdict,
 		confidence,
-		recommendedBid: calculateRecommendedBid(npv, decision),
-		maxBid: calculateMaxBid(npv, decision),
+		recommendedBid: calculateRecommendedBid(npv, interpretation.verdict),
+		maxBid: calculateMaxBid(npv, interpretation.verdict),
 		reasoning,
 		riskFactors,
 		upside,
 		conditions: conditions.length > 0 ? conditions : undefined,
-		timeline: determineTimeline(decision, riskScore),
+		timeline: determineTimeline(interpretation.verdict, riskScore),
+		interpretation,
 	};
 }
 
@@ -339,7 +467,8 @@ function assessPortfolioFit(args: { opportunity: PortfolioAsset; currentPortfoli
 }
 
 // Helper functions
-function calculateRecommendedBid(npv: number, decision: string): number {
+// Exported for testing — verifies that INVEST produces a non-zero bid while PASS returns 0
+export function calculateRecommendedBid(npv: number, decision: string): number {
 	if (decision === "PASS") return 0;
 	return Math.round(npv * 0.7); // Conservative 70% of NPV
 }
