@@ -2,9 +2,9 @@
 
 This document maps every [Arcade.dev agentic tool pattern](https://www.arcade.dev/patterns) to its implementation status in SHALE YEAH. It is the authoritative reference for pattern coverage and serves as the engineering roadmap for closing gaps.
 
-**Last audited:** 2026-03-30
+**Last audited:** 2026-04-08
 **Total patterns:** 52 across 10 categories
-**Implemented:** 29 (56%) | **Partial:** 9 (17%) | **Missing:** 14 (27%)
+**Implemented:** 30 (58%) | **Partial:** 8 (15%) | **Missing:** 14 (27%)
 
 ---
 
@@ -57,7 +57,7 @@ How agents find and understand available tools.
 | **Schema Explorer** | ❌ | `describe_tools()` returns all schemas at once. No layered drill-down (server list → tool list → full schema). | [#210](https://github.com/ryemyster/ShaleYeah/issues/210) |
 | **Dependency Hint** | 🔶 | Dependencies enforced in bundles via `dependsOn` in `src/kernel/executor.ts`. Not surfaced in tool descriptions — agents cannot discover "call X before Y" dynamically. | [#198](https://github.com/ryemyster/ShaleYeah/issues/198) |
 | **Capability Matching** | ✅ | `src/kernel/registry.ts` — `findByCapability()` does case-insensitive substring matching on capability strings | — |
-| **Health Check** | 🔶 | `src/kernel/middleware/circuit-breaker.ts` — per-server circuit breaker tracks failure state and fast-fails open circuits. Reactive health (based on failures), not proactive pinging. | [#112](https://github.com/ryemyster/ShaleYeah/issues/112) |
+| **Health Check** | ✅ | `src/kernel/health-monitor.ts` — `HealthMonitor` class does proactive per-server pinging on a configurable interval. `kernel.startHealthMonitor(probeFn)` wires in a real probe; `kernel.getServerHealth(name)` returns current status. Unhealthy servers are excluded from scatter-gather. | — |
 
 ---
 
@@ -86,7 +86,7 @@ How tool calls are actually run.
 | **Async Job** | ❌ | No job queue, no polling API, no job ID tracking. Long-running bundles block the caller. | [#122](https://github.com/ryemyster/ShaleYeah/issues/122) |
 | **Idempotent Operation** | ✅ | `src/kernel/executor.ts` — `generateIdempotencyKey()` using SHA-256 hash of `{tool, args, sessionId}`. Duplicate requests with the same key return cached results. | — |
 | **Transactional Boundary** | ❌ | No all-or-nothing guarantees for multi-step bundles. Partial failures leave session in mixed state. | [#200](https://github.com/ryemyster/ShaleYeah/issues/200) |
-| **Compensation Handler** | ❌ | No undo/rollback mechanism when a step fails mid-bundle. | [#128](https://github.com/ryemyster/ShaleYeah/issues/128) |
+| **Compensation Handler** | ❌ | No undo/rollback mechanism when a step fails mid-bundle. Issue #128 was closed but nothing was built — ghost-close. | [#128](https://github.com/ryemyster/ShaleYeah/issues/128) |
 | **Timeout Boundary** | ✅ | `src/kernel/executor.ts` — `withTimeout()` helper, configurable `toolTimeoutMs` (default: 30s) via `KernelConfig.resilience` | — |
 
 ---
@@ -166,7 +166,7 @@ How the system is structured as a whole.
 |----------|-------------|---------|---------|--------|
 | Tool | 4 | 0 | 0 | 100% |
 | Tool Interface | 2 | 3 | 2 | 50% |
-| Tool Discovery | 2 | 2 | 1 | 60% |
+| Tool Discovery | 3 | 1 | 1 | 70% |
 | Tool Composition | 3 | 1 | 2 | 58% |
 | Tool Execution | 3 | 0 | 3 | 50% |
 | Tool Output | 3 | 1 | 2 | 58% |
@@ -174,7 +174,7 @@ How the system is structured as a whole.
 | Tool Resilience | 4 | 1 | 1 | 83% |
 | Tool Security | 2 | 1 | 1 | 63% |
 | Compositional | 0 | 2 | 2 | 25% |
-| **Total** | **29** | **9** (17%) | **14** (27%) | **56%** |
+| **Total** | **30** | **8** (15%) | **14** (27%) | **58%** |
 
 ---
 
@@ -183,10 +183,9 @@ How the system is structured as a whole.
 Ordered by impact on real production workflows:
 
 ### Immediate (unblock production use)
-1. **Health Check** (#112) — proactive server pinging, not just reactive circuit breaking
-2. **Operation Mode** (#199) — preview command tools before committing
-3. **Fallback Tool** (#149) — surface the already-existing fallback map dynamically
-4. **Fuzzy Match Threshold** (#118) — confidence-scored capability matching
+1. **Operation Mode** (#199) — preview command tools before committing
+2. **Fallback Tool** (#149) — surface the already-existing fallback map dynamically
+3. **Fuzzy Match Threshold** (#118) — confidence-scored capability matching
 
 ### High Value (developer experience)
 5. **Schema Explorer** (#210) — layered discovery reduces token waste

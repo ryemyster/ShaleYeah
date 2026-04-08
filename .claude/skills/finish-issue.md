@@ -37,6 +37,8 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Run `/update-docs` to identify and update all impacted files. Then additionally verify these specific items for every PR:
 
+   **`docs/ARCADE-PATTERNS.md`** — Check whether this issue implements or changes any Arcade pattern. If yes: update the pattern row status (✅ / 🔶 / ❌), update the `Implementation` column description, recompute the coverage summary table at the bottom, and update the `Last audited` date. If no pattern changed, leave the file untouched.
+
    **README.md agent table** — The `Claude?` column must reflect truth. If this issue wires `callLLM` into a server, change that server's row from the issue link to ✅. If a server's LLM wiring is reverted or found broken, change ✅ back to the issue link. The table must never claim ✅ for a server that doesn't pass its anti-stub test.
 
    **`docs/SERVERS.md`** — If this issue changes what a server does, how it falls back, or its LLM status, update that server's entry. The description must match the actual code, not the original design intent.
