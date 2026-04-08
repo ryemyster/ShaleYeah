@@ -7,8 +7,15 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
+
+interface LLMRiskInterpretation {
+	topRisk: string;
+	mitigationPriority: string;
+	riskNarrative: string;
+}
 
 interface RiskAssessment {
 	overallRisk: number; // 0-1 scale
@@ -30,6 +37,7 @@ interface RiskAssessment {
 	mitigationStrategies: string[];
 	confidence: number;
 	recommendation: string;
+	interpretation?: LLMRiskInterpretation;
 }
 
 interface MonteCarloAnalysis {
@@ -89,7 +97,7 @@ const riskAnalysisTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const assessment = performRiskAssessment(args);
+				const assessment = await performRiskAssessment(args);
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(assessment, null, 2));
@@ -216,7 +224,7 @@ function stdDev(values: number[]): number {
 // Domain-specific analysis functions
 // ---------------------------------------------------------------------------
 
-function performRiskAssessment(args: {
+async function performRiskAssessment(args: {
 	projectData: {
 		geological?: { confidence?: number };
 		technical?: Record<string, unknown>;
@@ -224,7 +232,7 @@ function performRiskAssessment(args: {
 		regulatory?: Record<string, unknown>;
 	};
 	riskProfile: string;
-}): RiskAssessment {
+}): Promise<RiskAssessment> {
 	const projectData = args.projectData;
 
 	// Calculate risk scores for each category
@@ -233,8 +241,8 @@ function performRiskAssessment(args: {
 		technical: assessTechnicalRisk(projectData.technical),
 		economic: assessEconomicRisk(projectData.economic),
 		regulatory: assessRegulatoryRisk(projectData.regulatory),
-		environmental: 0.25, // stub: mid-range — replace with regulatory/site data
-		operational: 0.35, // stub: mid-range — replace with operational history data
+		environmental: assessEnvironmentalRisk(projectData.regulatory),
+		operational: assessOperationalRisk(projectData.technical),
 	};
 
 	// Calculate overall risk (weighted average)
@@ -253,8 +261,16 @@ function performRiskAssessment(args: {
 	// Identify key risks
 	const keyRisks = identifyKeyRisks(riskCategories, projectData);
 
-	// Generate mitigation strategies
-	const mitigationStrategies = generateMitigationStrategies(keyRisks);
+	// LLM interpretation
+	const interpretation = await synthesizeRiskInterpretationWithLLM({
+		overallRisk,
+		riskCategories,
+		keyRisks,
+		riskProfile: args.riskProfile,
+	});
+
+	// Generate mitigation strategies — LLM priority first
+	const mitigationStrategies = [interpretation.mitigationPriority, ...generateMitigationStrategies(keyRisks)];
 
 	return {
 		overallRisk,
@@ -263,6 +279,7 @@ function performRiskAssessment(args: {
 		mitigationStrategies,
 		confidence: ServerUtils.calculateConfidence(0.85, 0.9),
 		recommendation: generateRiskRecommendation(overallRisk, args.riskProfile),
+		interpretation,
 	};
 }
 
@@ -352,9 +369,13 @@ function assessGeologicalRisk(geoData: { confidence?: number } | null | undefine
 	return Math.max(0.1, (100 - confidence) / 100);
 }
 
-function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
+export function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
 	if (!techData) return 0.5;
-	return 0.3; // stub: mid-range — replace with well complexity/technology maturity scoring
+	const wellType = String(techData.wellType ?? "").toLowerCase();
+	const depth = Number(techData.depth ?? 0);
+	const typeRisk = wellType.includes("horizontal") ? 0.35 : wellType.includes("directional") ? 0.25 : 0.15;
+	const depthRisk = depth > 12000 ? 0.2 : depth > 8000 ? 0.1 : 0.05;
+	return Math.min(0.9, typeRisk + depthRisk);
 }
 
 function assessEconomicRisk(econData: { irr?: number } | null | undefined): number {
@@ -363,8 +384,32 @@ function assessEconomicRisk(econData: { irr?: number } | null | undefined): numb
 	return Math.max(0.1, Math.min(0.8, (0.25 - irr) / 0.15));
 }
 
-function assessRegulatoryRisk(_regData: Record<string, unknown> | null | undefined): number {
-	return 0.2; // stub: low-mid — replace with jurisdiction/permit status lookup
+export function assessRegulatoryRisk(regData: Record<string, unknown> | null | undefined): number {
+	if (!regData) return 0.4;
+	const jurisdiction = String(regData.jurisdiction ?? "").toLowerCase();
+	const LOW_RISK = ["texas", "tx", "oklahoma", "ok", "wyoming", "wy"];
+	const HIGH_RISK = ["california", "ca", "colorado", "co", "new mexico", "nm"];
+	if (LOW_RISK.some((j) => jurisdiction.includes(j))) return 0.15;
+	if (HIGH_RISK.some((j) => jurisdiction.includes(j))) return 0.55;
+	return 0.35;
+}
+
+export function assessEnvironmentalRisk(regData: Record<string, unknown> | null | undefined): number {
+	if (!regData) return 0.4;
+	const jurisdiction = String(regData.jurisdiction ?? "").toLowerCase();
+	const permitStatus = String(regData.permitStatus ?? "").toLowerCase();
+	const baseRisk = jurisdiction.includes("california") || jurisdiction.includes("colorado") ? 0.6 : 0.3;
+	const permitAdj = permitStatus.includes("approved") ? -0.1 : permitStatus.includes("pending") ? 0.1 : 0;
+	return Math.min(0.9, Math.max(0.05, baseRisk + permitAdj));
+}
+
+export function assessOperationalRisk(techData: Record<string, unknown> | null | undefined): number {
+	if (!techData) return 0.45;
+	const wellType = String(techData.wellType ?? "").toLowerCase();
+	const formation = String(techData.formation ?? "").toLowerCase();
+	const typeRisk = wellType.includes("horizontal") ? 0.4 : wellType.includes("directional") ? 0.3 : 0.2;
+	const formRisk = formation.includes("shale") || formation.includes("tight") ? 0.1 : 0;
+	return Math.min(0.85, typeRisk + formRisk);
 }
 
 function identifyKeyRisks(
@@ -413,6 +458,72 @@ function generateRiskRecommendation(overallRisk: number, riskProfile: string): s
 	if (overallRisk < 0.5) return `Moderate risk acceptable for ${riskProfile} risk profile`;
 	if (overallRisk < 0.7) return "Elevated risk requires enhanced mitigation measures";
 	return "High risk profile may warrant declining the opportunity";
+}
+
+// ---------------------------------------------------------------------------
+// LLM synthesis
+// ---------------------------------------------------------------------------
+
+function deriveDefaultRiskInterpretation(
+	overallRisk: number,
+	riskCategories: Record<string, number>,
+): LLMRiskInterpretation {
+	const top = Object.entries(riskCategories).sort((a, b) => b[1] - a[1])[0];
+	return {
+		topRisk: `${top[0]} risk at ${(top[1] * 100).toFixed(0)}%`,
+		mitigationPriority: `Address ${top[0]} risk before proceeding`,
+		riskNarrative:
+			overallRisk > 0.6
+				? "High overall risk profile warrants enhanced due diligence and mitigation planning."
+				: overallRisk > 0.4
+					? "Moderate risk profile is manageable with standard mitigation measures."
+					: "Low risk profile supports investment consideration.",
+	};
+}
+
+async function synthesizeRiskInterpretationWithLLM(params: {
+	overallRisk: number;
+	riskCategories: Record<string, number>;
+	keyRisks: Array<{ category: string; risk: string; probability: number; impact: number }>;
+	riskProfile: string;
+	monteCarloP50?: number;
+}): Promise<LLMRiskInterpretation> {
+	const { overallRisk, riskCategories, keyRisks, riskProfile, monteCarloP50 } = params;
+	const categoryLines = Object.entries(riskCategories)
+		.map(([k, v]) => `  ${k}: ${(v * 100).toFixed(1)}%`)
+		.join("\n");
+	const prompt = `You are Gaius Probabilis Assessor, Master Risk Strategist for oil and gas investments.
+
+Risk assessment results:
+- Overall risk score: ${(overallRisk * 100).toFixed(1)}%
+- Investor risk profile: ${riskProfile}
+${monteCarloP50 !== undefined ? `- Monte Carlo P50 NPV: $${monteCarloP50.toLocaleString()}` : ""}
+
+Risk category breakdown:
+${categoryLines}
+
+Key risks identified:
+${keyRisks.map((r) => `  - ${r.category}: ${r.risk} (probability ${(r.probability * 100).toFixed(0)}%, impact ${(r.impact * 100).toFixed(0)}%)`).join("\n")}
+
+Return ONLY valid JSON with this exact structure:
+{
+  "topRisk": "<single most critical risk factor in one sentence>",
+  "mitigationPriority": "<specific first action to mitigate that risk>",
+  "riskNarrative": "<2-3 sentence plain-English risk summary for an investment memo>"
+}`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 300 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in LLM response");
+		const parsed = JSON.parse(match[0]) as LLMRiskInterpretation;
+		if (typeof parsed.topRisk !== "string" || typeof parsed.riskNarrative !== "string") {
+			throw new Error("Invalid LLM response shape");
+		}
+		return parsed;
+	} catch {
+		return deriveDefaultRiskInterpretation(overallRisk, riskCategories);
+	}
 }
 
 // Create the server using factory
