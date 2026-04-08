@@ -73,8 +73,8 @@ This table shows which servers actually call Claude and which still use rule-bas
 | ------ | ------------- | ---------------- |
 | `geowiz` | ✅ Yes | Synthesizes TOC estimate and geological recommendation from formation data |
 | `econobot` | ✅ Yes | Generates PROCEED/CONDITIONAL/DECLINE recommendation from financial metrics |
-| `curve-smith` | Planned (#213) | Decline curve regression and EUR synthesis |
-| `risk-analysis` | Planned (#214) | Risk weight calibration and Monte Carlo narrative |
+| `curve-smith` | ✅ Yes | Interprets decline character, suggests basin analog, and flags anomalies from fitted Arps parameters |
+| `risk-analysis` | ✅ Yes | Interprets full risk profile, identifies top risk factor, and generates plain-English investment memo narrative from computed scores |
 | `decision` | Planned (#215) | Final investment recommendation synthesis |
 | `reporter` | Planned (#216) | Executive report narrative generation |
 | `research`, `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test` | Planned (#217) | Domain-specific LLM synthesis |

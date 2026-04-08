@@ -57,11 +57,19 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
 7. **Push** — `git push -u origin <current-branch>`
 
-8. **Open PR** — Create a PR targeting `develop` (NOT `main`):
+8. **Open PR** — ALWAYS target `develop`. NEVER target `main`. This is a hard rule — no exceptions.
 
+   Before creating the PR, confirm the base branch:
+   ```bash
+   git remote show origin | grep "HEAD branch"
+   ```
+
+   Create the PR:
    ```bash
    gh pr create --base develop --title "..." --body "..."
    ```
+
+   ⚠️ If `gh pr create` is called without `--base develop`, it will use the repo default branch (which may be `main`). Always pass `--base develop` explicitly.
 
    PR body should include: Summary bullets, Test plan checklist, closes #<issue-number>.
 

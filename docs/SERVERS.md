@@ -63,7 +63,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 - Production forecasts by month/year
 - Whether Arps hyperbolic, exponential, or harmonic decline fits the data best
 
-**LLM status:** Planned — issue [#213](https://github.com/ryemyster/ShaleYeah/issues/213). Currently uses rule-based Arps decline equations.
+**LLM status:** ✅ Wired (issue [#213](https://github.com/ryemyster/ShaleYeah/issues/213)). After fitting Arps decline parameters (qi, Di, b) from production data, `synthesizeInterpretationWithLLM()` sends those parameters to Claude. Claude returns a plain-English description of the decline character (e.g. "hyperbolic with strong early transient flow"), the nearest basin analog, and any anomaly flags. Falls back to `deriveDefaultInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
 **Code:** [src/servers/curve-smith.ts](../src/servers/curve-smith.ts)
 
@@ -80,7 +80,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 - Operational risk (drilling problems, cost overruns)
 - Combines these into an overall risk score and a probability-of-success estimate
 
-**LLM status:** Planned — issue [#214](https://github.com/ryemyster/ShaleYeah/issues/214). Currently uses weighted scoring rules.
+**LLM status:** ✅ Wired (issue [#214](https://github.com/ryemyster/ShaleYeah/issues/214)). After computing input-derived risk scores for all six categories (geological, technical, economic, regulatory, environmental, operational), `synthesizeRiskInterpretationWithLLM()` sends the full risk profile to Claude. Claude returns a plain-English `{ topRisk, mitigationPriority, riskNarrative }` interpretation. Falls back to `deriveDefaultRiskInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
 **Code:** [src/servers/risk-analysis.ts](../src/servers/risk-analysis.ts)
 
@@ -210,8 +210,8 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 | --- | --- | --- |
 | `geowiz` | ✅ Yes | — |
 | `econobot` | ✅ Yes | — |
-| `curve-smith` | Planned | [#213](https://github.com/ryemyster/ShaleYeah/issues/213) |
-| `risk-analysis` | Planned | [#214](https://github.com/ryemyster/ShaleYeah/issues/214) |
+| `curve-smith` | ✅ Yes | — |
+| `risk-analysis` | ✅ Yes | — |
 | `decision` | Planned | [#215](https://github.com/ryemyster/ShaleYeah/issues/215) |
 | `reporter` | Planned | [#216](https://github.com/ryemyster/ShaleYeah/issues/216) |
 | All 8 support agents | Planned | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
