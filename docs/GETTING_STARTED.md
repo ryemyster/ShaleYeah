@@ -159,12 +159,12 @@ Ready to analyze real oil & gas prospects? Follow this checklist:
 
 ### Prerequisites for Production Mode
 
-**API Keys** (both optional — app falls back to stubs without them):
+**API Keys:**
 
-| Key                 | Purpose                                   | How to get                                                    |
-| ------------------- | ----------------------------------------- | ------------------------------------------------------------- |
-| `ANTHROPIC_API_KEY` | LLM synthesis in all 14 servers           | [console.anthropic.com](https://console.anthropic.com)        |
-| `EIA_API_KEY`       | Real WTI/Henry Hub prices in `market.ts`  | Free — see [docs/EIA_API_SETUP.md](EIA_API_SETUP.md)          |
+| Key | Required? | Purpose | How to get |
+| --- | --------- | ------- | ---------- |
+| `ANTHROPIC_API_KEY` | **Yes for real AI output** | Enables LLM synthesis in all 14 servers. Without this, servers fall back to rule-based estimates — the app still runs but outputs won't be AI-generated. | [console.anthropic.com](https://console.anthropic.com) |
+| `EIA_API_KEY` | Optional | Real WTI/Henry Hub commodity prices in `market.ts`. Without this, market uses hardcoded price constants. | Free — see [docs/EIA_API_SETUP.md](EIA_API_SETUP.md) |
 
 ```bash
 # .env (never commit)

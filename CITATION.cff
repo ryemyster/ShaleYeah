@@ -4,9 +4,9 @@ message: "If you use this software, please cite it."
 authors:
   - family-names: "McDonald"
     given-names: "Ryan"
-    affiliation: "Ascendvent LLC"
+    affiliation: "ryemyster"
 license: Apache-2.0
-repository-code: "https://github.com/ascendvent/shale-yeah"
+repository-code: "https://github.com/ryemyster/ShaleYeah"
 preferred-citation:
   type: software
   title: "SHALE YEAH"

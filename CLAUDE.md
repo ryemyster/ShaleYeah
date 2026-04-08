@@ -1,6 +1,6 @@
 # SHALE YEAH — Claude Code Instructions
 
-Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel. Apache-2.0 / Ryan McDonald / Ascendvent LLC.
+Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel. Apache-2.0 / Ryan McDonald.
 
 ## Architecture
 

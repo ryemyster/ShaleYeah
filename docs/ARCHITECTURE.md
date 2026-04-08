@@ -615,7 +615,33 @@ interface ParseResult {
 
 ## Testing Strategy
 
-Tests use a simple assert pattern (not jest/vitest), run via `npx tsx tests/<name>.test.ts`. There are 8 kernel test suites (627 tests) plus demo integration and file processing tests.
+Tests use a simple assert pattern (not jest/vitest), run via `npx tsx tests/<name>.test.ts`. There are 16 test suites (700+ tests total): 8 kernel suites, anti-stub server tests, and integration tests.
+
+### Anti-Stub Test Pattern
+
+Every server that calls the LLM must have an anti-stub test file (`tests/<server>-anti-stub.test.ts`) that proves three things:
+
+1. **The LLM is actually called** — pass an invalid API key and confirm the SDK throws an auth error. If the server was returning a hardcoded stub, it would never reach the SDK and this test would fail.
+2. **Different inputs produce different outputs** — pass two very different requests (e.g., rich formation data vs. sparse data) and confirm the LLM prompt text differs. This catches servers that ignore their inputs.
+3. **Demo mode works without an API key** — when `ANTHROPIC_API_KEY` is absent, the server must fall back gracefully instead of crashing.
+
+```typescript
+// Example: confirm the LLM is reached (not a stub)
+// We use a bad API key so the Anthropic SDK throws an auth error.
+// If this test passes (auth error thrown), we know callLLM was reached.
+// If the server was hardcoded, it would return data without ever calling the SDK.
+process.env.ANTHROPIC_API_KEY = "sk-ant-bad-key-for-testing";
+try {
+  await server.runTool("analyze", args);
+  assert(false, "Expected auth error — server appears to be returning a stub");
+} catch (err) {
+  const msg = String(err);
+  assert(
+    msg.includes("auth") || msg.includes("401") || msg.includes("invalid"),
+    "Auth error thrown — confirms callLLM was reached"
+  );
+}
+```
 
 ### Kernel Tests
 
@@ -658,6 +684,10 @@ assert(kernel.registry.toolCount === 14, "Registry has 14 tools");
 | Auth | `tests/kernel-auth.test.ts` | 63 |
 | Audit | `tests/kernel-audit.test.ts` | 58 |
 | Bundles | `tests/kernel-bundles.test.ts` | 112 |
+| Geowiz anti-stub | `tests/geowiz-anti-stub.test.ts` | 4 |
+| Econobot anti-stub | `tests/econobot-anti-stub.test.ts` | 4 |
+| Fixture injection | `tests/fixture-injection.test.ts` | — |
+| Partial success | `tests/kernel-partial-success.test.ts` | — |
 
 ### Running Tests
 
@@ -700,4 +730,4 @@ npm run prod -- --files="*.las,*.xlsx" # Production with file inputs
 
 ---
 
-*Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0*
+*Generated with SHALE YEAH 2025 Ryan McDonald - Apache-2.0*

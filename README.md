@@ -1,211 +1,118 @@
 # SHALE YEAH
 
-**AI-Powered Oil & Gas Investment Analysis Platform**
+## AI-Powered Oil & Gas Investment Analysis
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Node.js](https://img.shields.io/badge/node.js-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://modelcontextprotocol.io/)
 
-> **Transform oil & gas investment analysis from weeks to minutes with AI-powered expert agents**
+There are roughly [9,000 independent oil and gas operators](https://www.ipaa.org/independent-producers/) in the US. They run **[95% of American wells](https://www.ipaa.org/independent-producers/)** and produce **[85% of domestic oil](https://www.ipaa.org/independent-producers/)** — but they don't have the resources of the majors. A proper investment due diligence still requires a petroleum geologist ([$58–67/hr](https://www.bls.gov/ooh/architecture-and-engineering/petroleum-engineers.htm)), a reservoir engineer ([$57–62/hr](https://www.zippia.com/salaries/reservoir-engineering-consultant/)), a financial analyst, a lawyer, and a risk manager, working for [8–10 weeks](https://datarooms.org/vdr-blog/how-long-is-the-due-diligence-period-in-a-deal/). That's [$50,000–$200,000 per deal](https://ogscapital.com/article/how-much-due-diligence-services-cost/) for a mid-market acquisition — before you've committed a dollar of capital. And in a market that saw **[$105–206 billion in upstream M&A in 2024 alone](https://oilprice.com/Latest-Energy-News/World-News/US-Upstream-Oil-Gas-MA-Hit-105-Billion-In-2024.html)**, deal windows don't wait.
 
-SHALE YEAH is a comprehensive investment analysis platform that replaces traditional teams of expensive specialists with intelligent AI agents powered by Large Language Models. Built on the Model Context Protocol (MCP) standard, it provides production-ready analysis for oil & gas investment opportunities.
+The result: serious investment analysis is effectively gated behind enterprise budgets. Independent operators, small funds, and mineral rights buyers either skip the analysis or pay more than they should for less than they need.
 
----
+**SHALE YEAH exists to close that gap.** It's an open-source **Agent OS** — a kernel-based runtime for AI agents, built on the same architectural principles as an operating system. The kernel handles agent discovery, parallel scatter-gather execution, session management, role-based access control, an append-only audit trail, and fault-tolerant resilience — so agents can fail gracefully, retry intelligently, and compose into larger workflows without breaking. 14 expert agents cover geology, economics, engineering, legal, risk, market, and more. The kernel decides who runs, in what order, with what permissions, and what to do when something goes wrong.
 
-## What This Is
+The OS infrastructure is complete. The agents are being wired to Claude one by one — 2 of 14 call the real API today (`geowiz` and `econobot`), with the rest following in issues [#213–#217](https://github.com/ryemyster/ShaleYeah/issues/213). Agents that aren't yet wired fall back to deterministic rule-based estimates so the full pipeline always runs. Every wired agent is verified with anti-stub tests that prove Claude is actually being called — not just that the server returns something.
 
-**The Problem**: Traditional oil & gas investment analysis requires weeks of work from expensive specialists:
-- Senior Geologist (6+ weeks, $200K+/year) — Formation analysis and risk assessment
-- Drilling Engineer (4+ weeks, $180K+/year) — Technical feasibility and cost estimation
-- Financial Analyst (3+ weeks, $150K+/year) — Economic modeling and NPV analysis
-- Legal Counsel (2+ weeks, $300K+/year) — Risk assessment and contract review
-- **Total**: 15+ weeks, $500K+ in labor costs, inconsistent quality
+AI adoption in upstream oil and gas is accelerating fast — [44% of E&P companies already use AI](https://worldoil.com/news/2026/1/23/oil-and-gas-operators-accelerate-ai-driven-software-adoption-isg-finds/), with the upstream software market projected to reach **[$25 billion by 2034](https://finance.yahoo.com/news/ai-oil-gas-market-size-140200556.html)**. SHALE YEAH is built for the operators who should be leading that shift, not waiting for the majors to trickle it down.
 
-**The Solution**: SHALE YEAH's AI-powered analysis pipeline:
-- **14 specialized MCP servers** with Roman Imperial personas
-- **Complete investment pipeline** from data ingestion to final decision
-- **Production-ready outputs** for board presentations and investment committees
-- **Standards-compliant** MCP architecture for enterprise integration
-
-**Who Uses This**:
-- Oil & gas investment firms and operators
-- Private equity funds focused on energy
-- Independent E&P companies
-- Mineral rights acquisition teams
-- Energy investment analysts and consultants
+The goal isn't to replace human judgment. It's to make high-quality analysis fast and cheap enough that human judgment gets applied to *decisions* — not spent on data wrangling.
 
 ---
 
-## Roman Imperial Personas
+## What you need to get started
 
-Each AI agent embodies a Roman Imperial expert with deep domain knowledge and decision-making authority:
-
-| **Domain** | **Roman Persona** | **Modern Role** | **Expertise** |
-|------------|------------------|-----------------|---------------|
-| **Geology** | **Marcus Aurelius Geologicus** | Master Geological Analyst | Formation analysis, reservoir characterization |
-| **Economics** | **Caesar Augustus Economicus** | Master Financial Strategist | DCF analysis, NPV/IRR modeling |
-| **Engineering** | **Lucius Technicus Engineer** | Master Reservoir Engineer | Decline curves, EUR estimation |
-| **Decision** | **Augustus Decidius Maximus** | Supreme Investment Strategist | Final investment logic, portfolio optimization |
-| **Research** | **Scientius Researchicus** | Master Intelligence Gatherer | Market intelligence, competitive analysis |
-| **Risk Analysis** | **Gaius Probabilis Assessor** | Master Risk Strategist | Monte Carlo, uncertainty quantification |
-| **Legal** | **Legatus Juridicus** | Master Legal Strategist | Contract analysis, regulatory compliance |
-| **Market** | **Mercatus Analyticus** | Master Market Strategist | Commodity forecasting, supply/demand analysis |
-| **Development** | **Architectus Developmentus** | Master Development Coordinator | Project planning, resource allocation |
-| **Drilling** | **Perforator Maximus** | Master Drilling Strategist | Drilling programs, cost optimization |
-| **Infrastructure** | **Structura Ingenious** | Master Infrastructure Architect | Facility design, capacity planning |
-| **Title** | **Titulus Verificatus** | Master Title Analyst | Ownership verification, due diligence |
-| **Test** | **Testius Validatus** | Master Quality Controller | Analysis validation, quality assurance |
-| **Reporting** | **Scriptor Reporticus Maximus** | Master Report Generator | Executive reporting, decision synthesis |
+- **Node.js 18 or higher** — download at [nodejs.org](https://nodejs.org/)
+- **Git** — for cloning this repo
+- **An Anthropic API key** — this is what lets the agents actually call Claude (the AI). Without it the system still runs, but agents return rule-based estimates instead of real AI analysis. Get a key at [console.anthropic.com](https://console.anthropic.com).
 
 ---
 
-## Quick Start
-
-### Prerequisites
-- **Node.js 18+** with npm
-- **Git** for source control
-- **Optional**: Anthropic API key for production AI analysis
-
-### Run the Demo
+## Three commands to see it work
 
 ```bash
-# Clone and install
-git clone https://github.com/rmcdonald/ShaleYeah.git
+# 1. Clone the repo and install dependencies
+git clone https://github.com/ryemyster/ShaleYeah.git
 cd ShaleYeah
 npm install --legacy-peer-deps
 
-# Run the demo (uses realistic mock data — no API keys needed)
+# 2. Run the demo — no API key needed, uses pre-written fixture data
 npm run demo
+
+# 3. Run all tests to confirm everything passes
+npm run test
 ```
 
-**What happens**: 14 AI expert agents analyze a Permian Basin tract through the Agent OS kernel, executing in parallel phases. Professional investment reports are generated in the output directory.
+The demo takes about 1 second and writes reports to `outputs/demo/`. Open `INVESTMENT_DECISION.md` in that folder to see the go/no-go recommendation.
 
-**Demo Output:**
-```
-🛢️  SHALE YEAH - AI-Powered Oil & Gas Investment Analysis
-📋 Analysis ID: demo-20250917T132058
-🗺️  Target Tract: Permian Basin Demo Tract
+---
 
-🤖 Phase 1 — Core Analysis (parallel)
-   ✅ Geological Analysis: 90% confidence
-   ✅ Financial Analysis: 82% confidence
-   ✅ Engineering Analysis: 88% confidence
-   ...
+## What's in this repo
 
-📊 Overall Recommendation: ✅ PROCEED (Strong Economics & Acceptable Risk)
-📁 Results: ./outputs/demo/demo-20250917T132058
+```text
+ShaleYeah/
+├── src/
+│   ├── kernel/          # The traffic controller — routes all analysis
+│   ├── servers/         # 14 AI expert agents (one file per expert)
+│   ├── shared/          # Shared tools: LLM client, file parsers, base class
+│   ├── demo-runner.ts   # Runs the demo
+│   └── main.ts          # Runs real production analysis
+├── tests/               # All test files (run with npm run test)
+├── docs/                # Detailed documentation (start here after this README)
+├── data/samples/        # Sample data files for production mode
+└── outputs/             # Where reports are written (auto-created)
 ```
 
 ---
 
-## Understanding Your Results
+## Go deeper
 
-Demo analysis produces three output files in `./outputs/demo/demo-YYYYMMDDTHHMMSS/`:
-
-| File | What It Contains | Who Should Read It |
-|------|-----------------|-------------------|
-| **`INVESTMENT_DECISION.md`** | Go/no-go recommendation with confidence scores | Investment committee, executives |
-| **`DETAILED_ANALYSIS.md`** | Comprehensive findings from all 14 expert domains | Technical reviewers, due diligence teams |
-| **`FINANCIAL_MODEL.json`** | Complete financial model with NPV, IRR, sensitivity analysis | Financial analysts, portfolio managers |
-
-**Start with `INVESTMENT_DECISION.md`** — it's the executive summary with the final recommendation.
-
----
-
-## Architecture Overview
-
-SHALE YEAH implements an **Agent OS kernel** that orchestrates 14 specialized MCP servers:
-
-```
-┌─────────────────────┐    ┌─────────────────────────────────────┐    ┌─────────────────────┐
-│   Data Ingestion    │───▶│  Agent OS Kernel                    │───▶│   Investment        │
-│                     │    │  ┌───────────────────────────────┐  │    │   Decision          │
-│ • LAS Well Logs     │    │  │ Registry │ Executor │ Session │  │    │                     │
-│ • Access Databases  │    │  └───────────────────────────────┘  │    │ • Go/No-Go          │
-│ • Shapefiles        │    │  ┌───────────────────────────────┐  │    │ • Risk Assessment   │
-│ • Market Data       │    │  │ Auth │ Audit │ Resilience     │  │    │ • NPV/IRR Analysis  │
-│ • Legal Documents   │    │  └───────────────────────────────┘  │    │ • Board Presentation│
-└─────────────────────┘    │  ┌─────────────────┐               │    └─────────────────────┘
-                           │  │  14 MCP Servers  │               │
-                           │  │  Roman Personas  │               │
-                           │  └─────────────────┘               │
-                           └─────────────────────────────────────┘
-```
-
-### Parallel Execution Pipeline
-
-The kernel executes servers in **parallel phases** (scatter-gather), not sequentially. Independent analyses run concurrently, with downstream phases waiting only for their declared dependencies.
-
-```mermaid
-graph TD
-    A[Data Ingestion] --> P1
-
-    subgraph P1["Phase 1 — Core Analysis (parallel)"]
-        B[Geology]
-        C[Economics]
-        D[Engineering]
-        E[Market]
-        F[Research]
-    end
-
-    P1 --> P2
-
-    subgraph P2["Phase 2 — Extended Analysis (parallel)"]
-        G[Risk]
-        H[Legal]
-        I[Title]
-        J[Drilling]
-        K[Infrastructure]
-        L[Development]
-    end
-
-    P2 --> P3[Phase 3 — QA Validation]
-    P3 --> P4a[Reporter] --> P4b[Investment Decision]
-```
-
-**Quick Screen** (4 servers, 1 phase): Geology + Economics + Engineering + Risk in parallel — sub-second screening.
-
-**Full Due Diligence** (14 servers, 4+ phases): All experts with dependency ordering — comprehensive investment analysis.
-
-For detailed architecture documentation, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+| I want to... | Read this |
+| --- | --- |
+| Understand oil & gas terms and why they matter | [docs/GLOSSARY.md](docs/GLOSSARY.md) |
+| Set up my environment step by step | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
+| Connect agents to Claude Desktop, VS Code, or Claude CLI | [docs/MCP_INTEGRATION.md](docs/MCP_INTEGRATION.md) |
+| Run a real analysis with my own data | [docs/DEMO_VS_PRODUCTION.md](docs/DEMO_VS_PRODUCTION.md) |
+| Check which agents call the real AI vs. stubs | [docs/DEMO_VS_PRODUCTION.md#llm-integration-status](docs/DEMO_VS_PRODUCTION.md#llm-integration-status) |
+| See all 14 agents and what they each do | [docs/SERVERS.md](docs/SERVERS.md) |
+| Understand how the agents and kernel work together | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Use the kernel from my own code | [docs/API_REFERENCE.md](docs/API_REFERENCE.md) |
+| Get free live oil and gas prices (EIA API) | [docs/EIA_API_SETUP.md](docs/EIA_API_SETUP.md) |
+| See which Agent OS patterns are implemented | [docs/ARCADE-PATTERNS.md](docs/ARCADE-PATTERNS.md) |
+| Read the Agent OS architecture review | [docs/AGENT-OS-REVIEW.md](docs/AGENT-OS-REVIEW.md) |
+| Understand the original project intent and goals | [docs/PROJECT-INTENT.md](docs/PROJECT-INTENT.md) |
 
 ---
 
-## Supported File Formats
+## The agents (quick list)
 
-| **File Category** | **Extensions** | **Status** | **Purpose** |
-|-------------------|---------------|------------|-------------|
-| **Well Logs** | `.las`, `.dlis` | Working | Formation evaluation, petrophysical data |
-| **Seismic Data** | `.segy`, `.sgy` | Working | Seismic traces, interpretation |
-| **Production DBs** | `.accdb`, `.mdb` | Working | Production history, well test data |
-| **GIS / Spatial** | `.shp`, `.geojson`, `.kml` | Working | Boundaries, lease blocks, pipelines |
-| **Financial Models** | `.xlsx`, `.csv`, `.json` | Working | Economics, forecasts, sensitivities |
-| **Reports** | `.md`, `.pdf`, `.docx` | Working | Executive summaries, investor reports |
+14 expert agents, each with a Roman Imperial persona and a specific domain:
 
----
+| Agent | Persona | What they analyze | Claude? |
+| --- | --- | --- | --- |
+| `geowiz` | Marcus Aurelius Geologicus | Rock formations, well logs, reservoir quality | ✅ |
+| `econobot` | Caesar Augustus Economicus | NPV, IRR, cash flows, breakeven prices | ✅ |
+| `curve-smith` | Lucius Technicus Engineer | Decline curves, production forecasts | [#213](https://github.com/ryemyster/ShaleYeah/issues/213) |
+| `risk-analysis` | Gaius Probabilis Assessor | Risk scoring, Monte Carlo | [#214](https://github.com/ryemyster/ShaleYeah/issues/214) |
+| `decision` | Augustus Decidius Maximus | Final investment recommendation | [#215](https://github.com/ryemyster/ShaleYeah/issues/215) |
+| `reporter` | Scriptor Reporticus Maximus | Executive reports and summaries | [#216](https://github.com/ryemyster/ShaleYeah/issues/216) |
+| `research` | Scientius Researchicus | Market intelligence, competitive analysis | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `legal` | Legatus Juridicus | Contract risk, regulatory compliance | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `market` | Mercatus Analyticus | Commodity prices, supply/demand | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `title` | Titulus Verificatus | Ownership verification, title risk | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `development` | Architectus Developmentus | Project planning, resource allocation | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `drilling` | Perforator Maximus | Drilling programs, cost optimization | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `infrastructure` | Structura Ingenious | Facility design, capacity planning | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `test` | Testius Validatus | Quality assurance, validation | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
 
-## Production Usage
-
-```bash
-# 1. Add API key for real AI analysis
-echo "ANTHROPIC_API_KEY=your-key-here" >> .env
-
-# 2. Add your data files
-cp your-well-logs.las data/samples/
-cp your-economic-data.xlsx data/samples/
-
-# 3. Run full analysis
-npm run prod
-```
-
-See [docs/DEMO_VS_PRODUCTION.md](docs/DEMO_VS_PRODUCTION.md) for detailed production setup and [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for a step-by-step guide.
+See [docs/SERVERS.md](docs/SERVERS.md) for details on each one.
 
 ---
 
-## Individual Expert Servers
+## Running individual agents
 
-Each AI expert can run independently as an MCP server — useful for connecting to Claude Desktop or other MCP clients:
+Each agent can also run on its own as a standalone MCP server. This is useful if you want to connect one agent to Claude Desktop or another MCP client:
 
 ```bash
 npm run server:geowiz        # Geological analysis
@@ -226,148 +133,61 @@ npm run server:reporter      # Executive reporting
 
 ---
 
-## Kernel API
-
-For programmatic integration:
-
-```typescript
-import { Kernel } from './src/kernel/index.js';
-
-const kernel = new Kernel();
-kernel.initialize(serverConfigs);
-kernel.setExecutorFn(executorFn);
-
-// Quick screen — 4 core servers in parallel
-const screen = await kernel.quickScreen({ basin: "Permian" });
-
-// Full due diligence — all 14 servers, dependency-ordered
-const full = await kernel.fullAnalysis({ basin: "Permian" });
-
-// Investment decision with confirmation gate
-const invest = await kernel.shouldWeInvest({ basin: "Permian" });
-const confirmed = await kernel.confirmAction(actionId);
-```
-
-See [docs/API_REFERENCE.md](docs/API_REFERENCE.md) for the complete API documentation.
-
----
-
-## Security
-
-SHALE YEAH includes role-based access control (RBAC) with a 4-tier permission hierarchy and an append-only JSONL audit trail with automatic sensitive value redaction. See [SECURITY.md](SECURITY.md) for full details.
-
----
-
-## Troubleshooting
-
-All tool errors are automatically classified by the kernel's resilience middleware:
-
-| Error Type | Example | What To Do |
-|---|---|---|
-| `retryable` | Timeout, rate limit, network error | Wait and retry |
-| `permanent` | Invalid input, schema validation | Fix request |
-| `auth_required` | 401/403, expired token | Re-authenticate |
-| `user_action` | File not found, missing data | Check your files |
-
-**Common fixes:**
-- **Demo not running?** Run `npm run build` first, then `npm run demo`
-- **Type errors?** Run `npm run type-check` to see details
-- **Need a clean start?** Run `npm run clean && npm install --legacy-peer-deps && npm run build`
-
-See [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) for detailed troubleshooting.
-
----
-
-## Roadmap
-
-SHALE YEAH is actively evolving from a stateless tool platform into an intelligent Agent OS. Development is tracked across five milestones:
-
-| Milestone | Focus | Priority |
-|-----------|-------|----------|
-| **Production Hardening** | Resilience, session persistence, caching, timeouts | High |
-| **Developer Experience & Composition** | Tool chaining, schema introspection, observability | High |
-| **Smart Agents v1** | Vector store memory, data connectors, feedback loops, BYOSLM | High |
-| **External Integration** | REST API, streaming, webhooks, plugin system | Medium |
-| **Scale & Governance** | Multi-tenant, fine-grained permissions, versioning | Future |
-
-See the [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) and [open issues](https://github.com/ryemyster/ShaleYeah/issues) for details.
-
----
-
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+New here? Here's the path from zero to opening a pull request:
+
+1. Pick an issue from [GitHub Issues](https://github.com/ryemyster/ShaleYeah/issues) or create one with `/create-issue`
+1. Cut a branch off `develop`: `/new-issue-branch <number> <slug>`
+1. Write a failing test first — see `tests/geowiz-anti-stub.test.ts` for the pattern we use
+1. Implement the change (no `Math.random()`, no hardcoded stubs)
+1. Run the full pre-commit check — all five must pass:
 
 ```bash
 npm run build && npm run type-check && npm run lint && npm run test && npm run demo
 ```
 
+Useful build commands:
+
+```bash
+npm run build        # compile TypeScript → dist/ (required before connecting any MCP client)
+npm run build:mcp    # same as build — named alias for clarity when setting up MCP clients
+npm run build:watch  # recompile automatically whenever you save a file (useful during development)
+```
+
+1. Ship it: `/finish-issue <number>` — this updates docs, commits, pushes, and opens the PR to `develop`
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+
+---
+
+## Security
+
+Role-based access control (4 tiers: analyst → engineer → executive → admin) and an append-only audit log with automatic sensitive-value redaction. See [SECURITY.md](SECURITY.md).
+
+---
+
+## Roadmap
+
+| Milestone | Focus | Status |
+| --- | --- | --- |
+| LLM wiring — core servers | Wire `callLLM` into geowiz, econobot, curve-smith, risk-analysis, decision, reporter | In progress (#211–#216) |
+| LLM wiring — support servers | Wire `callLLM` into all 8 remaining servers | Planned (#217) |
+| Production hardening | Resilience, session persistence, caching, timeouts | Planned |
+| Smart Agents v1 | Memory, data connectors, feedback loops | Planned |
+| External integration | REST API, streaming, webhooks | Planned |
+
+See [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) and [open issues](https://github.com/ryemyster/ShaleYeah/issues).
+
 ---
 
 ## License
 
-**Apache License 2.0** — 2025 Ryan McDonald / Ascendvent LLC
+Apache License 2.0 — 2025 Ryan McDonald
 
-All outputs include: `Generated with SHALE YEAH 2025 Ryan McDonald / Ascendvent LLC - Apache-2.0`
+All reports include: `Generated with SHALE YEAH 2025 Ryan McDonald - Apache-2.0`
 
-See [LICENSE](LICENSE) for details.
-
----
-
-## Example Analysis Output
-
-```markdown
-# SHALE YEAH Investment Analysis Report
-
-**Analysis Date:** 2025-08-22
-**Tract:** Permian Basin Section 12-T1S-R2E
-**Analyzed By:** 14 AI Specialists with Roman Imperial Authority
-**Overall Confidence:** 84%
-
-## Executive Summary
-
-**RECOMMENDATION: PROCEED WITH INVESTMENT**
-
-AI-powered comprehensive analysis indicates strong investment opportunity
-with moderate geological risk and attractive economic returns. All domain
-experts concur on positive investment thesis.
-
-## Key Investment Metrics
-
-| Metric | Value | Confidence |
-|--------|-------|------------|
-| **NPV (10%)** | $3.2M | 84% |
-| **IRR** | 28.5% | 82% |
-| **Payback Period** | 11 months | 88% |
-| **Geological Confidence** | 79% | High |
-| **Legal Risk Rating** | Low | 91% |
-
-## Domain Expert Analysis
-
-### Marcus Aurelius Geologicus (Geological Assessment)
-- **Formation Target:** Wolfcamp A/B intervals identified
-- **Net Pay:** 180 ft across both zones
-- **Porosity:** 8.2% average (acceptable for unconventional)
-- **Confidence:** 79% — Proceed with standard completion design
-
-### Caesar Augustus Economicus (Economic Analysis)
-- **Base Case NPV:** $3.2M at 10% discount rate
-- **P90/P10 Range:** $1.8M - $5.1M NPV
-- **Break-even Oil Price:** $52.80/bbl
-- **Recommendation:** Strong economics justify investment
-
-### Gaius Probabilis Assessor (Risk Assessment)
-- **Overall Risk Rating:** Moderate
-- **Primary Risks:** Geological uncertainty (30%), commodity price volatility (25%)
-- **Monte Carlo Results:** 78% probability of positive NPV
-
-## Recommended Next Steps
-
-1. Acquire additional seismic data for formation mapping
-2. Implement commodity hedging strategy for 18 months
-3. Execute lease amendments for optimal drilling units
-4. Present for final approval with $12M capital allocation
-```
+See [LICENSE](LICENSE).
 
 ---
 
