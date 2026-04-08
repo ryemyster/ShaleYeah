@@ -7,6 +7,8 @@
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "tsc",
+		"build:mcp": "tsc",
+		"build:watch": "tsc --watch",
 		"dev": "NODE_ENV=development tsx src/main.ts --mode=demo",
 		"start": "NODE_ENV=production tsx src/main.ts",
 		"init": "npx claude-flow@alpha init",
@@ -120,6 +122,6 @@
 		"type": "git",
 		"url": "https://github.com/rmcdonald/ShaleYeah.git"
 	},
-	"author": "Ryan McDonald / Ascendvent LLC",
+	"author": "Ryan McDonald",
 	"license": "Apache-2.0"
 }
