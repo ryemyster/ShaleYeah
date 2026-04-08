@@ -121,5 +121,5 @@ jobs:
       run: |
         export RUN_ID=release-$(date +%Y%m%d-%H%M%S)
         mkdir -p data/temp/test/$RUN_ID
-        echo "Generated with SHALE YEAH (c) Ryan McDonald / Ascendvent LLC - Apache-2.0" > data/temp/test/$RUN_ID/test.md
+        echo "Generated with SHALE YEAH (c) Ryan McDonald - Apache-2.0" > data/temp/test/$RUN_ID/test.md
         bash scripts/verify-branding.sh

@@ -9,6 +9,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
@@ -126,7 +127,7 @@ async function performEconomicAnalysis(args: { filePath: string }): Promise<Econ
 			throw new Error(`Unsupported file type: ${fileExt}`);
 		}
 
-		return analyzeEconomicData(economicData, args);
+		return await analyzeEconomicData(economicData, args);
 	} catch (_error) {
 		// Return default analysis if file processing fails
 		return generateDefaultAnalysis();
@@ -196,7 +197,7 @@ function parseCsvContent(csvContent: string): any[] {
 	});
 }
 
-function analyzeEconomicData(data: any, args: any): EconomicAnalysis {
+async function analyzeEconomicData(data: any, args: any): Promise<EconomicAnalysis> {
 	try {
 		let pricingData: any[] = [];
 		let costData: any[] = [];
@@ -228,17 +229,32 @@ function analyzeEconomicData(data: any, args: any): EconomicAnalysis {
 		const breakeven = calculateBreakeven(costData, pricingData);
 		const confidence = assessDataQuality(pricingData, costData, productionData);
 
+		const roundedNpv = Math.round(npv);
+		const roundedIrr = Math.round(irr * 10000) / 10000; // as decimal for LLM
+		const roundedPayback = Math.round(payback);
+		const roiMultiple = Math.round((npv / 1000000 + 1) * 100) / 100;
+
+		const llmResult = await synthesizeRecommendationWithLLM({
+			npv: roundedNpv,
+			irr: roundedIrr,
+			paybackMonths: roundedPayback,
+			roiMultiple,
+			oilBreakeven: breakeven.oil,
+			gasBreakeven: breakeven.gas,
+			confidence,
+		});
+
 		return {
-			npv: Math.round(npv),
-			irr: Math.round(irr * 10000) / 100,
-			paybackMonths: Math.round(payback),
-			roiMultiple: Math.round((npv / 1000000 + 1) * 100) / 100,
+			npv: roundedNpv,
+			irr: Math.round(roundedIrr * 10000) / 100, // as percentage for output
+			paybackMonths: roundedPayback,
+			roiMultiple,
 			breakeven: {
 				oilPrice: breakeven.oil,
 				gasPrice: breakeven.gas,
 			},
 			confidence,
-			recommendation: generateRecommendation(npv, irr, confidence),
+			recommendation: llmResult.recommendation,
 		};
 	} catch (_error) {
 		return generateDefaultAnalysis();
@@ -326,7 +342,7 @@ function assessDataQuality(pricing: any[], costs: any[], production: any[]): num
 	return Math.min(95, score);
 }
 
-function generateRecommendation(npv: number, irr: number, confidence: number): string {
+function deriveRecommendation(npv: number, irr: number, confidence: number): string {
 	if (npv > 1000000 && irr > 0.15 && confidence > 80) {
 		return "PROCEED";
 	} else if (npv > 0 && irr > 0.1 && confidence > 70) {
@@ -336,18 +352,107 @@ function generateRecommendation(npv: number, irr: number, confidence: number): s
 	}
 }
 
-function generateDefaultAnalysis(): EconomicAnalysis {
+interface LLMEconomicResult {
+	recommendation: string;
+	rationale: string;
+}
+
+/**
+ * Synthesize investment recommendation via LLM using computed DCF metrics.
+ * Falls back to rule-based recommendation when LLM is unavailable (demo mode, no API key).
+ */
+async function synthesizeRecommendationWithLLM(context: {
+	npv: number;
+	irr: number;
+	paybackMonths: number;
+	roiMultiple: number;
+	oilBreakeven: number;
+	gasBreakeven: number;
+	confidence: number;
+}): Promise<LLMEconomicResult> {
+	const { npv, irr, paybackMonths, roiMultiple, oilBreakeven, gasBreakeven, confidence } = context;
+
+	const prompt = `You are Caesar Augustus Economicus, a master petroleum financial strategist.
+
+Evaluate this oil & gas investment opportunity:
+- NPV (10% discount): $${npv.toLocaleString()}
+- IRR: ${(irr * 100).toFixed(1)}%
+- Payback period: ${paybackMonths} months
+- ROI multiple: ${roiMultiple.toFixed(2)}x
+- Oil breakeven: $${oilBreakeven.toFixed(2)}/bbl
+- Gas breakeven: $${gasBreakeven.toFixed(2)}/mcf
+- Data quality confidence: ${confidence}%
+
+Return ONLY valid JSON (no markdown, no explanation) in this exact format:
+{
+  "recommendation": "<PROCEED|CONDITIONAL|DECLINE>",
+  "rationale": "<one sentence explaining the decision>"
+}
+
+Decision criteria:
+- PROCEED: NPV > $1M AND IRR > 15% AND confidence > 80%
+- CONDITIONAL: NPV > 0 AND IRR > 10% AND confidence > 70%
+- DECLINE: otherwise`;
+
+	try {
+		const raw = await callLLM({
+			prompt,
+			system: "You are a petroleum economist. Respond only with valid JSON. No markdown, no explanation.",
+			maxTokens: 256,
+		});
+
+		const cleaned = raw.replace(/```(?:json)?/g, "").trim();
+		const parsed = JSON.parse(cleaned) as { recommendation?: unknown; rationale?: unknown };
+
+		const validRecs = ["PROCEED", "CONDITIONAL", "DECLINE"];
+		const recommendation =
+			typeof parsed.recommendation === "string" && validRecs.includes(parsed.recommendation)
+				? parsed.recommendation
+				: deriveRecommendation(npv, irr, confidence);
+
+		const rationale =
+			typeof parsed.rationale === "string" && parsed.rationale.length > 0
+				? parsed.rationale
+				: `Based on NPV $${npv.toLocaleString()} and IRR ${(irr * 100).toFixed(1)}%`;
+
+		return { recommendation, rationale };
+	} catch (_err) {
+		// LLM unavailable — fall back to rule-based decision
+		return {
+			recommendation: deriveRecommendation(npv, irr, confidence),
+			rationale: `Based on NPV $${npv.toLocaleString()} and IRR ${(irr * 100).toFixed(1)}%`,
+		};
+	}
+}
+
+async function generateDefaultAnalysis(): Promise<EconomicAnalysis> {
+	// No real data available — use LLM with mid-range defaults to produce a reasoned recommendation
+	const npv = 0;
+	const irr = 0;
+	const paybackMonths = 0;
+	const roiMultiple = 1.0;
+	const oilBreakeven = 55.0;
+	const gasBreakeven = 3.25;
+	const confidence = ServerUtils.calculateConfidence(0.6, 0.8);
+
+	const llmResult = await synthesizeRecommendationWithLLM({
+		npv,
+		irr,
+		paybackMonths,
+		roiMultiple,
+		oilBreakeven,
+		gasBreakeven,
+		confidence,
+	});
+
 	return {
-		npv: 4500000, // stub: mid-range $4.5M — replace with DCF from real inputs
-		irr: 22.5, // stub: 22.5% — replace with Newton-Raphson from cash flows
-		paybackMonths: 14, // stub: 14 months — replace with cumulative cash flow calc
-		roiMultiple: 3.0, // stub: 3x — replace with total return / invested capital
-		breakeven: {
-			oilPrice: 55.0, // stub: $55/bbl — replace with cost-stack analysis
-			gasPrice: 3.25, // stub: $3.25/mcf — replace with cost-stack analysis
-		},
-		confidence: ServerUtils.calculateConfidence(0.6, 0.8),
-		recommendation: "CONDITIONAL",
+		npv,
+		irr,
+		paybackMonths,
+		roiMultiple,
+		breakeven: { oilPrice: oilBreakeven, gasPrice: gasBreakeven },
+		confidence,
+		recommendation: llmResult.recommendation,
 	};
 }
 
