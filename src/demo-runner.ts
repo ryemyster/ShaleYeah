@@ -12,6 +12,7 @@
  * Perfect for presentations and demonstrations while being MCP standards-compliant
  */
 
+import { DEMO_FIXTURE_ARGS } from "./fixtures/demo-data.js";
 import { type AnalysisRequest, ShaleYeahMCPClient } from "./mcp-client.js";
 
 export interface DemoConfig {
@@ -58,12 +59,13 @@ export class ShaleYeahMCPDemo {
 				process.exit(0);
 			});
 
-			// Create analysis request for demo mode
+			// Create analysis request — fixture args injected into kernel bundle args
 			const request: AnalysisRequest = {
 				runId: this.runId,
 				tractName: this.tractName,
-				mode: "demo", // This tells the MCP client to use mock data
+				mode: "demo",
 				outputDir: this.outputDir,
+				fixtureArgs: DEMO_FIXTURE_ARGS,
 			};
 
 			// Execute analysis via kernel-backed MCP client — pass session for result forwarding
