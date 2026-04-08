@@ -13,7 +13,7 @@ The result: serious investment analysis is effectively gated behind enterprise b
 
 **SHALE YEAH exists to close that gap.** It's an open-source **Agent OS** — a kernel-based runtime for AI agents, built on the same architectural principles as an operating system. The kernel handles agent discovery, parallel scatter-gather execution, session management, role-based access control, an append-only audit trail, and fault-tolerant resilience — so agents can fail gracefully, retry intelligently, and compose into larger workflows without breaking. 14 expert agents cover geology, economics, engineering, legal, risk, market, and more. The kernel decides who runs, in what order, with what permissions, and what to do when something goes wrong.
 
-The OS infrastructure is complete. The agents are being wired to Claude one by one — 3 of 14 call the real API today (`geowiz`, `econobot`, and `curve-smith`), with the rest following in issues [#214–#217](https://github.com/ryemyster/ShaleYeah/issues/214). Agents that aren't yet wired fall back to deterministic rule-based estimates so the full pipeline always runs. Every wired agent is verified with anti-stub tests that prove Claude is actually being called — not just that the server returns something.
+The OS infrastructure is complete. The agents are being wired to Claude one by one — 4 of 14 call the real API today (`geowiz`, `econobot`, `curve-smith`, and `risk-analysis`), with the rest following in issues [#215–#217](https://github.com/ryemyster/ShaleYeah/issues/215). Agents that aren't yet wired fall back to deterministic rule-based estimates so the full pipeline always runs. Every wired agent is verified with anti-stub tests that prove Claude is actually being called — not just that the server returns something.
 
 AI adoption in upstream oil and gas is accelerating fast — [44% of E&P companies already use AI](https://worldoil.com/news/2026/1/23/oil-and-gas-operators-accelerate-ai-driven-software-adoption-isg-finds/), with the upstream software market projected to reach **[$25 billion by 2034](https://finance.yahoo.com/news/ai-oil-gas-market-size-140200556.html)**. SHALE YEAH is built for the operators who should be leading that shift, not waiting for the majors to trickle it down.
 
@@ -94,7 +94,7 @@ ShaleYeah/
 | `geowiz` | Marcus Aurelius Geologicus | Rock formations, well logs, reservoir quality | ✅ |
 | `econobot` | Caesar Augustus Economicus | NPV, IRR, cash flows, breakeven prices | ✅ |
 | `curve-smith` | Lucius Technicus Engineer | Decline curves, production forecasts | ✅ |
-| `risk-analysis` | Gaius Probabilis Assessor | Risk scoring, Monte Carlo | [#214](https://github.com/ryemyster/ShaleYeah/issues/214) |
+| `risk-analysis` | Gaius Probabilis Assessor | Risk scoring, Monte Carlo | ✅ |
 | `decision` | Augustus Decidius Maximus | Final investment recommendation | [#215](https://github.com/ryemyster/ShaleYeah/issues/215) |
 | `reporter` | Scriptor Reporticus Maximus | Executive reports and summaries | [#216](https://github.com/ryemyster/ShaleYeah/issues/216) |
 | `research` | Scientius Researchicus | Market intelligence, competitive analysis | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |

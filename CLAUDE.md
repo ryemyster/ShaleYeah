@@ -21,6 +21,8 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 
 **Branch flow:** `main` ← `develop` ← `<issue-number>-<slug>` (always branch off develop, PR targets develop)
 
+**PR rule — hard constraint:** ALL pull requests MUST target `develop`. NEVER open a PR to `main`. Always pass `--base develop` explicitly to `gh pr create` — omitting it risks defaulting to `main`.
+
 **Per-issue workflow:**
 1. `/new-issue-branch <n> <slug>` — cut branch off develop
 2. Write failing test first (TDD)
