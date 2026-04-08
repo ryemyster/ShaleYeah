@@ -1,0 +1,32 @@
+name: Secret Detection
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  schedule:
+    - cron: '0 2 * * 0'  # weekly Sunday 2am UTC
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    name: Detect secrets with Gitleaks
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      with:
+        fetch-depth: 0
+
+    - name: Run Gitleaks
+      uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7  # v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+    - name: Upload Gitleaks report
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f  # v7.0.0
+      if: failure()
+      with:
+        name: gitleaks-report-${{ github.run_number }}-${{ github.sha }}
+        path: gitleaks-report.json
