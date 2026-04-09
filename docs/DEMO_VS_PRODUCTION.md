@@ -76,7 +76,7 @@ This table shows which servers actually call Claude and which still use rule-bas
 | `curve-smith` | ✅ Yes | Interprets decline character, suggests basin analog, and flags anomalies from fitted Arps parameters |
 | `risk-analysis` | ✅ Yes | Interprets full risk profile, identifies top risk factor, and generates plain-English investment memo narrative from computed scores |
 | `decision` | ✅ Yes | Synthesizes all upstream domain data, identifies biggest risk and upside, and generates plain-English investment verdict from NPV/IRR/risk/geological inputs |
-| `reporter` | Planned (#216) | Executive report narrative generation |
+| `reporter` | ✅ Yes | Writes a professional analyst narrative (under 500 words) from the full investment verdict — NPV, IRR, payback, risk factors, next steps. Falls back to a rule-based summary with real numbers when the API is unavailable. |
 | `research`, `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test` | Planned (#217) | Domain-specific LLM synthesis |
 
 **What "falls back" means:** If `ANTHROPIC_API_KEY` is absent or the API call fails, the server computes a rule-based estimate from the input data and returns that instead of crashing. The result is still a valid analysis — it just wasn't written by Claude.

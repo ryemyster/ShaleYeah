@@ -7,9 +7,132 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate } from "../shared/server-factory.js";
 import type { AnalysisInputs, InvestmentCriteria } from "../shared/types.js";
+
+// ---------------------------------------------------------------------------
+// Exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Count the number of words in an executive summary string.
+ * Used by tests to verify summaries stay under 500 words.
+ */
+export function countWordsInSummary(text: string): number {
+	return text
+		.trim()
+		.split(/\s+/)
+		.filter((w) => w.length > 0).length;
+}
+
+/**
+ * Rule-based executive summary fallback — used when the Anthropic API is
+ * unavailable (demo mode, no API key, network error, etc.).
+ *
+ * Must include actual numbers from the input so tests can verify
+ * the output isn't just a hardcoded template string.
+ */
+export function deriveDefaultExecutiveSummary(params: {
+	tractName: string;
+	recommendation: "PROCEED" | "REJECT" | "DEFER";
+	npv: number;
+	irr: number;
+	paybackMonths: number;
+	confidence: number;
+}): string {
+	const { tractName, recommendation, npv, irr, paybackMonths, confidence } = params;
+	const npvM = (npv / 1_000_000).toFixed(1);
+	const irrPct = (irr * 100).toFixed(1);
+
+	const actionMap: Record<string, string> = {
+		PROCEED: "supports proceeding with development",
+		REJECT: "does not support investment at this time",
+		DEFER: "warrants additional data gathering before commitment",
+	};
+	const action = actionMap[recommendation] ?? "requires further review";
+
+	return (
+		`Investment analysis for ${tractName} ${action}. ` +
+		`Recommendation: ${recommendation} (${confidence}% confidence). ` +
+		`Key metrics: NPV $${npvM}M, IRR ${irrPct}%, payback ${paybackMonths} months. ` +
+		`This assessment is based on all available domain expert inputs including geological, ` +
+		`economic, decline curve, and risk analysis results.`
+	);
+}
+
+// ---------------------------------------------------------------------------
+// LLM synthesis
+// ---------------------------------------------------------------------------
+
+/**
+ * Ask Claude (Scriptor Reporticus Maximus) to write an investment-grade
+ * executive summary from the key metrics and upstream analysis results.
+ *
+ * Returns a plain-English summary under 500 words. Falls back to
+ * deriveDefaultExecutiveSummary() if the API is unavailable.
+ */
+async function synthesizeReportWithLLM(params: {
+	tractName: string;
+	recommendation: "PROCEED" | "REJECT" | "DEFER";
+	npv: number;
+	irr: number;
+	paybackMonths: number;
+	confidence: number;
+	riskFactors: string[];
+	nextSteps: string[];
+	keyFindings: string[];
+}): Promise<string> {
+	const { tractName, recommendation, npv, irr, paybackMonths, confidence, riskFactors, nextSteps, keyFindings } =
+		params;
+
+	const npvM = (npv / 1_000_000).toFixed(2);
+	const irrPct = (irr * 100).toFixed(1);
+
+	const prompt = `You are Scriptor Reporticus Maximus, a master oil & gas investment report writer.
+
+Write a professional executive summary for the following investment analysis. The summary must:
+- Be under 500 words
+- Read like a real analyst report — use specific numbers, domain vocabulary, coherent narrative
+- Lead with the recommendation and confidence level
+- Include a brief financial case (NPV, IRR, payback)
+- Mention the top 2-3 risk factors
+- Close with recommended next steps
+
+INVESTMENT DATA:
+Tract: ${tractName}
+Recommendation: ${recommendation} (confidence: ${confidence}%)
+NPV: $${npvM}M
+IRR: ${irrPct}%
+Payback: ${paybackMonths} months
+Key findings: ${keyFindings.slice(0, 3).join("; ")}
+Top risks: ${riskFactors.slice(0, 3).join("; ")}
+Next steps: ${nextSteps.slice(0, 3).join("; ")}
+
+Return ONLY the executive summary text. No JSON, no headers, no preamble.`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 600 });
+		const summary = raw.trim();
+
+		// Sanity check — must be non-empty and mention the tract name or recommendation
+		if (summary.length > 50 && (summary.includes(tractName) || summary.includes(recommendation))) {
+			return summary;
+		}
+
+		// Response came back but failed basic validation — use fallback
+		return deriveDefaultExecutiveSummary({ tractName, recommendation, npv, irr, paybackMonths, confidence });
+	} catch (_err) {
+		// API unavailable (no key, network down, etc.) — fall back to rule-based summary
+		// so demo mode and CI still produce a usable report.
+		return deriveDefaultExecutiveSummary({ tractName, recommendation, npv, irr, paybackMonths, confidence });
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Domain types
+// ---------------------------------------------------------------------------
 
 interface LocalInvestmentDecision {
 	recommendation: "PROCEED" | "REJECT" | "DEFER";
@@ -92,6 +215,22 @@ const reporterTemplate: ServerTemplate = {
 			}),
 			async (args) => {
 				const report = createExecutiveReport(args);
+
+				// Replace the template-generated executive summary with an LLM-authored
+				// analyst narrative that includes real numbers and domain vocabulary.
+				// Falls back to the rule-based summary if the API is unavailable.
+				const d = report.recommendation;
+				report.executiveSummary = await synthesizeReportWithLLM({
+					tractName: args.tractName,
+					recommendation: d.recommendation,
+					npv: d.keyMetrics.npv,
+					irr: d.keyMetrics.irr,
+					paybackMonths: d.keyMetrics.payback,
+					confidence: d.confidence,
+					riskFactors: d.riskFactors,
+					nextSteps: d.nextSteps,
+					keyFindings: report.keyFindings,
+				});
 
 				if (args.outputPath) {
 					const markdown = formatReportAsMarkdown(report);
