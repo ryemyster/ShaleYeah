@@ -239,13 +239,12 @@ await test("npm run demo completes and produces INVESTMENT_DECISION.md", async (
 		// Timing: should complete in under 30 seconds
 		assert.ok(elapsed < 30_000, `Demo completed in ${elapsed}ms (must be < 30000ms)`);
 
-		// INVESTMENT_DECISION.md must exist
+		// INVESTMENT_DECISION.md must exist and contain the standard header.
+		// Read directly — if the file is missing, readFile throws a clear ENOENT error.
+		// This avoids a TOCTOU race between a stat() check and a subsequent read().
 		const decisionPath = path.join(outputDir, "INVESTMENT_DECISION.md");
-		const stat = await fs.stat(decisionPath);
-		assert.ok(stat.isFile() && stat.size > 0, "INVESTMENT_DECISION.md written and non-empty");
-
-		// Must contain the standard header
 		const content = await fs.readFile(decisionPath, "utf-8");
+		assert.ok(content.length > 0, "INVESTMENT_DECISION.md written and non-empty");
 		assert.ok(
 			content.includes("SHALE YEAH Investment Analysis Report"),
 			"INVESTMENT_DECISION.md contains standard report header",
