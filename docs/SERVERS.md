@@ -229,6 +229,22 @@ When an agent doesn't yet call Claude, it computes a reasonable estimate from th
 
 ---
 
+## Production validation (Milestone 1 — complete)
+
+All 14 agents have been validated end-to-end as of issue [#218](https://github.com/ryemyster/ShaleYeah/issues/218):
+
+- **CI-safe tests** (`tests/e2e-production.test.ts`) — 13 structural tests run in CI without an API key: real LAS file parsing, curve shape validation, fallback determinism, and demo smoke test (all 14 servers complete in <30s)
+- **Key-gated LLM quality tests** — 2 additional tests run when `ANTHROPIC_API_KEY` is present, asserting that LLM output differs from the rule-based fallback (proves real Claude calls are made)
+- **Real test data** — `data/samples/real-test.las`: anonymized Wolfcamp/Bone Spring LAS 2.0 file (Midland County TX, 7500–7700 ft, 6 curves: GR, NPHI, RHOB, PEF, ILD) with realistic pay zone signatures
+
+To run the full LLM quality suite:
+
+```bash
+ANTHROPIC_API_KEY=sk-ant-... npx tsx tests/e2e-production.test.ts
+```
+
+---
+
 ## How to add a new agent
 
 If you need to add a 15th agent:
