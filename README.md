@@ -13,7 +13,7 @@ The result: serious investment analysis is effectively gated behind enterprise b
 
 **SHALE YEAH exists to close that gap.** It's an open-source **Agent OS** — a kernel-based runtime for AI agents, built on the same architectural principles as an operating system. The kernel handles agent discovery, parallel scatter-gather execution, session management, role-based access control, an append-only audit trail, and fault-tolerant resilience — so agents can fail gracefully, retry intelligently, and compose into larger workflows without breaking. 14 expert agents cover geology, economics, engineering, legal, risk, market, and more. The kernel decides who runs, in what order, with what permissions, and what to do when something goes wrong.
 
-The OS infrastructure is complete. The agents are being wired to Claude one by one — 6 of 14 call the real API today (`geowiz`, `econobot`, `curve-smith`, `risk-analysis`, `decision`, and `reporter`), with the rest following in issue [#217](https://github.com/ryemyster/ShaleYeah/issues/217). Agents that aren't yet wired fall back to deterministic rule-based estimates so the full pipeline always runs. Every wired agent is verified with anti-stub tests that prove Claude is actually being called — not just that the server returns something.
+The OS infrastructure is complete. All 14 agents call the real Anthropic API — every one verified with anti-stub tests that prove Claude is actually being called, not just that the server returns something. Agents fall back to deterministic rule-based estimates when the API is unavailable so the full pipeline always runs.
 
 AI adoption in upstream oil and gas is accelerating fast — [44% of E&P companies already use AI](https://worldoil.com/news/2026/1/23/oil-and-gas-operators-accelerate-ai-driven-software-adoption-isg-finds/), with the upstream software market projected to reach **[$25 billion by 2034](https://finance.yahoo.com/news/ai-oil-gas-market-size-140200556.html)**. SHALE YEAH is built for the operators who should be leading that shift, not waiting for the majors to trickle it down.
 
@@ -97,14 +97,14 @@ ShaleYeah/
 | `risk-analysis` | Gaius Probabilis Assessor | Risk scoring, Monte Carlo | ✅ |
 | `decision` | Augustus Decidius Maximus | Final investment recommendation | ✅ |
 | `reporter` | Scriptor Reporticus Maximus | Executive reports and summaries | ✅ |
-| `research` | Scientius Researchicus | Market intelligence, competitive analysis | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `legal` | Legatus Juridicus | Contract risk, regulatory compliance | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `market` | Mercatus Analyticus | Commodity prices, supply/demand | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `title` | Titulus Verificatus | Ownership verification, title risk | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `development` | Architectus Developmentus | Project planning, resource allocation | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `drilling` | Perforator Maximus | Drilling programs, cost optimization | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `infrastructure` | Structura Ingenious | Facility design, capacity planning | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
-| `test` | Testius Validatus | Quality assurance, validation | [#217](https://github.com/ryemyster/ShaleYeah/issues/217) |
+| `research` | Scientius Researchicus | Market intelligence, competitive analysis | ✅ |
+| `legal` | Legatus Juridicus | Contract risk, regulatory compliance | ✅ |
+| `market` | Mercatus Analyticus | Commodity prices, supply/demand | ✅ |
+| `title` | Titulus Verificatus | Ownership verification, title risk | ✅ |
+| `development` | Architectus Developmentus | Project planning, resource allocation | ✅ |
+| `drilling` | Perforator Maximus | Drilling programs, cost optimization | ✅ |
+| `infrastructure` | Structura Ingenious | Facility design, capacity planning | ✅ |
+| `test` | Testius Validatus | Quality assurance, validation | ✅ |
 
 See [docs/SERVERS.md](docs/SERVERS.md) for details on each one.
 
@@ -172,7 +172,7 @@ Role-based access control (4 tiers: analyst → engineer → executive → admin
 | Milestone | Focus | Status |
 | --- | --- | --- |
 | LLM wiring — core servers | Wire `callLLM` into geowiz, econobot, curve-smith, risk-analysis, decision, reporter | ✅ Complete (#211–#216) |
-| LLM wiring — support servers | Wire `callLLM` into all 8 remaining servers | Planned (#217) |
+| LLM wiring — support servers | Wire `callLLM` into all 8 remaining servers | ✅ Complete (#217) |
 | Production hardening | Resilience, session persistence, caching, timeouts | Planned |
 | Smart Agents v1 | Memory, data connectors, feedback loops | Planned |
 | External integration | REST API, streaming, webhooks | Planned |

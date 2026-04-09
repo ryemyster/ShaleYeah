@@ -7,8 +7,92 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
+
+// ---------------------------------------------------------------------------
+// Exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Rule-based regulatory risk rating — used as fallback when the API is unavailable.
+ * Returns "High" / "Medium" / "Low" based on jurisdiction and project type.
+ * Different inputs must produce different outputs so tests can verify determinism.
+ */
+export function deriveDefaultRegulatoryRisk(jurisdiction: string, projectType: string): string {
+	const highRiskJurisdictions = ["california", "colorado", "new mexico"];
+	const jLower = jurisdiction.toLowerCase();
+	const isHighJurisdiction = highRiskJurisdictions.some((j) => jLower.includes(j));
+
+	if (projectType === "exploration" || isHighJurisdiction) return "High";
+	if (projectType === "development") return "Medium";
+	return "Low";
+}
+
+/**
+ * Ask Claude (Legatus Juridicus) to assess the legal and regulatory exposure
+ * for a given jurisdiction and project type. Falls back to rule-based risk rating
+ * when the API is unavailable.
+ */
+export async function synthesizeLegalAnalysisWithLLM(params: {
+	jurisdiction: string;
+	projectType: string;
+	assets: string[];
+}): Promise<{ regulatoryRisk: string; keyRisks: string[]; recommendations: string[] }> {
+	const { jurisdiction, projectType, assets } = params;
+
+	const prompt = `You are Legatus Juridicus, a master oil & gas legal strategist.
+
+Analyze the regulatory and legal exposure for this project and return a JSON object.
+
+PROJECT:
+Jurisdiction: ${jurisdiction}
+Project type: ${projectType}
+Assets: ${assets.join(", ")}
+
+Return ONLY valid JSON in this exact shape:
+{
+  "regulatoryRisk": "High" | "Medium" | "Low",
+  "keyRisks": ["<risk 1>", "<risk 2>", "<risk 3>"],
+  "recommendations": ["<action 1>", "<action 2>", "<action 3>"]
+}
+
+Base your assessment on actual regulatory conditions in ${jurisdiction} for ${projectType} projects.`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 400 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		const parsed = JSON.parse(match[0]) as {
+			regulatoryRisk?: string;
+			keyRisks?: string[];
+			recommendations?: string[];
+		};
+		const validRisks = ["High", "Medium", "Low"];
+		if (!validRisks.includes(parsed.regulatoryRisk ?? "")) throw new Error("Invalid regulatoryRisk");
+		return {
+			regulatoryRisk: parsed.regulatoryRisk as string,
+			keyRisks: parsed.keyRisks ?? [],
+			recommendations: parsed.recommendations ?? [],
+		};
+	} catch (_err) {
+		// API unavailable — fall back to rule-based risk rating
+		return {
+			regulatoryRisk: deriveDefaultRegulatoryRisk(jurisdiction, projectType),
+			keyRisks: [
+				`${projectType} regulatory compliance in ${jurisdiction}`,
+				"Environmental permit requirements",
+				"Title and ownership verification",
+			],
+			recommendations: [
+				`Engage local counsel in ${jurisdiction}`,
+				"Complete title examination before proceeding",
+				"Obtain all required permits before operations",
+			],
+		};
+	}
+}
 
 const legalTemplate: ServerTemplate = {
 	name: "legal",
@@ -37,8 +121,13 @@ const legalTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const riskLevel =
-					args.projectType === "exploration" ? "High" : args.projectType === "development" ? "Medium" : "Low";
+				// Ask Claude to assess real regulatory exposure for this jurisdiction and project type.
+				// Falls back to rule-based risk rating if the API is unavailable.
+				const llmResult = await synthesizeLegalAnalysisWithLLM({
+					jurisdiction: args.jurisdiction,
+					projectType: args.projectType,
+					assets: args.assets,
+				});
 
 				const analysis = {
 					jurisdiction: args.jurisdiction,
@@ -47,7 +136,7 @@ const legalTemplate: ServerTemplate = {
 						permits: {
 							required: ["Drilling permits", "Environmental clearances", "Land use approvals", "Water usage permits"],
 							timeline: "4-6 months for standard approvals",
-							complexity: riskLevel,
+							complexity: llmResult.regulatoryRisk,
 						},
 						compliance: {
 							environmental: ["NEPA review", "State environmental laws", "Local ordinances"],
@@ -55,18 +144,14 @@ const legalTemplate: ServerTemplate = {
 							taxation: ["Severance taxes", "Property taxes", "Income tax implications"],
 						},
 						risks: {
-							regulatory: `${riskLevel} - ${args.projectType} projects in ${args.jurisdiction}`,
+							regulatory: `${llmResult.regulatoryRisk} - ${args.projectType} projects in ${args.jurisdiction}`,
+							keyRisks: llmResult.keyRisks,
 							contractual: "Standard oil & gas contract risks",
 							environmental: "Manageable with proper compliance",
 							title: args.assets.length > 1 ? "Complex - multiple assets" : "Standard",
 						},
 					},
-					recommendations: [
-						`Engage local counsel in ${args.jurisdiction}`,
-						"Complete title examination before proceeding",
-						"Obtain all required permits before operations",
-						"Implement comprehensive compliance program",
-					],
+					recommendations: llmResult.recommendations,
 					confidence: ServerUtils.calculateConfidence(0.88, 0.85),
 				};
 

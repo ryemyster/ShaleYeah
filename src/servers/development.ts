@@ -6,8 +6,96 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
+
+// ---------------------------------------------------------------------------
+// Exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+export interface DevelopmentOutlook {
+	scheduleRisk: string;
+	budgetRisk: string;
+	criticalPath: string[];
+	recommendation: string;
+}
+
+/**
+ * Rule-based development outlook — fallback when the API is unavailable.
+ * Output varies with well count, budget, and constraints so tests confirm determinism.
+ */
+export function deriveDefaultDevelopmentOutlook(
+	wellCount: number,
+	budget: number,
+	technicalConstraints: string[],
+): DevelopmentOutlook {
+	const isLarge = wellCount > 20;
+	const isTightBudget = budget < wellCount * 2_000_000; // less than $2M per well
+	const hasConstraints = technicalConstraints.length > 0;
+
+	return {
+		scheduleRisk: isLarge ? "Medium" : "Low",
+		budgetRisk: isTightBudget ? "High" : hasConstraints ? "Medium" : "Low",
+		criticalPath: [
+			"Environmental approvals",
+			"Drilling permits",
+			isLarge ? "Phased rig mobilization" : "Equipment procurement",
+		],
+		recommendation: `${isLarge ? "Phased development recommended" : "Single-phase feasible"}. ${isTightBudget ? "Budget is tight — monitor AFE variance closely." : "Budget appears adequate for scope."}`,
+	};
+}
+
+/**
+ * Ask Claude (Architectus Developmentus) to assess schedule and budget risks.
+ * Falls back to deriveDefaultDevelopmentOutlook() if the API is unavailable.
+ */
+export async function synthesizeDevelopmentAnalysisWithLLM(params: {
+	projectName: string;
+	wellCount: number;
+	budget: number;
+	technicalConstraints: string[];
+	totalDuration: string;
+}): Promise<DevelopmentOutlook> {
+	const { projectName, wellCount, budget, technicalConstraints, totalDuration } = params;
+
+	const prompt = `You are Architectus Developmentus, a master oil & gas development strategist.
+
+Assess the schedule and budget risks for this development project. Return a JSON object.
+
+PROJECT:
+Name: ${projectName}
+Well count: ${wellCount}
+Total budget: $${(budget / 1_000_000).toFixed(1)}M
+Total duration: ${totalDuration}
+Technical constraints: ${technicalConstraints.length > 0 ? technicalConstraints.join(", ") : "None specified"}
+
+Return ONLY valid JSON in this exact shape:
+{
+  "scheduleRisk": "High" | "Medium" | "Low",
+  "budgetRisk": "High" | "Medium" | "Low",
+  "criticalPath": ["<milestone 1>", "<milestone 2>", "<milestone 3>"],
+  "recommendation": "<one sentence development strategy recommendation>"
+}`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 350 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		const parsed = JSON.parse(match[0]) as Partial<DevelopmentOutlook>;
+		const validRisks = ["High", "Medium", "Low"];
+		if (!validRisks.includes(parsed.scheduleRisk ?? "") || !validRisks.includes(parsed.budgetRisk ?? ""))
+			throw new Error("Invalid risk level");
+		return {
+			scheduleRisk: parsed.scheduleRisk as string,
+			budgetRisk: parsed.budgetRisk as string,
+			criticalPath: parsed.criticalPath ?? [],
+			recommendation: parsed.recommendation ?? "",
+		};
+	} catch (_err) {
+		return deriveDefaultDevelopmentOutlook(wellCount, budget, technicalConstraints);
+	}
+}
 
 const developmentTemplate: ServerTemplate = {
 	name: "development",
@@ -48,16 +136,30 @@ const developmentTemplate: ServerTemplate = {
 			async (args) => {
 				const phaseCount = Math.min(4, Math.ceil(args.project.wellCount / 10));
 				const wellsPerPhase = Math.ceil(args.project.wellCount / phaseCount);
+				const budget = args.constraints?.budget ?? 50_000_000;
+				const technicalConstraints = args.constraints?.technical ?? [];
+				const totalDuration = `${phaseCount * 8} months`;
+
+				// Ask Claude to assess schedule and budget risks for this project.
+				// Falls back to rule-based outlook if API is unavailable.
+				const outlook = await synthesizeDevelopmentAnalysisWithLLM({
+					projectName: args.project.name,
+					wellCount: args.project.wellCount,
+					budget,
+					technicalConstraints,
+					totalDuration,
+				});
 
 				const analysis = {
 					project: args.project,
+					outlook,
 					development: {
 						strategy: args.project.wellCount > 20 ? "Phased development" : "Single phase",
 						phases: Array.from({ length: phaseCount }, (_, i) => ({
 							phase: i + 1,
 							wells: Math.min(wellsPerPhase, args.project.wellCount - i * wellsPerPhase),
 							duration: `${6 + i * 2} months`,
-							investment: Math.round((args.constraints?.budget || 50000000) / phaseCount),
+							investment: Math.round(budget / phaseCount),
 							keyMilestones: [
 								"Permitting and approvals",
 								"Site preparation",
@@ -67,9 +169,10 @@ const developmentTemplate: ServerTemplate = {
 							],
 						})),
 						schedule: {
-							totalDuration: `${phaseCount * 8} months`,
-							criticalPath: ["Environmental approvals", "Drilling permits", "Equipment procurement"],
-							riskFactors: args.constraints?.technical || ["Weather delays", "Equipment availability"],
+							totalDuration,
+							criticalPath: outlook.criticalPath,
+							riskFactors:
+								technicalConstraints.length > 0 ? technicalConstraints : ["Weather delays", "Equipment availability"],
 						},
 					},
 					resources: {
@@ -90,7 +193,7 @@ const developmentTemplate: ServerTemplate = {
 						},
 					},
 					economics: {
-						capex: Math.round((args.constraints?.budget || 50000000) * 1.1),
+						capex: Math.round(budget * 1.1),
 						timeToPayback: "18-24 months",
 						peakProduction: Math.round(args.project.reserves * 0.15),
 						plantLife: "25-30 years",
