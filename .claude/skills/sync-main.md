@@ -50,4 +50,9 @@ The resolution is always the same: **develop wins on every conflict**.
 
 ## Prevention
 
-To reduce how often this is needed, merge `develop → main` promptly after each milestone completes rather than letting `develop` accumulate many commits ahead of `main`. The longer the gap, the more conflicts accumulate.
+This is a pre-release step, not a per-PR step. The correct cadence is:
+
+- Feature branches → `develop` (many per day, all day)
+- `develop` → `main` (once per milestone/release, after running `/sync-main` to clear conflicts)
+
+Run `/sync-main` once before cutting a release PR, and the `develop → main` merge will be clean. There is no need to run it after every feature PR.
