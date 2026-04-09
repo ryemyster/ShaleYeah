@@ -8,6 +8,7 @@
 import fs from "node:fs/promises";
 import { z } from "zod";
 import { type FetchResult, fetchUrl } from "../../tools/web-fetch.js";
+import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
 
@@ -21,6 +22,77 @@ interface MarketResearch {
 	priceForecasts: Array<Record<string, unknown>>;
 	confidence: number;
 	recommendations: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+/**
+ * Rule-based research summary — fallback when the API is unavailable.
+ * Output varies with topic and scope so tests can verify determinism.
+ */
+export function deriveDefaultResearchSummary(topic: string, scope: string, sourceCount: number): string {
+	const dataQuality = sourceCount > 1 ? "multiple sources" : sourceCount === 1 ? "a single source" : "limited sources";
+	return `${scope} market research on "${topic}" based on ${dataQuality}. Current industry conditions show mixed signals — monitor rig counts, commodity prices, and regulatory developments for updated intelligence.`;
+}
+
+/**
+ * Ask Claude (Scientius Researchicus) to synthesize fetched web content into
+ * actionable market intelligence. Falls back to deriveDefaultResearchSummary()
+ * if the API is unavailable.
+ */
+export async function synthesizeResearchWithLLM(params: {
+	topic: string;
+	scope: string;
+	fetchedContent: string;
+	sourceCount: number;
+}): Promise<{ summary: string; keyFindings: string[]; recommendations: string[] }> {
+	const { topic, scope, fetchedContent, sourceCount } = params;
+
+	// Trim content to avoid exceeding context window
+	const contentSnippet = fetchedContent.slice(0, 2000);
+
+	const prompt = `You are Scientius Researchicus, a master oil & gas intelligence gatherer.
+
+Synthesize the following web content into actionable market intelligence. Return a JSON object.
+
+RESEARCH TOPIC: ${topic}
+SCOPE: ${scope}
+SOURCES FETCHED: ${sourceCount}
+
+WEB CONTENT (excerpt):
+${contentSnippet}
+
+Return ONLY valid JSON in this exact shape:
+{
+  "summary": "<2-3 sentence synthesis of what the content reveals about ${topic}>",
+  "keyFindings": ["<finding 1>", "<finding 2>", "<finding 3>"],
+  "recommendations": ["<action 1>", "<action 2>"]
+}`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 400 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		const parsed = JSON.parse(match[0]) as {
+			summary?: string;
+			keyFindings?: string[];
+			recommendations?: string[];
+		};
+		if (!parsed.summary) throw new Error("Missing summary");
+		return {
+			summary: parsed.summary,
+			keyFindings: parsed.keyFindings ?? [],
+			recommendations: parsed.recommendations ?? [],
+		};
+	} catch (_err) {
+		return {
+			summary: deriveDefaultResearchSummary(topic, scope, sourceCount),
+			keyFindings: [`${scope} market shows activity trends`, "Limited data available for deep analysis"],
+			recommendations: ["Gather additional market intelligence", "Monitor competitor drilling programs"],
+		};
+	}
 }
 
 const researchTemplate: ServerTemplate = {
@@ -89,20 +161,36 @@ async function performMarketResearch(args: Record<string, unknown>): Promise<Mar
 		const scope = String(args.scope || "General");
 		const sources = Array.isArray(args.sources) ? (args.sources as string[]) : undefined;
 
-		// Gather web intelligence
+		// Gather web intelligence then ask Claude to synthesize it.
 		const webIntelligence = await gatherWebIntelligence(topic, sources);
 		const insights = extractMarketInsights(webIntelligence, topic);
 
+		// Combine all fetched text for LLM synthesis
+		const combinedContent = webIntelligence
+			.filter((r) => r.text && r.text.length > 50)
+			.map((r) => r.text)
+			.join("\n\n");
+
+		const llmInsights = await synthesizeResearchWithLLM({
+			topic,
+			scope,
+			fetchedContent: combinedContent,
+			sourceCount: insights.sources.length,
+		});
+
 		return {
 			topic,
-			summary: insights.summary || "Market research summary",
+			summary: llmInsights.summary,
 			sources: insights.sources,
-			keyFindings: insights.findings || [],
+			keyFindings: llmInsights.keyFindings.length > 0 ? llmInsights.keyFindings : (insights.findings ?? []),
 			competitiveIntelligence: generateCompetitiveLandscape(scope),
 			marketTrends: generateMarketTrends(scope, insights.confidence || 0.5),
 			priceForecasts: generatePriceForecasts(scope),
 			confidence: insights.confidence || 0.5,
-			recommendations: generateRecommendations(topic, insights.confidence || 0.5),
+			recommendations:
+				llmInsights.recommendations.length > 0
+					? llmInsights.recommendations
+					: generateRecommendations(topic, insights.confidence || 0.5),
 		};
 	} catch (_error) {
 		const topic = String(args.topic || "Market Research");

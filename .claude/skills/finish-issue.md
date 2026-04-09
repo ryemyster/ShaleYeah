@@ -73,6 +73,8 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    ⚠️ If `gh pr create` is called without `--base develop`, it will use the repo default branch (which may be `main`). Always pass `--base develop` explicitly.
 
+   ⚠️ If a `develop → main` PR (release PR) shows merge conflicts and GitHub's web editor is unavailable, run `/sync-main` to resolve them via CLI. Develop always wins on every conflict.
+
    PR body should include: Summary bullets, Test plan checklist, closes #<issue-number>.
 
 9. **Close issue** — The PR closing via `closes #<number>` in the body handles this automatically when merged. Confirm the PR URL.

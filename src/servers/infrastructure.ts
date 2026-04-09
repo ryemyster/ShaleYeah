@@ -7,8 +7,90 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
+
+// ---------------------------------------------------------------------------
+// Exported helpers (used by tests)
+// ---------------------------------------------------------------------------
+
+export interface InfrastructureInterpretation {
+	takeawayRisk: string;
+	keyConstraints: string[];
+	recommendation: string;
+}
+
+/**
+ * Rule-based infrastructure interpretation — fallback when the API is unavailable.
+ * Output varies with well count and production so tests can verify determinism.
+ */
+export function deriveDefaultInfrastructureInterpretation(
+	wellCount: number,
+	expectedProduction: number,
+	location: string,
+): InfrastructureInterpretation {
+	const isLargeProject = wellCount > 20 || expectedProduction > 10000;
+	const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
+
+	return {
+		takeawayRisk: isRemote ? "High" : isLargeProject ? "Medium" : "Low",
+		keyConstraints: [
+			`${wellCount} wells require ${Math.ceil(wellCount * 1.2)} miles of gathering line`,
+			isLargeProject ? "Large project — phased infrastructure buildout recommended" : "Single-phase buildout feasible",
+			isRemote
+				? "Remote location — midstream access may require new pipeline"
+				: "Existing midstream infrastructure accessible",
+		],
+		recommendation: `${isRemote ? "Secure midstream contract before committing capital." : "Standard gathering buildout."} ${isLargeProject ? "Phase infrastructure to match production ramp." : "Single phase appropriate for project scale."}`,
+	};
+}
+
+/**
+ * Ask Claude (Structura Ingenious) to assess takeaway constraints and midstream risk.
+ * Falls back to deriveDefaultInfrastructureInterpretation() if the API is unavailable.
+ */
+export async function synthesizeInfrastructureAnalysisWithLLM(params: {
+	wellCount: number;
+	expectedProduction: number;
+	location: string;
+	totalCost: number;
+}): Promise<InfrastructureInterpretation> {
+	const { wellCount, expectedProduction, location, totalCost } = params;
+
+	const prompt = `You are Structura Ingenious, a master infrastructure architect for oil & gas projects.
+
+Assess the infrastructure and takeaway constraints for this project. Return a JSON object.
+
+PROJECT:
+Well count: ${wellCount}
+Expected production: ${expectedProduction} bopd
+Location: ${location}
+Estimated infrastructure cost: $${(totalCost / 1_000_000).toFixed(2)}M
+
+Return ONLY valid JSON in this exact shape:
+{
+  "takeawayRisk": "High" | "Medium" | "Low",
+  "keyConstraints": ["<constraint 1>", "<constraint 2>", "<constraint 3>"],
+  "recommendation": "<one sentence infrastructure recommendation>"
+}`;
+
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 350 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		const parsed = JSON.parse(match[0]) as Partial<InfrastructureInterpretation>;
+		const validRisks = ["High", "Medium", "Low"];
+		if (!validRisks.includes(parsed.takeawayRisk ?? "")) throw new Error("Invalid takeawayRisk");
+		return {
+			takeawayRisk: parsed.takeawayRisk as string,
+			keyConstraints: parsed.keyConstraints ?? [],
+			recommendation: parsed.recommendation ?? "",
+		};
+	} catch (_err) {
+		return deriveDefaultInfrastructureInterpretation(wellCount, expectedProduction, location);
+	}
+}
 
 const infrastructureTemplate: ServerTemplate = {
 	name: "infrastructure",
@@ -46,8 +128,20 @@ const infrastructureTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
+				const totalCost = Math.round(args.projectScope.wellCount * 430000);
+
+				// Ask Claude to assess takeaway constraints and midstream risk.
+				// Falls back to rule-based interpretation if API is unavailable.
+				const interpretation = await synthesizeInfrastructureAnalysisWithLLM({
+					wellCount: args.projectScope.wellCount,
+					expectedProduction: args.projectScope.expectedProduction,
+					location: args.projectScope.location,
+					totalCost,
+				});
+
 				const analysis = {
 					project: args.projectScope,
+					interpretation,
 					infrastructure: {
 						pipelines: {
 							gathering: `${Math.round(args.projectScope.wellCount * 1.2)} miles`,
@@ -62,7 +156,7 @@ const infrastructureTemplate: ServerTemplate = {
 						costs: {
 							pipelines: Math.round(args.projectScope.wellCount * 250000),
 							facilities: Math.round(args.projectScope.wellCount * 180000),
-							total: Math.round(args.projectScope.wellCount * 430000),
+							total: totalCost,
 						},
 					},
 					compliance: {
