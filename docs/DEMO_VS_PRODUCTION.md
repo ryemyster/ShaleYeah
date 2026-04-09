@@ -77,7 +77,14 @@ This table shows which servers actually call Claude and which still use rule-bas
 | `risk-analysis` | ✅ Yes | Interprets full risk profile, identifies top risk factor, and generates plain-English investment memo narrative from computed scores |
 | `decision` | ✅ Yes | Synthesizes all upstream domain data, identifies biggest risk and upside, and generates plain-English investment verdict from NPV/IRR/risk/geological inputs |
 | `reporter` | ✅ Yes | Writes a professional analyst narrative (under 500 words) from the full investment verdict — NPV, IRR, payback, risk factors, next steps. Falls back to a rule-based summary with real numbers when the API is unavailable. |
-| `research`, `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test` | Planned (#217) | Domain-specific LLM synthesis |
+| `legal` | ✅ Yes | Assesses regulatory exposure by jurisdiction and project type — replaces generic permit list with LLM risk rating |
+| `market` | ✅ Yes | Interprets live EIA prices into trend, volatility, 12-month outlook, and competitive activity narrative |
+| `title` | ✅ Yes | Evaluates realistic county-level title risk including ownership %, encumbrances, and notes |
+| `drilling` | ✅ Yes | Interprets drilling program risk from well type, depth, and formation — flags formation-specific hazards |
+| `infrastructure` | ✅ Yes | Assesses takeaway constraints and midstream risk based on well count, production, and location |
+| `development` | ✅ Yes | Assesses schedule and budget risk from project parameters — criticalPath from LLM, not hardcoded |
+| `research` | ✅ Yes | Synthesizes fetched web content into actionable market intelligence with key findings and recommendations |
+| `test` | ✅ Yes | Validates QA configuration and flags inconsistencies — overallStatus driven by LLM, not hardcoded PASS |
 
 **What "falls back" means:** If `ANTHROPIC_API_KEY` is absent or the API call fails, the server computes a rule-based estimate from the input data and returns that instead of crashing. The result is still a valid analysis — it just wasn't written by Claude.
 
