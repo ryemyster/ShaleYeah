@@ -19,6 +19,15 @@ export interface LLMCallOptions {
 	model?: string;
 	/** Max output tokens (defaults to 4096) */
 	maxTokens?: number;
+	/**
+	 * Injected API key — use this instead of reading process.env.ANTHROPIC_API_KEY.
+	 *
+	 * The kernel's SecretsStore resolves this at call time and passes it here,
+	 * so the key never has to be in the environment during tests or multi-tenant runs.
+	 *
+	 * Falls back to process.env.ANTHROPIC_API_KEY when not provided (dev/CI default).
+	 */
+	apiKey?: string;
 }
 
 const DEFAULT_MODEL = "claude-opus-4-6";
@@ -31,7 +40,9 @@ const DEFAULT_MAX_TOKENS = 4096;
  * Uses adaptive thinking on Opus 4.6 for best reasoning quality.
  */
 export async function callLLM(options: LLMCallOptions): Promise<string> {
-	const apiKey = process.env.ANTHROPIC_API_KEY;
+	// Use injected key first (from kernel SecretsStore), then fall back to env.
+	// This allows tests and multi-tenant runs to supply keys without polluting process.env.
+	const apiKey = options.apiKey ?? process.env.ANTHROPIC_API_KEY;
 	if (!apiKey) {
 		throw new Error(
 			"ANTHROPIC_API_KEY environment variable is not set. " +
