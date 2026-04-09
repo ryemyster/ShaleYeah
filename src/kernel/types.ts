@@ -197,6 +197,23 @@ export interface DegradedResponse {
 // Security (Arcade: Permission Gate + Secret Injection + Audit Trail)
 // ==========================================
 
+// ==========================================
+// Secret Injection (Arcade: Secret Injection pattern)
+// ==========================================
+
+/**
+ * A secret value — either a static string or an async resolver (e.g. fetching from a vault).
+ * Dynamic resolvers are called fresh on every resolve() call — no caching.
+ */
+export type SecretValue = string | (() => Promise<string>);
+
+/**
+ * Initial secrets to load into the SecretsStore at kernel startup.
+ * Keys are secret names (e.g. "ANTHROPIC_API_KEY"); values are static strings or async resolvers.
+ * If a key is not provided here, resolve() falls back to process.env[key].
+ */
+export type SecretsConfig = Record<string, SecretValue>;
+
 /** Permission scopes for tool access control */
 export type Permission = "read:analysis" | "write:reports" | "execute:decisions" | "admin:servers" | "admin:users";
 
@@ -471,6 +488,17 @@ export interface KernelConfig {
 		requireAuth: boolean;
 		auditEnabled: boolean;
 		auditPath: string;
+	};
+	/**
+	 * Pre-loaded secrets for injection into tool handlers.
+	 * Falls back to process.env for any key not listed here.
+	 * Supports a .env file path for dev convenience (loaded at kernel init).
+	 */
+	secrets?: {
+		/** Static or dynamic secret values to pre-load */
+		values?: SecretsConfig;
+		/** Path to a .env file to load for dev/local overrides (e.g. ".env.local") */
+		envFile?: string;
 	};
 	resilience: {
 		maxRetries: number;

@@ -31,6 +31,7 @@ import { AuditMiddleware } from "./middleware/audit.js";
 import { AuthMiddleware } from "./middleware/auth.js";
 import { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { Registry } from "./registry.js";
+import { SecretsStore } from "./secrets.js";
 import type {
 	AuthResult,
 	BundleResponse,
@@ -79,10 +80,22 @@ export class Kernel {
 	public readonly audit: AuditMiddleware;
 	public readonly config: KernelConfig;
 	public readonly healthMonitor: HealthMonitor;
+	/** Secrets store — inject API keys without exposing them in args or logs */
+	public readonly secrets: SecretsStore;
 	private _initialized = false;
 
 	constructor(config?: Partial<KernelConfig>) {
 		this.config = { ...DEFAULT_KERNEL_CONFIG, ...config };
+
+		// Initialize secrets store and load any pre-configured values
+		this.secrets = new SecretsStore();
+		if (this.config.secrets?.values) {
+			this.secrets.load(this.config.secrets.values);
+		}
+		// Dev bypass: load from .env file if configured (silently skips if file absent)
+		if (this.config.secrets?.envFile) {
+			this.secrets.loadEnvFile(this.config.secrets.envFile);
+		}
 
 		const cbConfig = this.config.resilience.circuitBreaker;
 		const circuitBreaker = new CircuitBreaker(cbConfig);
