@@ -9,6 +9,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import type { SecretAccessEntry } from "../secrets.js";
 import type { AuditEntry } from "../types.js";
 
 // ==========================================
@@ -127,6 +128,35 @@ export class AuditMiddleware {
 				.map((line) => JSON.parse(line) as AuditEntry);
 		} catch {
 			return [];
+		}
+	}
+
+	/**
+	 * Flush secret access log entries from the SecretsStore into the audit trail.
+	 *
+	 * Records which key was accessed, when, and whether it came from the injected
+	 * store or process.env. The secret VALUE is never written — only the key name.
+	 *
+	 * Call this after each tool execution to keep the audit trail current.
+	 */
+	logSecretAccess(entries: SecretAccessEntry[]): void {
+		if (!this.enabled || entries.length === 0) return;
+
+		for (const entry of entries) {
+			// Write as a special secret_access action — key name only, never value
+			const auditEntry = {
+				tool: "secrets-store",
+				action: "secret_access" as const,
+				parameters: {
+					key: entry.key,
+					source: entry.source,
+				},
+				userId: "system",
+				sessionId: "system",
+				role: "system",
+				timestamp: entry.timestamp,
+			};
+			this.writeEntry(auditEntry as unknown as AuditEntry);
 		}
 	}
 

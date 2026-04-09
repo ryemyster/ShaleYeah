@@ -2,9 +2,9 @@
 
 This document maps every [Arcade.dev agentic tool pattern](https://www.arcade.dev/patterns) to its implementation status in SHALE YEAH. It is the authoritative reference for pattern coverage and serves as the engineering roadmap for closing gaps.
 
-**Last audited:** 2026-04-08
+**Last audited:** 2026-04-09
 **Total patterns:** 52 across 10 categories
-**Implemented:** 30 (58%) | **Partial:** 8 (15%) | **Missing:** 14 (27%)
+**Implemented:** 31 (60%) | **Partial:** 7 (13%) | **Missing:** 14 (27%)
 
 ---
 
@@ -140,7 +140,7 @@ How tools handle credentials and access control.
 
 | Pattern | Status | Implementation | Issue |
 |---------|--------|---------------|-------|
-| **Secret Injection** | 🔶 | Audit trail redacts secrets in logs (`src/kernel/middleware/audit.ts`). Tools still read credentials directly from `process.env` — no controlled injection or per-session secret scoping. | [#205](https://github.com/ryemyster/ShaleYeah/issues/205) |
+| **Secret Injection** | ✅ | `SecretsStore` (`src/kernel/secrets.ts`) on the kernel manages API keys with static values, async resolvers, and `.env` file dev bypass. `callLLM()` accepts injected `apiKey`. `AuditMiddleware.logSecretAccess()` logs key name + source, never value. `toJSON()` prevents value leakage. (closes #205) | — |
 | **Permission Gate** | ✅ | `src/kernel/middleware/auth.ts` — `AuthMiddleware` enforces RBAC. 4 roles: `analyst`, `engineer`, `executive`, `admin`. Enabled via `KERNEL_AUTH_ENABLED=true`. | — |
 | **Scope Declaration** | ❌ | No OAuth scope annotations on tool metadata. Tools don't declare what external permissions they require. | [#123](https://github.com/ryemyster/ShaleYeah/issues/123) |
 | **Audit Trail** | ✅ | `src/kernel/middleware/audit.ts` — append-only JSONL audit trail. Logs all requests, responses, errors, and access denials. Automatic sensitive value redaction. | — |
@@ -197,7 +197,7 @@ Ordered by impact on real production workflows:
 9. **Async Job** (#122) — non-blocking long-running analyses
 10. **Transactional Boundary** (#200) — all-or-nothing bundle execution
 11. **Canonical Tool Model** (#208) — shared data model between servers
-12. **Secret Injection** (#205) — controlled credential supply
+12. **Secret Injection** — `SecretsStore` with injection, env fallback, audit trail ✅
 
 ### Future
 13. **Tool Adapter** (#207) — external API wrapping
