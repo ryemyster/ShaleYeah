@@ -137,6 +137,35 @@ export interface ResponseMetadata {
 	totalRetryDelayMs?: number;
 	/** True when this response was served from the result cache. */
 	fromCache?: boolean;
+	/**
+	 * True when the response came from a registered fallback tool because
+	 * the primary tool failed after all retries were exhausted.
+	 */
+	usedFallback?: boolean;
+	/**
+	 * The primary tool name that was originally requested (set when usedFallback is true).
+	 */
+	originalTool?: string;
+	/**
+	 * The fallback tool name that was actually executed (set when usedFallback is true).
+	 */
+	fallbackTool?: string;
+}
+
+/**
+ * A single audit record of a fallback invocation.
+ * Collected by the executor so callers can surface fallback usage
+ * in audit logs or user-facing warnings.
+ */
+export interface FallbackUsageRecord {
+	/** The primary tool that was requested but failed */
+	primaryTool: string;
+	/** The fallback tool that was invoked in its place */
+	fallbackTool: string;
+	/** Human-readable reason (the primary's last error message) */
+	reason: string;
+	/** ISO timestamp of the fallback invocation */
+	timestamp: string;
 }
 
 /** Classified error with recovery guidance (Arcade: Recovery Guide pattern) */
