@@ -16,13 +16,13 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Read the acceptance criteria and TDD checklist from the issue body. Verify the issue is open (state: OPEN). Use the issue title as the basis for the PR title and commit message.
 
-2. **Ghost-Close Guard** — Before running pre-commit, verify implementation exists. For server issues:
+2. **Ghost-Close Guard** — Before running pre-commit, verify implementation exists:
 
-   ```bash
-   grep -r "callLLM" src/servers/<server>.ts
-   ```
+   - Server issues: `grep -r "callLLM" src/servers/<server>.ts`
+   - Kernel issues: `grep -r "<new-export>" src/kernel/<file>.ts`
+   - Other: grep for the primary new symbol in the relevant source file
 
-   For kernel issues, grep for the new exported function/type in the relevant source file. If grep returns nothing: STOP — the issue is not implemented. Do not close.
+   If grep returns nothing: STOP — the issue is not implemented. Do not close.
 
 3. **Pre-commit checks** — Run `/pre-commit`. Stop if anything fails. This includes `npm run type-check` — fix any type errors before proceeding.
 
@@ -82,46 +82,3 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 10. **Compact context** — After confirming the PR URL, run `/compact <focused instructions for next phase>` to reset context.
 
 Report the PR URL when done.
-
-## Code Comment Standards
-
-When writing or reviewing code as part of any issue, comments must be clear enough that a 12-year-old who has never seen this codebase can understand what is happening and why. Follow these rules:
-
-**What to comment:**
-- Anything that isn't obvious from reading the function name and variable names alone
-- The "why" behind a decision (not just the "what")
-- Any fallback or safety-net behavior
-- Magic numbers or constants that would confuse a reader
-
-**How to write comments:**
-
-```typescript
-// BAD: restates the code
-const toc = depth > 10000 ? 5.8 : 4.5; // set toc based on depth
-
-// GOOD: explains what this means and why it matters
-// Deeper rock has had more time to cook organic material into oil,
-// so we estimate a higher TOC (Total Organic Carbon) for deeper wells.
-const toc = depth > 10000 ? 5.8 : 4.5;
-```
-
-```typescript
-// BAD: no context
-} catch (_err) {
-  return fallback();
-}
-
-// GOOD: explains why we swallow the error
-} catch (_err) {
-  // If the LLM is unavailable (no API key, network down, etc.),
-  // we fall back to a rule-based estimate so the server still returns
-  // something useful instead of crashing.
-  return fallback();
-}
-```
-
-**Style rules:**
-- Write in plain English. Avoid jargon unless you define it first.
-- One sentence is better than zero. Three sentences are better than one vague one.
-- Comments describe intent and behavior — not syntax.
-- Do not add comments to code you did not change (don't pad existing files).

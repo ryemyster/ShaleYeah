@@ -8,11 +8,7 @@ Resolve conflicts on an open `develop → main` PR when GitHub refuses to merge 
 
 Run this whenever a `develop → main` PR (e.g. #262, #268) shows "This branch has conflicts that must be resolved."
 
-## Why this keeps happening
-
-`develop` is the source of truth. Every feature PR merges into `develop`. The `develop → main` PR is a periodic release merge. When `develop` moves ahead of `main` between releases, the PR accumulates conflicts in CHANGELOG.md, README.md, docs/, and package.json. GitHub's web editor can't resolve these reliably, so we do it via CLI.
-
-The resolution is always the same: **develop wins on every conflict**.
+**develop is always the source of truth. Develop wins on every conflict.**
 
 ## Steps
 
