@@ -7,14 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-- **Demo bypass removed** (`src/mcp-client.ts`) — `createExecutorFn()` no longer hardcodes `mode: "demo"` as the fallback default; production mode is now the default when no `currentRequest` is set. Demo mode remains valid but is explicitly opt-in via `mode: "demo"` on the `AnalysisRequest`. (closes #221)
-
-### Security
-- **Clear-text logging of sensitive field** (`tools/access-processor.ts`) — removed `hasPassword` from the summary object logged to stdout. The boolean indicated whether an Access database is password-protected and was flowing into `console.log(JSON.stringify(summary))`, triggering CodeQL `js/clear-text-logging` (CWE-532). The field is no longer needed in the CLI summary output. (fixes CodeQL alert #39)
-- **CI/CD Supply Chain Hardening** — all GitHub Actions pinned to full commit SHAs (previously used mutable tags like `@v6`/`@v4`/`@v3`); added `permissions: contents: read` default to `ci.yml` and `demo.yml` to prevent over-privileged tokens on PR/push runs; added `environment: production` gate (requires reviewer approval) to `release` and `sign` jobs in `release.yml`; pinned SLSA generator to SHA; removed lint-suppression hacks (`|| echo ...`) from `ci.yml` and `release.yml`; renamed `gitleaks.yml` → `codeql.yml` to match its actual content (CodeQL, not Gitleaks)
-
 ### Added
+
+- **Fallback Tool** (`src/kernel/registry.ts`, `src/kernel/executor.ts`, `src/kernel/types.ts`) — When a primary tool fails after all retries are exhausted, the kernel automatically routes to a registered fallback tool. Fallbacks are opt-in per tool via `registry.registerFallback(primaryTool, fallbackTool)`. Result metadata flags `usedFallback: true`, `originalTool`, and `fallbackTool` so callers always know when a substitute was used. Every fallback invocation is appended to `executor.getFallbackUsage()` (audit log) with the primary tool name, fallback tool name, failure reason, and timestamp. 14 tests in `tests/kernel-fallback.test.ts`. (closes #149)
+- **Biome bump** — `@biomejs/biome` updated from 2.4.9 to 2.4.11; `biome.json` schema URL updated to match.
 
 - **Secret Injection** (`src/kernel/secrets.ts`, `src/kernel/index.ts`, `src/shared/llm-client.ts`) — `SecretsStore` on the kernel manages API keys without exposing them in args or logs. Supports static values, async resolvers (vault rotation), and a `.env` file dev bypass (`secrets.envFile` in `KernelConfig`). `resolve(key)` checks the injected store first, then falls back to `process.env`. `callLLM()` accepts an optional `apiKey` param so keys never have to be in the environment during tests or multi-tenant runs. `AuditMiddleware.logSecretAccess()` records key name + source (`store` vs `env`) to the audit trail — never the value. `SecretsStore.toJSON()` redacts all values so secrets can't leak via `JSON.stringify`. 14 tests in `tests/kernel-secrets.test.ts`. (closes #205)
 
@@ -58,6 +54,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Shared LLM Client** (`src/shared/llm-client.ts`) — `callLLM(options)` is the single entry point for all Anthropic API calls in SHALE YEAH. Accepts `prompt`, optional `system`, `model` (default `claude-opus-4-6`), and `maxTokens` (default 4096). Uses adaptive thinking on Opus 4.6 for best reasoning quality. Throws a descriptive `Error` when `ANTHROPIC_API_KEY` is absent. 6 tests in `tests/llm-client.test.ts`. (closes #222)
 - **Circuit Breaker Pattern** (`src/kernel/middleware/circuit-breaker.ts`) — per-server state machine (closed → open → half-open) that automatically excludes repeatedly-failing servers from scatter-gather and bundle execution. Configurable failure threshold (default 3 consecutive RETRYABLE failures), reset timeout (default 30s), and half-open probe attempts (default 1). Only RETRYABLE errors trip the breaker — PERMANENT, AUTH_REQUIRED, and USER_ACTION errors are request-level issues and do not affect server health. Integrated into `Executor` (fast-fail + outcome recording) and `Registry` (`listServers()` filters open-circuit servers). Exposed on `Kernel` via `getCircuitState(serverName)` for observability. Configurable via `KernelConfig.resilience.circuitBreaker`. 43 tests in `tests/kernel-circuit-breaker.test.ts`. (issue #111)
 - **Retry with Exponential Backoff** (`src/kernel/executor.ts`) — automatic retry for retryable errors (rate limit, timeout, connection) using existing `ResilienceMiddleware.classifyError()` classification. Exponential backoff with jitter (`baseDelay * 2^attempt + 0-30% jitter`) prevents thundering herd. Base delays from resilience recommendations (rate limit: 5s, timeout: 2s, connection: 1s). Configurable via `KernelConfig.resilience.maxRetries` (default 2) and `retryBackoffMs` (default 1000ms). Permanent, auth, and user_action errors are never retried. Retry metadata (`retryAttempts`, `totalRetryDelayMs`) attached to responses.
+
+### Fixed
+
+- **Demo bypass removed** (`src/mcp-client.ts`) — `createExecutorFn()` no longer hardcodes `mode: "demo"` as the fallback default; production mode is now the default when no `currentRequest` is set. Demo mode remains valid but is explicitly opt-in via `mode: "demo"` on the `AnalysisRequest`. (closes #221)
+
+### Security
+
+- **Clear-text logging of sensitive field** (`tools/access-processor.ts`) — removed `hasPassword` from the summary object logged to stdout. The boolean indicated whether an Access database is password-protected and was flowing into `console.log(JSON.stringify(summary))`, triggering CodeQL `js/clear-text-logging` (CWE-532). The field is no longer needed in the CLI summary output. (fixes CodeQL alert #39)
+- **CI/CD Supply Chain Hardening** — all GitHub Actions pinned to full commit SHAs (previously used mutable tags like `@v6`/`@v4`/`@v3`); added `permissions: contents: read` default to `ci.yml` and `demo.yml` to prevent over-privileged tokens on PR/push runs; added `environment: production` gate (requires reviewer approval) to `release` and `sign` jobs in `release.yml`; pinned SLSA generator to SHA; removed lint-suppression hacks (`|| echo ...`) from `ci.yml` and `release.yml`; renamed `gitleaks.yml` → `codeql.yml` to match its actual content (CodeQL, not Gitleaks)
 
 ### Changed
 

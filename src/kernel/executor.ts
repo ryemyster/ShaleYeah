@@ -12,6 +12,7 @@ import { createHash } from "node:crypto";
 import type { Session } from "./context.js";
 import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
+import type { Registry } from "./registry.js";
 import { ResultCache } from "./result-cache.js";
 import type {
 	BundleResponse,
@@ -20,6 +21,7 @@ import type {
 	ExecutionOptions,
 	FailedItem,
 	FailureDetail,
+	FallbackUsageRecord,
 	GatheredResponse,
 	PartialSuccessResult,
 	PhaseResult,
@@ -73,6 +75,10 @@ export class Executor {
 	private pendingActions: Map<string, PendingAction> = new Map();
 	private circuitBreaker: CircuitBreaker | null = null;
 	public readonly resultCache: ResultCache;
+	/** Optional registry reference for fallback routing lookups. */
+	private registry: Registry | null = null;
+	/** Audit log of every fallback invocation this executor has performed. */
+	private fallbackUsage: FallbackUsageRecord[] = [];
 
 	constructor(options?: {
 		maxParallel?: number;
@@ -107,6 +113,22 @@ export class Executor {
 	 */
 	setExecutorFn(fn: ToolExecutorFn): void {
 		this.executorFn = fn;
+	}
+
+	/**
+	 * Attach the tool registry so the executor can look up registered fallbacks.
+	 * Call this after the registry is populated during kernel initialization.
+	 */
+	setRegistry(registry: Registry): void {
+		this.registry = registry;
+	}
+
+	/**
+	 * Return the audit log of every fallback invocation this executor has performed.
+	 * Callers can use this to surface fallback usage in audit logs or warnings.
+	 */
+	getFallbackUsage(): FallbackUsageRecord[] {
+		return [...this.fallbackUsage];
 	}
 
 	/**
@@ -214,6 +236,38 @@ export class Executor {
 				retryAttempts: attemptsUsed,
 				totalRetryDelayMs: Date.now() - overallStartMs,
 			};
+		}
+
+		// Fallback routing — attempt a registered fallback tool when all primary retries fail.
+		// The fallback is opt-in per tool: only fires if registerFallback() was called for this tool.
+		const fallbackToolName = this.registry?.getFallback(request.toolName);
+		if (fallbackToolName && lastResponse && !lastResponse.success) {
+			const primaryFailureReason = lastResponse.error?.message ?? lastResponse.summary ?? "Primary tool failed";
+			const fallbackServerName = fallbackToolName.split(".")[0];
+			try {
+				const fallbackResult = await this.withTimeout(
+					this.executorFn!(fallbackServerName, request.args),
+					this.serverTimeouts[fallbackServerName] ?? this.toolTimeoutMs,
+				);
+				// Record this fallback invocation for audit/observability regardless of outcome
+				const record: FallbackUsageRecord = {
+					primaryTool: request.toolName,
+					fallbackTool: fallbackToolName,
+					reason: primaryFailureReason,
+					timestamp: new Date().toISOString(),
+				};
+				this.fallbackUsage.push(record);
+				// Stamp the result with fallback provenance so callers can surface it
+				fallbackResult.metadata = {
+					...fallbackResult.metadata,
+					usedFallback: true,
+					originalTool: request.toolName,
+					fallbackTool: fallbackToolName,
+				};
+				return fallbackResult;
+			} catch {
+				// Fallback itself failed — fall through and return the primary failure
+			}
 		}
 
 		return lastResponse!;

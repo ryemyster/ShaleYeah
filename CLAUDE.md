@@ -39,6 +39,7 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 - Tests use simple assert pattern (not jest/vitest) — run via `npx tsx tests/<name>.test.ts`
 - CI requires no API key — mock the Anthropic SDK in tests
 - New servers: inherit `MCPServer`, add Roman persona, use `registerTool()`
+- Code comments explain the "why", not the "what" — write for a reader who has never seen this codebase. Bad: `// set toc based on depth`. Good: `// Deeper rock has had more time to cook organic material, so we estimate higher TOC for deeper wells.`
 
 ## Key Commands
 
