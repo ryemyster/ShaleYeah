@@ -46,6 +46,11 @@ export class Registry {
 	private toolIndex: Map<string, ToolDescriptor> = new Map();
 	private capabilityIndex: Map<string, ToolDescriptor[]> = new Map();
 	private circuitBreaker: CircuitBreaker | null = null;
+	/**
+	 * Opt-in fallback mappings: primaryToolName → fallbackToolName.
+	 * Only tools explicitly registered here will have a fallback route.
+	 */
+	private fallbackMap: Map<string, string> = new Map();
 
 	/**
 	 * Register a server and auto-generate its tool descriptors.
@@ -211,6 +216,26 @@ export class Registry {
 	 */
 	getTool(toolName: string): ToolDescriptor | undefined {
 		return this.toolIndex.get(toolName);
+	}
+
+	/**
+	 * Register an opt-in fallback for a primary tool.
+	 * When the primary tool fails after all retries, the executor will
+	 * attempt the fallback tool instead before returning failure.
+	 *
+	 * @param primaryTool  Fully-qualified primary tool name (e.g. "geowiz.analyze")
+	 * @param fallbackTool Fully-qualified fallback tool name (e.g. "risk-analysis.analyze")
+	 */
+	registerFallback(primaryTool: string, fallbackTool: string): void {
+		this.fallbackMap.set(primaryTool, fallbackTool);
+	}
+
+	/**
+	 * Return the registered fallback tool name for a primary tool, or
+	 * undefined if no fallback has been registered for that tool.
+	 */
+	getFallback(primaryTool: string): string | undefined {
+		return this.fallbackMap.get(primaryTool);
 	}
 
 	/**
