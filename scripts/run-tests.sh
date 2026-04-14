@@ -10,7 +10,11 @@
 #
 # To skip a test file permanently, add its basename to EXCLUDED below.
 
-set -euo pipefail
+# No set -e: we handle failures manually via the if/else around npx tsx.
+# set -e would kill the script on ((passed++)) when passed=0, since ((0)) is
+# falsy in bash arithmetic — and on any individual test failure we want to
+# continue running remaining suites, not abort.
+set -uo pipefail
 
 TESTS_DIR="$(cd "$(dirname "$0")/../tests" && pwd)"
 
@@ -40,9 +44,9 @@ for test_file in "$TESTS_DIR"/*.test.ts; do
   echo ""
   echo "▶  $(basename "$test_file")"
   if npx tsx "$test_file"; then
-    ((passed++))
+    passed=$((passed + 1))
   else
-    ((failed++))
+    failed=$((failed + 1))
     failed_files+=("$(basename "$test_file")")
   fi
 done
