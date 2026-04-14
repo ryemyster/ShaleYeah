@@ -112,10 +112,17 @@ export class Kernel {
 		});
 		this.executor.setCircuitBreaker(circuitBreaker);
 
+		// Wire the registry for fallback routing — must come after registry is created.
+		this.executor.setRegistry(this.registry);
+
 		const storageBackend = this.config.sessionStorage
 			? new FileSessionStorage(this.config.sessionStorage.path)
 			: undefined;
 		this.sessions = new SessionManager(storageBackend);
+
+		// Wire the session manager so the executor can resolve ResourceRef values
+		// in tool args before dispatch (Issue #204 — Resource Reference pattern).
+		this.executor.setSessionManager(this.sessions);
 		this.auth = new AuthMiddleware(this.config.security.requireAuth);
 		this.audit = new AuditMiddleware({
 			enabled: this.config.security.auditEnabled,

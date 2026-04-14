@@ -197,6 +197,44 @@ export interface ErrorDetail {
 export type ToolResponse = AgentOSResponse;
 
 // ==========================================
+// Resource Reference (Arcade: Resource Reference pattern — Issue #204)
+// ==========================================
+
+/**
+ * A handle to a named data blob stored in the session resource store.
+ *
+ * Instead of copying large payloads (formation logs, cash-flow tables) through
+ * every tool call, a server stores the blob once and returns this lightweight
+ * ticket. Downstream tools pass the ticket; the kernel swaps it back for the
+ * full payload before invoking the handler — transparent to the tool author.
+ *
+ * Format convention for resourceId: "<server>:<data-type>:<run-id>"
+ *   e.g. "geowiz:formation-data:run-abc123"
+ *        "econobot:cashflow:run-456"
+ */
+export interface ResourceRef {
+	/** Stable identifier for this resource within the session */
+	resourceId: string;
+	/** MIME type of the stored payload (usually "application/json") */
+	mimeType: string;
+	/** Size of the JSON-serialized payload in bytes (set by the store) */
+	sizeBytes?: number;
+}
+
+/**
+ * One entry in the session's resource store.
+ * Holds the raw payload alongside the metadata needed to reconstruct a ResourceRef.
+ */
+export interface StoredResource {
+	/** The actual data blob (any JSON-serializable value) */
+	data: unknown;
+	/** MIME type echoed from the original storeResource() call */
+	mimeType: string;
+	/** ISO timestamp of when this resource was stored */
+	storedAt: string;
+}
+
+// ==========================================
 // Circuit Breaker (Arcade: Circuit Breaker pattern)
 // ==========================================
 
