@@ -150,6 +150,12 @@ export interface ResponseMetadata {
 	 * The fallback tool name that was actually executed (set when usedFallback is true).
 	 */
 	fallbackTool?: string;
+	/**
+	 * Advisory token budget passed by the caller (Arcade: Token-Efficient Response).
+	 * The shaper records this in metadata so callers can verify it was received.
+	 * Enforcement is best-effort — it does not truncate content.
+	 */
+	maxTokenHint?: number;
 }
 
 /**

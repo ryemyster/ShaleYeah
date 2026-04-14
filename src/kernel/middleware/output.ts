@@ -46,6 +46,11 @@ const STANDARD_STRIP_FIELDS: string[] = [
 export class OutputShaper {
 	/**
 	 * Shape a raw tool response into an AgentOSResponse with the requested detail level.
+	 *
+	 * Token-Efficient Response options (Arcade pattern — issue #201):
+	 *   fields      — only include these top-level keys in the response data
+	 *   maxTokenHint — advisory token budget; recorded in metadata, not enforced
+	 *   stripNulls  — when true, omit null/undefined fields (default: off)
 	 */
 	shape<T = unknown>(
 		rawData: T,
@@ -55,13 +60,30 @@ export class OutputShaper {
 			persona: string;
 			executionTimeMs: number;
 			confidence?: number;
+			/** Only include these top-level fields in the response payload. */
+			fields?: string[];
+			/** Advisory token budget — stored in metadata, not enforced. */
+			maxTokenHint?: number;
+			/** Strip null/undefined fields from the response payload. */
+			stripNulls?: boolean;
 		},
 	): AgentOSResponse<T> {
 		const level = options.detailLevel ?? "standard";
 		const confidence = options.confidence ?? this.extractConfidence(rawData) ?? 0;
 
 		const domain = this.detectDomain(rawData);
-		const shaped = this.applyDetailLevel(rawData, level, domain);
+		let shaped: unknown = this.applyDetailLevel(rawData, level, domain);
+
+		// Apply field projection before null stripping — projection narrows the object,
+		// stripping then cleans what remains. Order matters for the combined case.
+		if (options.fields && options.fields.length > 0) {
+			shaped = applyFieldProjection(shaped, options.fields);
+		}
+
+		if (options.stripNulls === true) {
+			shaped = applyNullStripping(shaped);
+		}
+
 		const summary = this.summarize(rawData, domain, confidence);
 
 		const metadata: ResponseMetadata = {
@@ -69,6 +91,7 @@ export class OutputShaper {
 			persona: options.persona,
 			executionTimeMs: options.executionTimeMs,
 			timestamp: new Date().toISOString(),
+			...(options.maxTokenHint !== undefined ? { maxTokenHint: options.maxTokenHint } : {}),
 		};
 
 		return {
@@ -300,6 +323,37 @@ export class OutputShaper {
 // ==========================================
 // Helpers
 // ==========================================
+
+// ==========================================
+// Token-Efficient Response helpers (Arcade: Token-Efficient Response — #201)
+// ==========================================
+
+/**
+ * Return only the requested top-level fields from the data object.
+ * Unknown field names are silently ignored — callers should not need to know the schema.
+ * Non-object data passes through unchanged.
+ */
+function applyFieldProjection(data: unknown, fields: string[]): unknown {
+	if (!fields.length || typeof data !== "object" || data === null) return data;
+	const obj = data as Record<string, unknown>;
+	return Object.fromEntries(fields.filter((f) => f in obj).map((f) => [f, obj[f]]));
+}
+
+/**
+ * Recursively remove null and undefined fields from an object.
+ * Preserves falsy-but-valid values like 0, false, and empty strings.
+ * Non-object data passes through unchanged.
+ */
+function applyNullStripping(data: unknown): unknown {
+	if (typeof data !== "object" || data === null) return data;
+	if (Array.isArray(data)) return data.map(applyNullStripping);
+	const obj = data as Record<string, unknown>;
+	return Object.fromEntries(
+		Object.entries(obj)
+			.filter(([, v]) => v !== null && v !== undefined)
+			.map(([k, v]) => [k, applyNullStripping(v)]),
+	);
+}
 
 function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1);
