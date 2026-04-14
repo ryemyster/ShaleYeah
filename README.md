@@ -82,6 +82,7 @@ ShaleYeah/
 | See which Agent OS patterns are implemented | [docs/ARCADE-PATTERNS.md](docs/ARCADE-PATTERNS.md) |
 | Read the Agent OS architecture review | [docs/AGENT-OS-REVIEW.md](docs/AGENT-OS-REVIEW.md) |
 | Understand the original project intent and goals | [docs/PROJECT-INTENT.md](docs/PROJECT-INTENT.md) |
+| See how SHALE YEAH compares to Claude Managed Agents — feature by feature | [docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md](docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md) |
 
 ---
 
