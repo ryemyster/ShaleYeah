@@ -18,6 +18,7 @@
 import { randomUUID } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import type { CanonicalSection, WellAnalysisContext } from "./canonical-model.js";
 import type { InjectedContext, Permission, SessionInfo, ToolResponse, UserIdentity, UserPreferences } from "./types.js";
 
 // ==========================================
@@ -173,6 +174,14 @@ export class Session {
 
 	private results: Map<string, ToolResponse> = new Map();
 
+	/**
+	 * Accumulated canonical context for this session.
+	 * Each section is written by the server that owns it (e.g. geowiz writes formation).
+	 * Sections accumulate independently — a missing section is simply absent (not defaulted).
+	 * See src/kernel/canonical-model.ts for the schema definitions.
+	 */
+	private canonicalSections: Partial<WellAnalysisContext> = {};
+
 	constructor(identity: UserIdentity, preferences?: UserPreferences, _serialized?: SerializedSession) {
 		if (_serialized) {
 			this.id = _serialized.id;
@@ -190,6 +199,25 @@ export class Session {
 			this.lastActivity = this.createdAt;
 			this.preferences = preferences ?? {};
 		}
+	}
+
+	/**
+	 * Merge a canonical section into this session's accumulated context.
+	 * Replaces the entire section — sections are atomic (last writer wins).
+	 * This is intentional: if curve-smith re-runs with better data, the new
+	 * production section replaces the old one rather than partially overwriting it.
+	 */
+	mergeCanonicalSection(section: CanonicalSection, data: WellAnalysisContext[CanonicalSection]): void {
+		this.canonicalSections = { ...this.canonicalSections, [section]: data };
+	}
+
+	/**
+	 * Read the accumulated canonical context for this session.
+	 * Returns undefined if no sections have been merged yet — callers must check
+	 * for undefined rather than defaulting to 0 or empty strings.
+	 */
+	getCanonicalContext(): Partial<WellAnalysisContext> | undefined {
+		return Object.keys(this.canonicalSections).length > 0 ? this.canonicalSections : undefined;
 	}
 
 	/**
@@ -348,6 +376,31 @@ export class SessionManager {
 		for (const session of sessions) {
 			this.sessions.set(session.id, session);
 		}
+	}
+
+	/**
+	 * Merge a canonical section into a session's accumulated context.
+	 * No-op if the session does not exist — servers may call this speculatively
+	 * and should not crash if the session has already been destroyed.
+	 *
+	 * Usage: call this from any server tool handler after computing domain outputs.
+	 *   mgr.mergeCanonical(sessionId, "formation", FormationSchema.parse(result));
+	 */
+	mergeCanonical(sessionId: string, section: CanonicalSection, data: WellAnalysisContext[CanonicalSection]): void {
+		const session = this.sessions.get(sessionId);
+		if (!session) return; // Session gone — tolerate gracefully, don't throw
+		session.mergeCanonicalSection(section, data);
+	}
+
+	/**
+	 * Read the accumulated canonical context for a session.
+	 * Returns undefined if the session does not exist or no sections have been merged.
+	 *
+	 * Usage: call this from decision.ts and reporter.ts to read validated upstream data
+	 * instead of accessing raw tool results via ?.field || 0 chains.
+	 */
+	getCanonical(sessionId: string): Partial<WellAnalysisContext> | undefined {
+		return this.sessions.get(sessionId)?.getCanonicalContext();
 	}
 
 	/**
