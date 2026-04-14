@@ -61,6 +61,20 @@ export interface ToolDescriptor {
 	detailLevels: DetailLevel[];
 	/** Default parameter values when not specified */
 	smartDefaults: Record<string, unknown>;
+	/**
+	 * Fully-qualified tool names that must complete before this tool can run.
+	 * Declares the tool's prerequisites — consumed by the registry's dependency
+	 * graph and by the executor's pre-dispatch validation.
+	 * Format: "serverName.toolName" (e.g. "geowiz.analyze").
+	 * Defaults to [] when not declared.
+	 */
+	dependsOn: string[];
+	/**
+	 * Fully-qualified tool names that can consume this tool's output.
+	 * Inverse of dependsOn — useful for graph traversal and "what runs after me?" queries.
+	 * Defaults to [] when not declared.
+	 */
+	providesFor: string[];
 }
 
 /** Minimal server info returned by discovery tools */

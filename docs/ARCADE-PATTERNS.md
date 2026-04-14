@@ -4,7 +4,7 @@ This document maps every [Arcade.dev agentic tool pattern](https://www.arcade.de
 
 **Last audited:** 2026-04-14
 **Total patterns:** 52 across 10 categories
-**Implemented:** 33 (63%) | **Partial:** 5 (10%) | **Missing:** 14 (27%)
+**Implemented:** 34 (65%) | **Partial:** 4 (8%) | **Missing:** 14 (27%)
 
 ---
 
@@ -55,7 +55,7 @@ How agents find and understand available tools.
 |---------|--------|---------------|-------|
 | **Tool Registry** | ✅ | `src/kernel/registry.ts` — complete registry with 14 servers, capability indexing, type classification, fuzzy capability matching | — |
 | **Schema Explorer** | ❌ | `describe_tools()` returns all schemas at once. No layered drill-down (server list → tool list → full schema). | [#210](https://github.com/ryemyster/ShaleYeah/issues/210) |
-| **Dependency Hint** | 🔶 | Dependencies enforced in bundles via `dependsOn` in `src/kernel/executor.ts`. Not surfaced in tool descriptions — agents cannot discover "call X before Y" dynamically. | [#198](https://github.com/ryemyster/ShaleYeah/issues/198) |
+| **Dependency Hint** | ✅ | `src/kernel/types.ts` — `ToolDescriptor.dependsOn[]` + `providesFor[]`. `src/kernel/registry.ts` — `setToolDependencies()`, `getDependencies()`, `getDependents()`, `validateExecutionOrder()`, `getExecutionGraph()`. 18 tests in `tests/kernel-dependency-hints.test.ts`. (closes #198) | — |
 | **Capability Matching** | ✅ | `src/kernel/registry.ts` — `findByCapability()` does case-insensitive substring matching on capability strings | — |
 | **Health Check** | ✅ | `src/kernel/health-monitor.ts` — `HealthMonitor` class does proactive per-server pinging on a configurable interval. `kernel.startHealthMonitor(probeFn)` wires in a real probe; `kernel.getServerHealth(name)` returns current status. Unhealthy servers are excluded from scatter-gather. | — |
 
@@ -166,7 +166,7 @@ How the system is structured as a whole.
 |----------|-------------|---------|---------|--------|
 | Tool | 4 | 0 | 0 | 100% |
 | Tool Interface | 2 | 3 | 2 | 50% |
-| Tool Discovery | 3 | 1 | 1 | 70% |
+| Tool Discovery | 4 | 0 | 1 | 80% |
 | Tool Composition | 3 | 1 | 2 | 58% |
 | Tool Execution | 3 | 0 | 3 | 50% |
 | Tool Output | 3 | 1 | 2 | 58% |
@@ -174,7 +174,7 @@ How the system is structured as a whole.
 | Tool Resilience | 5 | 0 | 1 | 83% |
 | Tool Security | 2 | 1 | 1 | 63% |
 | Compositional | 1 | 1 | 2 | 38% |
-| **Total** | **33** | **5** (10%) | **14** (27%) | **63%** |
+| **Total** | **34** | **4** (8%) | **14** (27%) | **65%** |
 
 ---
 
@@ -190,8 +190,7 @@ Ordered by impact on real production workflows:
 ### High Value (developer experience)
 5. **Schema Explorer** (#210) — layered discovery reduces token waste
 6. **Natural Identifier** (#194) — human-readable tool references
-7. **Dependency Hint** (#198) — discoverable execution order
-8. **Tool Chain** (#117) — composable sequential pipelines
+7. **Tool Chain** (#117) — composable sequential pipelines
 
 ### Scale & Integration
 9. **Async Job** (#122) — non-blocking long-running analyses
