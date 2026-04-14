@@ -1,16 +1,19 @@
 # sync-main
 
-Resolve conflicts on an open `develop → main` PR when GitHub refuses to merge due to conflicts and the web editor is unavailable.
+Two modes:
 
-## Usage
-
-`/sync-main`
-
-Run this whenever a `develop → main` PR (e.g. #262, #268) shows "This branch has conflicts that must be resolved."
+1. **`/sync-main`** — fix a `develop → main` PR that GitHub is blocking due to conflicts
+2. **`/sync-main post-merge`** — keep develop in sync after a `develop → main` merge completes (run this after every release merge to prevent the next conflict from accumulating)
 
 **develop is always the source of truth. Develop wins on every conflict.**
 
-## Steps
+---
+
+## Mode 1: Fix a conflicted develop → main PR
+
+Run this whenever a `develop → main` PR shows "This branch has conflicts that must be resolved."
+
+### Steps
 
 1. **Ensure you are on develop and it is current:**
 
@@ -32,7 +35,7 @@ Run this whenever a `develop → main` PR (e.g. #262, #268) shows "This branch h
    git push origin develop
    ```
 
-   GitHub will warn about branch protection rule violations (merge commits, direct push). This is expected — the push goes through anyway.
+   GitHub may warn about branch protection rules. This is expected — the push goes through anyway.
 
 4. **Verify the PR is now mergeable:**
 
@@ -40,15 +43,33 @@ Run this whenever a `develop → main` PR (e.g. #262, #268) shows "This branch h
    gh pr view <PR-number> --json mergeable,mergeStateStatus
    ```
 
-   Expected: `MERGEABLE / BLOCKED` (blocked only on CI — that's fine).
+   Expected: `MERGEABLE / BLOCKED` (blocked on CI only — that's fine).
 
-5. **Wait for CI to pass**, then the PR is ready to merge via GitHub UI.
+5. **Wait for CI to pass**, then merge via GitHub UI.
 
-## Prevention
+---
 
-This is a pre-release step, not a per-PR step. The correct cadence is:
+## Mode 2: Post-merge develop ← main sync (run after every release)
 
-- Feature branches → `develop` (many per day, all day)
-- `develop` → `main` (once per milestone/release, after running `/sync-main` to clear conflicts)
+After the `develop → main` PR merges, immediately sync develop so it includes the merge commit. This prevents the next develop → main PR from inheriting the divergence.
 
-Run `/sync-main` once before cutting a release PR, and the `develop → main` merge will be clean. There is no need to run it after every feature PR.
+```bash
+git fetch origin
+git checkout develop
+git pull origin develop
+git merge origin/main --ff-only || git merge origin/main -m "chore: sync develop with main post-release"
+git push origin develop
+```
+
+If `--ff-only` succeeds: develop and main are identical — no new commit needed.
+If it falls back to a merge commit: push it anyway — the bases are now synced.
+
+---
+
+## Prevention — why conflicts recur
+
+The three files that always conflict (`CHANGELOG.md`, `package.json`, `src/kernel/types.ts`) accumulate divergence with every PR to develop. The fix is cadence:
+
+- Run **Mode 2** immediately after every `develop → main` merge
+- Open a `develop → main` PR after every 3–5 feature PRs (not once per quarter)
+- New test files auto-discovered via `scripts/run-tests.sh` — no more `package.json` edits per test suite
