@@ -75,6 +75,8 @@ export class Registry {
 			requiresConfirmation: CONFIRMATION_REQUIRED.has(config.name),
 			detailLevels: ["summary", "standard", "full"] as DetailLevel[],
 			smartDefaults: {},
+			dependsOn: [],
+			providesFor: [],
 		};
 
 		const entry: RegisteredServer = {
@@ -236,6 +238,84 @@ export class Registry {
 	 */
 	getFallback(primaryTool: string): string | undefined {
 		return this.fallbackMap.get(primaryTool);
+	}
+
+	// ==========================================
+	// Dependency Hint graph (Arcade: Dependency Hint pattern — Issue #198)
+	// ==========================================
+
+	/**
+	 * Declare prerequisite and consumer relationships for a registered tool.
+	 *
+	 * Call this after all servers are registered to wire up the dependency graph.
+	 * Unknown tool names are silently ignored so that partial registrations during
+	 * startup do not crash the kernel.
+	 *
+	 * @param toolName  Fully-qualified tool name (e.g. "decision.analyze")
+	 * @param hints     Object with optional dependsOn[] and/or providesFor[] arrays
+	 */
+	setToolDependencies(toolName: string, hints: { dependsOn?: string[]; providesFor?: string[] }): void {
+		const tool = this.toolIndex.get(toolName);
+		if (!tool) return; // Unknown tool — no-op
+
+		if (hints.dependsOn !== undefined) {
+			tool.dependsOn = [...hints.dependsOn];
+		}
+		if (hints.providesFor !== undefined) {
+			tool.providesFor = [...hints.providesFor];
+		}
+	}
+
+	/**
+	 * Return the list of tools that must complete before the given tool can run.
+	 * Returns [] for unknown tools (no prerequisites assumed for unregistered tools).
+	 */
+	getDependencies(toolName: string): string[] {
+		return this.toolIndex.get(toolName)?.dependsOn ?? [];
+	}
+
+	/**
+	 * Return all tools that list the given tool in their dependsOn.
+	 *
+	 * Computed on demand by scanning the tool index — the graph is small (≤ 14 tools)
+	 * so a linear scan is cheaper than maintaining a separate reverse-edge index.
+	 */
+	getDependents(toolName: string): string[] {
+		const dependents: string[] = [];
+		for (const [name, tool] of this.toolIndex) {
+			if (name !== toolName && tool.dependsOn.includes(toolName)) {
+				dependents.push(name);
+			}
+		}
+		return dependents;
+	}
+
+	/**
+	 * Validate that all prerequisites for a tool have already completed.
+	 *
+	 * @param toolName   Fully-qualified tool name to check
+	 * @param completed  Set of fully-qualified tool names that have finished successfully
+	 * @returns          { valid: true, missing: [] } or { valid: false, missing: [...] }
+	 */
+	validateExecutionOrder(toolName: string, completed: Set<string>): { valid: boolean; missing: string[] } {
+		const deps = this.getDependencies(toolName);
+		const missing = deps.filter((dep) => !completed.has(dep));
+		return { valid: missing.length === 0, missing };
+	}
+
+	/**
+	 * Return the full dependency adjacency map for all registered tools.
+	 *
+	 * Keys are fully-qualified tool names; values are their dependsOn arrays.
+	 * Useful for building execution plans, dry-run visualizations (#135), and
+	 * explaining tool ordering to agents.
+	 */
+	getExecutionGraph(): Map<string, string[]> {
+		const graph = new Map<string, string[]>();
+		for (const [name, tool] of this.toolIndex) {
+			graph.set(name, [...tool.dependsOn]);
+		}
+		return graph;
 	}
 
 	/**
