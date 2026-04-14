@@ -45,7 +45,8 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 
 ```bash
 npm run demo                          # smoke test — all 14 servers must complete
-npm run test                          # 16 suites (~700+ tests)
+npm run test                          # all suites (auto-discovered via scripts/run-tests.sh)
+npx tsx tests/<name>.test.ts          # run one suite directly — no npm alias needed
 npm run build && npm run type-check   # compile gate
 npm run lint                          # Biome
 npm run server:geowiz                 # test individual server (all 14 available)

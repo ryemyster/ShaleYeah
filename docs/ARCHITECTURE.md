@@ -674,27 +674,28 @@ assert(kernel.registry.toolCount === 14, "Registry has 14 tools");
 
 ### Test Suites
 
-| Suite | File | Tests |
-|---|---|---|
-| Registry | `tests/kernel-registry.test.ts` | 60 |
-| Output | `tests/kernel-output.test.ts` | 56 |
-| Executor | `tests/kernel-executor.test.ts` | 83 |
-| Context | `tests/kernel-context.test.ts` | 87 |
-| Resilience | `tests/kernel-resilience.test.ts` | 108 |
-| Auth | `tests/kernel-auth.test.ts` | 63 |
-| Audit | `tests/kernel-audit.test.ts` | 58 |
-| Bundles | `tests/kernel-bundles.test.ts` | 112 |
-| Geowiz anti-stub | `tests/geowiz-anti-stub.test.ts` | 4 |
-| Econobot anti-stub | `tests/econobot-anti-stub.test.ts` | 4 |
-| Fixture injection | `tests/fixture-injection.test.ts` | — |
-| Partial success | `tests/kernel-partial-success.test.ts` | — |
+All test files live in `tests/` and are auto-discovered by `scripts/run-tests.sh`. There are 41 suites total — 8 kernel suites, 14 anti-stub server tests, and the rest covering integration, file formats, MCP protocol, and the canonical model.
+
+Key suites:
+
+| Suite | File | What it checks |
+| --- | --- | --- |
+| Registry | `tests/kernel-registry.test.ts` | 14 servers registered, capability matching, tool classification |
+| Executor | `tests/kernel-executor.test.ts` | Single execution, scatter-gather, bundle phases |
+| Context | `tests/kernel-context.test.ts` | Session isolation, context injection, result storage |
+| Resilience | `tests/kernel-resilience.test.ts` | Error classification, graceful degradation, partial success |
+| Auth | `tests/kernel-auth.test.ts` | RBAC role tiers, permission enforcement |
+| Audit | `tests/kernel-audit.test.ts` | JSONL trail, sensitive value redaction |
+| Bundles | `tests/kernel-bundles.test.ts` | Pre-built bundle phases and dependency ordering |
+| Canonical model | `tests/canonical-model.test.ts` | Zod schema validation, session accumulation |
+| Anti-stub (each server) | `tests/*-anti-stub.test.ts` | Proves Claude is actually called, not stubbed |
 
 ### Running Tests
 
 ```bash
-npm run test                          # All suites
-npx tsx tests/kernel-registry.test.ts # Individual suite
-npm run demo                          # Demo integration test
+npm run test                            # All 41 suites via scripts/run-tests.sh
+npx tsx tests/kernel-registry.test.ts  # One suite at a time — same command, no npm alias needed
+npm run demo                            # 14-server smoke test (separate from unit tests)
 ```
 
 ## Security Considerations

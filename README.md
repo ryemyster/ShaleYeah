@@ -152,8 +152,14 @@ Useful build commands:
 
 ```bash
 npm run build        # compile TypeScript → dist/ (required before connecting any MCP client)
-npm run build:mcp    # same as build — named alias for clarity when setting up MCP clients
 npm run build:watch  # recompile automatically whenever you save a file (useful during development)
+```
+
+To run a single test file during development:
+
+```bash
+npx tsx tests/kernel-registry.test.ts   # just that one suite
+npx tsx tests/geowiz-anti-stub.test.ts  # just the geowiz anti-stub tests
 ```
 
 1. Ship it: `/finish-issue <number>` — this updates docs, commits, pushes, and opens the PR to `develop`
