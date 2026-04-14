@@ -223,6 +223,27 @@ Fixtures are injected via `src/mcp-client.ts`. Demo mode bypasses the LLM call e
 
 ---
 
+### Resource Reference
+
+**What is it?**
+A resource reference is a short "ticket" that points to a large blob of data stored inside the kernel's session. Instead of copying a big formation log or cash-flow table through every tool call, a tool saves the blob once and hands back a small ticket (a `ResourceRef`). Downstream tools pass the ticket; the kernel automatically swaps it back for the full data before the tool ever sees it.
+
+Think of it like a coat check at a restaurant. You hand in your heavy coat, get a numbered ticket, and later hand the ticket back to get your coat — instead of carrying the coat through every room.
+
+**Why does it matter?**
+In a chain of 14 agents, the same large dataset (like a full well log) would otherwise get copied through every tool call. That wastes memory and makes each call slower. Resource references cut the copy-and-paste by storing the data once and passing a short ID everywhere else.
+
+**How does SHALE YEAH handle it?**
+
+- `session.storeResource(id, data, mimeType)` — saves the blob and returns a `ResourceRef` ticket.
+- `session.getResource(id)` — retrieves the blob by ID.
+- The kernel's executor (`src/kernel/executor.ts`) automatically detects any `ResourceRef` values in a tool's input args and swaps them for the real payload before calling the tool — the tool author never has to think about it.
+- Resource IDs follow the convention `"<server>:<data-type>:<run-id>"`, for example `"geowiz:formation-data:run-abc123"`.
+
+See `src/kernel/types.ts` for the `ResourceRef` and `StoredResource` types.
+
+---
+
 ### callLLM()
 
 **What is it?**
