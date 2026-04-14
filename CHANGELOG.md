@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Token-Efficient Response** (`src/kernel/middleware/output.ts`, `src/kernel/types.ts`) — Extends the existing Progressive Detail system with three new options on `OutputShaper.shape()`: `fields?: string[]` returns only the requested top-level fields (unknown fields silently ignored); `stripNulls?: boolean` recursively removes null/undefined fields while preserving falsy-but-valid values like `0` and `false`; `maxTokenHint?: number` records the caller's advisory token budget in response metadata (best-effort, not enforced). Field projection runs before null stripping so the two compose correctly. 7 new tests in `tests/kernel-output.test.ts`. (closes #201)
+
 - **Fallback Tool** (`src/kernel/registry.ts`, `src/kernel/executor.ts`, `src/kernel/types.ts`) — When a primary tool fails after all retries are exhausted, the kernel automatically routes to a registered fallback tool. Fallbacks are opt-in per tool via `registry.registerFallback(primaryTool, fallbackTool)`. Result metadata flags `usedFallback: true`, `originalTool`, and `fallbackTool` so callers always know when a substitute was used. Every fallback invocation is appended to `executor.getFallbackUsage()` (audit log) with the primary tool name, fallback tool name, failure reason, and timestamp. 14 tests in `tests/kernel-fallback.test.ts`. (closes #149)
 - **Biome bump** — `@biomejs/biome` updated from 2.4.9 to 2.4.11; `biome.json` schema URL updated to match.
 

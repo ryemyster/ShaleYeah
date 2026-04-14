@@ -276,6 +276,86 @@ assert(overrideResp.confidence === 99, "Explicit confidence overrides extracted 
 // Summary
 // ==========================================
 
+// ==========================================
+// Test: Token-Efficient Response — field projection (fields?: string[])
+// ==========================================
+
+console.log("\n🎯 Testing field projection (fields option)...");
+const econProjected = shaper.shape(econData, { ...baseOpts, detailLevel: "full", fields: ["economic"] });
+const econProjData = econProjected.data as Record<string, unknown>;
+assert("economic" in econProjData, "Projected data includes requested field");
+assert(!("confidence" in econProjData), "Projected data excludes unrequested fields");
+
+const multiProjected = shaper.shape(econData, { ...baseOpts, detailLevel: "full", fields: ["economic", "confidence"] });
+const multiProjData = multiProjected.data as Record<string, unknown>;
+assert("economic" in multiProjData, "Multi-projection includes first field");
+assert("confidence" in multiProjData, "Multi-projection includes second field");
+
+// Unknown field names are silently ignored — no error
+const unknownProjected = shaper.shape(econData, { ...baseOpts, detailLevel: "full", fields: ["nonexistent"] });
+const unknownProjData = unknownProjected.data as Record<string, unknown>;
+assert(Object.keys(unknownProjData).length === 0, "Unknown field names produce empty object (no error)");
+
+// Empty fields array = no projection (return all)
+const emptyProjected = shaper.shape(econData, { ...baseOpts, detailLevel: "full", fields: [] });
+const emptyProjData = emptyProjected.data as Record<string, unknown>;
+assert("economic" in emptyProjData, "Empty fields array returns all fields");
+assert("confidence" in emptyProjData, "Empty fields array returns all fields (confidence present)");
+
+// ==========================================
+// Test: Token-Efficient Response — null stripping (stripNulls?: boolean)
+// ==========================================
+
+console.log("\n🧹 Testing null stripping (stripNulls option)...");
+const dataWithNulls = { a: 1, b: null, c: undefined, d: "value", e: 0 };
+const stripped = shaper.shape(dataWithNulls, { ...baseOpts, detailLevel: "full", stripNulls: true });
+const strippedData = stripped.data as Record<string, unknown>;
+assert("a" in strippedData, "stripNulls keeps non-null fields (a)");
+assert("d" in strippedData, "stripNulls keeps string fields (d)");
+assert("e" in strippedData, "stripNulls keeps falsy-but-non-null fields (0)");
+assert(!("b" in strippedData), "stripNulls removes null fields");
+assert(!("c" in strippedData), "stripNulls removes undefined fields");
+
+// stripNulls: false — preserve nulls
+const notStripped = shaper.shape(dataWithNulls, { ...baseOpts, detailLevel: "full", stripNulls: false });
+const notStrippedData = notStripped.data as Record<string, unknown>;
+assert("b" in notStrippedData, "stripNulls:false preserves null fields");
+
+// Default behavior (no stripNulls specified) preserves existing behavior — no stripping
+const defaultStrip = shaper.shape(dataWithNulls, { ...baseOpts, detailLevel: "full" });
+const defaultStripData = defaultStrip.data as Record<string, unknown>;
+assert("b" in defaultStripData, "Default (no stripNulls) preserves null fields");
+
+// ==========================================
+// Test: maxTokenHint is stored in metadata
+// ==========================================
+
+console.log("\n📏 Testing maxTokenHint passthrough...");
+const hintResp = shaper.shape(econData, { ...baseOpts, detailLevel: "full", maxTokenHint: 500 });
+assert((hintResp.metadata as Record<string, unknown>).maxTokenHint === 500, "maxTokenHint stored in metadata");
+
+const noHintResp = shaper.shape(econData, { ...baseOpts, detailLevel: "full" });
+assert(
+	(noHintResp.metadata as Record<string, unknown>).maxTokenHint === undefined,
+	"maxTokenHint absent when not specified",
+);
+
+// ==========================================
+// Test: fields + stripNulls combined
+// ==========================================
+
+console.log("\n🔗 Testing fields + stripNulls combined...");
+const combined = shaper.shape(
+	{ economic: { npv: 1000, irr: null }, confidence: 80 },
+	{ ...baseOpts, detailLevel: "full", fields: ["economic"], stripNulls: true },
+);
+const combinedData = combined.data as Record<string, unknown>;
+assert("economic" in combinedData, "Combined: projected field present");
+assert(!("confidence" in combinedData), "Combined: non-projected field absent");
+const combinedEcon = combinedData.economic as Record<string, unknown>;
+assert("npv" in combinedEcon, "Combined: non-null sub-field present");
+assert(!("irr" in combinedEcon), "Combined: null sub-field stripped");
+
 console.log(`\n${"=".repeat(70)}`);
 console.log("📊 KERNEL OUTPUT SHAPING TEST SUMMARY");
 console.log("=".repeat(70));
