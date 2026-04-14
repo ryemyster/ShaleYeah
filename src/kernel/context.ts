@@ -156,6 +156,13 @@ export class FileSessionStorage implements SessionStorageBackend {
 /**
  * A single user session — holds identity, preferences, and analysis results.
  * Each session is an isolated context boundary.
+ *
+ * MA-COMPAT: Managed Agents (https://www.anthropic.com/engineering/managed-agents) models the
+ * session as an append-only event log with emitEvent(id, event) / getEvents(offset, limit).
+ * Today this class uses a mutable results Map. When integrating with Managed Agents, replace
+ * storeResult() with an event-append and derive results via replay — the session ID and
+ * FileSessionStorage pluggable backend are already structured to make that swap one interface
+ * implementation, not a redesign. See issue #285.
  */
 export class Session {
 	public readonly id: string;

@@ -98,6 +98,13 @@ export class SecretsStore {
 	 *
 	 * Logs key name and source to the in-memory access log on every call.
 	 * The value itself is never logged.
+	 *
+	 * MA-COMPAT: Managed Agents stores OAuth tokens in an external vault and routes tool calls
+	 * through a proxy that authenticates using session-associated credentials — tokens never
+	 * reach the sandbox. This method already follows that pattern (store → resolve, never expose).
+	 * The gap: no expiration metadata on stored entries. When integrating with a vault backend
+	 * (see #285), add { value: string, expiresAt?: Date } to SecretValue so stale tokens are
+	 * detected and the dynamic resolver (() => Promise<string>) is called to refresh them.
 	 */
 	async resolve(key: string): Promise<string> {
 		if (this.store.has(key)) {
