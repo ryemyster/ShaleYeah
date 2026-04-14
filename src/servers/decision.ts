@@ -293,11 +293,15 @@ async function evaluateInvestmentOpportunity(args: {
 	const inputs = args.analysisInputs;
 	const criteria = args.investmentCriteria;
 
-	// Extract key metrics
-	const npv = inputs.economic?.npv || 0;
-	const irr = inputs.economic?.irr || 0;
-	const payback = inputs.economic?.paybackMonths || 999;
-	const riskScore = inputs.risk?.overallRisk || 0.5;
+	// Extract key metrics with explicit undefined checks.
+	// The old ?.field || 0 pattern silently defaulted to 0 when upstream data was missing —
+	// a missing NPV of 0 would look like a failed investment and produce a PASS decision,
+	// masking the fact that econobot never ran. With explicit undefined checks, absent data
+	// produces a CONDITIONAL decision and surfaces the gap in the reasoning strings.
+	const npv = inputs.economic?.npv ?? undefined;
+	const irr = inputs.economic?.irr ?? undefined;
+	const payback = inputs.economic?.paybackMonths ?? undefined;
+	const riskScore = inputs.risk?.overallRisk ?? undefined;
 
 	// Decision logic
 	let decision: "INVEST" | "PASS" | "CONDITIONAL" = "PASS";
@@ -306,12 +310,22 @@ async function evaluateInvestmentOpportunity(args: {
 	const upside: string[] = [];
 	const conditions: string[] = [];
 
-	// Evaluate against criteria
-	if (npv >= (criteria?.minNPV ?? 0) && irr >= (criteria?.minIRR ?? 0) && payback <= (criteria?.maxPayback ?? 999)) {
-		if (riskScore <= (criteria?.maxRisk ?? 1)) {
+	// When core economic fields are absent, surface that gap explicitly rather than
+	// silently treating missing data as zeros. A missing NPV is not a zero NPV.
+	if (npv === undefined || irr === undefined) {
+		decision = "CONDITIONAL";
+		reasoning.push("Incomplete economic data — cannot make a definitive investment decision");
+		if (npv === undefined) riskFactors.push("NPV not provided — econobot analysis may be missing");
+		if (irr === undefined) riskFactors.push("IRR not provided — econobot analysis may be missing");
+	} else if (
+		npv >= (criteria?.minNPV ?? 0) &&
+		irr >= (criteria?.minIRR ?? 0) &&
+		(payback ?? 0) <= (criteria?.maxPayback ?? 999)
+	) {
+		if ((riskScore ?? 0.5) <= (criteria?.maxRisk ?? 1)) {
 			decision = "INVEST";
 			reasoning.push(`Strong economics: NPV $${(npv / 1000000).toFixed(1)}M, IRR ${(irr * 100).toFixed(1)}%`);
-			reasoning.push(`Acceptable risk profile: ${(riskScore * 100).toFixed(1)}% risk score`);
+			reasoning.push(`Acceptable risk profile: ${((riskScore ?? 0.5) * 100).toFixed(1)}% risk score`);
 		} else {
 			decision = "CONDITIONAL";
 			reasoning.push("Economics meet thresholds but risk is elevated");
@@ -332,12 +346,12 @@ async function evaluateInvestmentOpportunity(args: {
 	}
 
 	// Identify risk factors
-	if (riskScore > 0.6) riskFactors.push("Elevated overall risk score");
-	if (payback > 18) riskFactors.push("Extended payback period");
+	if ((riskScore ?? 0) > 0.6) riskFactors.push("Elevated overall risk score");
+	if ((payback ?? 0) > 18) riskFactors.push("Extended payback period");
 	if (!inputs.geological) riskFactors.push("Limited geological data available");
 
 	// Identify upside potential
-	if (irr > 0.25) upside.push("Strong IRR indicates significant upside potential");
+	if ((irr ?? 0) > 0.25) upside.push("Strong IRR indicates significant upside potential");
 	if (
 		inputs.geological &&
 		"confidence" in inputs.geological &&
@@ -348,6 +362,7 @@ async function evaluateInvestmentOpportunity(args: {
 		inputs.economic &&
 		"p10" in inputs.economic &&
 		(inputs.economic as { p10: number }).p10 &&
+		npv !== undefined &&
 		(inputs.economic as { p10: number }).p10 > npv * 1.5
 	)
 		upside.push("Significant upside in P10 scenario");
@@ -372,13 +387,13 @@ async function evaluateInvestmentOpportunity(args: {
 	return {
 		decision: interpretation.verdict,
 		confidence,
-		recommendedBid: calculateRecommendedBid(npv, interpretation.verdict),
-		maxBid: calculateMaxBid(npv, interpretation.verdict),
+		recommendedBid: calculateRecommendedBid(npv ?? 0, interpretation.verdict),
+		maxBid: calculateMaxBid(npv ?? 0, interpretation.verdict),
 		reasoning,
 		riskFactors,
 		upside,
 		conditions: conditions.length > 0 ? conditions : undefined,
-		timeline: determineTimeline(interpretation.verdict, riskScore),
+		timeline: determineTimeline(interpretation.verdict, riskScore ?? 0.5),
 		interpretation,
 	};
 }

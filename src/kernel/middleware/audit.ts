@@ -5,6 +5,14 @@
  * Implements Arcade patterns:
  * - Audit Trail (structured logging of all tool calls)
  * - Secret Injection (redaction of sensitive values)
+ *
+ * MA-COMPAT: Managed Agents uses the session event log as the source of truth for replay
+ * and context slicing. This JSONL trail already follows the same append-only principle.
+ * Two additions needed before Managed Agents integration (see #285):
+ *   1. Add invocationId to AuditEntry so events from a single harness run can be correlated
+ *      and sliced (mirrors getEvents(offset, limit) in the MA session API).
+ *   2. Add queryEntries(filter) for sessionId/toolName/action lookup to support event replay.
+ * The file-per-day partitioning strategy would also shift to file-per-session or file-per-invocation.
  */
 
 import fs from "node:fs";

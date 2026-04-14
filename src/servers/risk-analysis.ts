@@ -7,6 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { EconomicsSchema, FormationSchema } from "../kernel/canonical-model.js";
 import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
@@ -87,10 +88,15 @@ const riskAnalysisTemplate: ServerTemplate = {
 			"Comprehensive risk assessment for investment opportunities",
 			z.object({
 				projectData: z.object({
-					geological: z.any().optional(),
-					economic: z.any().optional(),
-					technical: z.any().optional(),
-					regulatory: z.any().optional(),
+					// Using canonical schemas instead of z.any() — ensures upstream data is validated
+					// before risk scores are computed. A badly-typed field now throws at intake
+					// rather than producing a silently wrong risk number.
+					geological: FormationSchema.optional(),
+					economic: EconomicsSchema.optional(),
+					technical: z
+						.object({ wellType: z.string().optional(), depth: z.number().optional(), formation: z.string().optional() })
+						.optional(),
+					regulatory: z.object({ jurisdiction: z.string().optional(), permitStatus: z.string().optional() }).optional(),
 				}),
 				riskProfile: z.enum(["conservative", "moderate", "aggressive"]).default("moderate"),
 				analysisDepth: z.enum(["screening", "standard", "comprehensive"]).default("standard"),
@@ -226,10 +232,13 @@ function stdDev(values: number[]): number {
 
 async function performRiskAssessment(args: {
 	projectData: {
-		geological?: { confidence?: number };
-		technical?: Record<string, unknown>;
-		economic?: { irr?: number };
-		regulatory?: Record<string, unknown>;
+		// Canonical schemas replace the old anonymous shapes — no more z.any() input.
+		// Formation has porosity/saturation instead of a raw confidence number;
+		// we derive geological risk from data quality rather than a single scalar.
+		geological?: { name?: string; depth?: number; netPay?: number; porosity?: number; saturation?: number };
+		technical?: { wellType?: string; depth?: number; formation?: string };
+		economic?: { npv?: number; irr?: number; paybackMonths?: number; breakEvenPrice?: number };
+		regulatory?: { jurisdiction?: string; permitStatus?: string };
 	};
 	riskProfile: string;
 }): Promise<RiskAssessment> {
@@ -363,10 +372,16 @@ export function performMonteCarloAnalysis(args: {
 }
 
 // Helper functions for risk assessment
-function assessGeologicalRisk(geoData: { confidence?: number } | null | undefined): number {
+function assessGeologicalRisk(geoData: { porosity?: number; netPay?: number } | null | undefined): number {
 	if (!geoData) return 0.6;
-	const confidence = geoData.confidence || 75;
-	return Math.max(0.1, (100 - confidence) / 100);
+	// Porosity above 8% indicates decent reservoir quality; below that risk climbs sharply.
+	// NetPay below 50ft means limited productive interval — elevated geological risk.
+	// If neither field is present, we default to moderate-high risk (0.5) rather than
+	// assuming good quality — absent data should be pessimistic, not optimistic.
+	if (geoData.porosity === undefined && geoData.netPay === undefined) return 0.5;
+	const porosityRisk = geoData.porosity !== undefined ? Math.max(0.1, (0.08 - geoData.porosity) / 0.08 + 0.2) : 0.4;
+	const netPayRisk = geoData.netPay !== undefined ? (geoData.netPay < 50 ? 0.3 : 0.1) : 0.2;
+	return Math.min(0.9, Math.max(0.1, (porosityRisk + netPayRisk) / 2));
 }
 
 export function assessTechnicalRisk(techData: Record<string, unknown> | null | undefined): number {
@@ -380,7 +395,9 @@ export function assessTechnicalRisk(techData: Record<string, unknown> | null | u
 
 function assessEconomicRisk(econData: { irr?: number } | null | undefined): number {
 	if (!econData) return 0.7;
-	const irr = econData.irr || 0.1;
+	// IRR below 15% (hurdle rate) → high economic risk; 25%+ → low risk.
+	// If IRR is absent, default to 0.1 (high risk) — missing data is not optimistic.
+	const irr = econData.irr ?? 0.1;
 	return Math.max(0.1, Math.min(0.8, (0.25 - irr) / 0.15));
 }
 

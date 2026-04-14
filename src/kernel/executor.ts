@@ -135,6 +135,12 @@ export class Executor {
 	 * Execute a single tool request with automatic retry for retryable errors.
 	 * Uses exponential backoff with jitter based on resilience delay recommendations.
 	 * Pass an optional CancellationToken to abort before execution starts.
+	 *
+	 * MA-COMPAT: Managed Agents calls wake(sessionId) to restart a stateless harness against
+	 * a durable session log. The Executor is already stateless (no in-process session state),
+	 * which matches that model exactly. The missing piece: each analysis run should carry an
+	 * invocationId so audit events and session results can be sliced per harness activation.
+	 * Add invocationId?: string here and thread it into AuditEntry when wiring to #285.
 	 */
 	async execute(request: ToolRequest, token?: CancellationToken): Promise<ToolResponse> {
 		if (token?.isCancelled) {

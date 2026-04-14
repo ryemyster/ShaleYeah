@@ -120,6 +120,15 @@ export interface AgentOSResponse<T = unknown> {
 	/** Whether this is a partial/degraded result */
 	degraded?: boolean;
 
+	/**
+	 * Canonical output from this tool, conforming to WellAnalysisContextSchema (Issue #208).
+	 * Present when the server explicitly writes a canonical section.
+	 * The kernel accumulates these into the session's WellAnalysisContext via
+	 * SessionManager.mergeCanonical(). Absent when the server has not yet adopted
+	 * the canonical model — consumers must treat absence as undefined, not as 0.
+	 */
+	canonicalOutput?: Partial<import("./canonical-model.js").WellAnalysisContext>;
+
 	/** Execution metadata */
 	metadata: ResponseMetadata;
 
@@ -150,6 +159,12 @@ export interface ResponseMetadata {
 	 * The fallback tool name that was actually executed (set when usedFallback is true).
 	 */
 	fallbackTool?: string;
+	/**
+	 * Advisory token budget passed by the caller (Arcade: Token-Efficient Response).
+	 * The shaper records this in metadata so callers can verify it was received.
+	 * Enforcement is best-effort — it does not truncate content.
+	 */
+	maxTokenHint?: number;
 }
 
 /**
