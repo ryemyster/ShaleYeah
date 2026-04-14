@@ -82,6 +82,7 @@ ShaleYeah/
 | See which Agent OS patterns are implemented | [docs/ARCADE-PATTERNS.md](docs/ARCADE-PATTERNS.md) |
 | Read the Agent OS architecture review | [docs/AGENT-OS-REVIEW.md](docs/AGENT-OS-REVIEW.md) |
 | Understand the original project intent and goals | [docs/PROJECT-INTENT.md](docs/PROJECT-INTENT.md) |
+| See how SHALE YEAH compares to Claude Managed Agents — feature by feature | [docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md](docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md) |
 
 ---
 
@@ -158,12 +159,6 @@ npm run build:watch  # recompile automatically whenever you save a file (useful 
 1. Ship it: `/finish-issue <number>` — this updates docs, commits, pushes, and opens the PR to `develop`
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
-
----
-
-## Positioning
-
-With Anthropic's Claude Managed Agents launch and rapid AI platform changes, a natural question is: does SHALE YEAH still make sense? The short answer is yes — and the long answer is in [docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md](docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md). It covers what Managed Agents actually provides, where SHALE YEAH already matches it, where it doesn't, and the roadmap that compounds the domain moat over time. Honest and specific.
 
 ---
 
