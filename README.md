@@ -161,6 +161,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 ---
 
+## Positioning
+
+With Anthropic's Claude Managed Agents launch and rapid AI platform changes, a natural question is: does SHALE YEAH still make sense? The short answer is yes — and the long answer is in [docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md](docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md). It covers what Managed Agents actually provides, where SHALE YEAH already matches it, where it doesn't, and the roadmap that compounds the domain moat over time. Honest and specific.
+
+---
+
 ## Security
 
 Role-based access control (4 tiers: analyst → engineer → executive → admin) and an append-only audit log with automatic sensitive-value redaction. See [SECURITY.md](SECURITY.md).
