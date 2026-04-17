@@ -151,6 +151,13 @@ export class Kernel {
 			});
 		}
 
+		// Register opt-in fallback chains — when a primary server is unavailable, the kernel
+		// routes to the next server in the chain that can handle the same domain question.
+		// These are representative defaults; callers can add more via registry.registerFallback().
+		this.registry.registerFallback("risk-analysis.analyze", ["decision.analyze", "econobot.analyze"]);
+		this.registry.registerFallback("geowiz.analyze", ["curve-smith.analyze"]);
+		this.registry.registerFallback("econobot.analyze", ["risk-analysis.analyze"]);
+
 		this._initialized = true;
 	}
 
@@ -291,6 +298,20 @@ export class Kernel {
 			this.audit.logResponse(respEntry);
 		} else {
 			this.audit.logError(respEntry);
+		}
+
+		// 5. Audit fallback — if the executor routed to a fallback, emit a dedicated audit event
+		// so operators can see substitutions separately from normal responses.
+		if (result.metadata.usedFallback && result.metadata.originalTool && result.metadata.fallbackTool) {
+			const failureReason = `${result.metadata.originalTool} failed — routed to fallback`;
+			this.audit.logFallback(
+				result.metadata.originalTool,
+				result.metadata.fallbackTool,
+				failureReason,
+				identity.userId,
+				sid,
+				identity.role,
+			);
 		}
 
 		return result;

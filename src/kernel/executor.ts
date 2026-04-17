@@ -306,36 +306,49 @@ export class Executor {
 			};
 		}
 
-		// Fallback routing — attempt a registered fallback tool when all primary retries fail.
-		// The fallback is opt-in per tool: only fires if registerFallback() was called for this tool.
-		const fallbackToolName = this.registry?.getFallback(request.toolName);
-		if (fallbackToolName && lastResponse && !lastResponse.success) {
+		// Fallback chain routing — try each registered fallback in order when all primary retries fail.
+		// Fallbacks are opt-in per tool: only fires if registerFallback() was called for this tool.
+		// The chain stops at the first fallback that succeeds; all attempts are recorded for audit.
+		const fallbackChain = this.registry?.getFallbacks(request.toolName) ?? [];
+		if (fallbackChain.length > 0 && lastResponse && !lastResponse.success) {
 			const primaryFailureReason = lastResponse.error?.message ?? lastResponse.summary ?? "Primary tool failed";
-			const fallbackServerName = fallbackToolName.split(".")[0];
-			try {
-				const fallbackResult = await this.withTimeout(
-					this.executorFn!(fallbackServerName, resolvedArgs),
-					this.serverTimeouts[fallbackServerName] ?? this.toolTimeoutMs,
-				);
-				// Record this fallback invocation for audit/observability regardless of outcome
-				const record: FallbackUsageRecord = {
-					primaryTool: request.toolName,
-					fallbackTool: fallbackToolName,
-					reason: primaryFailureReason,
-					timestamp: new Date().toISOString(),
-				};
-				this.fallbackUsage.push(record);
-				// Stamp the result with fallback provenance so callers can surface it
-				fallbackResult.metadata = {
-					...fallbackResult.metadata,
-					usedFallback: true,
-					originalTool: request.toolName,
-					fallbackTool: fallbackToolName,
-				};
-				return fallbackResult;
-			} catch {
-				// Fallback itself failed — fall through and return the primary failure
+			for (const fallbackToolName of fallbackChain) {
+				const fallbackServerName = fallbackToolName.split(".")[0];
+				try {
+					const fallbackResult = await this.withTimeout(
+						this.executorFn!(fallbackServerName, resolvedArgs),
+						this.serverTimeouts[fallbackServerName] ?? this.toolTimeoutMs,
+					);
+					// Record every fallback attempt for audit/observability
+					const record: FallbackUsageRecord = {
+						primaryTool: request.toolName,
+						fallbackTool: fallbackToolName,
+						reason: primaryFailureReason,
+						timestamp: new Date().toISOString(),
+					};
+					this.fallbackUsage.push(record);
+					if (fallbackResult.success) {
+						// Stamp the result with fallback provenance so callers can surface it
+						fallbackResult.metadata = {
+							...fallbackResult.metadata,
+							usedFallback: true,
+							originalTool: request.toolName,
+							fallbackTool: fallbackToolName,
+						};
+						return fallbackResult;
+					}
+					// This fallback failed — try the next one in the chain
+				} catch {
+					// Fallback threw — record and continue to next in chain
+					this.fallbackUsage.push({
+						primaryTool: request.toolName,
+						fallbackTool: fallbackToolName,
+						reason: `${primaryFailureReason} (fallback threw)`,
+						timestamp: new Date().toISOString(),
+					});
+				}
 			}
+			// All fallbacks exhausted — fall through and return the primary failure
 		}
 
 		return lastResponse!;

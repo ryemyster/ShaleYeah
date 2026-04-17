@@ -47,10 +47,11 @@ export class Registry {
 	private capabilityIndex: Map<string, ToolDescriptor[]> = new Map();
 	private circuitBreaker: CircuitBreaker | null = null;
 	/**
-	 * Opt-in fallback mappings: primaryToolName → fallbackToolName.
-	 * Only tools explicitly registered here will have a fallback route.
+	 * Opt-in fallback chains: primaryToolName → ordered list of fallback tool names.
+	 * The executor tries each fallback in order and stops on first success.
+	 * Only tools explicitly registered via registerFallback() have a fallback route.
 	 */
-	private fallbackMap: Map<string, string> = new Map();
+	private fallbackMap: Map<string, string[]> = new Map();
 
 	/**
 	 * Register a server and auto-generate its tool descriptors.
@@ -221,23 +222,31 @@ export class Registry {
 	}
 
 	/**
-	 * Register an opt-in fallback for a primary tool.
-	 * When the primary tool fails after all retries, the executor will
-	 * attempt the fallback tool instead before returning failure.
+	 * Register an opt-in fallback chain for a primary tool.
+	 * When the primary tool fails after all retries, the executor tries each
+	 * fallback in order and stops on the first success.
 	 *
-	 * @param primaryTool  Fully-qualified primary tool name (e.g. "geowiz.analyze")
-	 * @param fallbackTool Fully-qualified fallback tool name (e.g. "risk-analysis.analyze")
+	 * @param primaryTool   Fully-qualified primary tool name (e.g. "geowiz.analyze")
+	 * @param fallbackTools Single fallback or ordered list of alternatives (preferred → last resort)
 	 */
-	registerFallback(primaryTool: string, fallbackTool: string): void {
-		this.fallbackMap.set(primaryTool, fallbackTool);
+	registerFallback(primaryTool: string, fallbackTools: string | string[]): void {
+		this.fallbackMap.set(primaryTool, Array.isArray(fallbackTools) ? [...fallbackTools] : [fallbackTools]);
 	}
 
 	/**
-	 * Return the registered fallback tool name for a primary tool, or
-	 * undefined if no fallback has been registered for that tool.
+	 * Return the ordered fallback chain for a primary tool.
+	 * Returns an empty array if no fallback has been registered for that tool.
+	 */
+	getFallbacks(primaryTool: string): string[] {
+		return this.fallbackMap.get(primaryTool) ?? [];
+	}
+
+	/**
+	 * Convenience alias — returns the first registered fallback, or undefined.
+	 * Callers that only need a single fallback can use this instead of getFallbacks().
 	 */
 	getFallback(primaryTool: string): string | undefined {
-		return this.fallbackMap.get(primaryTool);
+		return this.getFallbacks(primaryTool)[0];
 	}
 
 	// ==========================================
