@@ -1229,6 +1229,251 @@ console.log("\n⚖️ Test H: shouldWeInvest() — decision.analyze present once
 }
 
 // ==========================================
+// Test: Fallback chain — Issue #149
+// ==========================================
+
+console.log("\n🔁 Testing fallback chain routing (Issue #149)...");
+
+// Single fallback succeeds
+{
+	const { Registry } = await import("../src/kernel/registry.js");
+	const reg = new Registry();
+	reg.registerServer({
+		name: "geowiz",
+		description: "Geo",
+		persona: "Marcus",
+		domain: "geology",
+		capabilities: ["geology"],
+	});
+	reg.registerServer({
+		name: "risk-analysis",
+		description: "Risk",
+		persona: "Seneca",
+		domain: "risk",
+		capabilities: ["risk"],
+	});
+	reg.registerFallback("geowiz.analyze", "risk-analysis.analyze");
+
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setRegistry(reg);
+	executor.setExecutorFn(async (serverName) => {
+		if (serverName === "geowiz") {
+			return {
+				success: false,
+				summary: "geowiz down",
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+				error: { type: "retryable" as any, message: "geowiz unavailable" },
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} fallback response`,
+			confidence: 70,
+			data: { fallback: true },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+	assert(result.success === true, "Single fallback: succeeds when primary fails");
+	assert(result.metadata.usedFallback === true, "Single fallback: usedFallback stamped on metadata");
+	assert(result.metadata.originalTool === "geowiz.analyze", "Single fallback: originalTool correct");
+	assert(result.metadata.fallbackTool === "risk-analysis.analyze", "Single fallback: fallbackTool correct");
+	const usage = executor.getFallbackUsage();
+	assert(usage.length === 1, `Single fallback: one FallbackUsageRecord (got ${usage.length})`);
+	assert(usage[0].primaryTool === "geowiz.analyze", "FallbackUsageRecord: primaryTool correct");
+	assert(usage[0].fallbackTool === "risk-analysis.analyze", "FallbackUsageRecord: fallbackTool correct");
+}
+
+// Fallback chain: first in chain succeeds, second not attempted
+{
+	const { Registry } = await import("../src/kernel/registry.js");
+	const reg = new Registry();
+	reg.registerServer({
+		name: "geowiz",
+		description: "Geo",
+		persona: "Marcus",
+		domain: "geology",
+		capabilities: ["geology"],
+	});
+	reg.registerServer({
+		name: "risk-analysis",
+		description: "Risk",
+		persona: "Seneca",
+		domain: "risk",
+		capabilities: ["risk"],
+	});
+	reg.registerServer({
+		name: "econobot",
+		description: "Econ",
+		persona: "Pliny",
+		domain: "economics",
+		capabilities: ["economics"],
+	});
+	reg.registerFallback("geowiz.analyze", ["risk-analysis.analyze", "econobot.analyze"]);
+
+	const attempted: string[] = [];
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setRegistry(reg);
+	executor.setExecutorFn(async (serverName) => {
+		attempted.push(serverName);
+		if (serverName === "geowiz") {
+			return {
+				success: false,
+				summary: "geowiz down",
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+				error: { type: "retryable" as any, message: "geowiz unavailable" },
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} ok`,
+			confidence: 75,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+	assert(result.success === true, "Chain: first fallback succeeds");
+	assert(result.metadata.fallbackTool === "risk-analysis.analyze", "Chain: fallbackTool is first in chain");
+	assert(!attempted.includes("econobot"), "Chain: second fallback NOT attempted when first succeeds");
+}
+
+// Fallback chain: first fails, second succeeds
+{
+	const { Registry } = await import("../src/kernel/registry.js");
+	const reg = new Registry();
+	reg.registerServer({
+		name: "geowiz",
+		description: "Geo",
+		persona: "Marcus",
+		domain: "geology",
+		capabilities: ["geology"],
+	});
+	reg.registerServer({
+		name: "risk-analysis",
+		description: "Risk",
+		persona: "Seneca",
+		domain: "risk",
+		capabilities: ["risk"],
+	});
+	reg.registerServer({
+		name: "econobot",
+		description: "Econ",
+		persona: "Pliny",
+		domain: "economics",
+		capabilities: ["economics"],
+	});
+	reg.registerFallback("geowiz.analyze", ["risk-analysis.analyze", "econobot.analyze"]);
+
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setRegistry(reg);
+	executor.setExecutorFn(async (serverName) => {
+		if (serverName === "geowiz" || serverName === "risk-analysis") {
+			return {
+				success: false,
+				summary: `${serverName} down`,
+				confidence: 0,
+				data: null,
+				detailLevel: "standard" as const,
+				completeness: 0,
+				metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+				error: { type: "retryable" as any, message: `${serverName} unavailable` },
+			};
+		}
+		return {
+			success: true,
+			summary: `${serverName} ok`,
+			confidence: 75,
+			data: { server: serverName },
+			detailLevel: "standard" as const,
+			completeness: 100,
+			metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+		};
+	});
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+	assert(result.success === true, "Chain: second fallback succeeds when first fails");
+	assert(
+		result.metadata.fallbackTool === "econobot.analyze",
+		"Chain: fallbackTool is second in chain (the one that worked)",
+	);
+	const usage = executor.getFallbackUsage();
+	// Both geowiz (primary failure) and risk-analysis (first fallback failure) should be recorded
+	assert(usage.length >= 2, `Chain: at least 2 FallbackUsageRecords (got ${usage.length})`);
+}
+
+// All fallbacks exhausted — returns primary failure
+{
+	const { Registry } = await import("../src/kernel/registry.js");
+	const reg = new Registry();
+	reg.registerServer({
+		name: "geowiz",
+		description: "Geo",
+		persona: "Marcus",
+		domain: "geology",
+		capabilities: ["geology"],
+	});
+	reg.registerServer({
+		name: "risk-analysis",
+		description: "Risk",
+		persona: "Seneca",
+		domain: "risk",
+		capabilities: ["risk"],
+	});
+	reg.registerFallback("geowiz.analyze", "risk-analysis.analyze");
+
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setRegistry(reg);
+	executor.setExecutorFn(async (serverName) => ({
+		success: false,
+		summary: `${serverName} down`,
+		confidence: 0,
+		data: null,
+		detailLevel: "standard" as const,
+		completeness: 0,
+		metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+		error: { type: "retryable" as any, message: `${serverName} unavailable` },
+	}));
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+	assert(result.success === false, "All fallbacks exhausted: returns primary failure");
+	assert(result.metadata.usedFallback !== true, "All fallbacks exhausted: usedFallback NOT stamped");
+}
+
+// No fallback registered — primary failure returned unchanged
+{
+	const executor = new Executor({ maxRetries: 0, retryBackoffMs: 10 });
+	executor.setExecutorFn(async (serverName) => ({
+		success: false,
+		summary: `${serverName} down`,
+		confidence: 0,
+		data: null,
+		detailLevel: "standard" as const,
+		completeness: 0,
+		metadata: { server: serverName, persona: serverName, executionTimeMs: 1, timestamp: new Date().toISOString() },
+		error: { type: "retryable" as any, message: `${serverName} unavailable` },
+	}));
+
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
+	assert(result.success === false, "No fallback: primary failure returned");
+	assert(result.metadata.usedFallback !== true, "No fallback: usedFallback not present");
+}
+
+// ==========================================
 // Summary
 // ==========================================
 

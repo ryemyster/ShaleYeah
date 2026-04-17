@@ -347,8 +347,8 @@ export interface AuthResult {
 export interface AuditEntry {
 	/** Tool name that was called */
 	tool: string;
-	/** What happened: request, response, error, or denied */
-	action: "request" | "response" | "error" | "denied";
+	/** What happened: request, response, error, denied, or fallback_used */
+	action: "request" | "response" | "error" | "denied" | "fallback_used";
 	/** Tool parameters (sensitive values redacted) */
 	parameters: Record<string, unknown>;
 
