@@ -194,6 +194,10 @@ createSession(identity?, prefs?)  →  Session { id, identity, preferences }
         └─ destroySession(sessionId)       // Cleanup
 ```
 
+### Resource Reference (Large Payload Store)
+
+Tools that produce large data blobs (formation logs, cash-flow tables) store them via `session.storeResource(resourceId, data, mimeType)` and return a lightweight `ResourceRef { resourceId, mimeType, sizeBytes }` handle. The executor transparently resolves refs back to full payloads before invoking downstream tools — callers and tool handlers never see the indirection. This avoids copying multi-megabyte results through tool args on multi-phase pipelines.
+
 ### Context Boundary (Session Isolation)
 
 Each session is an isolated context boundary. Results stored in one session are never visible to another:
@@ -277,6 +281,14 @@ When scatter-gather execution encounters partial failures, the resilience middle
 
 Each server has fallback suggestions based on capability overlap (e.g., geowiz to research, econobot to market).
 
+### Fallback Chains
+
+When a tool fails after exhausting retries, the kernel tries each registered fallback in order and stops on first success. Declared via `registry.registerFallback("geowiz.analyze", ["research.analyze"])`. Every fallback invocation is recorded in `fallbackUsage[]` with primary/fallback names, reason, and ISO timestamp. Response metadata flags `usedFallback: true` and `originalTool`/`fallbackTool` names so callers can surface warnings to users.
+
+### Dependency Hints & Execution Graph
+
+Tools declare prerequisites in the registry (`ToolDescriptor.dependsOn[]`, `providesFor[]`). Before dispatch, `registry.validateExecutionOrder()` checks that required predecessors have completed. `registry.getExecutionGraph()` returns the full adjacency map — useful for visualizing pipeline order. Example: `decision.analyze` depends on `["geowiz.analyze", "econobot.analyze"]` so it never runs before geological and economic results are available.
+
 ### Configuration
 
 Both auth and audit are controlled by environment variables:
@@ -327,6 +339,8 @@ class GeowizServer extends MCPServer {
   // Tools: analyze_formation, process_gis, assess_quality
   // Expertise: Formation analysis, well log interpretation, GIS processing
   // Persona: Marcus Aurelius Geologicus - Master Geological Analyst
+  // Fallback: deriveDefaultFormationProperties(formations, depthHint)
+  //   — formation-keyword + depth-tier estimates when LAS parse fails
 }
 ```
 

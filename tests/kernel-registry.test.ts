@@ -241,6 +241,88 @@ console.log("\n🔁 Testing fallback chain registration (Issue #149)...");
 }
 
 // ==========================================
+// Test: Schema Explorer — layered discovery
+// ==========================================
+
+console.log("\n🔍 Testing Schema Explorer (layered discovery)...");
+
+{
+	// Level 1 — schemaExplorerListServers()
+	const servers = kernel.schemaExplorerListServers();
+	assert(servers.length === 14, `Level 1: returns 14 server entries (got ${servers.length})`);
+
+	const geowizEntry = servers.find((s) => s.name === "geowiz");
+	assert(geowizEntry !== undefined, "Level 1: geowiz entry exists");
+	assert(
+		typeof geowizEntry?.description === "string" && geowizEntry.description.length > 0,
+		"Level 1: geowiz has description",
+	);
+	assert(typeof geowizEntry?.toolCount === "number" && geowizEntry.toolCount > 0, "Level 1: geowiz toolCount > 0");
+
+	// Level 1 entries must NOT include inputSchema (that would defeat the purpose)
+	const hasSchema = Object.hasOwn(geowizEntry ?? {}, "inputSchema");
+	assert(!hasSchema, "Level 1: server entries do not expose inputSchema");
+}
+
+{
+	// Level 2 — schemaExplorerListTools()
+	const tools = kernel.schemaExplorerListTools("geowiz");
+	assert(tools.length > 0, `Level 2: geowiz has at least 1 tool (got ${tools.length})`);
+
+	const first = tools[0];
+	assert(typeof first?.name === "string" && first.name.length > 0, "Level 2: tool has name");
+	assert(typeof first?.description === "string", "Level 2: tool has description");
+	assert(
+		first?.type === "query" || first?.type === "command" || first?.type === "discovery",
+		"Level 2: tool type is valid",
+	);
+
+	// Level 2 must NOT expose inputSchema
+	const hasSchema = Object.hasOwn(first ?? {}, "inputSchema");
+	assert(!hasSchema, "Level 2: tool entries do not expose inputSchema");
+
+	// Unknown server → empty array, not a throw
+	const unknown = kernel.schemaExplorerListTools("nonexistent_server");
+	assert(Array.isArray(unknown) && unknown.length === 0, "Level 2: unknown server returns []");
+}
+
+{
+	// Level 3 — schemaExplorerDescribe()
+	const toolName = kernel.schemaExplorerListTools("geowiz")[0]?.name ?? "geowiz.analyze";
+	const descriptor = kernel.schemaExplorerDescribe("geowiz", toolName);
+	assert(descriptor !== null, "Level 3: known tool returns a descriptor");
+	assert(
+		descriptor?.name === toolName || descriptor?.name === `geowiz.${toolName}`,
+		"Level 3: descriptor name matches",
+	);
+	assert(typeof descriptor?.inputSchema === "object", "Level 3: full descriptor includes inputSchema");
+
+	// Unknown tool → null, not a throw
+	const missing = kernel.schemaExplorerDescribe("geowiz", "nonexistent_tool");
+	assert(missing === null, "Level 3: unknown tool returns null");
+
+	// Unknown server → null, not a throw
+	const badServer = kernel.schemaExplorerDescribe("nonexistent_server", "any_tool");
+	assert(badServer === null, "Level 3: unknown server returns null");
+}
+
+{
+	// Unified schemaExplorer() dispatcher
+	const lvl1 = kernel.schemaExplorer("servers");
+	assert(
+		Array.isArray(lvl1) && (lvl1 as unknown[]).length === 14,
+		"Unified dispatcher: level=servers returns 14 entries",
+	);
+
+	const lvl2 = kernel.schemaExplorer("tools", "geowiz");
+	assert(Array.isArray(lvl2) && (lvl2 as unknown[]).length > 0, "Unified dispatcher: level=tools returns geowiz tools");
+
+	const toolName = (lvl2 as Array<{ name: string }>)[0]?.name ?? "geowiz.analyze";
+	const lvl3 = kernel.schemaExplorer("schema", "geowiz", toolName);
+	assert(lvl3 !== null && !Array.isArray(lvl3), "Unified dispatcher: level=schema returns single descriptor");
+}
+
+// ==========================================
 // Summary
 // ==========================================
 

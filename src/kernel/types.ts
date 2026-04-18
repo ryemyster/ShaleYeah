@@ -17,6 +17,9 @@ export type ToolType = "query" | "command" | "discovery";
 /** Response detail granularity (Arcade: Progressive Detail pattern) */
 export type DetailLevel = "summary" | "standard" | "full";
 
+/** Schema Explorer drill-down level (Arcade: Schema Explorer pattern) */
+export type SchemaExplorerLevel = "servers" | "tools" | "schema";
+
 // ==========================================
 // Error Classification (Arcade: Error Classification pattern)
 // ==========================================
