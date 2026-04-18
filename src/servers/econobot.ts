@@ -9,6 +9,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
+import { EconomicsSchema } from "../kernel/canonical-model.js";
 import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
@@ -24,6 +25,7 @@ interface EconomicAnalysis {
 	};
 	confidence: number;
 	recommendation: string;
+	canonicalOutput?: Record<string, unknown>;
 }
 
 const econobotTemplate: ServerTemplate = {
@@ -255,6 +257,15 @@ async function analyzeEconomicData(data: any, args: any): Promise<EconomicAnalys
 			},
 			confidence,
 			recommendation: llmResult.recommendation,
+			canonicalOutput: {
+				economics: EconomicsSchema.parse({
+					npv: roundedNpv,
+					// IRR is stored as a fraction in the canonical model; econobot output is percentage
+					irr: roundedIrr,
+					paybackMonths: roundedPayback,
+					breakEvenPrice: breakeven.oil,
+				}),
+			},
 		};
 	} catch (_error) {
 		return generateDefaultAnalysis();

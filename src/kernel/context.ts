@@ -55,6 +55,8 @@ export interface SerializedSession {
 	createdAt: string;
 	lastActivity: string;
 	results: Record<string, ToolResponse>;
+	/** Accumulated canonical context sections — absent on sessions created before #208 */
+	canonicalSections?: Partial<WellAnalysisContext>;
 }
 
 /** Pluggable backend for session persistence */
@@ -114,6 +116,7 @@ export class FileSessionStorage implements SessionStorageBackend {
 			createdAt: session.createdAt,
 			lastActivity: session.lastActivity,
 			results: session.exportResults(),
+			canonicalSections: session.getCanonicalContext(),
 		};
 		writeFileSync(this.filePath(session.id), JSON.stringify(data, null, 2), "utf-8");
 	}
@@ -209,6 +212,10 @@ export class Session {
 			this.lastActivity = _serialized.lastActivity;
 			for (const [key, response] of Object.entries(_serialized.results)) {
 				this.results.set(key, response);
+			}
+			// Restore accumulated canonical context — absent on sessions saved before #208
+			if (_serialized.canonicalSections) {
+				this.canonicalSections = _serialized.canonicalSections;
 			}
 		} else {
 			this.id = randomUUID();

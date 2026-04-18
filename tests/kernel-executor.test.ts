@@ -6,7 +6,7 @@
  */
 
 import { FULL_DUE_DILIGENCE_BUNDLE, QUICK_SCREEN_BUNDLE } from "../src/kernel/bundles.js";
-import { DEMO_IDENTITY, Session } from "../src/kernel/context.js";
+import { DEMO_IDENTITY, Session, SessionManager } from "../src/kernel/context.js";
 import { Executor } from "../src/kernel/executor.js";
 import { Kernel } from "../src/kernel/index.js";
 import type { TaskBundle, ToolRequest, ToolResponse } from "../src/kernel/types.js";
@@ -1471,6 +1471,153 @@ console.log("\n🔁 Testing fallback chain routing (Issue #149)...");
 	const result = await executor.execute({ toolName: "geowiz.analyze", args: {} });
 	assert(result.success === false, "No fallback: primary failure returned");
 	assert(result.metadata.usedFallback !== true, "No fallback: usedFallback not present");
+}
+
+// ==========================================
+// Test: Canonical accumulation — mergeCanonical called after tool with canonicalOutput
+// ==========================================
+
+console.log("\n🗂 Testing canonical accumulation...");
+{
+	const sessionManager = new SessionManager();
+	const session = sessionManager.createSession(DEMO_IDENTITY);
+
+	const executor = new Executor();
+	executor.setSessionManager(sessionManager);
+	executor.setExecutorFn(async (_serverName, _args) => ({
+		success: true,
+		summary: "geowiz analysis complete",
+		confidence: 88,
+		data: { formations: ["Wolfcamp A"] },
+		detailLevel: "standard" as const,
+		completeness: 100,
+		canonicalOutput: {
+			formation: { name: "Wolfcamp A", netPay: 120, porosity: 0.1 },
+		},
+		metadata: {
+			server: "geowiz",
+			persona: "Marcus",
+			executionTimeMs: 5,
+			timestamp: new Date().toISOString(),
+		},
+	}));
+
+	await executor.execute({
+		toolName: "geowiz.analyze",
+		args: {},
+		sessionId: session.id,
+	});
+
+	const canonical = sessionManager.getCanonical(session.id);
+	assert(canonical !== undefined, "Canonical context populated after tool call");
+	assert(canonical?.formation?.name === "Wolfcamp A", "Formation name accumulated correctly");
+	assert(canonical?.formation?.netPay === 120, "Formation netPay accumulated correctly");
+	assert(canonical?.formation?.porosity === 0.1, "Formation porosity accumulated correctly");
+}
+
+// ==========================================
+// Test: Canonical accumulation — no-op when canonicalOutput is absent
+// ==========================================
+
+console.log("\n🚫 Testing canonical no-op when canonicalOutput absent...");
+{
+	const sessionManager = new SessionManager();
+	const session = sessionManager.createSession(DEMO_IDENTITY);
+
+	const executor = new Executor();
+	executor.setSessionManager(sessionManager);
+	executor.setExecutorFn(async (_serverName, _args) => ({
+		success: true,
+		summary: "tool complete",
+		confidence: 80,
+		data: { result: "ok" },
+		detailLevel: "standard" as const,
+		completeness: 100,
+		// No canonicalOutput field — older server that hasn't adopted the canonical model
+		metadata: {
+			server: "research",
+			persona: "Cicero",
+			executionTimeMs: 5,
+			timestamp: new Date().toISOString(),
+		},
+	}));
+
+	await executor.execute({
+		toolName: "research.analyze",
+		args: {},
+		sessionId: session.id,
+	});
+
+	const canonical = sessionManager.getCanonical(session.id);
+	assert(canonical === undefined, "No canonical context when server returns no canonicalOutput");
+}
+
+// ==========================================
+// Test: Canonical accumulation — multiple sections accumulate independently
+// ==========================================
+
+console.log("\n📊 Testing multi-section canonical accumulation...");
+{
+	const sessionManager = new SessionManager();
+	const session = sessionManager.createSession(DEMO_IDENTITY);
+
+	const executor = new Executor();
+	executor.setSessionManager(sessionManager);
+
+	// First tool call: geowiz writes formation
+	executor.setExecutorFn(async (_serverName, _args) => ({
+		success: true,
+		summary: "geowiz done",
+		confidence: 88,
+		data: {},
+		detailLevel: "standard" as const,
+		completeness: 100,
+		canonicalOutput: { formation: { netPay: 150, porosity: 0.12 } },
+		metadata: { server: "geowiz", persona: "Marcus", executionTimeMs: 5, timestamp: new Date().toISOString() },
+	}));
+	await executor.execute({ toolName: "geowiz.analyze", args: {}, sessionId: session.id });
+
+	// Second tool call: econobot writes economics
+	executor.setExecutorFn(async (_serverName, _args) => ({
+		success: true,
+		summary: "econobot done",
+		confidence: 90,
+		data: {},
+		detailLevel: "standard" as const,
+		completeness: 100,
+		canonicalOutput: { economics: { npv: 5_000_000, irr: 0.22, paybackMonths: 18 } },
+		metadata: { server: "econobot", persona: "Caesar", executionTimeMs: 5, timestamp: new Date().toISOString() },
+	}));
+	await executor.execute({ toolName: "econobot.analyze", args: {}, sessionId: session.id });
+
+	const canonical = sessionManager.getCanonical(session.id);
+	assert(canonical?.formation?.netPay === 150, "Formation section persists after second tool call");
+	assert(canonical?.economics?.npv === 5_000_000, "Economics section accumulated from second tool call");
+	assert(canonical?.economics?.irr === 0.22, "Economics IRR accumulated correctly");
+}
+
+// ==========================================
+// Test: Canonical accumulation — no session manager means no-op (no crash)
+// ==========================================
+
+console.log("\n🔕 Testing canonical no-op without session manager...");
+{
+	const executor = new Executor();
+	// No setSessionManager call — executor has no sessionManager
+	executor.setExecutorFn(async (_serverName, _args) => ({
+		success: true,
+		summary: "tool done",
+		confidence: 85,
+		data: {},
+		detailLevel: "standard" as const,
+		completeness: 100,
+		canonicalOutput: { formation: { netPay: 100 } },
+		metadata: { server: "geowiz", persona: "Marcus", executionTimeMs: 5, timestamp: new Date().toISOString() },
+	}));
+
+	// Should complete without throwing even though there's no session manager to call
+	const result = await executor.execute({ toolName: "geowiz.analyze", args: {}, sessionId: "some-session" });
+	assert(result.success === true, "Canonical output ignored gracefully when no session manager");
 }
 
 // ==========================================

@@ -9,6 +9,7 @@
  */
 
 import { createHash } from "node:crypto";
+import type { CanonicalSection } from "./canonical-model.js";
 import type { Session, SessionManager } from "./context.js";
 import type { CircuitBreaker } from "./middleware/circuit-breaker.js";
 import { ResilienceMiddleware } from "./middleware/resilience.js";
@@ -257,6 +258,21 @@ export class Executor {
 							retryAttempts: attempt,
 							totalRetryDelayMs: startMs - overallStartMs,
 						};
+					}
+					// Accumulate canonical sections into session after each successful tool call.
+					// Servers that have adopted the canonical model return canonicalOutput; others
+					// leave it absent — the undefined check makes this a no-op for non-adopters.
+					if (result.canonicalOutput && this.sessionManager && request.sessionId) {
+						for (const [section, data] of Object.entries(result.canonicalOutput)) {
+							if (data !== undefined) {
+								this.sessionManager.mergeCanonical(
+									request.sessionId,
+									section as CanonicalSection,
+									// eslint-disable-next-line @typescript-eslint/no-explicit-any
+									data as any,
+								);
+							}
+						}
 					}
 					// Populate cache for query tools
 					if (cacheable) {

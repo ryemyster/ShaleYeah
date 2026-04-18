@@ -9,6 +9,7 @@ import fs from "node:fs/promises";
 import { z } from "zod";
 import { analyzeLASCurve, type CurveAnalysis } from "../../tools/curve-qc.js";
 import { type LASData, parseLASFile } from "../../tools/las-parse.js";
+import { FormationSchema } from "../kernel/canonical-model.js";
 import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
@@ -24,6 +25,7 @@ interface GeologicalAnalysis {
 	targets: number;
 	confidence: number;
 	recommendation: string;
+	canonicalOutput?: Record<string, unknown>;
 }
 
 const geowizTemplate: ServerTemplate = {
@@ -209,7 +211,22 @@ async function performFormationAnalysis(args: {
 		const lasData: LASData = parseLASFile(args.filePath);
 		const keyQCResults = await performCurveQC(args.filePath, lasData);
 
-		return await analyzeGeologicalData(lasData, keyQCResults, args.analysisType || "standard", args.formations);
+		const analysis = await analyzeGeologicalData(
+			lasData,
+			keyQCResults,
+			args.analysisType || "standard",
+			args.formations,
+		);
+		return {
+			...analysis,
+			canonicalOutput: {
+				formation: FormationSchema.parse({
+					netPay: analysis.netPay,
+					porosity: analysis.porosity / 100, // geowiz returns % — canonical wants fraction 0–1
+					saturation: undefined,
+				}),
+			},
+		};
 	} catch (_error) {
 		// LAS parsing failed — derive formation-aware estimates from whatever context is available,
 		// then ask the LLM to refine TOC and recommendation using those estimates.
@@ -236,6 +253,13 @@ async function performFormationAnalysis(args: {
 			targets: Math.max(1, formations.filter((f) => f !== "Unidentified Formation").length),
 			confidence: ServerUtils.calculateConfidence(0.6, 0.7),
 			recommendation: llmResult.recommendation,
+			canonicalOutput: {
+				formation: FormationSchema.parse({
+					name: formations[0],
+					netPay: fallbackProps.netPay,
+					porosity: fallbackProps.porosity / 100, // deriveDefault returns % — canonical wants fraction
+				}),
+			},
 		};
 	}
 }
