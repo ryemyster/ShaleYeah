@@ -4,7 +4,7 @@ Run the full ShaleYeah pre-commit check suite. Use this before committing or ope
 
 ## Steps
 
-Run the following commands in sequence from the repo root. Stop and report any failures immediately — do not continue to the next step if one fails.
+Run the following in sequence from the repo root. Stop and report any failure immediately — do not continue to the next step if one fails.
 
 ### 1. Anti-pattern scan (fast — runs before the slow compile steps)
 
@@ -28,4 +28,19 @@ If either grep fires: stop and report the file:line. Fix before proceeding.
 npm run build && npm run type-check && npm run lint && npm run test && npm run demo
 ```
 
-Report the result of each step clearly. If all pass, confirm the branch is ready to commit/push.
+Report the result of each step clearly.
+
+### 3. Coverage gate (90% line coverage required)
+
+```bash
+npm run coverage
+```
+
+This runs all test suites under `c8` and prints a summary table. The gate passes when:
+- **Lines**: ≥ 90%
+- **Functions**: ≥ 85%
+- **Branches**: ≥ 80%
+
+If coverage drops below threshold, identify the uncovered files from the report and add tests before proceeding. Do not commit with failing coverage.
+
+If all checks pass, confirm the branch is ready to commit/push.
