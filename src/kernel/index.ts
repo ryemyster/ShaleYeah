@@ -539,15 +539,7 @@ export class Kernel {
 	 */
 	listBundles(): Record<string, { name: string; description: string; stepCount: number }> {
 		const all: Record<string, { name: string; description: string; stepCount: number }> = {};
-		// Include executor bundles
-		for (const bundle of [QUICK_SCREEN_BUNDLE, FULL_DUE_DILIGENCE_BUNDLE]) {
-			all[bundle.name] = {
-				name: bundle.name,
-				description: bundle.description,
-				stepCount: bundle.steps.length,
-			};
-		}
-		// Include bundles from bundles.ts
+		// BUNDLES already contains every bundle including QUICK_SCREEN and FULL_DUE_DILIGENCE
 		for (const [key, bundle] of Object.entries(BUNDLES)) {
 			all[key] = {
 				name: bundle.name,

@@ -15,6 +15,9 @@ TESTS_DIR="$(cd "$(dirname "$0")/../tests" && pwd)"
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 ENTRY="$REPO_ROOT/.coverage-entry.ts"
 
+# Remove temp entry file on exit, even if the script is killed mid-run
+trap 'rm -f "$ENTRY"' EXIT
+
 EXCLUDED=(
   "mcp-integration.test.ts"
   "mcp-server-infrastructure.test.ts"
@@ -59,7 +62,6 @@ npx c8 \
   npx tsx "$ENTRY"
 
 EXIT_CODE=$?
-rm -f "$ENTRY"
 
 if [[ $EXIT_CODE -ne 0 ]]; then
   echo ""

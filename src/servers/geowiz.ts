@@ -26,16 +26,6 @@ interface GeologicalAnalysis {
 	recommendation: string;
 }
 
-interface _GISAnalysis {
-	type: string;
-	features: number;
-	geometryTypes: string[];
-	bounds: Record<string, number>;
-	coordinateSystem: string;
-	attributes: string[];
-	quality: number;
-}
-
 const geowizTemplate: ServerTemplate = {
 	name: "geowiz",
 	description: "Geological Analysis MCP Server",
