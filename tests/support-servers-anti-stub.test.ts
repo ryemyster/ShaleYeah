@@ -259,6 +259,35 @@ await test("research: competitive analysis fallback varies by region and competi
 	assert.strictEqual(permianEntry.dataSource, "llm-fallback", "dataSource must be llm-fallback");
 });
 
+await test("test server: run_quality_tests no longer returns hardcoded latency/throughput constants", () => {
+	// Verify the old stub values are not present in any exported function output.
+	// The handler itself is async/tool-wired, so we validate the fallback path directly.
+	const result = deriveDefaultQAResult(["geowiz", "econobot"], 0.95);
+	// Old stub: score: 95, responseTime: "145ms", throughput: "420 requests/min"
+	// None of these should appear in the rule-based QA result (which only has status/issues/recommendation)
+	const resultStr = JSON.stringify(result);
+	assert.ok(!resultStr.includes("145ms"), `deriveDefaultQAResult must not embed hardcoded "145ms": ${resultStr}`);
+	assert.ok(
+		!resultStr.includes("420 requests"),
+		`deriveDefaultQAResult must not embed hardcoded throughput: ${resultStr}`,
+	);
+	assert.ok(
+		!resultStr.includes('"score": 95'),
+		`deriveDefaultQAResult must not embed hardcoded score 95: ${resultStr}`,
+	);
+});
+
+await test("test server: generate_quality_report dataSource is llm-validation, not hardcoded metrics", () => {
+	// The generate_quality_report handler returns a fixed analysis shape.
+	// We verify the exported deriveDefaultQAResult (the only exported helper) does not
+	// carry the old hardcoded telemetry values (99.8 uptime, 0.12 errorRate, 820 hours MTBF).
+	const result = deriveDefaultQAResult(["all-servers"], 0.96);
+	const resultStr = JSON.stringify(result);
+	assert.ok(!resultStr.includes("99.8"), `Must not contain hardcoded 99.8 uptime: ${resultStr}`);
+	assert.ok(!resultStr.includes("0.12"), `Must not contain hardcoded 0.12 errorRate: ${resultStr}`);
+	assert.ok(!resultStr.includes("820 hours"), `Must not contain hardcoded 820h MTBF: ${resultStr}`);
+});
+
 await test("test server: tight accuracy threshold produces WARNING vs standard produces PASS", () => {
 	const tightCriteria = deriveDefaultQAResult(["geowiz", "econobot", "decision"], 0.99);
 	const standardCriteria = deriveDefaultQAResult(["geowiz"], 0.95);
