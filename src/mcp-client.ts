@@ -292,6 +292,13 @@ export class ShaleYeahMCPClient {
 
 			const result = await this.executeServerAnalysis(serverName, request);
 
+			// Extract canonicalOutput if the server included it in the analysis payload.
+			// Servers that have adopted the canonical model embed it alongside their domain data.
+			const analysisPayload = result.analysis as Record<string, unknown> | null;
+			const canonicalOutput = analysisPayload?.canonicalOutput as
+				| import("./kernel/canonical-model.js").WellAnalysisContext
+				| undefined;
+
 			return {
 				success: result.success,
 				summary: `${config.persona} analysis${result.success ? " complete" : " failed"}`,
@@ -299,6 +306,7 @@ export class ShaleYeahMCPClient {
 				data: result.analysis,
 				detailLevel: "standard" as const,
 				completeness: result.success ? 100 : 0,
+				canonicalOutput,
 				metadata: {
 					server: serverName,
 					persona: config.persona,

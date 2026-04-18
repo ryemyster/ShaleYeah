@@ -37,14 +37,14 @@ export function countWordsInSummary(text: string): number {
 export function deriveDefaultExecutiveSummary(params: {
 	tractName: string;
 	recommendation: "PROCEED" | "REJECT" | "DEFER";
-	npv: number;
-	irr: number;
-	paybackMonths: number;
+	npv: number | undefined;
+	irr: number | undefined;
+	paybackMonths: number | undefined;
 	confidence: number;
 }): string {
 	const { tractName, recommendation, npv, irr, paybackMonths, confidence } = params;
-	const npvM = (npv / 1_000_000).toFixed(1);
-	const irrPct = (irr * 100).toFixed(1);
+	const npvM = npv !== undefined ? (npv / 1_000_000).toFixed(1) : "N/A";
+	const irrPct = irr !== undefined ? (irr * 100).toFixed(1) : "N/A";
 
 	const actionMap: Record<string, string> = {
 		PROCEED: "supports proceeding with development",
@@ -56,7 +56,7 @@ export function deriveDefaultExecutiveSummary(params: {
 	return (
 		`Investment analysis for ${tractName} ${action}. ` +
 		`Recommendation: ${recommendation} (${confidence}% confidence). ` +
-		`Key metrics: NPV $${npvM}M, IRR ${irrPct}%, payback ${paybackMonths} months. ` +
+		`Key metrics: NPV $${npvM}M, IRR ${irrPct}%, payback ${paybackMonths !== undefined ? `${paybackMonths} months` : "N/A"}. ` +
 		`This assessment is based on all available domain expert inputs including geological, ` +
 		`economic, decline curve, and risk analysis results.`
 	);
@@ -76,9 +76,9 @@ export function deriveDefaultExecutiveSummary(params: {
 async function synthesizeReportWithLLM(params: {
 	tractName: string;
 	recommendation: "PROCEED" | "REJECT" | "DEFER";
-	npv: number;
-	irr: number;
-	paybackMonths: number;
+	npv: number | undefined;
+	irr: number | undefined;
+	paybackMonths: number | undefined;
 	confidence: number;
 	riskFactors: string[];
 	nextSteps: string[];
@@ -87,8 +87,8 @@ async function synthesizeReportWithLLM(params: {
 	const { tractName, recommendation, npv, irr, paybackMonths, confidence, riskFactors, nextSteps, keyFindings } =
 		params;
 
-	const npvM = (npv / 1_000_000).toFixed(2);
-	const irrPct = (irr * 100).toFixed(1);
+	const npvM = npv !== undefined ? (npv / 1_000_000).toFixed(2) : "N/A";
+	const irrPct = irr !== undefined ? (irr * 100).toFixed(1) : "N/A";
 
 	const prompt = `You are Scriptor Reporticus Maximus, a master oil & gas investment report writer.
 
@@ -105,7 +105,7 @@ Tract: ${tractName}
 Recommendation: ${recommendation} (confidence: ${confidence}%)
 NPV: $${npvM}M
 IRR: ${irrPct}%
-Payback: ${paybackMonths} months
+Payback: ${paybackMonths !== undefined ? `${paybackMonths} months` : "N/A"}
 Key findings: ${keyFindings.slice(0, 3).join("; ")}
 Top risks: ${riskFactors.slice(0, 3).join("; ")}
 Next steps: ${nextSteps.slice(0, 3).join("; ")}
@@ -138,10 +138,10 @@ interface LocalInvestmentDecision {
 	recommendation: "PROCEED" | "REJECT" | "DEFER";
 	confidence: number;
 	keyMetrics: {
-		npv: number;
-		irr: number;
-		payback: number;
-		netPay: number;
+		npv: number | undefined;
+		irr: number | undefined;
+		payback: number | undefined;
+		netPay: number | undefined;
 	};
 	riskFactors: string[];
 	nextSteps: string[];
@@ -268,31 +268,41 @@ function generateInvestmentDecision(args: {
 	const results = args.analysisResults;
 	const criteria = args.decisionCriteria;
 
+	// Use explicit undefined checks — missing economic data is absent, not zero.
+	// A missing NPV of 0 would look like a failed investment and skew the recommendation.
 	const keyMetrics = {
-		npv: results.economic?.npv || 0,
-		irr: results.economic?.irr || 0,
-		payback: results.economic?.paybackMonths || 0,
-		netPay: results.geological?.confidenceLevel || 0,
+		npv: results.economic?.npv ?? undefined,
+		irr: results.economic?.irr ?? undefined,
+		payback: results.economic?.paybackMonths ?? undefined,
+		netPay: results.geological?.confidenceLevel ?? undefined,
 	};
 
 	let recommendation: "PROCEED" | "REJECT" | "DEFER" = "DEFER";
 	let confidence = 75;
 
+	// Missing economic fields produce DEFER — unknown data should not force a PROCEED or REJECT.
 	if (
+		keyMetrics.npv !== undefined &&
+		keyMetrics.irr !== undefined &&
+		keyMetrics.payback !== undefined &&
 		keyMetrics.npv >= (criteria?.minNPV ?? 0) &&
 		keyMetrics.irr >= (criteria?.minIRR ?? 0) &&
 		keyMetrics.payback <= (criteria?.maxPayback ?? 999)
 	) {
 		recommendation = "PROCEED";
 		confidence = 85;
-	} else if (keyMetrics.npv < 0 || keyMetrics.irr < 0.1) {
+	} else if (
+		keyMetrics.npv !== undefined &&
+		keyMetrics.irr !== undefined &&
+		(keyMetrics.npv < 0 || keyMetrics.irr < 0.1)
+	) {
 		recommendation = "REJECT";
 		confidence = 90;
 	}
 
 	const riskFactors = [];
-	if (keyMetrics.payback > 18) riskFactors.push("Long payback period");
-	if (keyMetrics.irr < 0.2) riskFactors.push("Moderate IRR");
+	if (keyMetrics.payback !== undefined && keyMetrics.payback > 18) riskFactors.push("Long payback period");
+	if (keyMetrics.irr !== undefined && keyMetrics.irr < 0.2) riskFactors.push("Moderate IRR");
 	if (!results.geological) riskFactors.push("Limited geological data");
 
 	const nextSteps = [];
@@ -399,7 +409,9 @@ function generateSynthesisRecommendations(avgConfidence: number): string[] {
 }
 
 function generateExecutiveSummary(tractName: string, decision: LocalInvestmentDecision): string {
-	return `Investment analysis for ${tractName} indicates ${decision.recommendation} with ${decision.confidence}% confidence. Key economic metrics show NPV of $${(decision.keyMetrics.npv / 1000000).toFixed(1)}M and IRR of ${decision.keyMetrics.irr}%.`;
+	const npvStr = decision.keyMetrics.npv !== undefined ? `$${(decision.keyMetrics.npv / 1000000).toFixed(1)}M` : "N/A";
+	const irrStr = decision.keyMetrics.irr !== undefined ? `${decision.keyMetrics.irr}%` : "N/A";
+	return `Investment analysis for ${tractName} indicates ${decision.recommendation} with ${decision.confidence}% confidence. Key economic metrics show NPV of ${npvStr} and IRR of ${irrStr}.`;
 }
 
 function generateKeyFindings(decision: LocalInvestmentDecision): string[] {
@@ -424,8 +436,8 @@ ${report.keyFindings.map((finding) => `- ${finding}`).join("\n")}
 **${report.recommendation.recommendation}** - Confidence: ${report.recommendation.confidence}%
 
 ### Key Metrics
-- NPV: $${(report.recommendation.keyMetrics.npv / 1000000).toFixed(1)}M
-- IRR: ${report.recommendation.keyMetrics.irr}%
+- NPV: ${report.recommendation.keyMetrics.npv !== undefined ? `$${(report.recommendation.keyMetrics.npv / 1000000).toFixed(1)}M` : "N/A"}
+- IRR: ${report.recommendation.keyMetrics.irr !== undefined ? `${report.recommendation.keyMetrics.irr}%` : "N/A"}
 - Payback: ${report.recommendation.keyMetrics.payback} months
 - Net Pay: ${report.recommendation.keyMetrics.netPay} ft
 

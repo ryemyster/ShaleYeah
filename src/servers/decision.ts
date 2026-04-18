@@ -7,6 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { DecisionSchema } from "../kernel/canonical-model.js";
 import { callLLM } from "../shared/llm-client.js";
 import { runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate } from "../shared/server-factory.js";
@@ -36,6 +37,7 @@ interface InvestmentDecision {
 	timeline: string;
 	// LLM-generated interpretation, present when Claude was available
 	interpretation?: LLMDecisionInterpretation;
+	canonicalOutput?: Record<string, unknown>;
 }
 
 interface BidStrategy {
@@ -384,6 +386,11 @@ async function evaluateInvestmentOpportunity(args: {
 		upside,
 	});
 
+	// Map legacy INVEST/PASS labels to canonical PROCEED/REJECT/CONDITIONAL before storing.
+	// The canonical model uses PROCEED/REJECT/CONDITIONAL — these are the three standard outcomes.
+	const canonicalRecommendation =
+		interpretation.verdict === "INVEST" ? "PROCEED" : interpretation.verdict === "PASS" ? "REJECT" : "CONDITIONAL";
+
 	return {
 		decision: interpretation.verdict,
 		confidence,
@@ -395,6 +402,13 @@ async function evaluateInvestmentOpportunity(args: {
 		conditions: conditions.length > 0 ? conditions : undefined,
 		timeline: determineTimeline(interpretation.verdict, riskScore ?? 0.5),
 		interpretation,
+		canonicalOutput: {
+			decision: DecisionSchema.parse({
+				recommendation: canonicalRecommendation,
+				confidence,
+				rationale: interpretation.rationale,
+			}),
+		},
 	};
 }
 

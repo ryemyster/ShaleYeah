@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import { z } from "zod";
-import { EconomicsSchema, FormationSchema } from "../kernel/canonical-model.js";
+import { EconomicsSchema, FormationSchema, RiskProfileSchema } from "../kernel/canonical-model.js";
 import { callLLM } from "../shared/llm-client.js";
 import { type MCPServer, runMCPServer } from "../shared/mcp-server.js";
 import { ServerFactory, type ServerTemplate, ServerUtils } from "../shared/server-factory.js";
@@ -39,6 +39,7 @@ interface RiskAssessment {
 	confidence: number;
 	recommendation: string;
 	interpretation?: LLMRiskInterpretation;
+	canonicalOutput?: Record<string, unknown>;
 }
 
 interface MonteCarloAnalysis {
@@ -289,6 +290,15 @@ async function performRiskAssessment(args: {
 		confidence: ServerUtils.calculateConfidence(0.85, 0.9),
 		recommendation: generateRiskRecommendation(overallRisk, args.riskProfile),
 		interpretation,
+		canonicalOutput: {
+			risk: RiskProfileSchema.parse({
+				// overallRisk is already 0–1 from weighted sum; canonical overallScore is 0–100 for display
+				overallScore: Math.round(overallRisk * 100),
+				geologic: riskCategories.geological,
+				economic: riskCategories.economic,
+				regulatory: riskCategories.regulatory,
+			}),
+		},
 	};
 }
 
