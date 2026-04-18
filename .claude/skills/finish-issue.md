@@ -32,16 +32,16 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    If grep returns nothing: STOP — the issue is not implemented. Do not close.
 
-3. **Pre-commit checks** — Run `/pre-commit`. Stop if anything fails. This includes `npm run type-check` — fix any type errors before proceeding.
+4. **Pre-commit checks** — Run `/pre-commit`. Stop if anything fails. This includes `npm run type-check` — fix any type errors before proceeding.
 
-4. **CHANGELOG.md** — Add an entry under `[Unreleased]` describing the change. Use the format:
+5. **CHANGELOG.md** — Add an entry under `[Unreleased]` describing the change. Use the format:
 
    ```
    ### Added / Fixed / Changed
    - Brief description of what was done (issue #<number>)
    ```
 
-5. **Docs update** — This step is mandatory. Do not skip it or the PR is not done.
+6. **Docs update** — This step is mandatory. Do not skip it or the PR is not done.
 
    Run `/update-docs` to identify and update all impacted files. Then additionally verify these specific items for every PR:
 
@@ -57,7 +57,7 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Every doc update must be written so a 12-year-old with no oil & gas background can follow it. Define terms, explain the why, make steps explicit.
 
-6. **Commit** — Stage and commit any remaining changes:
+7. **Commit** — Stage and commit any remaining changes:
 
    ```bash
    git add -A && git commit -m "..."
@@ -65,9 +65,9 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Follow conventional commit format. Include `Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>`.
 
-7. **Push** — `git push -u origin <current-branch>`
+8. **Push** — `git push -u origin <current-branch>`
 
-8. **Open PR** — ALWAYS target `develop`. NEVER target `main`. This is a hard rule — no exceptions.
+9. **Open PR** — ALWAYS target `develop`. NEVER target `main`. This is a hard rule — no exceptions.
 
    Before creating the PR, confirm the base branch:
    ```bash
@@ -85,8 +85,8 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    PR body should include: Summary bullets, Test plan checklist, closes #<issue-number>.
 
-9. **Close issue** — The PR closing via `closes #<number>` in the body handles this automatically when merged. Confirm the PR URL.
+10. **Close issue** — The PR closing via `closes #<number>` in the body handles this automatically when merged. Confirm the PR URL.
 
-10. **Compact context** — After confirming the PR URL, run `/compact <focused instructions for next phase>` to reset context.
+11. **Compact context** — After confirming the PR URL, run `/compact <focused instructions for next phase>` to reset context.
 
 Report the PR URL when done.

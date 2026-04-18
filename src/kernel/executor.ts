@@ -236,6 +236,7 @@ export class Executor {
 
 		const overallStartMs = Date.now();
 		let lastResponse: ToolResponse | null = null;
+		let attempt = 0;
 		// Use per-server timeout if configured, else fall back to global
 		const effectiveTimeoutMs = this.serverTimeouts[serverName] ?? this.toolTimeoutMs;
 
@@ -243,7 +244,7 @@ export class Executor {
 		// Done once outside the retry loop — refs are stable across retries.
 		const resolvedArgs = this.resolveResourceRefs(request.args, request.sessionId);
 
-		for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+		for (; attempt <= this.maxRetries; attempt++) {
 			const startMs = Date.now();
 
 			try {
@@ -293,15 +294,12 @@ export class Executor {
 			}
 		}
 
-		// Attach retry metadata to the final failure response
+		// Attach retry metadata to the final failure response.
+		// attempt is the last value from the loop — it equals the number of attempts made (0-indexed).
 		if (lastResponse && this.maxRetries > 0) {
-			const attemptsUsed = Math.min(
-				this.maxRetries,
-				Math.max(1, Math.round((Date.now() - overallStartMs) / this.retryBackoffMs)),
-			);
 			lastResponse.metadata = {
 				...lastResponse.metadata,
-				retryAttempts: attemptsUsed,
+				retryAttempts: attempt,
 				totalRetryDelayMs: Date.now() - overallStartMs,
 			};
 		}
@@ -315,8 +313,9 @@ export class Executor {
 			for (const fallbackToolName of fallbackChain) {
 				const fallbackServerName = fallbackToolName.split(".")[0];
 				try {
+					// executorFn is guaranteed non-null — the guard at the top of execute() returns early if unset
 					const fallbackResult = await this.withTimeout(
-						this.executorFn!(fallbackServerName, resolvedArgs),
+						this.executorFn(fallbackServerName, resolvedArgs),
 						this.serverTimeouts[fallbackServerName] ?? this.toolTimeoutMs,
 					);
 					// Record every fallback attempt for audit/observability
@@ -351,7 +350,10 @@ export class Executor {
 			// All fallbacks exhausted — fall through and return the primary failure
 		}
 
-		return lastResponse!;
+		// lastResponse is always set: the loop runs at least once (attempt 0) and always populates lastResponse on failure
+		return (
+			lastResponse ?? this.errorResponse(request.toolName, "No response from tool after retries", ErrorType.PERMANENT)
+		);
 	}
 
 	/**

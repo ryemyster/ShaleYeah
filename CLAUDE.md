@@ -34,8 +34,8 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 
 ## Standards
 
-- TypeScript strict mode — no `any`, explicit interfaces, Zod at all boundaries
-- No `Math.random()` in business logic — deterministic constants or real computation only
+- TypeScript strict mode — no `any`, explicit interfaces, Zod at all boundaries. Exception: `src/shared/mcp-server.ts` and `src/shared/server-factory.ts` use `any` for Zod runtime interop; all other files are `any`-free. No `z.any()` in Zod schemas — use explicit types.
+- No `Math.random()` in business logic — deterministic constants or real computation only. Exception: `sampleUniform`, `sampleTriangular`, `sampleNormal` in `src/servers/risk-analysis.ts` are intentional Monte Carlo samplers and are explicitly named as such.
 - Tests use simple assert pattern (not jest/vitest) — run via `npx tsx tests/<name>.test.ts`
 - CI requires no API key — mock the Anthropic SDK in tests
 - New servers: inherit `MCPServer`, add Roman persona, use `registerTool()`

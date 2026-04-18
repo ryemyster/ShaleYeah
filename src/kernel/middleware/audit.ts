@@ -176,9 +176,9 @@ export class AuditMiddleware {
 
 		for (const entry of entries) {
 			// Write as a special secret_access action — key name only, never value
-			const auditEntry = {
+			const auditEntry: AuditEntry = {
 				tool: "secrets-store",
-				action: "secret_access" as const,
+				action: "secret_access",
 				parameters: {
 					key: entry.key,
 					source: entry.source,
@@ -188,7 +188,7 @@ export class AuditMiddleware {
 				role: "system",
 				timestamp: entry.timestamp,
 			};
-			this.writeEntry(auditEntry as unknown as AuditEntry);
+			this.writeEntry(auditEntry);
 		}
 	}
 
@@ -213,9 +213,7 @@ export class AuditMiddleware {
 	private writeEntry(entry: AuditEntry): void {
 		if (!this.enabled) return;
 
-		// Ensure parameters are redacted
-		entry.parameters = this.redactSensitive(entry.parameters);
-
+		// buildEntry() already redacts parameters — no mutation here
 		const dateStr = new Date().toISOString().slice(0, 10);
 		const filePath = path.join(this.auditPath, `${dateStr}.jsonl`);
 

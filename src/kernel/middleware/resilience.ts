@@ -192,8 +192,6 @@ export class ResilienceMiddleware {
 		const totalExpected = expectedTools.length;
 		const completeness = totalExpected > 0 ? Math.round((successful.length / totalExpected) * 100) : 100;
 
-		const _isUseful = completeness >= 50;
-
 		const suggestions = this.degradationSuggestions(missingAnalyses, completeness);
 
 		const degradationReason =

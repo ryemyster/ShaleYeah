@@ -111,8 +111,8 @@ echo "📝 Cache & Logs Cleanup:"
 safe_remove "node_modules/.cache" "Node.js cache files"
 safe_remove ".tsx-cache" "TSX cache files"
 
-# Clean logs
-if [ -f "*.log" ]; then
+# Clean logs — use compgen to correctly test for glob matches ([ -f "*.log" ] tests for a literal filename)
+if compgen -G "*.log" > /dev/null 2>&1; then
     echo "🗑️  Removing log files..."
     rm -f *.log
     echo "   ✅ Cleaned log files"

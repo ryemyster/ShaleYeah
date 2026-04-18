@@ -18,9 +18,18 @@ grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" src/servers/ 2>/
 # Exception: distribution samplers in risk-analysis.ts Monte Carlo (sampleUniform, sampleTriangular, sampleNormal)
 # are intentional — they are clearly named and tested. All other uses are violations.
 grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample" && echo "FAIL: Math.random() in business logic" && exit 1 || true
+
+# Detect z.any() in Zod schemas.
+# z.any() masks type errors and defeats strict-mode guarantees — use explicit canonical schema types.
+# Exception: src/shared/mcp-server.ts and src/shared/server-factory.ts use it for Zod runtime interop.
+grep -rn "z\.any()" src/servers/ src/kernel/ 2>/dev/null && echo "FAIL: z.any() in server or kernel — use explicit Zod types" && exit 1 || true
+
+# Detect silent numeric defaults — ?.field || 0 hides missing upstream data and produces wrong NPV/IRR silently.
+# Replace with canonical context reads (session.getCanonical()) or explicit undefined checks.
+grep -rn "\?\.\w\+[[:space:]]*||[[:space:]]*0\b" src/servers/ src/kernel/ 2>/dev/null | grep -v "node_modules\|\.test\." && echo "WARN: silent ?.field || 0 default found — verify intentional" || true
 ```
 
-If either grep fires: stop and report the file:line. Fix before proceeding.
+If any grep fires on a non-warning line: stop and report the file:line. Fix before proceeding. The `?.field || 0` check is a warning — report it but don't block if the use is intentional (document why).
 
 ### 2. Quality gate
 

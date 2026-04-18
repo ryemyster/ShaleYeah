@@ -40,7 +40,8 @@ Run each grep. A result here is a violation — report it and stop the review as
 grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" src/servers/ 2>/dev/null
 
 # Math.random() in business logic (must be deterministic — no random in servers or kernel)
-grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null
+# Exception: sampleUniform/sampleTriangular/sampleNormal in risk-analysis.ts are approved Monte Carlo samplers.
+grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample"
 
 # z.any() in Zod schemas (masks type errors — use canonical schema sections instead)
 # Note: pre-existing z.any() in risk-analysis.ts was the target of #208 and is now removed.
