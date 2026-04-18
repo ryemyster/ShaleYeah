@@ -221,22 +221,29 @@ async function performFormationAnalysis(args: {
 
 		return await analyzeGeologicalData(lasData, keyQCResults, args.analysisType || "standard", args.formations);
 	} catch (_error) {
-		// LAS parsing failed — call LLM with available context for best-effort analysis
-		const formationContext = args.formations?.join(", ") ?? "unknown";
+		// LAS parsing failed — derive formation-aware estimates from whatever context is available,
+		// then ask the LLM to refine TOC and recommendation using those estimates.
+		const formations = args.formations ?? ["Unidentified Formation"];
+		const formationContext = formations.join(", ");
+		// Use LLM's default depth (7000 ft) as the depth hint when no real data is available —
+		// consistent with the avgDepth default in synthesizeAnalysisWithLLM().
+		const fallbackProps = deriveDefaultFormationProperties(formations, 7000);
 		const llmResult = await synthesizeAnalysisWithLLM({
 			filePath: args.filePath,
 			formations: formationContext,
 			analysisType: args.analysisType ?? "standard",
+			avgPorosity: fallbackProps.porosity,
+			netPay: fallbackProps.netPay,
 			fallback: true,
 		});
 		return {
-			formations: args.formations ?? ["Unidentified Formation"],
-			netPay: 150,
-			porosity: 12.0,
-			permeability: 0.001,
+			formations,
+			netPay: fallbackProps.netPay,
+			porosity: fallbackProps.porosity,
+			permeability: estimatePermeability(fallbackProps.porosity),
 			toc: llmResult.toc,
-			maturity: "Early Oil Window",
-			targets: 2,
+			maturity: fallbackProps.maturity,
+			targets: Math.max(1, formations.filter((f) => f !== "Unidentified Formation").length),
 			confidence: ServerUtils.calculateConfidence(0.6, 0.7),
 			recommendation: llmResult.recommendation,
 		};
@@ -652,6 +659,47 @@ function deriveDefaultTOC(avgDepth: number): number {
 	if (avgDepth > 6000) return 4.5;
 	if (avgDepth > 4000) return 3.8;
 	return 2.5;
+}
+
+export interface FormationProperties {
+	netPay: number;
+	porosity: number;
+	maturity: string;
+}
+
+/**
+ * Formation-aware fallback when LAS parsing fails and no log curves are available.
+ * Uses formation name keywords and depth to produce estimates that vary with input —
+ * better than static constants but explicitly not a substitute for real log data.
+ *
+ * netPay: multi-zone plays have more aggregate pay than single-formation targets.
+ * porosity: tight shale plays run 6–10%; carbonates and clean sands run higher.
+ * maturity: mirrors assessMaturity() depth tiers so the two paths stay consistent.
+ */
+export function deriveDefaultFormationProperties(formations: string[], depthHint: number): FormationProperties {
+	// Count how many distinct pay zones the formation list implies — more zones = more net pay
+	const shaleKeywords = ["wolfcamp", "eagle ford", "marcellus", "bone spring", "barnett", "haynesville", "utica"];
+	const carbonateKeywords = ["spraberry", "clear fork", "arbuckle", "austin chalk", "woodford"];
+
+	const lowerNames = formations.map((f) => f.toLowerCase());
+	const isShalePlay = lowerNames.some((n) => shaleKeywords.some((kw) => n.includes(kw)));
+	const isCarbonate = lowerNames.some((n) => carbonateKeywords.some((kw) => n.includes(kw)));
+	const zoneCount = Math.max(1, formations.filter((f) => f && f !== "Unidentified Formation").length);
+
+	// netPay: multi-zone shale stacks average 100–200 ft aggregate; single-zone or unknown 60–100 ft
+	const netPay = isShalePlay ? Math.min(200, 80 + zoneCount * 30) : isCarbonate ? 70 + zoneCount * 15 : 80;
+
+	// porosity: tight shale 6–10%, carbonate/clean sand 10–16%, unknown 10%
+	const porosity = isShalePlay ? 7.0 : isCarbonate ? 12.0 : 10.0;
+
+	// maturity: same depth tiers as assessMaturity() — keeps fallback and happy path consistent
+	let maturity: string;
+	if (depthHint > 8000) maturity = "Overmature Gas Window";
+	else if (depthHint > 6000) maturity = "Peak Oil Window";
+	else if (depthHint > 4000) maturity = "Early Oil Window";
+	else maturity = "Immature";
+
+	return { netPay, porosity, maturity };
 }
 
 function assessMaturity(lasData: LASData): string {

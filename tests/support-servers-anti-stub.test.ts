@@ -14,6 +14,7 @@
 import assert from "node:assert";
 import { deriveDefaultDevelopmentOutlook } from "../src/servers/development.js";
 import { deriveDefaultDrillingInterpretation } from "../src/servers/drilling.js";
+import { deriveDefaultFormationProperties } from "../src/servers/geowiz.js";
 import { deriveDefaultInfrastructureInterpretation } from "../src/servers/infrastructure.js";
 import { deriveDefaultRegulatoryRisk } from "../src/servers/legal.js";
 import { deriveDefaultCompetitorProfile, deriveDefaultMarketInterpretation } from "../src/servers/market.js";
@@ -337,6 +338,48 @@ await test("callLLM: throws descriptive error when ANTHROPIC_API_KEY is absent",
 			process.env.ANTHROPIC_API_KEY = savedKey;
 		}
 	}
+});
+
+// ---------------------------------------------------------------------------
+// geowiz: formation-aware fallback — Issue #299
+// ---------------------------------------------------------------------------
+
+await test("geowiz: Wolfcamp shale stack has lower porosity and higher netPay than unknown formation", () => {
+	const wolfcamp = deriveDefaultFormationProperties(["Wolfcamp A", "Wolfcamp B", "Bone Spring"], 7000);
+	const unknown = deriveDefaultFormationProperties(["Unidentified Formation"], 7000);
+
+	assert.ok(
+		wolfcamp.porosity < unknown.porosity,
+		`Shale porosity (${wolfcamp.porosity}%) should be tighter than unknown (${unknown.porosity}%)`,
+	);
+	assert.ok(
+		wolfcamp.netPay > unknown.netPay,
+		`Multi-zone shale netPay (${wolfcamp.netPay}ft) should exceed single unknown (${unknown.netPay}ft)`,
+	);
+});
+
+await test("geowiz: maturity follows depth tiers — deep gas window differs from shallow immature", () => {
+	const deepGas = deriveDefaultFormationProperties(["Haynesville"], 9000);
+	const shallow = deriveDefaultFormationProperties(["Haynesville"], 3000);
+
+	assert.strictEqual(deepGas.maturity, "Overmature Gas Window", `9000ft should be Overmature Gas Window`);
+	assert.strictEqual(shallow.maturity, "Immature", `3000ft should be Immature`);
+	assert.notStrictEqual(deepGas.maturity, shallow.maturity, "Depth tiers must produce different maturity");
+});
+
+await test("geowiz: carbonate play (Spraberry) differs from shale play (Eagle Ford) — no static constants", () => {
+	const spraberry = deriveDefaultFormationProperties(["Spraberry", "Clear Fork"], 6500);
+	const eagleFord = deriveDefaultFormationProperties(["Eagle Ford"], 6500);
+
+	assert.notStrictEqual(spraberry.porosity, eagleFord.porosity, "Carbonate and shale porosity must differ");
+	assert.ok(
+		spraberry.porosity > eagleFord.porosity,
+		`Carbonate porosity (${spraberry.porosity}%) should exceed tight shale (${eagleFord.porosity}%)`,
+	);
+	// Confirm neither is the old hardcoded 12.0 for a shale play
+	assert.notStrictEqual(eagleFord.porosity, 12.0, "Eagle Ford shale porosity must not be the old hardcoded 12.0");
+	// Confirm the old static 150ft netPay is gone from shale fallback
+	assert.notStrictEqual(eagleFord.netPay, 150, "Single-formation netPay must not be the old hardcoded 150");
 });
 
 // ---------------------------------------------------------------------------
