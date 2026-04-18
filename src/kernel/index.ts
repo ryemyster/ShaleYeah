@@ -39,6 +39,7 @@ import type {
 	GatheredResponse,
 	InjectedContext,
 	KernelConfig,
+	SchemaExplorerLevel,
 	ServerFilter,
 	ServerInfo,
 	SessionInfo,
@@ -46,6 +47,7 @@ import type {
 	ToolDescriptor,
 	ToolRequest,
 	ToolResponse,
+	ToolType,
 	UserIdentity,
 	UserPreferences,
 } from "./types.js";
@@ -199,6 +201,67 @@ export class Kernel {
 	 */
 	resolveServer(toolName: string): string | undefined {
 		return this.registry.resolveServer(toolName);
+	}
+
+	// ==========================================
+	// Schema Explorer (Arcade: Schema Explorer pattern)
+	// Layered discovery — agents drill down only as far as needed,
+	// avoiding the token cost of fetching all 14 servers' full schemas upfront.
+	// ==========================================
+
+	/**
+	 * Level 1 — server names and one-line descriptions.
+	 * Cheap: ~14 items regardless of how many tools each server has.
+	 * Discovery tool: kernel.schema_explorer / level: "servers"
+	 */
+	schemaExplorerListServers(): Array<{ name: string; description: string; toolCount: number }> {
+		return this.registry.listServers().map((s) => ({
+			name: s.name,
+			description: s.description,
+			toolCount: s.toolCount,
+		}));
+	}
+
+	/**
+	 * Level 2 — tool names and types for a specific server, no input schema.
+	 * Returns [] for unknown server names (does not throw).
+	 * Discovery tool: kernel.schema_explorer / level: "tools"
+	 */
+	schemaExplorerListTools(serverName: string): Array<{ name: string; description: string; type: ToolType }> {
+		return this.registry.listTools(serverName).map((t) => ({
+			name: t.name,
+			description: t.description,
+			type: t.type,
+		}));
+	}
+
+	/**
+	 * Level 3 — full ToolDescriptor for a single tool including inputSchema.
+	 * Returns null for unknown server or tool (does not throw).
+	 * Discovery tool: kernel.schema_explorer / level: "schema"
+	 */
+	schemaExplorerDescribe(serverName: string, toolName: string): ToolDescriptor | null {
+		const fullyQualified = toolName.includes(".") ? toolName : `${serverName}.${toolName}`;
+		const tools = this.registry.listTools(serverName);
+		return tools.find((t) => t.name === fullyQualified) ?? null;
+	}
+
+	/**
+	 * Unified Schema Explorer entry point — dispatch by level.
+	 * Lets callers parameterize the drill-down level rather than picking a method.
+	 */
+	schemaExplorer(
+		level: SchemaExplorerLevel,
+		serverName?: string,
+		toolName?: string,
+	):
+		| Array<{ name: string; description: string; toolCount: number }>
+		| Array<{ name: string; description: string; type: ToolType }>
+		| ToolDescriptor
+		| null {
+		if (level === "servers") return this.schemaExplorerListServers();
+		if (level === "tools") return this.schemaExplorerListTools(serverName ?? "");
+		return this.schemaExplorerDescribe(serverName ?? "", toolName ?? "");
 	}
 
 	// ==========================================

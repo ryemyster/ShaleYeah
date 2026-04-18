@@ -127,6 +127,59 @@ Find tools that match a capability string. Case-insensitive substring matching.
 
 **Response:** Array of matching `ToolDescriptor` objects (same shape as `describe_tools`).
 
+### Schema Explorer — Layered Discovery
+
+Layered discovery lets agents explore cheaply before committing to full schema fetches. Three progressive levels:
+
+#### `kernel.list_servers`
+
+Level 1 — server names and one-line descriptions. Minimal token cost.
+
+```typescript
+kernel.listServers()
+// → [{ name: "geowiz", description: "Geological Analysis...", toolCount: 3 }, ...]
+```
+
+#### `kernel.list_tools`
+
+Level 2 — tool names for a specific server, no schema detail.
+
+```typescript
+kernel.listTools("geowiz")
+// → [{ name: "analyze_formation", description: "...", type: "query" }, ...]
+// Returns [] for unknown server names (does not throw)
+```
+
+#### `kernel.describe_tool_schema`
+
+Level 3 — full `ToolDescriptor` for one specific tool.
+
+```typescript
+kernel.describeToolSchema("geowiz", "analyze_formation")
+// → full ToolDescriptor with inputSchema, capabilities, detailLevels, etc.
+// Returns null for unknown server or tool (does not throw)
+```
+
+**Typical agent flow:** `list_servers` → pick a server → `list_tools` → pick a tool → `describe_tool_schema` → call the tool. Reduces discovery token usage by ~90% vs. fetching all schemas upfront.
+
+### Dependency Graph API
+
+Tools declare prerequisites via `ToolDescriptor.dependsOn[]` and `providesFor[]` at registration time.
+
+```typescript
+registry.getDependencies("decision.analyze")
+// → ["geowiz.analyze", "econobot.analyze"]  — must complete before decision runs
+
+registry.getDependents("geowiz.analyze")
+// → ["decision.analyze", "risk-analysis.assess"]  — tools that consume geowiz output
+
+registry.validateExecutionOrder(["decision.analyze", "geowiz.analyze"])
+// → throws if decision is listed before geowiz (its prerequisite)
+
+registry.getExecutionGraph()
+// → Map<string, string[]>  — full adjacency map for all registered tools
+```
+
 ### Session & Context Tools
 
 Sessions provide identity anchoring and context injection. Based on the [Arcade.dev Identity Anchor](https://www.arcade.dev/patterns/identity-anchor) and [Context Injection](https://www.arcade.dev/patterns/context-injection) patterns.
@@ -176,6 +229,21 @@ const info = kernel.getSession(sessionId);
 
 Sessions are isolated — results stored in one session are not visible to others. Context is automatically injected into tool calls when a `sessionId` is provided in `ToolRequest`.
 
+### Resource Reference
+
+Tools that produce large payloads store them as named resources to avoid copying multi-megabyte blobs through tool args.
+
+```typescript
+// Store a large result and get a lightweight handle
+const ref = session.storeResource("geowiz:formation-run-abc", largePayload, "application/json");
+// ref → { resourceId: "geowiz:formation-run-abc", mimeType: "application/json", sizeBytes: 48200 }
+
+// Retrieve later
+const data = session.getResource("geowiz:formation-run-abc");
+```
+
+The executor auto-resolves `ResourceRef` handles in downstream tool args — tool handlers receive the full payload, not the handle.
+
 ### Error Intelligence & Resilience
 
 All tool errors are classified with type, recovery guidance, and alternative tool suggestions. Based on [Arcade.dev Error Classification](https://www.arcade.dev/patterns/error-classification) and [Recovery Guide](https://www.arcade.dev/patterns/recovery-guide) patterns.
@@ -206,7 +274,8 @@ Priority order: auth > user_action > retryable > permanent. Unknown errors defau
       "Check network connectivity and server status.",
       "If geowiz remains unavailable, consider alternative tools."
     ],
-    alternativeTools: ["research.analyze"],  // Fallback suggestions
+    alternativeTools: ["research.analyze"],  // Populated from registry fallback map
+    // If a registered fallback chain exists, executor tries it automatically before surfacing this error
     retryAfterMs: 2000              // Suggested retry delay (retryable only)
   }
 }

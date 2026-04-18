@@ -16,7 +16,15 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Read the acceptance criteria and TDD checklist from the issue body. Verify the issue is open (state: OPEN). Use the issue title as the basis for the PR title and commit message.
 
-2. **Ghost-Close Guard** — Before running pre-commit, verify implementation exists:
+2. **SDLC Guard** — Confirm the branch was cut from the issue, not the other way around:
+
+   ```bash
+   git log --oneline develop..HEAD
+   ```
+
+   If the first commit predates the issue creation date (check `gh issue view <number> --json createdAt`), flag it in the PR description as "branch cut before issue was filed."
+
+3. **Ghost-Close Guard** — Before running pre-commit, verify implementation exists:
 
    - Server issues: `grep -r "callLLM" src/servers/<server>.ts`
    - Kernel issues: `grep -r "<new-export>" src/kernel/<file>.ts`
