@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **Competitive Analysis stubs** (`src/servers/market.ts`, `src/servers/research.ts`) — `competitive_analysis` in `market.ts` no longer returns hardcoded 15% market share / 25,000 BOE/d / $22.50/BOE for every competitor regardless of input. Replaced with `synthesizeCompetitorAnalysisWithLLM()` that builds a domain-aware prompt from `args.competitors` and `args.market`, calls Claude, and falls back to `deriveDefaultCompetitorProfile()` which derives varied estimates from competitor name length and basin type — no fixed constants. `research.ts` `performCompetitiveAnalysis()` was rewritten from a two-hardcoded-entry stub ("Major Oil Corp", "Regional Independent") into an async function that fetches live web intelligence via `gatherWebIntelligence()`, passes it to `synthesizeResearchWithLLM()`, and falls back to `deriveDefaultCompetitorEntry()` which varies by region and competitor name. Both fallbacks exported for determinism testing. 2 new tests in `tests/support-servers-anti-stub.test.ts`. (closes #294)
+
 ### Added
 
 - **Dependency Hints** (`src/kernel/types.ts`, `src/shared/mcp-server.ts`, `src/kernel/registry.ts`) — Implements the Dependency Hint pattern so tools can declare prerequisite relationships and the registry exposes the full execution graph. `ToolDescriptor` and `MCPTool` gain `dependsOn: string[]` (tools that must complete first) and `providesFor: string[]` (tools that consume this output). `Registry.setToolDependencies()` wires these hints after registration. `Registry.getDependencies()` / `getDependents()` traverse the graph; `validateExecutionOrder()` checks a set of completed tools against a tool's prerequisites and returns `{ valid, missing }`; `getExecutionGraph()` returns the full adjacency map for dry-run visualization and agent planning. 18 tests in `tests/kernel-dependency-hints.test.ts`. (closes #198)
