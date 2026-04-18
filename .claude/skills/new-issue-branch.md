@@ -36,20 +36,30 @@ Example: `/new-issue-branch 112 server-health-check`
    git checkout develop && git pull origin develop
    ```
 
-5. Create the branch (no `feat/` prefix — use bare `<issue-number>-<slug>`):
+5. Check the branch doesn't already exist locally or remotely:
+
+   ```bash
+   git branch --list <issue-number>-<short-slug>
+   git branch -r --list "origin/<issue-number>-<short-slug>"
+   ```
+
+   If the branch exists locally: ask the user whether to switch to it, delete and recreate it, or stop. Do not silently overwrite.
+   If it exists remotely only: pull it (`git checkout --track origin/<branch>`) rather than creating a new one.
+
+6. Create the branch (no `feat/` prefix — use bare `<issue-number>-<slug>`):
 
    ```bash
    git checkout -b <issue-number>-<short-slug>
    ```
 
-6. Confirm the branch is tracking correctly:
+7. Confirm the branch is tracking correctly:
 
    ```bash
    git status
    git branch --show-current
    ```
 
-7. **Remind the user of the TDD order** before they write any code:
+8. **Remind the user of the TDD order** before they write any code:
 
    > Branch ready. TDD order: write the failing test first → implement → run `/pre-commit` → `/finish-issue <issue-number>`.
 
