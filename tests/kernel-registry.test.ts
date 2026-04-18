@@ -199,6 +199,48 @@ kernel.initialize(client.serverConfigs);
 assert(kernel.registry.serverCount === 14, "Double init still has 14 servers (idempotent)");
 
 // ==========================================
+// Test: Fallback chain — Issue #149
+// ==========================================
+
+console.log("\n🔁 Testing fallback chain registration (Issue #149)...");
+{
+	const { Registry } = await import("../src/kernel/registry.js");
+	const reg = new Registry();
+
+	// getFallbacks returns empty array when nothing registered
+	const none = reg.getFallbacks("geowiz.analyze");
+	assert(Array.isArray(none), "getFallbacks returns an array");
+	assert(none.length === 0, "getFallbacks returns [] for unregistered tool");
+
+	// Single-string registration
+	reg.registerFallback("geowiz.analyze", "risk-analysis.analyze");
+	const single = reg.getFallbacks("geowiz.analyze");
+	assert(single.length === 1, `Single fallback: chain length 1 (got ${single.length})`);
+	assert(single[0] === "risk-analysis.analyze", "Single fallback: correct tool name");
+
+	// getFallback compat alias returns first in chain
+	const compat = reg.getFallback("geowiz.analyze");
+	assert(compat === "risk-analysis.analyze", "getFallback() compat alias returns first entry");
+
+	// Array registration — ordered hierarchy
+	reg.registerFallback("econobot.analyze", ["decision.analyze", "research.analyze"]);
+	const chain = reg.getFallbacks("econobot.analyze");
+	assert(chain.length === 2, `Ordered chain: length 2 (got ${chain.length})`);
+	assert(chain[0] === "decision.analyze", "Chain order preserved: first is decision");
+	assert(chain[1] === "research.analyze", "Chain order preserved: second is research");
+
+	// getFallback compat alias returns first in multi-chain
+	const compatChain = reg.getFallback("econobot.analyze");
+	assert(compatChain === "decision.analyze", "getFallback() compat alias returns first of multi-chain");
+
+	// Overwrite replaces mapping
+	reg.registerFallback("econobot.analyze", "market.analyze");
+	const overwritten = reg.getFallbacks("econobot.analyze");
+	assert(overwritten.length === 1, "Overwrite replaces previous mapping");
+	assert(overwritten[0] === "market.analyze", "Overwrite: new fallback is correct");
+}
+
+// ==========================================
 // Summary
 // ==========================================
 

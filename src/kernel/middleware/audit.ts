@@ -76,6 +76,30 @@ export class AuditMiddleware {
 	}
 
 	/**
+	 * Log a fallback routing event.
+	 * Called when the executor routes to an alternative tool after primary failure.
+	 * Records which primary tool failed, which fallback ran, and why.
+	 */
+	logFallback(
+		primaryTool: string,
+		fallbackTool: string,
+		reason: string,
+		userId: string,
+		sessionId: string,
+		role: string,
+	): void {
+		this.writeEntry({
+			tool: primaryTool,
+			action: "fallback_used",
+			parameters: { primaryTool, fallbackTool, reason },
+			userId,
+			sessionId,
+			role,
+			timestamp: new Date().toISOString(),
+		});
+	}
+
+	/**
 	 * Redact sensitive values from a parameters object.
 	 * Any key matching /key|token|secret|password|credential|auth|bearer|api.?key/i is replaced.
 	 */

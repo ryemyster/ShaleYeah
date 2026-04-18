@@ -19,7 +19,16 @@ import { randomUUID } from "node:crypto";
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { CanonicalSection, WellAnalysisContext } from "./canonical-model.js";
-import type { InjectedContext, Permission, SessionInfo, ToolResponse, UserIdentity, UserPreferences } from "./types.js";
+import type {
+	InjectedContext,
+	Permission,
+	ResourceRef,
+	SessionInfo,
+	StoredResource,
+	ToolResponse,
+	UserIdentity,
+	UserPreferences,
+} from "./types.js";
 
 // ==========================================
 // Default Identity
@@ -182,6 +191,15 @@ export class Session {
 	 */
 	private canonicalSections: Partial<WellAnalysisContext> = {};
 
+	/**
+	 * Named resource store for this session (Issue #204 — Resource Reference pattern).
+	 *
+	 * Large payloads (formation logs, cash-flow tables) are stored here once
+	 * and referenced by a short resourceId. Downstream tools pass the ID instead
+	 * of copying the full blob, saving tokens and memory across tool chains.
+	 */
+	private resources: Map<string, StoredResource> = new Map();
+
 	constructor(identity: UserIdentity, preferences?: UserPreferences, _serialized?: SerializedSession) {
 		if (_serialized) {
 			this.id = _serialized.id;
@@ -218,6 +236,62 @@ export class Session {
 	 */
 	getCanonicalContext(): Partial<WellAnalysisContext> | undefined {
 		return Object.keys(this.canonicalSections).length > 0 ? this.canonicalSections : undefined;
+	}
+
+	// ==========================================
+	// Resource Reference store (Issue #204)
+	// ==========================================
+
+	/**
+	 * Store a data blob under a stable resourceId and return a lightweight ResourceRef ticket.
+	 *
+	 * The caller owns the ID format — convention is "<server>:<data-type>:<run-id>".
+	 * Storing under an existing ID overwrites the previous blob (last writer wins).
+	 *
+	 * @param resourceId  Stable identifier, e.g. "geowiz:formation-data:run-abc123"
+	 * @param data        Any JSON-serializable payload
+	 * @param mimeType    MIME type of the payload, usually "application/json"
+	 * @returns           A ResourceRef ticket that downstream tools can pass instead of the full payload
+	 */
+	storeResource(resourceId: string, data: unknown, mimeType: string): ResourceRef {
+		const sizeBytes = Buffer.byteLength(JSON.stringify(data), "utf-8");
+		this.resources.set(resourceId, { data, mimeType, storedAt: new Date().toISOString() });
+		this.touch();
+		return { resourceId, mimeType, sizeBytes };
+	}
+
+	/**
+	 * Retrieve a stored resource payload by its resourceId.
+	 * Returns undefined if no resource has been stored under this ID.
+	 */
+	getResource(resourceId: string): unknown {
+		return this.resources.get(resourceId)?.data;
+	}
+
+	/**
+	 * List the resourceIds of all blobs currently stored in this session.
+	 */
+	get availableResourceIds(): string[] {
+		return Array.from(this.resources.keys());
+	}
+
+	/**
+	 * Number of resource blobs currently stored in this session.
+	 */
+	get resourceCount(): number {
+		return this.resources.size;
+	}
+
+	/**
+	 * Export resources as a plain object for serialization (session persistence).
+	 * Keys are resourceIds; values are the full StoredResource entries.
+	 */
+	exportResources(): Record<string, StoredResource> {
+		const out: Record<string, StoredResource> = {};
+		for (const [k, v] of this.resources) {
+			out[k] = v;
+		}
+		return out;
 	}
 
 	/**
@@ -401,6 +475,17 @@ export class SessionManager {
 	 */
 	getCanonical(sessionId: string): Partial<WellAnalysisContext> | undefined {
 		return this.sessions.get(sessionId)?.getCanonicalContext();
+	}
+
+	/**
+	 * Resolve a resource reference to its stored payload.
+	 *
+	 * Returns undefined if the session doesn't exist or the resourceId was never stored.
+	 * Callers should treat undefined as "data not available" rather than an error,
+	 * because sessions can be destroyed between tool calls in long-running pipelines.
+	 */
+	resolveResource(sessionId: string, resourceId: string): unknown {
+		return this.sessions.get(sessionId)?.getResource(resourceId);
 	}
 
 	/**

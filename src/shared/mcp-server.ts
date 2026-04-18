@@ -31,6 +31,17 @@ export interface MCPTool {
 	type?: "query" | "command" | "discovery";
 	/** Supported response detail levels */
 	detailLevel?: "summary" | "standard" | "full";
+	/**
+	 * Fully-qualified tool names that must complete before this tool can run.
+	 * Format: "serverName.toolName" (e.g. "geowiz.analyze").
+	 * Omit or leave empty for tools with no prerequisites.
+	 */
+	dependsOn?: string[];
+	/**
+	 * Fully-qualified tool names that can consume this tool's output.
+	 * Inverse of dependsOn — for documentation and graph traversal.
+	 */
+	providesFor?: string[];
 }
 
 export interface MCPResource {

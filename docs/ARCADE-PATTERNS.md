@@ -2,9 +2,9 @@
 
 This document maps every [Arcade.dev agentic tool pattern](https://www.arcade.dev/patterns) to its implementation status in SHALE YEAH. It is the authoritative reference for pattern coverage and serves as the engineering roadmap for closing gaps.
 
-**Last audited:** 2026-04-09
+**Last audited:** 2026-04-14
 **Total patterns:** 52 across 10 categories
-**Implemented:** 31 (60%) | **Partial:** 7 (13%) | **Missing:** 14 (27%)
+**Implemented:** 34 (65%) | **Partial:** 4 (8%) | **Missing:** 14 (27%)
 
 ---
 
@@ -55,7 +55,7 @@ How agents find and understand available tools.
 |---------|--------|---------------|-------|
 | **Tool Registry** | ✅ | `src/kernel/registry.ts` — complete registry with 14 servers, capability indexing, type classification, fuzzy capability matching | — |
 | **Schema Explorer** | ❌ | `describe_tools()` returns all schemas at once. No layered drill-down (server list → tool list → full schema). | [#210](https://github.com/ryemyster/ShaleYeah/issues/210) |
-| **Dependency Hint** | 🔶 | Dependencies enforced in bundles via `dependsOn` in `src/kernel/executor.ts`. Not surfaced in tool descriptions — agents cannot discover "call X before Y" dynamically. | [#198](https://github.com/ryemyster/ShaleYeah/issues/198) |
+| **Dependency Hint** | ✅ | `src/kernel/types.ts` — `ToolDescriptor.dependsOn[]` + `providesFor[]`. `src/kernel/registry.ts` — `setToolDependencies()`, `getDependencies()`, `getDependents()`, `validateExecutionOrder()`, `getExecutionGraph()`. 18 tests in `tests/kernel-dependency-hints.test.ts`. (closes #198) | — |
 | **Capability Matching** | ✅ | `src/kernel/registry.ts` — `findByCapability()` does case-insensitive substring matching on capability strings | — |
 | **Health Check** | ✅ | `src/kernel/health-monitor.ts` — `HealthMonitor` class does proactive per-server pinging on a configurable interval. `kernel.startHealthMonitor(probeFn)` wires in a real probe; `kernel.getServerHealth(name)` returns current status. Unhealthy servers are excluded from scatter-gather. | — |
 
@@ -113,7 +113,7 @@ How tools understand the environment they're running in.
 | Pattern | Status | Implementation | Issue |
 |---------|--------|---------------|-------|
 | **Identity Anchor** | ✅ | `src/kernel/context.ts` — `DEMO_IDENTITY` fallback + `UserIdentity` attached to every session. Identity flows through to audit log and persona responses. | — |
-| **Resource Reference** | 🔶 | `src/kernel/context.ts` — `storeResult()` / `getResult()` stores tool outputs by string key in session. No URI-based resource addressing or cross-session references. | [#204](https://github.com/ryemyster/ShaleYeah/issues/204) |
+| **Resource Reference** | ✅ | `src/kernel/types.ts` — `ResourceRef` type (resourceId + mimeType + sizeBytes). `Session.storeResource()` stores a payload and returns a ticket; `Session.getResource()` retrieves by ID. `SessionManager.resolveResource()` resolves by session + ID. `Executor.resolveResourceRefs()` auto-swaps any ResourceRef values in tool args for the stored payload before dispatch — transparent to tool authors. 14 tests in `tests/kernel-resource-reference.test.ts`. (closes #204) | — |
 | **Context Injection** | ✅ | `src/kernel/context.ts` — `getInjectedContext()` auto-populates: `userId`, `role`, `timezone`, `availableResults`, `sessionMetadata` for every tool call | — |
 | **Context Boundary** | ✅ | `src/kernel/context.ts` — `SessionManager` enforces per-session isolation. Sessions cannot read each other's results. | — |
 
@@ -130,7 +130,7 @@ How tools handle failure.
 | **Confirmation Request** | ✅ | `src/kernel/executor.ts` — `executeWithConfirmation()` — command-type tools (decision, reporter) require explicit `confirmAction(actionId)` before executing | — |
 | **Fuzzy Match Threshold** | ❌ | Capability matching is exact substring — no confidence score, no configurable threshold for auto-accept vs. require-confirmation. | [#118](https://github.com/ryemyster/ShaleYeah/issues/118) |
 | **Graceful Degradation** | ✅ | `src/kernel/executor.ts` — failures in scatter-gather don't abort the phase. `DegradedResponse` returned with `completeness` score when under threshold. | — |
-| **Fallback Tool** | 🔶 | `src/kernel/middleware/resilience.ts` — `ALTERNATIVE_TOOLS` hardcoded map (e.g., `geowiz → research`). Not exposed dynamically in error responses or discoverable by agents. | [#149](https://github.com/ryemyster/ShaleYeah/issues/149) |
+| **Fallback Tool** | ✅ | `src/kernel/registry.ts` + `src/kernel/executor.ts` — `registerFallback(primary, fallback)` wires opt-in fallback routing. When all retries fail, executor routes to the fallback and stamps result metadata with `usedFallback: true`, `originalTool`, `fallbackTool`. Every invocation appended to `getFallbackUsage()` for audit. (closes #149) | — |
 
 ---
 
@@ -155,7 +155,7 @@ How the system is structured as a whole.
 |---------|--------|---------------|-------|
 | **Tool Gateway** | 🔶 | `src/kernel/index.ts` — `Kernel` class is the single entry point and routes all calls through the middleware pipeline. Not formalized as a composable `ToolGateway` class with pluggable policies. | [#206](https://github.com/ryemyster/ShaleYeah/issues/206) |
 | **Tool Adapter** | ❌ | No adapter layer for wrapping external APIs, LangChain tools, or non-MCP servers into the kernel's interface. | [#207](https://github.com/ryemyster/ShaleYeah/issues/207) |
-| **Canonical Tool Model** | 🔶 | `src/kernel/types.ts` — `ToolDescriptor` standardizes tool metadata. Each server defines its own payload format — no shared domain model for the data flowing between servers. | [#208](https://github.com/ryemyster/ShaleYeah/issues/208) |
+| **Canonical Tool Model** | ✅ | `src/kernel/canonical-model.ts` — Zod schemas for 5 sections (`FormationSchema`, `EconomicsSchema`, `ProductionSchema`, `RiskProfileSchema`, `DecisionSchema`) compose into `WellAnalysisContextSchema`. `SessionManager.mergeCanonical()` / `getCanonical()` accumulate sections across tool calls. `risk-analysis` validates upstream inputs against canonical schemas; `decision` reads from session context instead of silent `?.field \|\| 0` chains. (closes #208) | — |
 | **Tool Versioning** | ❌ | No version tracking on tools. No side-by-side v1/v2 coexistence. Upgrades require redeployment. | [#126](https://github.com/ryemyster/ShaleYeah/issues/126) |
 
 ---
@@ -166,15 +166,15 @@ How the system is structured as a whole.
 |----------|-------------|---------|---------|--------|
 | Tool | 4 | 0 | 0 | 100% |
 | Tool Interface | 2 | 3 | 2 | 50% |
-| Tool Discovery | 3 | 1 | 1 | 70% |
+| Tool Discovery | 4 | 0 | 1 | 80% |
 | Tool Composition | 3 | 1 | 2 | 58% |
 | Tool Execution | 3 | 0 | 3 | 50% |
 | Tool Output | 3 | 1 | 2 | 58% |
-| Tool Context | 3 | 1 | 0 | 88% |
-| Tool Resilience | 4 | 1 | 1 | 83% |
+| Tool Context | 4 | 0 | 0 | 100% |
+| Tool Resilience | 5 | 0 | 1 | 83% |
 | Tool Security | 2 | 1 | 1 | 63% |
-| Compositional | 0 | 2 | 2 | 25% |
-| **Total** | **30** | **8** (15%) | **14** (27%) | **58%** |
+| Compositional | 1 | 1 | 2 | 38% |
+| **Total** | **34** | **4** (8%) | **14** (27%) | **65%** |
 
 ---
 
@@ -190,8 +190,7 @@ Ordered by impact on real production workflows:
 ### High Value (developer experience)
 5. **Schema Explorer** (#210) — layered discovery reduces token waste
 6. **Natural Identifier** (#194) — human-readable tool references
-7. **Dependency Hint** (#198) — discoverable execution order
-8. **Tool Chain** (#117) — composable sequential pipelines
+7. **Tool Chain** (#117) — composable sequential pipelines
 
 ### Scale & Integration
 9. **Async Job** (#122) — non-blocking long-running analyses

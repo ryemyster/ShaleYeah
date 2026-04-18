@@ -61,6 +61,20 @@ export interface ToolDescriptor {
 	detailLevels: DetailLevel[];
 	/** Default parameter values when not specified */
 	smartDefaults: Record<string, unknown>;
+	/**
+	 * Fully-qualified tool names that must complete before this tool can run.
+	 * Declares the tool's prerequisites — consumed by the registry's dependency
+	 * graph and by the executor's pre-dispatch validation.
+	 * Format: "serverName.toolName" (e.g. "geowiz.analyze").
+	 * Defaults to [] when not declared.
+	 */
+	dependsOn: string[];
+	/**
+	 * Fully-qualified tool names that can consume this tool's output.
+	 * Inverse of dependsOn — useful for graph traversal and "what runs after me?" queries.
+	 * Defaults to [] when not declared.
+	 */
+	providesFor: string[];
 }
 
 /** Minimal server info returned by discovery tools */
@@ -197,6 +211,44 @@ export interface ErrorDetail {
 export type ToolResponse = AgentOSResponse;
 
 // ==========================================
+// Resource Reference (Arcade: Resource Reference pattern — Issue #204)
+// ==========================================
+
+/**
+ * A handle to a named data blob stored in the session resource store.
+ *
+ * Instead of copying large payloads (formation logs, cash-flow tables) through
+ * every tool call, a server stores the blob once and returns this lightweight
+ * ticket. Downstream tools pass the ticket; the kernel swaps it back for the
+ * full payload before invoking the handler — transparent to the tool author.
+ *
+ * Format convention for resourceId: "<server>:<data-type>:<run-id>"
+ *   e.g. "geowiz:formation-data:run-abc123"
+ *        "econobot:cashflow:run-456"
+ */
+export interface ResourceRef {
+	/** Stable identifier for this resource within the session */
+	resourceId: string;
+	/** MIME type of the stored payload (usually "application/json") */
+	mimeType: string;
+	/** Size of the JSON-serialized payload in bytes (set by the store) */
+	sizeBytes?: number;
+}
+
+/**
+ * One entry in the session's resource store.
+ * Holds the raw payload alongside the metadata needed to reconstruct a ResourceRef.
+ */
+export interface StoredResource {
+	/** The actual data blob (any JSON-serializable value) */
+	data: unknown;
+	/** MIME type echoed from the original storeResource() call */
+	mimeType: string;
+	/** ISO timestamp of when this resource was stored */
+	storedAt: string;
+}
+
+// ==========================================
 // Circuit Breaker (Arcade: Circuit Breaker pattern)
 // ==========================================
 
@@ -295,8 +347,8 @@ export interface AuthResult {
 export interface AuditEntry {
 	/** Tool name that was called */
 	tool: string;
-	/** What happened: request, response, error, or denied */
-	action: "request" | "response" | "error" | "denied";
+	/** What happened: request, response, error, denied, or fallback_used */
+	action: "request" | "response" | "error" | "denied" | "fallback_used";
 	/** Tool parameters (sensitive values redacted) */
 	parameters: Record<string, unknown>;
 
