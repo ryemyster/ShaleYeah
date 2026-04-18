@@ -24,34 +24,7 @@ Examples:
 ShaleYeah is a **14-server MCP-based agent OS for oil & gas investment analysis**. Every research
 output should be grounded in this context:
 
-**The 14 servers and their domains:**
-
-| Server | Domain | Key Data Needs |
-|---|---|---|
-| `geowiz` | Geological formation analysis, LAS parsing | LAS/DLIS files, formation tops, USGS, OSDU |
-| `econobot` | NPV/IRR, DCF, production forecasting | EIA production data, decline curves, commodity prices |
-| `curve-smith` | Petrophysics, well engineering | LAS curves, petrophysical models, WITSML |
-| `decision` | Investment decision synthesis | All upstream results, market context, risk scores |
-| `reporter` | Executive report generation | Structured JSON from all servers → Markdown/PDF |
-| `risk-analysis` | Geological + financial risk scoring | USGS geochemistry, Monte Carlo, EIA price history |
-| `research` | Market intelligence, web research | EIA API, state OCC portals, commodity feeds |
-| `legal` | Regulatory compliance, permitting | BLM, state OCC/OCD, FERC, FracFocus, TX RRC |
-| `market` | Commodity prices, market data | EIA, Oil Price API, NYMEX futures, CME Group |
-| `title` | Land ownership, title chains | BLM lease dataset, state land offices, PPDM |
-| `drilling` | Drilling engineering, costs, AFEs | WITSML, Volve dataset, SPE/IADC benchmarks |
-| `infrastructure` | Pipeline, facilities, takeaway | FERC, BLM ROW, state GIS portals |
-| `development` | Field development planning | OSDU, OPM Flow, EIA forecasts, PPDM |
-| `test` | QA/validation | Volve dataset, USGS public logs, EIA production data |
-
-**Key industry standards to know:**
-- **LAS / DLIS** — well log file formats (ASCII vs. binary)
-- **WITSML** — real-time wellsite data (XML/SOAP, Energistics)
-- **OSDU** — Open Subsurface Data Universe (emerging JSON/REST standard)
-- **PPDM** — Professional Petroleum Data Management (relational model, 1,238 tables)
-- **ARIES** — common A&D economics database (XML/CSV export, widely used)
-- **Volve** — Equinor's 5TB open field dataset (gold-standard free test data)
-- **EIA** — U.S. Energy Information Administration (authoritative free API)
-- **FracFocus** — hydraulic fracturing chemical disclosure registry (240K+ completions)
+See [`docs/SERVERS.md`](../../docs/SERVERS.md) for the full server and tool reference — domains, personas, LLM status, key data needs, and industry standards (LAS/DLIS, WITSML, OSDU, PPDM, ARIES, Volve, EIA, FracFocus).
 
 **Architectural constraints:**
 - All LLM calls go through `src/shared/llm-client.ts` (no direct SDK calls in servers)
