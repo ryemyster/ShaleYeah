@@ -57,8 +57,8 @@ output should be grounded in this context:
 - All LLM calls go through `src/shared/llm-client.ts` (no direct SDK calls in servers)
 - Integrations must be config-driven (`integrations.config.json`) and pluggable
 - CI has no API key — integrations must have free-tier or mock support
-- No `Math.random()` in business logic — deterministic fallbacks required
 - TypeScript strict mode — every integration needs a typed adapter interface
+- Code quality rules (no `Math.random()`, no `z.any()`, no silent defaults, etc.) are defined in `CLAUDE.md ## Standards`
 
 ---
 

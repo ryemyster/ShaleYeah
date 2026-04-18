@@ -8,24 +8,19 @@ Run the following in sequence from the repo root. Stop and report any failure im
 
 ### 1. Anti-pattern scan (fast — runs before the slow compile steps)
 
+Rules and exceptions are defined in `CLAUDE.md ## Standards`. These greps enforce them:
+
 ```bash
-# Detect direct Anthropic SDK imports in server files.
-# All LLM calls must route through src/shared/llm-client.ts — direct imports bypass the shared client.
+# Rule: no direct Anthropic SDK imports in server files (see CLAUDE.md ## Standards)
 grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" src/servers/ 2>/dev/null && echo "FAIL: direct SDK import in src/servers/" && exit 1 || true
 
-# Detect Math.random() in business logic.
-# Servers and kernel must be deterministic — Math.random() produces unreproducible results.
-# Exception: distribution samplers in risk-analysis.ts Monte Carlo (sampleUniform, sampleTriangular, sampleNormal)
-# are intentional — they are clearly named and tested. All other uses are violations.
+# Rule: no Math.random() in business logic — exception: named Monte Carlo samplers in risk-analysis.ts (see CLAUDE.md ## Standards)
 grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample" && echo "FAIL: Math.random() in business logic" && exit 1 || true
 
-# Detect z.any() in Zod schemas.
-# z.any() masks type errors and defeats strict-mode guarantees — use explicit canonical schema types.
-# Exception: src/shared/mcp-server.ts and src/shared/server-factory.ts use it for Zod runtime interop.
+# Rule: no z.any() in Zod schemas — exception: mcp-server.ts and server-factory.ts (see CLAUDE.md ## Standards)
 grep -rn "z\.any()" src/servers/ src/kernel/ 2>/dev/null && echo "FAIL: z.any() in server or kernel — use explicit Zod types" && exit 1 || true
 
-# Detect silent numeric defaults — ?.field || 0 hides missing upstream data and produces wrong NPV/IRR silently.
-# Replace with canonical context reads (session.getCanonical()) or explicit undefined checks.
+# Warning: ?.field || 0 silent defaults hide missing upstream data (see CLAUDE.md ## Standards)
 grep -rn "\?\.\w\+[[:space:]]*||[[:space:]]*0\b" src/servers/ src/kernel/ 2>/dev/null | grep -v "node_modules\|\.test\." && echo "WARN: silent ?.field || 0 default found — verify intentional" || true
 ```
 
