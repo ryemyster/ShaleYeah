@@ -16,8 +16,8 @@ import { deriveDefaultDevelopmentOutlook } from "../src/servers/development.js";
 import { deriveDefaultDrillingInterpretation } from "../src/servers/drilling.js";
 import { deriveDefaultInfrastructureInterpretation } from "../src/servers/infrastructure.js";
 import { deriveDefaultRegulatoryRisk } from "../src/servers/legal.js";
-import { deriveDefaultMarketInterpretation } from "../src/servers/market.js";
-import { deriveDefaultResearchSummary } from "../src/servers/research.js";
+import { deriveDefaultCompetitorProfile, deriveDefaultMarketInterpretation } from "../src/servers/market.js";
+import { deriveDefaultCompetitorEntry, deriveDefaultResearchSummary } from "../src/servers/research.js";
 import { deriveDefaultQAResult } from "../src/servers/test.js";
 import { deriveDefaultTitleFindings } from "../src/servers/title.js";
 import { callLLM } from "../src/shared/llm-client.js";
@@ -205,6 +205,58 @@ await test("research: different topics and source counts produce different summa
 	// Topics must appear in summaries
 	assert.ok(drillingMulti.includes("Permian Basin drilling activity"), "Summary must include topic");
 	assert.ok(gasZeroSources.includes("Henry Hub gas prices"), "Summary must include topic");
+});
+
+await test("market: competitor profile varies by name and market — no hardcoded constants", () => {
+	const pioneer = deriveDefaultCompetitorProfile("Pioneer Natural Resources", "Permian Basin");
+	const smallCo = deriveDefaultCompetitorProfile("A", "Gulf Coast");
+
+	// Longer name → higher scale → higher production and market share
+	assert.ok(
+		pioneer.production > smallCo.production,
+		`Longer-named company should have higher production: ${pioneer.production} vs ${smallCo.production}`,
+	);
+	assert.ok(
+		pioneer.marketShare > smallCo.marketShare,
+		`Longer-named company should have higher market share: ${pioneer.marketShare} vs ${smallCo.marketShare}`,
+	);
+	// Permian market should produce Permian-specific strategy (different from Gulf Coast)
+	assert.notStrictEqual(pioneer.strategy, smallCo.strategy, "Different markets should produce different strategy");
+	// Each profile is unique — not the old hardcoded 15% / 25000 / $22.50
+	assert.notStrictEqual(pioneer.marketShare, 15.0, "Market share must not be the old hardcoded 15.0");
+	assert.notStrictEqual(pioneer.production, 25000, "Production must not be the old hardcoded 25000");
+	assert.notStrictEqual(pioneer.avgCosts, 22.5, "avgCosts must not be the old hardcoded 22.50");
+});
+
+await test("research: competitive analysis fallback varies by region and competitor list", () => {
+	const permianEntry = deriveDefaultCompetitorEntry("Pioneer Natural Resources", "Permian Basin", 0);
+	const appalachiaEntry = deriveDefaultCompetitorEntry("EQT Corporation", "Appalachia", 1);
+
+	// Region must appear in activities
+	assert.ok(
+		String(permianEntry.activities).includes("Permian") || String(permianEntry.activities).includes("permian"),
+		`Permian entry activities must mention Permian, got: ${JSON.stringify(permianEntry.activities)}`,
+	);
+	assert.ok(
+		String(appalachiaEntry.activities).includes("Appalachia") ||
+			String(appalachiaEntry.activities).includes("appalachia"),
+		`Appalachia entry activities must mention Appalachia, got: ${JSON.stringify(appalachiaEntry.activities)}`,
+	);
+	// Threat levels differ between even/odd index
+	assert.strictEqual(permianEntry.threatLevel, "HIGH", `index 0 should be HIGH, got: ${permianEntry.threatLevel}`);
+	assert.strictEqual(
+		appalachiaEntry.threatLevel,
+		"MEDIUM",
+		`index 1 should be MEDIUM, got: ${appalachiaEntry.threatLevel}`,
+	);
+	// Neither entry should be "Major Oil Corp" or "Regional Independent" (old hardcoded names)
+	assert.notStrictEqual(permianEntry.competitor, "Major Oil Corp", "Must not return hardcoded competitor name");
+	assert.notStrictEqual(
+		appalachiaEntry.competitor,
+		"Regional Independent",
+		"Must not return hardcoded competitor name",
+	);
+	assert.strictEqual(permianEntry.dataSource, "llm-fallback", "dataSource must be llm-fallback");
 });
 
 await test("test server: tight accuracy threshold produces WARNING vs standard produces PASS", () => {
