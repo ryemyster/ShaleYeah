@@ -35,21 +35,19 @@ These are scope creep candidates — they need explicit justification or should 
 
 Run each grep. A result here is a violation — report it and stop the review as failed.
 
+Rules and exceptions are defined in `CLAUDE.md ## Standards`. These greps enforce them:
+
 ```bash
-# Direct Anthropic SDK imports in server files (must route through llm-client.ts)
+# Rule: no direct Anthropic SDK imports in server files (see CLAUDE.md ## Standards)
 grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" src/servers/ 2>/dev/null
 
-# Math.random() in business logic (must be deterministic — no random in servers or kernel)
-# Exception: sampleUniform/sampleTriangular/sampleNormal in risk-analysis.ts are approved Monte Carlo samplers.
+# Rule: no Math.random() in business logic — exception: named Monte Carlo samplers in risk-analysis.ts (see CLAUDE.md ## Standards)
 grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample"
 
-# z.any() in Zod schemas (masks type errors — use canonical schema sections instead)
-# Note: pre-existing z.any() in risk-analysis.ts was the target of #208 and is now removed.
-# New z.any() in any server file is a violation.
+# Rule: no z.any() in Zod schemas — exception: mcp-server.ts and server-factory.ts (see CLAUDE.md ## Standards)
 grep -rn "z\.any()" src/servers/ 2>/dev/null
 
-# Silent numeric defaults — ?.field || 0 pattern hides missing upstream data
-# These should be replaced with canonical context reads or explicit undefined checks.
+# Warning: ?.field || 0 silent defaults hide missing upstream data (see CLAUDE.md ## Standards)
 grep -rn "?\..*|| 0\|?\..*|| \"\"\|?\..*|| \[\]" src/servers/ src/kernel/ 2>/dev/null | grep -v "test" | grep -v "node_modules"
 ```
 
