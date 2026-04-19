@@ -26,12 +26,7 @@ output should be grounded in this context:
 
 See [`docs/SERVERS.md`](../../docs/SERVERS.md) for the full server and tool reference — domains, personas, LLM status, key data needs, and industry standards (LAS/DLIS, WITSML, OSDU, PPDM, ARIES, Volve, EIA, FracFocus).
 
-**Architectural constraints:**
-- All LLM calls go through `src/shared/llm-client.ts` (no direct SDK calls in servers)
-- Integrations must be config-driven (`integrations.config.json`) and pluggable
-- CI has no API key — integrations must have free-tier or mock support
-- TypeScript strict mode — every integration needs a typed adapter interface
-- Code quality rules (no `Math.random()`, no `z.any()`, no silent defaults, etc.) are defined in `CLAUDE.md ## Standards`
+**Architectural constraints:** All LLM calls via `src/shared/llm-client.ts`. Integrations config-driven (`integrations.config.json`), CI-safe (mock or free-tier), TypeScript strict. Code quality rules in `CLAUDE.md ## Standards`.
 
 ---
 
