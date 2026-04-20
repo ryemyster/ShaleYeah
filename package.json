@@ -43,7 +43,7 @@
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.88.0",
 		"@modelcontextprotocol/sdk": "^1.29.0",
-		"@turf/turf": "^7.3.4",
+		"@turf/turf": "^7.3.5",
 		"dotenv": "^17.4.2",
 		"exceljs": "^4.4.0",
 		"glob": "^13.0.3",
