@@ -51,7 +51,7 @@
 		"proj4": "^2.20.8",
 		"shapefile": "^0.6.6",
 		"xml2js": "^0.6.2",
-		"yaml": "^2.8.3",
+		"yaml": "^2.8.4",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
