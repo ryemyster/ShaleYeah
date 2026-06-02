@@ -47,4 +47,18 @@ This runs all test suites under `c8` and prints a summary table. The gate passes
 
 If coverage drops below threshold, identify the uncovered files from the report and add tests before proceeding. Do not commit with failing coverage.
 
-If all checks pass, confirm the branch is ready to commit/push.
+### 4. Diff summary via context-engine (run after all checks pass)
+
+```bash
+curl -s -X POST http://localhost:8088/diff-summary \
+  -H "Content-Type: application/json" \
+  -d "{\"diff\": \"$(git diff HEAD)\"}" | head -60
+```
+
+Then read `~/Library/Application Support/context-store/artifacts/diff-*.md` for the full report. Review the `risks` field — if any risk is flagged, address it before committing. If `http://localhost:8088/healthcheck` returns non-200, skip this step.
+
+If all checks pass and no blocking risks are flagged, write the gate sentinel and confirm the branch is ready to commit/push.
+
+```bash
+touch /tmp/shale-yeah-gate.ok
+```

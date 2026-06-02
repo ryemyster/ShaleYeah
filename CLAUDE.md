@@ -19,16 +19,7 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 
 ## SDLC
 
-**Branch flow:** `main` ← `develop` ← `<issue-number>-<slug>` (always branch off develop, PR targets develop)
-
-**PR rule — hard constraint:** ALL pull requests MUST target `develop`. NEVER open a PR to `main`. Always pass `--base develop` explicitly to `gh pr create` — omitting it risks defaulting to `main`.
-
-**Per-issue workflow:**
-1. `/new-issue-branch <n> <slug>` — cut branch off develop
-2. Write failing test first (TDD)
-3. Implement — no `Math.random()`, no mock bypasses, no silent fallbacks
-4. `/pre-commit` — must pass before committing
-5. `/finish-issue <n>` — CHANGELOG → commit → PR → compact
+Branch from `develop`, PR targets `develop` — always `--base develop`. See `.claude/rules/sdlc.md` for full workflow.
 
 **Skills:** `/create-issue` `/new-issue-branch` `/pre-commit` `/finish-issue` `/compact` `/test-kernel`
 
@@ -37,7 +28,6 @@ Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel
 - TypeScript strict mode — no `any`, explicit interfaces, Zod at all boundaries. Exception: `src/shared/mcp-server.ts` and `src/shared/server-factory.ts` use `any` for Zod runtime interop; all other files are `any`-free. No `z.any()` in Zod schemas — use explicit types.
 - No `Math.random()` in business logic — deterministic constants or real computation only. Exception: `sampleUniform`, `sampleTriangular`, `sampleNormal` in `src/servers/risk-analysis.ts` are intentional Monte Carlo samplers and are explicitly named as such.
 - Tests use simple assert pattern (not jest/vitest) — run via `npx tsx tests/<name>.test.ts`
-- CI requires no API key — mock the Anthropic SDK in tests
 - New servers: inherit `MCPServer`, add Roman persona, use `registerTool()`
 - Code comments explain the "why", not the "what" — write for a reader who has never seen this codebase. Bad: `// set toc based on depth`. Good: `// Deeper rock has had more time to cook organic material, so we estimate higher TOC for deeper wells.`
 
@@ -53,16 +43,10 @@ npm run server:geowiz                 # test individual server (all 14 available
 npm run prod -- --files="*.las"       # production analysis
 ```
 
-**Pre-commit gate (all must pass):** `npm run build && npm run type-check && npm run lint && npm run test && npm run demo`
-
 ## Key Files
 
 | Path | Purpose |
 |------|---------|
-| `src/kernel/` | Registry, executor, context, bundles, middleware |
-| `src/servers/` | 14 MCP domain servers |
-| `src/shared/mcp-server.ts` | Base class for all servers |
-| `src/shared/llm-client.ts` | Shared Anthropic SDK wrapper (source of truth for LLM calls) |
-| `tests/kernel-*.test.ts` | 8 kernel test suites |
+| `src/shared/llm-client.ts` | Shared Anthropic SDK wrapper — source of truth for all LLM calls |
 | `docs/ARCHITECTURE.md` | Living architecture reference |
 | `CHANGELOG.md` | Updated per issue before PR |

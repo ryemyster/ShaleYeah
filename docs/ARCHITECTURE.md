@@ -198,6 +198,12 @@ createSession(identity?, prefs?)  →  Session { id, identity, preferences }
 
 Tools that produce large data blobs (formation logs, cash-flow tables) store them via `session.storeResource(resourceId, data, mimeType)` and return a lightweight `ResourceRef { resourceId, mimeType, sizeBytes }` handle. The executor transparently resolves refs back to full payloads before invoking downstream tools — callers and tool handlers never see the indirection. This avoids copying multi-megabyte results through tool args on multi-phase pipelines.
 
+### Canonical Tool Model
+
+Every tool response may include a `canonicalOutput: Partial<WellAnalysisContext>` field with typed sections (`formation`, `economics`, `production`, `risk`, `decision`). After each successful tool call the executor calls `sessionManager.mergeCanonical()` for each non-undefined section, accumulating a session-wide typed context that downstream tools can query without re-parsing raw results. Servers that have adopted the model: `geowiz` (formation), `econobot` (economics), `risk-analysis` (risk), `decision` (decision). Others leave `canonicalOutput` absent — treated as a no-op.
+
+Schemas live in `src/kernel/canonical-model.ts`. The session accumulator is `SessionManager.mergeCanonical(section, data)` / `getCanonical(section?)` in `src/kernel/context.ts`.
+
 ### Context Boundary (Session Isolation)
 
 Each session is an isolated context boundary. Results stored in one session are never visible to another:
@@ -688,7 +694,7 @@ assert(kernel.registry.toolCount === 14, "Registry has 14 tools");
 
 ### Test Suites
 
-All test files live in `tests/` and are auto-discovered by `scripts/run-tests.sh`. There are 41 suites total — 8 kernel suites, 14 anti-stub server tests, and the rest covering integration, file formats, MCP protocol, and the canonical model.
+All test files live in `tests/` and are auto-discovered by `scripts/run-tests.sh`. There are 48 suites total — 8 kernel suites, 14 anti-stub server tests, 7 server/parser unit test suites, and the rest covering integration, file formats, MCP protocol, and the canonical model.
 
 Key suites:
 
@@ -703,6 +709,19 @@ Key suites:
 | Bundles | `tests/kernel-bundles.test.ts` | Pre-built bundle phases and dependency ordering |
 | Canonical model | `tests/canonical-model.test.ts` | Zod schema validation, session accumulation |
 | Anti-stub (each server) | `tests/*-anti-stub.test.ts` | Proves Claude is actually called, not stubbed |
+| Decision server | `tests/servers-decision.test.ts` | countDomainsPresent, calculateRecommendedBid |
+| Development server | `tests/servers-development.test.ts` | deriveDefaultDevelopmentOutlook all branches |
+| Drilling server | `tests/servers-drilling.test.ts` | deriveDefaultDrillingInterpretation all risk tiers |
+| Reporter server | `tests/servers-reporter.test.ts` | countWordsInSummary, deriveDefaultExecutiveSummary |
+| LAS parser | `tests/parsers-las.test.ts` | Parse valid LAS file, error path on missing file |
+| GIS parser | `tests/parsers-gis.test.ts` | Parse valid GeoJSON, error paths on missing files |
+| Excel parser | `tests/parsers-excel.test.ts` | Parse CSV, error path on missing xlsx |
+
+### Script Safety
+
+`scripts/run-coverage.sh` uses `trap EXIT` to clean up temporary entry files when the process is killed — without the trap, a killed coverage run would leave orphan files in the project root.
+
+`scripts/cleanup-workspace.sh` uses `compgen -G` for glob matching instead of `[ -f "*.log" ]`. The bracket test checks for a file literally named `*.log` (which never exists); `compgen -G` correctly expands the glob.
 
 ### Running Tests
 

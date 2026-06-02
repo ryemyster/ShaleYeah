@@ -244,6 +244,24 @@ const data = session.getResource("geowiz:formation-run-abc");
 
 The executor auto-resolves `ResourceRef` handles in downstream tool args — tool handlers receive the full payload, not the handle.
 
+### Canonical Context
+
+Tools that return typed results populate `canonicalOutput` on their response. The executor accumulates these into a session-wide `WellAnalysisContext` so downstream tools can read prior results without re-parsing raw JSON.
+
+```typescript
+// Inside a tool handler — write canonical output
+return { ...result, canonicalOutput: { formation: FormationSchema.parse({ netPay, porosity }) } };
+
+// Session API — read accumulated context
+session.mergeCanonical("formation", data);   // accumulate one section (last-writer-wins)
+session.getCanonical("formation");            // retrieve one section
+session.getCanonical();                       // retrieve full WellAnalysisContext
+```
+
+Sections: `formation` | `economics` | `production` | `risk` | `decision`
+
+Schemas: `src/kernel/canonical-model.ts` — `FormationSchema`, `EconomicsSchema`, `RiskProfileSchema`, `DecisionSchema`, `WellAnalysisContextSchema`.
+
 ### Error Intelligence & Resilience
 
 All tool errors are classified with type, recovery guidance, and alternative tool suggestions. Based on [Arcade.dev Error Classification](https://www.arcade.dev/patterns/error-classification) and [Recovery Guide](https://www.arcade.dev/patterns/recovery-guide) patterns.

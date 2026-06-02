@@ -26,7 +26,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 - How deep the target zones are
 - A TOC (Total Organic Carbon) estimate — higher TOC means more organic material that cooked into hydrocarbons
 
-**LLM status:** ✅ Calls Claude. The LLM synthesizes the TOC estimate and writes a plain-English recommendation based on the formation data. Falls back to depth-based rules if no API key.
+**LLM status:** ✅ Calls Claude. The LLM synthesizes the TOC estimate and writes a plain-English recommendation based on the formation data. Falls back to `deriveDefaultFormationProperties(formations, depthHint)` if no API key — uses formation-keyword and depth-tier lookup tables (shallow/mid/deep) to estimate TOC, porosity, and permeability so analysis always completes even without a real LAS file or API key.
 
 **Code:** [src/servers/geowiz.ts](../src/servers/geowiz.ts)
 

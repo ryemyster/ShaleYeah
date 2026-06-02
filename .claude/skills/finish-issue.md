@@ -8,7 +8,18 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
 ## Steps
 
-1. **Fetch issue details from GitHub**:
+1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   ```bash
+   TITLE=$(gh issue view <issue-number> --json title -q .title)
+   curl -s -X POST http://localhost:8088/context \
+     -H "Content-Type: application/json" \
+     -d "{\"task\": \"Finish issue: $TITLE\", \"paths\": [\"ryemyster/ShaleYeah/src/kernel\",\"ryemyster/ShaleYeah/src/servers\",\"ryemyster/ShaleYeah/src/shared\",\"ryemyster/ShaleYeah/tests\"], \"focus\": [\"<issue-slug>\"]}"
+   ```
+
+   Read `~/Library/Application Support/context-store/artifacts/context-bundle.md` before proceeding. Note the `suggested_files` and `risks` fields.
+
+2. **Fetch issue details from GitHub**:
 
    ```bash
    gh issue view <issue-number> --json title,body,state,labels
