@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Distributed agent architecture guide** (`docs/DISTRIBUTED_AGENTS.md`) — documents the #377 baseline for moving SHALE YEAH from a kernel-centered runtime toward 14 independently deployable specialist agents. Covers the agent/tool layer split, standalone `AgentRuntime` and `AgentManifest` expectations, BYO LLM/embedding/vector/data provider ownership, private versus shared reviewed memory, Arcade-aligned tool/auth/discovery/observability requirements, local-only/mixed/full-suite deployment diagrams, security checklist, delivery order, and a compliance matrix for issues #363-#376. README and `docs/ARCHITECTURE.md` now link to the guide. (closes #377)
+- **Phased CI/CD gates** (`.github/workflows/*.yml`, `.github/dependabot.yml`, `docs/CI_CD.md`) — simplifies open-source contributor workflows while preserving production-worthy checks. PRs run fast correctness checks and secret detection; pushes to `develop`/`main` add demo, coverage, and CodeQL; scheduled/manual workflows keep security scans available; release packaging is reduced to a single verified artifact job with SHA256 sums. Dependabot updates are grouped to reduce maintenance PR noise.
 
 ### Fixed
 

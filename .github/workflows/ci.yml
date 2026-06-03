@@ -1,16 +1,18 @@
 name: CI
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  ci:
+  pr-checks:
+    name: PR checks
     runs-on: ubuntu-latest
 
     steps:
@@ -25,6 +27,41 @@ jobs:
     - run: npm ci --legacy-peer-deps
     - run: npm run type-check
     - run: npm run lint
-    - run: npm run test
     - run: npm run build
+    - run: npm run test
+
+  integration-smoke:
+    name: Integration smoke
+    runs-on: ubuntu-latest
+    needs: pr-checks
+    if: github.event_name != 'pull_request'
+
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
+      with:
+        node-version: '22.x'
+        cache: 'npm'
+
+    - run: npm ci --legacy-peer-deps
     - run: npm run demo
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    needs: pr-checks
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+
+    - name: Setup Node.js
+      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
+      with:
+        node-version: '22.x'
+        cache: 'npm'
+
+    - run: npm ci --legacy-peer-deps
+    - run: npm run coverage
