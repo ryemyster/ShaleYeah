@@ -56,3 +56,5 @@ tests/temp/
 .secure*
 leaks.json
 gitleaks-report.json
+.claude/
+CLAUDE.md

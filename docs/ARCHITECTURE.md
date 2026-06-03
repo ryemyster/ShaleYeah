@@ -6,6 +6,8 @@ This document explains the technical architecture of SHALE YEAH for developers a
 
 SHALE YEAH is an **Agent OS** for oil and gas investment analysis. At its core is a **kernel** that routes all execution through **14 MCP domain servers**, providing tool discovery, parallel scatter-gather execution, session management, and a middleware pipeline (auth, audit, resilience, output shaping).
 
+The current refactor direction is distributed and agent-first: the monorepo remains the contributor workspace, but each specialist must become independently deployable as a process, container, or remote service. The kernel and future orchestrator coordinate agents after their standalone contracts are stable; they must not be required for a single agent to boot or complete its core role. See [Distributed Agent Architecture](DISTRIBUTED_AGENTS.md) for the standalone contract, Arcade-aligned checklist, security requirements, and 14-agent compliance matrix.
+
 Both modes share the same kernel layer (registry, executor, sessions, middleware), but diverge at server execution:
 
 - **Demo** (`npm run demo`) — `mcp-client.ts` returns fixture data immediately without calling server processes; deterministic, no API keys, ~6s
