@@ -77,6 +77,7 @@ ShaleYeah/
 | Check which agents call the real AI vs. stubs | [docs/DEMO_VS_PRODUCTION.md#llm-integration-status](docs/DEMO_VS_PRODUCTION.md#llm-integration-status) |
 | See all 14 agents and what they each do | [docs/SERVERS.md](docs/SERVERS.md) |
 | Understand how the agents and kernel work together | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
+| Understand the distributed standalone-agent refactor | [docs/DISTRIBUTED_AGENTS.md](docs/DISTRIBUTED_AGENTS.md) |
 | Use the kernel from my own code | [docs/API_REFERENCE.md](docs/API_REFERENCE.md) |
 | Get free live oil and gas prices (EIA API) | [docs/EIA_API_SETUP.md](docs/EIA_API_SETUP.md) |
 | See which Agent OS patterns are implemented | [docs/ARCADE-PATTERNS.md](docs/ARCADE-PATTERNS.md) |

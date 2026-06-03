@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Distributed agent architecture guide** (`docs/DISTRIBUTED_AGENTS.md`) — documents the #377 baseline for moving SHALE YEAH from a kernel-centered runtime toward 14 independently deployable specialist agents. Covers the agent/tool layer split, standalone `AgentRuntime` and `AgentManifest` expectations, BYO LLM/embedding/vector/data provider ownership, private versus shared reviewed memory, Arcade-aligned tool/auth/discovery/observability requirements, local-only/mixed/full-suite deployment diagrams, security checklist, delivery order, and a compliance matrix for issues #363-#376. README and `docs/ARCHITECTURE.md` now link to the guide. (closes #377)
+
 ### Fixed
 
 - **Code smell audit** (issue #307) — Full repo quality pass across kernel, servers, shared layer, scripts, and skills:
