@@ -13,8 +13,8 @@
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@shaleyeah/sdk": "workspace:*",
-		"@shaleyeah/server-geowiz": "workspace:*"
+		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@shaleyeah/sdk": "workspace:*"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.11",
