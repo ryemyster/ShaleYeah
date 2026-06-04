@@ -4,9 +4,11 @@
  */
 
 import fs from "node:fs/promises";
+import http from "node:http";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { z } from "zod";
 import { FileIntegrationManager } from "./file-integration.js";
 
@@ -57,7 +59,9 @@ export interface MCPResource {
  */
 export abstract class MCPServer {
 	protected server: McpServer;
-	protected transport: StdioServerTransport;
+	protected transport: StdioServerTransport | StreamableHTTPServerTransport;
+	private _httpServer?: http.Server;
+	private _port?: number;
 	public config: MCPServerConfig;
 	public dataPath: string;
 	public fileManager: FileIntegrationManager;
@@ -73,8 +77,32 @@ export abstract class MCPServer {
 			version: config.version,
 		});
 
-		this.transport = new StdioServerTransport();
+		const portEnv = process.env.PORT;
+		if (portEnv) {
+			this._port = parseInt(portEnv, 10);
+			const httpTransport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+			this.transport = httpTransport;
+			this._httpServer = http.createServer((req, res) => {
+				httpTransport.handleRequest(req, res).catch((err) => {
+					console.error(`❌ HTTP request error on ${this.config.name}:`, err);
+					res.writeHead(500).end();
+				});
+			});
+		} else {
+			this.transport = new StdioServerTransport();
+		}
+
 		this.setupCapabilities();
+	}
+
+	/** Returns true when the server is running in HTTP mode (PORT env var was set at construction). */
+	public isHttpMode(): boolean {
+		return this._port !== undefined;
+	}
+
+	/** Returns the HTTP port if in HTTP mode, undefined otherwise. */
+	public httpPort(): number | undefined {
+		return this._port;
 	}
 
 	protected abstract setupCapabilities(): void;
@@ -85,6 +113,17 @@ export abstract class MCPServer {
 			await fs.mkdir(this.dataPath, { recursive: true });
 			await this.setupDataDirectories();
 			await this.server.connect(this.transport);
+
+			if (this._httpServer && this._port) {
+				await new Promise<void>((resolve, reject) => {
+					this._httpServer!.listen(this._port, () => {
+						console.log(`🌐 ${this.config.name} HTTP transport listening on port ${this._port}`);
+						resolve();
+					});
+					this._httpServer!.once("error", reject);
+				});
+			}
+
 			this.initialized = true;
 			console.log(`✅ ${this.config.name} v${this.config.version} initialized`);
 		} catch (error) {
@@ -103,6 +142,11 @@ export abstract class MCPServer {
 
 	async stop(): Promise<void> {
 		try {
+			if (this._httpServer) {
+				await new Promise<void>((resolve, reject) => {
+					this._httpServer!.close((err) => (err ? reject(err) : resolve()));
+				});
+			}
 			await this.server.close();
 			this.initialized = false;
 			console.log(`✅ ${this.config.name} stopped`);
