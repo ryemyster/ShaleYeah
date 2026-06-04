@@ -202,7 +202,7 @@ const geowizTemplate: ServerTemplate = {
 };
 
 // Domain-specific geological analysis functions
-async function performFormationAnalysis(args: {
+export async function performFormationAnalysis(args: {
 	filePath: string;
 	formations?: string[];
 	analysisType?: string;
@@ -360,7 +360,7 @@ async function analyzeGeologicalData(
 }
 
 // Enhanced GIS processing function
-async function processEnhancedGIS(args: {
+export async function processEnhancedGIS(args: {
 	filePath: string;
 	analysisType?: string;
 	qualityAssessment?: boolean;
@@ -531,7 +531,7 @@ function generateGISInvestmentRecommendations(metrics: any): string[] {
 	return recommendations;
 }
 
-function assessDataQuality(args: {
+export function assessDataQuality(args: {
 	dataType: string;
 	thresholds?: {
 		completeness: number;
@@ -745,7 +745,7 @@ function generateRecommendation(porosity: number, netPay: number, confidence: nu
 }
 
 // Multi-format well log processing function
-async function processMultiFormatWellLog(args: {
+export async function processMultiFormatWellLog(args: {
 	filePath: string;
 	format?: string;
 	qualityAssessment?: boolean;
@@ -908,7 +908,7 @@ function generateWellLogRecommendations(wellLogData: any): string[] {
 }
 
 // Process Access Database Data
-async function processAccessDatabaseData(args: {
+export async function processAccessDatabaseData(args: {
 	filePath: string;
 	extractTables?: string[];
 	outputFormat?: string;
@@ -1046,7 +1046,7 @@ function generateDatabaseRecommendations(accessData: any, tables: any[]): string
 }
 
 // Process Document Data
-async function processDocumentData(args: {
+export async function processDocumentData(args: {
 	filePath: string;
 	extractionType?: string;
 }): Promise<Record<string, unknown>> {
@@ -1237,7 +1237,7 @@ function generateDocumentRecommendations(documentData: any): string[] {
 }
 
 // Process Seismic Data Analysis
-async function processSeismicAnalysis(args: {
+export async function processSeismicAnalysis(args: {
 	filePath: string;
 	analysisType?: string;
 }): Promise<Record<string, unknown>> {
@@ -1414,7 +1414,7 @@ function generateSeismicRecommendations(seismicData: any): string[] {
 }
 
 // Process ARIES Database Analysis
-async function processAriesAnalysis(args: {
+export async function processAriesAnalysis(args: {
 	filePath: string;
 	analysisType?: string;
 }): Promise<Record<string, unknown>> {
