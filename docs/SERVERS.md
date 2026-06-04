@@ -34,6 +34,8 @@ These four agents do the most important work and run first (Phase 1 of a full an
 
 **Tests:** [tests/geowiz-anti-stub.test.ts](../tests/geowiz-anti-stub.test.ts)
 
+**Standalone agent:** [src/agents/geologist.ts](../src/agents/geologist.ts) — geowiz migrated onto the `LocalAgentRuntime` contract. Use `createGeologistRuntime()` / `createGeologistEndpoint()` to run the geologist without the kernel or orchestrator. See [STANDALONE_AGENT_DEPLOYMENT.md](STANDALONE_AGENT_DEPLOYMENT.md) for the deployment tutorial.
+
 ---
 
 ### econobot — Economic Analysis
