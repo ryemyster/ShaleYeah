@@ -1,4 +1,0 @@
-# This file ensures the data/samples/ directory is tracked by git
-# Required sample files for production mode:
-# - demo.las (well log data)
-# - economics.csv (economic parameters)
