@@ -42,11 +42,11 @@ This table shows every capability Managed Agents provides and whether SHALE YEAH
 
 | Managed Agents Capability | SHALE YEAH Today | Status |
 |---|---|---|
-| **Durable session log** — remembers what happened even after a restart | `src/kernel/context.ts` — `SessionManager` with `FileSessionStorage` writes sessions to disk. Also injects O&G context (basin, operator, formation) into every run — Managed Agents doesn't do that. | ✅ Already built |
+| **Durable session log** — remembers what happened even after a restart | `AgentRuntime` in `@shaleyeah/sdk` maintains context across tool calls. O&G context (basin, operator, formation) injected via `AgentRuntimeConfig`. Managed Agents doesn't do that. | ✅ Already built |
 | **Stateless harness** — the reasoning brain is decoupled from the stored state | Kernel executor holds zero state in-process by design. Session data lives on disk, not in memory. | ✅ Already built — same principle |
-| **Credential security** — API keys never exposed to generated code | `src/kernel/secrets.ts` — `SecretsStore` with async resolvers. `AuditMiddleware` logs the key *name* and *source*, never the value. | ✅ Already built — with an audit trail Managed Agents doesn't have |
+| **Credential security** — API keys never exposed to generated code | `LLMClient` in `@shaleyeah/sdk` reads `ANTHROPIC_API_KEY` from env; key name is logged, never the value. | ✅ Already built — with an audit trail Managed Agents doesn't have |
 | **MCP connectivity** — tools plug in via the MCP standard | All 14 servers use `registerTool()` and are fully MCP-compliant. They could plug into a Managed Agents fleet with zero code changes. | ✅ Already built |
-| **Sandboxed execution** — agents run in isolation | Per-server isolation enforced by the kernel router. Circuit breaker automatically cuts off any failing server. | ✅ Already built — domain-tuned: knows which servers to trust |
+| **Sandboxed execution** — agents run in isolation | Each server runs as an independent process. HITL policy in `AgentRuntimeConfig` controls which tools require human confirmation. | ✅ Already built — domain-tuned: knows which servers to trust |
 | **Error recovery** — automatic retry and graceful fallback | Circuit breaker, exponential backoff, fallback tool routing, graceful degradation with a manifest of what failed and why. | ✅ Already built — more sophisticated than generic recovery |
 | **Parallel execution** — multiple agents running at the same time | `executeParallel()` via `Promise.allSettled`. `FULL_DUE_DILIGENCE` runs 14 servers across 4 dependency-ordered phases at once. | ✅ Already built — plus O&G-specific phase ordering |
 | **Context across steps** — agents can see what earlier steps produced | `session.getAvailableResults()` injects prior findings into each agent call. GeoWiz's geological findings flow into EconoBot's economics. | ✅ Already built — domain-aware, not generic |
@@ -67,7 +67,7 @@ Managed Agents is a general-purpose platform. It has no idea what oil and gas is
 | **The full due diligence pipeline** | Geology runs first. Those findings feed into economics. Economics feeds into risk. Risk feeds into the final investment decision. No generic platform knows the right order for an oil and gas deal. |
 | **INVEST / PASS / CONDITIONAL verdict** | Takes real petrophysical data, financial models, regulatory checks, and market prices — and produces one decision a board can act on. |
 | **Formation-specific fallback logic** | When the AI is unavailable (no API key, demo mode), Wolfcamp A gets different default parameters than Bakken or Eagle Ford. That's domain knowledge in code — not a generic placeholder. |
-| **Wiki memory that compounds** (planned — #284) | After every analysis run, the kernel compiles findings into structured notes per basin, per operator, per formation. Run 50 starts with what runs 1–49 already learned about this basin. Generic platforms start from scratch every time. |
+| **Wiki memory that compounds** (planned — #284) | After every analysis run, the agent fleet compiles findings into structured notes per basin, per operator, per formation. Run 50 starts with what runs 1–49 already learned about this basin. Generic platforms start from scratch every time. |
 | **Per-agent learning** (planned — #271) | GeoWiz after 50 Permian Basin analyses is not the same as a fresh GeoWiz. It's learned the GR cutoffs that actually work in that basin. |
 | **Best-of-N sampling for high-stakes outputs** (planned — #270) | For the most important numbers (EUR, IRR, INVEST verdict), run the analysis N times and pick the best answer using domain-specific scoring — not just "ask the AI once and hope." |
 | **Analyst feedback loop** (planned — #144) | When an analyst says "your EUR estimate was 20% too high — here's what the wells actually produced," that correction gets stored and used to improve future runs. That dataset belongs to you. Nobody else has it. |
@@ -78,13 +78,13 @@ Managed Agents is a general-purpose platform. It has no idea what oil and gas is
 
 This isn't a response to Managed Agents — these architectural decisions were made before Managed Agents existed. Here's why they line up:
 
-**Stateless execution + durable state** — the kernel never held session state in memory from day one. `FileSessionStorage` was built as a pluggable interface. Swapping in a Managed Agents session store means implementing one interface, not redesigning the system.
+**Stateless execution + durable state** — agent session state is managed per-agent via `AgentRuntimeConfig.memory`. Swapping the backend is a config change.
 
-**MCP-first design** — every server uses the MCP standard. The kernel routes through MCP. This means the 14 servers could run as a Managed Agents fleet with zero changes to the servers — only the deployment target changes.
+**MCP-first design** — every server uses the MCP standard. Each server exposes tools via MCP. This means the 14 servers could run as a Managed Agents fleet with zero changes to the servers — only the deployment target changes.
 
 **Pluggable secrets** — `SecretsStore` accepts static strings or async resolver functions (e.g., fetch from a vault). Wiring in a Managed Agents credential vault is one resolver function.
 
-**Domain intelligence is separate from infrastructure** — every design decision kept O&G knowledge in the server layer and plumbing in the kernel layer. The domain intelligence doesn't change when the infrastructure does.
+**Domain intelligence is separate from infrastructure** — O&G knowledge lives in `servers/*/` and `agents/*/`; contracts and utilities live in `sdk/`. The domain intelligence doesn't change when the deployment target does.
 
 The right way to think about this: the **domain intelligence is the invariant**. Infrastructure is the variable. Managed Agents is a very good variable.
 

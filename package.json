@@ -10,13 +10,11 @@
     "test": "pnpm turbo test",
     "lint": "pnpm turbo lint",
     "type-check": "pnpm turbo type-check",
-    "demo": "tsx demo.ts",
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",
     "turbo": "^2.5.4",
-    "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   },
   "engines": {

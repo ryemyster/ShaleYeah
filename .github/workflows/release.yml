@@ -40,7 +40,6 @@ jobs:
         pnpm turbo lint
         pnpm turbo build
         pnpm turbo test
-        pnpm demo
 
     - name: Create release package
       run: |

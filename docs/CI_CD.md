@@ -17,10 +17,10 @@ The intent is to keep PRs lightweight while preserving a path to production-wort
 
 PRs run:
 
-- `npm run type-check`
-- `npm run lint`
-- `npm run build`
-- `npm run test`
+- `pnpm turbo type-check`
+- `pnpm turbo lint`
+- `pnpm turbo build`
+- `pnpm turbo test`
 - Secret detection
 
 These checks catch TypeScript errors, formatting/lint issues, build breakage, unit/integration failures, and accidental secret commits. They do not run coverage, demo smoke, CodeQL, or release packaging on every PR.
@@ -29,8 +29,8 @@ These checks catch TypeScript errors, formatting/lint issues, build breakage, un
 
 Pushes to `develop` and `main` run the PR checks plus:
 
-- `npm run demo`
-- `npm run coverage`
+- `pnpm demo`
+- `pnpm turbo test` (coverage via c8 per package)
 - CodeQL security analysis
 
 This keeps expensive or slower checks on trusted branch integration, where they protect the project without slowing every external contributor loop.

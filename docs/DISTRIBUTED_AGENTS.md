@@ -4,7 +4,7 @@ Issue [#377](https://github.com/ryemyster/ShaleYeah/issues/377) defines the cont
 
 ## Architecture Decision
 
-SHALE YEAH is moving from a kernel-centered runtime toward an open-source distributed agent system. The monorepo remains the contributor workspace, but each specialist must be independently deployable as its own process, container, or remote service.
+SHALE YEAH is an open-source distributed agent system. The monorepo remains the contributor workspace, but each specialist must be independently deployable as its own process, container, or remote service.
 
 Users must be able to run:
 
@@ -13,7 +13,7 @@ Users must be able to run:
 - The complete 14-agent fleet
 - An optional orchestrator after standalone agents are stable
 
-No standalone agent may require the central kernel, shared hosted infrastructure, or the orchestrator to start, expose health, publish its tools, or complete its core role.
+No standalone agent may require shared hosted infrastructure or the orchestrator to start, expose health, publish its tools, or complete its core role.
 
 ## Agent Layer vs Tool Layer
 
@@ -39,11 +39,11 @@ Every standalone agent must expose the same minimum contract.
 | Execution | MCP-compatible tool calls with validated input and output schemas |
 | Configuration | Per-agent config with environment overrides, secret redaction, autonomy level, memory policy, eval policy, and provider/data connector selection |
 | Storage | Private run context and private reviewed-memory namespace by default |
-| Compatibility | Backwards-compatible `npm run server:<name>` while the old MCP server entrypoints remain supported |
+| Compatibility | `pnpm --filter @shaleyeah/server-<name> start` launches any server standalone |
 
 ## Provider Ownership
 
-Provider choice belongs to the standalone agent, not a central kernel.
+Provider choice belongs to the standalone agent.
 
 | Provider type | Requirement |
 | --- | --- |
@@ -191,7 +191,7 @@ Use this checklist for every standalone agent migration.
 - [ ] Agent never exposes tokens to prompts, responses, logs, run context, or memory.
 - [ ] Agent returns authorization or human-approval challenges for sensitive actions.
 - [ ] Agent emits observable run metadata.
-- [ ] Agent preserves its backwards-compatible `npm run server:<name>` path while migration is underway.
+- [x] Agent launches via `pnpm --filter @shaleyeah/server-<name> start` as standalone MCP server
 - [ ] Agent has standalone tests and a tutorial-style README or docs section that follows [Standalone Agent Deployment Guide](STANDALONE_AGENT_DEPLOYMENT.md).
 
 ## Security Checklist
