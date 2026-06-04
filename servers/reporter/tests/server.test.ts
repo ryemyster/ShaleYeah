@@ -12,8 +12,8 @@
  */
 
 import assert from "node:assert";
-import { countWordsInSummary, deriveDefaultExecutiveSummary } from "../src/index.js";
 import { callLLM } from "@shaleyeah/sdk";
+import { countWordsInSummary, deriveDefaultExecutiveSummary } from "../src/index.js";
 
 let passed = 0;
 let failed = 0;

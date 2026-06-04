@@ -6,10 +6,8 @@
  */
 
 import fs from "node:fs/promises";
+import { callLLM, type MCPServer, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-import { callLLM } from "@shaleyeah/sdk";
-import { type MCPServer, runMCPServer } from "@shaleyeah/sdk";
-import { ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 
 // ---------------------------------------------------------------------------
 // Exported helpers (used by tests)

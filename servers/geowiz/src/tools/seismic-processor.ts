@@ -182,12 +182,7 @@ export interface AmplitudeAnalysis {
 }
 
 export interface ReservoirIndicator {
-	type:
-		| "bright_spot"
-		| "flat_spot"
-		| "dim_spot"
-		| "phase_reversal"
-		| "velocity_anomaly";
+	type: "bright_spot" | "flat_spot" | "dim_spot" | "phase_reversal" | "velocity_anomaly";
 	location: {
 		trace: number;
 		time: number; // milliseconds
@@ -198,9 +193,7 @@ export interface ReservoirIndicator {
 	notes: string;
 }
 
-export async function processSeismicFile(
-	filePath: string,
-): Promise<SeismicData> {
+export async function processSeismicFile(filePath: string): Promise<SeismicData> {
 	try {
 		const stats = fs.statSync(filePath);
 		const fileName = path.basename(filePath);
@@ -250,21 +243,14 @@ export async function processSeismicFile(
 	}
 }
 
-async function extractSeismicHeaders(
-	_filePath: string,
-	format: "SEGY" | "SGY" | "SEISMIC3D",
-): Promise<SeismicHeaders> {
+async function extractSeismicHeaders(_filePath: string, format: "SEGY" | "SGY" | "SEISMIC3D"): Promise<SeismicHeaders> {
 	// Note: Full SEGY processing requires libraries like segy-js or seisplotjs
 	// This is a placeholder implementation showing the structure
 
-	console.warn(
-		`Seismic processing for ${format} requires specialized libraries:`,
-	);
+	console.warn(`Seismic processing for ${format} requires specialized libraries:`);
 	console.warn("For JavaScript: npm install segy-js seisplotjs");
 	console.warn("For Python integration: pip install segyio obspy");
-	console.warn(
-		"User must have appropriate seismic data licenses and software access rights.",
-	);
+	console.warn("User must have appropriate seismic data licenses and software access rights.");
 
 	// Return demo structure for development
 	const demoHeaders: SeismicHeaders = {
@@ -419,8 +405,7 @@ async function extractSeismicTraces(
 			sweepFrequencyAtEnd: headers.binaryHeader.sweepFrequencyEnd,
 			sweepLength: headers.binaryHeader.sweepLength,
 			sweepType: headers.binaryHeader.sweepType,
-			sweepTraceTaperLengthAtStart:
-				headers.binaryHeader.sweepTraceTaperLengthStart,
+			sweepTraceTaperLengthAtStart: headers.binaryHeader.sweepTraceTaperLengthStart,
 			sweepTraceTaperLengthAtEnd: headers.binaryHeader.sweepTraceTaperLengthEnd,
 			taperType: headers.binaryHeader.taperType,
 			aliasFilterFrequency: 125,
@@ -432,10 +417,7 @@ async function extractSeismicTraces(
 			lowCutSlope: 18,
 			highCutSlope: 18,
 			year: new Date().getFullYear(),
-			dayOfYear: Math.floor(
-				(Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) /
-					(1000 * 60 * 60 * 24),
-			),
+			dayOfYear: Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / (1000 * 60 * 60 * 24)),
 			hour: new Date().getHours(),
 			minute: new Date().getMinutes(),
 			second: new Date().getSeconds(),
@@ -473,15 +455,10 @@ async function analyzeSeismicData(
 	});
 
 	analysis.amplitudeAnalysis = {
-		averageAmplitude:
-			allAmplitudes.reduce((sum, amp) => sum + Math.abs(amp), 0) /
-			allAmplitudes.length,
+		averageAmplitude: allAmplitudes.reduce((sum, amp) => sum + Math.abs(amp), 0) / allAmplitudes.length,
 		maxAmplitude: Math.max(...allAmplitudes),
 		minAmplitude: Math.min(...allAmplitudes),
-		rmsAmplitude: Math.sqrt(
-			allAmplitudes.reduce((sum, amp) => sum + amp * amp, 0) /
-				allAmplitudes.length,
-		),
+		rmsAmplitude: Math.sqrt(allAmplitudes.reduce((sum, amp) => sum + amp * amp, 0) / allAmplitudes.length),
 		brightSpots: 0,
 		dimSpots: 0,
 		amplitudeDistribution: {
@@ -503,8 +480,7 @@ async function analyzeSeismicData(
 				timeEnd: 1400, // 1.4 seconds
 			},
 			confidence: 0.6,
-			description:
-				"Potential continuous reflector - possible reservoir horizon",
+			description: "Potential continuous reflector - possible reservoir horizon",
 		});
 
 		// Identify potential bright spots (hydrocarbon indicators)
@@ -524,32 +500,23 @@ async function analyzeSeismicData(
 	}
 
 	// Add interpretation notes
-	analysis.interpretationNotes.push(
-		"Preliminary automated analysis - manual interpretation recommended",
-	);
+	analysis.interpretationNotes.push("Preliminary automated analysis - manual interpretation recommended");
 	analysis.interpretationNotes.push(
 		`${traces.length} traces processed with ${headers.binaryHeader.samplesPerTrace} samples each`,
 	);
 
 	if (headers.binaryHeader.measurementSystem === 2) {
-		analysis.interpretationNotes.push(
-			"Measurements in feet - suitable for US onshore analysis",
-		);
+		analysis.interpretationNotes.push("Measurements in feet - suitable for US onshore analysis");
 	}
 
 	if (headers.binaryHeader.segYFormatRevisionNumber >= 200) {
-		analysis.interpretationNotes.push(
-			"Modern SEGY format - full feature support available",
-		);
+		analysis.interpretationNotes.push("Modern SEGY format - full feature support available");
 	}
 
 	return analysis;
 }
 
-function calculateSeismicQuality(
-	traces: SeismicTrace[],
-	headers: SeismicHeaders,
-): SeismicData["qualityMetrics"] {
+function calculateSeismicQuality(traces: SeismicTrace[], headers: SeismicHeaders): SeismicData["qualityMetrics"] {
 	if (traces.length === 0) {
 		return {
 			traceCompleteness: 0,
@@ -561,36 +528,24 @@ function calculateSeismicQuality(
 
 	// Trace completeness: percentage of traces with expected sample count
 	const expectedSamples = headers.binaryHeader.samplesPerTrace;
-	const completeTraces = traces.filter(
-		(trace) => trace.samplesInTrace === expectedSamples,
-	).length;
+	const completeTraces = traces.filter((trace) => trace.samplesInTrace === expectedSamples).length;
 	const traceCompleteness = completeTraces / traces.length;
 
 	// Amplitude consistency: measure of amplitude variance across traces
 	const traceRMS = traces.map((trace) => {
-		const rms = Math.sqrt(
-			trace.data.reduce((sum, amp) => sum + amp * amp, 0) / trace.data.length,
-		);
+		const rms = Math.sqrt(trace.data.reduce((sum, amp) => sum + amp * amp, 0) / trace.data.length);
 		return rms;
 	});
 	const meanRMS = traceRMS.reduce((sum, rms) => sum + rms, 0) / traceRMS.length;
-	const rmsVariance =
-		traceRMS.reduce((sum, rms) => sum + (rms - meanRMS) ** 2, 0) /
-		traceRMS.length;
-	const amplitudeConsistency = Math.max(
-		0,
-		1 - Math.sqrt(rmsVariance) / meanRMS,
-	);
+	const rmsVariance = traceRMS.reduce((sum, rms) => sum + (rms - meanRMS) ** 2, 0) / traceRMS.length;
+	const amplitudeConsistency = Math.max(0, 1 - Math.sqrt(rmsVariance) / meanRMS);
 
 	// Spatial coverage: based on coordinate consistency and distribution
-	const coordinates = traces.filter(
-		(trace) => trace.coordinateX !== 0 && trace.coordinateY !== 0,
-	);
+	const coordinates = traces.filter((trace) => trace.coordinateX !== 0 && trace.coordinateY !== 0);
 	const spatialCoverage = coordinates.length / traces.length;
 
 	// Overall confidence
-	const confidence =
-		(traceCompleteness + amplitudeConsistency + spatialCoverage) / 3;
+	const confidence = (traceCompleteness + amplitudeConsistency + spatialCoverage) / 3;
 
 	return {
 		traceCompleteness: Math.round(traceCompleteness * 100) / 100,
@@ -624,9 +579,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: seismic-processor <file.segy|.sgy|.seismic3d> [--json|--summary|--analysis]",
-		);
+		console.error("Usage: seismic-processor <file.segy|.sgy|.seismic3d> [--json|--summary|--analysis]");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
 		console.error("  --summary  Output metadata summary (default)");
@@ -670,10 +623,8 @@ const main = async () => {
 					revision: seismicData.metadata.revision,
 				},
 				oilGasAnalysis: {
-					structuralFeatures:
-						seismicData.oilGasAnalysis.structuralFeatures.length,
-					reservoirIndicators:
-						seismicData.oilGasAnalysis.reservoirIndicators.length,
+					structuralFeatures: seismicData.oilGasAnalysis.structuralFeatures.length,
+					reservoirIndicators: seismicData.oilGasAnalysis.reservoirIndicators.length,
 					brightSpots: seismicData.oilGasAnalysis.amplitudeAnalysis.brightSpots,
 				},
 				quality: seismicData.qualityMetrics,

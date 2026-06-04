@@ -6,12 +6,9 @@
  */
 
 import fs from "node:fs/promises";
-import { z } from "zod";
-import { DecisionSchema } from "@shaleyeah/sdk";
-import { callLLM } from "@shaleyeah/sdk";
-import { runMCPServer } from "@shaleyeah/sdk";
-import { ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
 import type { AnalysisInputs, InvestmentCriteria, PortfolioAsset } from "@shaleyeah/sdk";
+import { callLLM, DecisionSchema, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
+import { z } from "zod";
 
 // The shape Claude returns when it synthesizes all upstream data into a decision
 interface LLMDecisionInterpretation {

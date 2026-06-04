@@ -61,9 +61,7 @@ export interface AccessField {
 	nullValues: number;
 }
 
-export async function processAccessDatabase(
-	filePath: string,
-): Promise<AccessDatabaseData> {
+export async function processAccessDatabase(filePath: string): Promise<AccessDatabaseData> {
 	try {
 		const stats = fs.statSync(filePath);
 		const dbName = path.basename(filePath, path.extname(filePath));
@@ -82,10 +80,7 @@ export async function processAccessDatabase(
 		// Calculate quality metrics
 		const qualityMetrics = calculateDatabaseQuality(tables);
 
-		const totalRecords = tables.reduce(
-			(sum, table) => sum + table.recordCount,
-			0,
-		);
+		const totalRecords = tables.reduce((sum, table) => sum + table.recordCount, 0);
 
 		return {
 			format: "ACCESS",
@@ -128,9 +123,7 @@ async function extractAccessTables(filePath: string): Promise<AccessTable[]> {
 	// Note: Full Access support requires mdb-tools (Linux) or ODBC drivers
 	// This is a placeholder implementation showing the structure
 
-	console.warn(
-		"Access database processing requires mdb-tools or ODBC drivers.",
-	);
+	console.warn("Access database processing requires mdb-tools or ODBC drivers.");
 	console.warn("For production use on Linux: apt-get install mdb-tools");
 	console.warn("For Windows: Install Microsoft Access Database Engine");
 	console.warn("User must have appropriate Microsoft Access license.");
@@ -331,15 +324,10 @@ function calculateDatabaseQuality(tables: AccessTable[]): {
 }
 
 // Helper function for extracting data using mdb-tools (Linux) or ODBC (Windows)
-export async function extractAccessData(
-	_filePath: string,
-	tableName: string,
-): Promise<Record<string, unknown>[]> {
+export async function extractAccessData(_filePath: string, tableName: string): Promise<Record<string, unknown>[]> {
 	// This would use mdb-export on Linux or ODBC connection on Windows
 	// Placeholder implementation
-	console.warn(
-		`Data extraction from table ${tableName} requires platform-specific tools`,
-	);
+	console.warn(`Data extraction from table ${tableName} requires platform-specific tools`);
 	return [];
 }
 
@@ -349,9 +337,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: access-processor <database.accdb|database.mdb> [--json|--summary|--tables]",
-		);
+		console.error("Usage: access-processor <database.accdb|database.mdb> [--json|--summary|--tables]");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
 		console.error("  --summary  Output metadata summary (default)");

@@ -107,9 +107,7 @@ export class EnhancedGISProcessor {
 	/**
 	 * Detect GIS file format
 	 */
-	detectGISFormat(
-		filePath: string,
-	): "shapefile" | "geojson" | "kml" | "unknown" {
+	detectGISFormat(filePath: string): "shapefile" | "geojson" | "kml" | "unknown" {
 		const ext = path.extname(filePath).toLowerCase();
 
 		switch (ext) {
@@ -136,9 +134,7 @@ export class EnhancedGISProcessor {
 			// Validate shapefile components
 			const validation = await this.validateShapefileComponents(shpPath);
 			if (!validation.isValid) {
-				throw new Error(
-					`Shapefile validation failed: ${validation.errors.join(", ")}`,
-				);
+				throw new Error(`Shapefile validation failed: ${validation.errors.join(", ")}`);
 			}
 
 			const basePath = shpPath.replace(/\.shp$/i, "");
@@ -178,10 +174,7 @@ export class EnhancedGISProcessor {
 
 			// Enhanced processing
 			const bounds = this.calculateEnhancedBounds(features);
-			const qualityMetrics = await this.assessGISQuality(
-				features,
-				coordinateSystem,
-			);
+			const qualityMetrics = await this.assessGISQuality(features, coordinateSystem);
 			const oilGasMetrics = this.analyzeOilGasContent(features);
 			const attributeFields = this.extractAttributeFields(features);
 			const stats = await stat(shpPath);
@@ -203,10 +196,7 @@ export class EnhancedGISProcessor {
 					hasElevation: this.checkElevationData(features),
 					dateProcessed: new Date().toISOString(),
 				},
-				recommendations: this.generateRecommendations(
-					qualityMetrics,
-					oilGasMetrics,
-				),
+				recommendations: this.generateRecommendations(qualityMetrics, oilGasMetrics),
 			};
 		} catch (error) {
 			throw new Error(`Failed to process shapefile: ${error}`);
@@ -226,9 +216,7 @@ export class EnhancedGISProcessor {
 			// Validate GeoJSON structure
 			const validation = this.validateGeoJSONStructure(data);
 			if (!validation.isValid) {
-				throw new Error(
-					`GeoJSON validation failed: ${validation.errors.join(", ")}`,
-				);
+				throw new Error(`GeoJSON validation failed: ${validation.errors.join(", ")}`);
 			}
 
 			let featureCollection: SpatialFeatureCollection;
@@ -268,12 +256,8 @@ export class EnhancedGISProcessor {
 				featureCollection.features,
 				this.extractCRS(featureCollection),
 			);
-			const oilGasMetrics = this.analyzeOilGasContent(
-				featureCollection.features,
-			);
-			const attributeFields = this.extractAttributeFields(
-				featureCollection.features,
-			);
+			const oilGasMetrics = this.analyzeOilGasContent(featureCollection.features);
+			const attributeFields = this.extractAttributeFields(featureCollection.features);
 			const stats = await stat(filePath);
 
 			return {
@@ -293,10 +277,7 @@ export class EnhancedGISProcessor {
 					hasElevation: this.checkElevationData(featureCollection.features),
 					dateProcessed: new Date().toISOString(),
 				},
-				recommendations: this.generateRecommendations(
-					qualityMetrics,
-					oilGasMetrics,
-				),
+				recommendations: this.generateRecommendations(qualityMetrics, oilGasMetrics),
 			};
 		} catch (error) {
 			throw new Error(`Failed to process GeoJSON: ${error}`);
@@ -367,10 +348,7 @@ export class EnhancedGISProcessor {
 					hasElevation: this.checkElevationData(features),
 					dateProcessed: new Date().toISOString(),
 				},
-				recommendations: this.generateRecommendations(
-					qualityMetrics,
-					oilGasMetrics,
-				),
+				recommendations: this.generateRecommendations(qualityMetrics, oilGasMetrics),
 			};
 		} catch (error) {
 			throw new Error(`Failed to process KML: ${error}`);
@@ -378,9 +356,7 @@ export class EnhancedGISProcessor {
 	}
 
 	// Validation methods
-	private async validateShapefileComponents(
-		shpPath: string,
-	): Promise<{ isValid: boolean; errors: string[] }> {
+	private async validateShapefileComponents(shpPath: string): Promise<{ isValid: boolean; errors: string[] }> {
 		const errors: string[] = [];
 		const basePath = shpPath.replace(/\.shp$/i, "");
 
@@ -460,10 +436,7 @@ export class EnhancedGISProcessor {
 		return { minX, minY, maxX, maxY, centerX, centerY, width, height };
 	}
 
-	private async assessGISQuality(
-		features: SpatialFeature[],
-		coordinateSystem: string,
-	): Promise<GISQualityMetrics> {
+	private async assessGISQuality(features: SpatialFeature[], coordinateSystem: string): Promise<GISQualityMetrics> {
 		const validationErrors: string[] = [];
 
 		// Geometry validity check
@@ -475,19 +448,14 @@ export class EnhancedGISProcessor {
 					turf.bbox(feature as GeoJSONFeature);
 					validGeometries++;
 				} else {
-					validationErrors.push(
-						`Feature ${index}: Invalid or missing geometry`,
-					);
+					validationErrors.push(`Feature ${index}: Invalid or missing geometry`);
 				}
 			} catch (error) {
-				validationErrors.push(
-					`Feature ${index}: Geometry validation failed - ${error}`,
-				);
+				validationErrors.push(`Feature ${index}: Geometry validation failed - ${error}`);
 			}
 		});
 
-		const geometryValidity =
-			features.length > 0 ? validGeometries / features.length : 0;
+		const geometryValidity = features.length > 0 ? validGeometries / features.length : 0;
 
 		// Attribute completeness
 		let featuresWithAttributes = 0;
@@ -497,8 +465,7 @@ export class EnhancedGISProcessor {
 			}
 		});
 
-		const attributeCompleteness =
-			features.length > 0 ? featuresWithAttributes / features.length : 0;
+		const attributeCompleteness = features.length > 0 ? featuresWithAttributes / features.length : 0;
 
 		// Spatial accuracy (based on coordinate system definition)
 		const spatialAccuracy = coordinateSystem !== "Unknown" ? 0.9 : 0.5;
@@ -507,34 +474,21 @@ export class EnhancedGISProcessor {
 		const dataConsistency = this.assessDataConsistency(features);
 
 		// Overall quality score
-		const overallQuality =
-			(geometryValidity +
-				attributeCompleteness +
-				spatialAccuracy +
-				dataConsistency) /
-			4;
+		const overallQuality = (geometryValidity + attributeCompleteness + spatialAccuracy + dataConsistency) / 4;
 
 		// Generate recommendations
 		const recommendations: string[] = [];
 		if (geometryValidity < 0.9) {
-			recommendations.push(
-				"Some features have invalid geometries - consider data validation",
-			);
+			recommendations.push("Some features have invalid geometries - consider data validation");
 		}
 		if (attributeCompleteness < 0.8) {
-			recommendations.push(
-				"Many features lack attribute data - consider data enrichment",
-			);
+			recommendations.push("Many features lack attribute data - consider data enrichment");
 		}
 		if (spatialAccuracy < 0.8) {
-			recommendations.push(
-				"Coordinate system not well defined - verify projection",
-			);
+			recommendations.push("Coordinate system not well defined - verify projection");
 		}
 		if (dataConsistency < 0.8) {
-			recommendations.push(
-				"Inconsistent attribute schema - standardize field names",
-			);
+			recommendations.push("Inconsistent attribute schema - standardize field names");
 		}
 
 		return {
@@ -567,10 +521,7 @@ export class EnhancedGISProcessor {
 			const props = feature.properties || {};
 
 			// Analyze by geometry type and properties
-			if (
-				feature.geometry?.type === "Polygon" ||
-				feature.geometry?.type === "MultiPolygon"
-			) {
+			if (feature.geometry?.type === "Polygon" || feature.geometry?.type === "MultiPolygon") {
 				// Likely lease blocks
 				const keywords = ["lease", "block", "tract", "acreage", "permit"];
 				const hasLeaseKeywords = Object.keys(props).some((key) =>
@@ -594,9 +545,7 @@ export class EnhancedGISProcessor {
 					wellKeywords.some((keyword) => key.toLowerCase().includes(keyword)),
 				);
 				const hasFacilityKeywords = Object.keys(props).some((key) =>
-					facilityKeywords.some((keyword) =>
-						key.toLowerCase().includes(keyword),
-					),
+					facilityKeywords.some((keyword) => key.toLowerCase().includes(keyword)),
 				);
 
 				if (hasWellKeywords) {
@@ -604,16 +553,11 @@ export class EnhancedGISProcessor {
 				} else if (hasFacilityKeywords) {
 					facilities++;
 				}
-			} else if (
-				feature.geometry?.type === "LineString" ||
-				feature.geometry?.type === "MultiLineString"
-			) {
+			} else if (feature.geometry?.type === "LineString" || feature.geometry?.type === "MultiLineString") {
 				// Likely pipelines
 				const pipelineKeywords = ["pipeline", "pipe", "line", "transmission"];
 				const hasPipelineKeywords = Object.keys(props).some((key) =>
-					pipelineKeywords.some((keyword) =>
-						key.toLowerCase().includes(keyword),
-					),
+					pipelineKeywords.some((keyword) => key.toLowerCase().includes(keyword)),
 				);
 
 				if (hasPipelineKeywords) {
@@ -644,9 +588,7 @@ export class EnhancedGISProcessor {
 	private assessDataConsistency(features: SpatialFeature[]): number {
 		if (features.length === 0) return 1;
 
-		const attributeSets = features.map(
-			(f) => new Set(Object.keys(f.properties || {})),
-		);
+		const attributeSets = features.map((f) => new Set(Object.keys(f.properties || {})));
 		if (attributeSets.length < 2) return 1;
 
 		// Calculate consistency based on attribute field overlap
@@ -683,22 +625,15 @@ export class EnhancedGISProcessor {
 		});
 	}
 
-	private generateRecommendations(
-		qualityMetrics: GISQualityMetrics,
-		oilGasMetrics: any,
-	): string[] {
+	private generateRecommendations(qualityMetrics: GISQualityMetrics, oilGasMetrics: any): string[] {
 		const recommendations: string[] = [];
 
 		if (qualityMetrics.overallQuality < 0.7) {
-			recommendations.push(
-				"Overall data quality below 70% - comprehensive review recommended",
-			);
+			recommendations.push("Overall data quality below 70% - comprehensive review recommended");
 		}
 
 		if (oilGasMetrics.leaseBlocks > 0) {
-			recommendations.push(
-				`Identified ${oilGasMetrics.leaseBlocks} potential lease blocks - verify ownership data`,
-			);
+			recommendations.push(`Identified ${oilGasMetrics.leaseBlocks} potential lease blocks - verify ownership data`);
 		}
 
 		if (oilGasMetrics.wellLocations > 0) {
@@ -708,20 +643,14 @@ export class EnhancedGISProcessor {
 		}
 
 		if (oilGasMetrics.estimatedAcreage > 0) {
-			recommendations.push(
-				`Estimated ${oilGasMetrics.estimatedAcreage} acres total - verify boundary accuracy`,
-			);
+			recommendations.push(`Estimated ${oilGasMetrics.estimatedAcreage} acres total - verify boundary accuracy`);
 		}
 
 		if (oilGasMetrics.majorOperators.length > 0) {
-			recommendations.push(
-				`Major operators identified: ${oilGasMetrics.majorOperators.slice(0, 3).join(", ")}`,
-			);
+			recommendations.push(`Major operators identified: ${oilGasMetrics.majorOperators.slice(0, 3).join(", ")}`);
 		}
 
-		return recommendations.length > 0
-			? recommendations
-			: ["Standard GIS processing completed successfully"];
+		return recommendations.length > 0 ? recommendations : ["Standard GIS processing completed successfully"];
 	}
 
 	// Utility methods (from original parser)
@@ -765,20 +694,10 @@ export class EnhancedGISProcessor {
 	}
 
 	private isGeometryType(type: string): boolean {
-		return [
-			"Point",
-			"LineString",
-			"Polygon",
-			"MultiPoint",
-			"MultiLineString",
-			"MultiPolygon",
-		].includes(type);
+		return ["Point", "LineString", "Polygon", "MultiPoint", "MultiLineString", "MultiPolygon"].includes(type);
 	}
 
-	private async extractKMLFeatures(
-		element: any,
-		features: SpatialFeature[],
-	): Promise<void> {
+	private async extractKMLFeatures(element: any, features: SpatialFeature[]): Promise<void> {
 		// Implementation from original parser
 		if (element.Placemark) {
 			for (const placemark of element.Placemark) {
@@ -796,23 +715,18 @@ export class EnhancedGISProcessor {
 		}
 	}
 
-	private async convertKMLPlacemark(
-		placemark: any,
-	): Promise<SpatialFeature | null> {
+	private async convertKMLPlacemark(placemark: any): Promise<SpatialFeature | null> {
 		// Implementation from original parser - simplified for space
 		try {
 			const properties: Record<string, any> = {};
 
 			if (placemark.name) properties.name = placemark.name[0];
-			if (placemark.description)
-				properties.description = placemark.description[0];
+			if (placemark.description) properties.description = placemark.description[0];
 
 			let geometry: SpatialGeometry | null = null;
 
 			if (placemark.Point) {
-				const coords = this.parseKMLCoordinates(
-					placemark.Point[0].coordinates[0],
-				);
+				const coords = this.parseKMLCoordinates(placemark.Point[0].coordinates[0]);
 				if (coords.length > 0) {
 					geometry = { type: "Point", coordinates: coords[0] };
 				}
@@ -858,9 +772,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: gis-processor <file> [--json|--summary|--quality|--oilgas]",
-		);
+		console.error("Usage: gis-processor <file> [--json|--summary|--quality|--oilgas]");
 		console.error("Supported formats: .shp, .geojson, .kml");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
@@ -938,11 +850,7 @@ const main = async () => {
 // Check if this script is being run directly
 if (typeof process !== "undefined" && process.argv.length >= 2) {
 	const scriptPath = process.argv[1];
-	if (
-		scriptPath &&
-		(scriptPath.endsWith("gis-processor.ts") ||
-			scriptPath.endsWith("gis-processor.js"))
-	) {
+	if (scriptPath && (scriptPath.endsWith("gis-processor.ts") || scriptPath.endsWith("gis-processor.js"))) {
 		main();
 	}
 }

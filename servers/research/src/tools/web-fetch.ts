@@ -36,31 +36,16 @@ export function stripHtmlTags(html: string): string {
 
 	// 2) Kill script/style blocks (comprehensive malformed tag handling)
 	// Handle all possible malformed closing tags including </script\t\n bar>
-	result = removeAll(
-		result,
-		/<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script[^>]*>/gi,
-	);
+	result = removeAll(result, /<\s*script\b[^>]*>[\s\S]*?<\s*\/\s*script[^>]*>/gi);
 	result = removeAll(result, /<\s*style\b[^>]*>[\s\S]*?<\s*\/\s*style[^>]*>/gi);
 	// Also remove any remaining script/style opening tags without proper closing
 	result = removeAll(result, /<\s*script\b[^>]*>/gi);
 	result = removeAll(result, /<\s*style\b[^>]*>/gi);
 
 	// 3) Remove high-risk paired tags
-	const paired = [
-		"iframe",
-		"object",
-		"embed",
-		"applet",
-		"form",
-		"textarea",
-		"button",
-		"select",
-	];
+	const paired = ["iframe", "object", "embed", "applet", "form", "textarea", "button", "select"];
 	for (const tag of paired) {
-		const re = new RegExp(
-			`<\\s*${tag}\\b[\\s\\S]*?<\\s*\\/\\s*${tag}\\s*>`,
-			"gi",
-		);
+		const re = new RegExp(`<\\s*${tag}\\b[\\s\\S]*?<\\s*\\/\\s*${tag}\\s*>`, "gi");
 		result = removeAll(result, re);
 	}
 
@@ -93,23 +78,12 @@ export function stripHtmlTags(html: string): string {
 	];
 	for (const tag of safeTextTags) {
 		// Extract text content from paired tags before removal
-		const pairedRe = new RegExp(
-			`<\\s*${tag}\\b[^>]*>([\\s\\S]*?)<\\s*\\/\\s*${tag}\\s*>`,
-			"gi",
-		);
+		const pairedRe = new RegExp(`<\\s*${tag}\\b[^>]*>([\\s\\S]*?)<\\s*\\/\\s*${tag}\\s*>`, "gi");
 		result = result.replace(pairedRe, "$1 ");
 	}
 
 	// Remove dangerous self-closing tags completely
-	const dangerousSingleTags = [
-		"img",
-		"input",
-		"meta",
-		"link",
-		"base",
-		"source",
-		"track",
-	];
+	const dangerousSingleTags = ["img", "input", "meta", "link", "base", "source", "track"];
 	for (const tag of dangerousSingleTags) {
 		const singleRe = new RegExp(`<\\s*${tag}\\b[^>]*\\/?>`, "gi");
 		result = removeAll(result, singleRe);
@@ -151,8 +125,7 @@ export function fetchUrl(url: string): Promise<FetchResult> {
 			{
 				headers: {
 					"User-Agent": "SHALE-YEAH-Research-Agent/1.0",
-					Accept:
-						"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+					Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
 				},
 				timeout: 10000,
 			},
@@ -174,8 +147,7 @@ export function fetchUrl(url: string): Promise<FetchResult> {
 							status: response.statusCode,
 						});
 					} else {
-						const text =
-							data.length > 10000 ? `${data.substring(0, 10000)}...` : data;
+						const text = data.length > 10000 ? `${data.substring(0, 10000)}...` : data;
 						resolve({
 							url,
 							text,
@@ -220,9 +192,7 @@ async function main() {
 		// Only allow http and https - block all dangerous schemes
 		const allowedProtocols = ["http:", "https:"];
 		if (!allowedProtocols.includes(u.protocol)) {
-			console.error(
-				`Unsupported protocol: ${u.protocol}. Only http and https are allowed.`,
-			);
+			console.error(`Unsupported protocol: ${u.protocol}. Only http and https are allowed.`);
 			process.exit(1);
 		}
 	} catch (_error) {

@@ -7,12 +7,17 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import {
+	callLLM,
+	EconomicsSchema,
+	type MCPServer,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
-import { EconomicsSchema } from "@shaleyeah/sdk";
-import { callLLM } from "@shaleyeah/sdk";
-import { type MCPServer, runMCPServer } from "@shaleyeah/sdk";
-import { ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 
 interface EconomicAnalysis {
 	npv: number;

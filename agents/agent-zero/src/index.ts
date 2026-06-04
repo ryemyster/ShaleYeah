@@ -1,6 +1,5 @@
 import type { AgentManifest, AgentRuntimeConfig } from "@shaleyeah/sdk";
-import { LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
-import { LocalAgentEndpoint } from "@shaleyeah/sdk";
+import { LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 
 export const agentZeroManifest: AgentManifest = {
 	id: "agent-zero",

@@ -134,9 +134,7 @@ function extractValue(line: string): string {
 	return "";
 }
 
-function parseCurveDefinition(
-	line: string,
-): { name: string; unit: string; description: string } | null {
+function parseCurveDefinition(line: string): { name: string; unit: string; description: string } | null {
 	if (!line.includes(".")) return null;
 
 	const parts = line.split(":");
@@ -187,8 +185,7 @@ function parseDataLine(
 		for (let i = 0; i < result.curves.length && i < values.length; i++) {
 			const value = values[i];
 			// Replace null values with NaN for easier processing
-			const processedValue =
-				Math.abs(value - result.null_value) < 0.01 ? NaN : value;
+			const processedValue = Math.abs(value - result.null_value) < 0.01 ? NaN : value;
 			result.curves[i].data.push(processedValue);
 		}
 	}
@@ -252,4 +249,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 	main();
 }
 
-export { parseLASFile, type LASData, type LASCurve };
+export { type LASCurve, type LASData, parseLASFile };
