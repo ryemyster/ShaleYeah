@@ -37,7 +37,7 @@ Every standalone agent must expose the same minimum contract.
 | Health | A cheap endpoint or command that returns readiness, config validity, provider availability, and storage status without running analysis |
 | Discovery | Summary first, tool list second, individual tool schema third. Clients should not need every schema up front |
 | Execution | MCP-compatible tool calls with validated input and output schemas |
-| Configuration | Per-agent config with environment overrides and secret redaction |
+| Configuration | Per-agent config with environment overrides, secret redaction, autonomy level, memory policy, eval policy, and provider/data connector selection |
 | Storage | Private run context and private reviewed-memory namespace by default |
 | Compatibility | Backwards-compatible `npm run server:<name>` while the old MCP server entrypoints remain supported |
 
@@ -53,6 +53,24 @@ Provider choice belongs to the standalone agent, not a central kernel.
 | Data connectors | BYO adapter, optional per agent, with explicit auth scopes |
 
 Agents may share default adapter implementations, but no agent may instantiate a hardcoded hosted provider directly in domain logic.
+
+## Standalone Deployment Tutorial Standard
+
+Every migrated agent must include a tutorial-style README or docs section that follows [Standalone Agent Deployment Guide](STANDALONE_AGENT_DEPLOYMENT.md).
+
+That guide is a required implementation standard, not optional prose. It defines how every agent explains:
+
+- Solo Linux deployment
+- MCP service startup
+- Health checks
+- BYO LLM, embeddings, vector store, memory, and data connectors
+- Autonomy levels
+- Reviewed learning and memory promotion
+- Configurable evals
+- Human approval gates
+- Troubleshooting for first-time users
+
+The target is simple: a first-time Linux user should be able to start one agent without understanding the full monorepo or orchestrator.
 
 ## Memory Model
 
@@ -166,13 +184,15 @@ Use this checklist for every standalone agent migration.
 - [ ] Agent accepts optional BYO data connectors.
 - [ ] Agent has private run context and private reviewed-memory namespace.
 - [ ] Agent can opt into shared reviewed collections without making them required.
+- [ ] Agent supports configurable autonomy level.
+- [ ] Agent supports configurable evals with schema, domain completeness, confidence, source/provenance, redaction, and memory-promotion checks.
 - [ ] Agent declares minimum scopes for authenticated tools.
 - [ ] Agent injects secrets only through execution context.
 - [ ] Agent never exposes tokens to prompts, responses, logs, run context, or memory.
 - [ ] Agent returns authorization or human-approval challenges for sensitive actions.
 - [ ] Agent emits observable run metadata.
 - [ ] Agent preserves its backwards-compatible `npm run server:<name>` path while migration is underway.
-- [ ] Agent has standalone tests and a README or docs section.
+- [ ] Agent has standalone tests and a tutorial-style README or docs section that follows [Standalone Agent Deployment Guide](STANDALONE_AGENT_DEPLOYMENT.md).
 
 ## Security Checklist
 
@@ -219,7 +239,7 @@ Legend:
 
 1. Read this document before starting any standalone-agent issue.
 2. Start with the contract in [#358](https://github.com/ryemyster/ShaleYeah/issues/358), not orchestration.
-3. Use `geowiz` extraction [#309](https://github.com/ryemyster/ShaleYeah/issues/309) and standalone geologist [#363](https://github.com/ryemyster/ShaleYeah/issues/363) as the reference.
+3. Use [Agent Zero](AGENT_ZERO.md) as the contract harness, then use `geowiz` extraction [#309](https://github.com/ryemyster/ShaleYeah/issues/309) and standalone geologist [#363](https://github.com/ryemyster/ShaleYeah/issues/363) as the real migration reference.
 4. Keep edits scoped to one agent where possible.
 5. Do not add a central orchestrator dependency to make an agent boot.
 6. Review the implementation against the checklist and matrix before opening a PR.
@@ -231,4 +251,3 @@ Legend:
 - Runtime hot-loading beyond configured startup discovery
 - Rewriting every domain tool in one PR
 - Moving agent business logic into an orchestrator
-

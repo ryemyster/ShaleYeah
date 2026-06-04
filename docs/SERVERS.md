@@ -9,6 +9,8 @@ Every agent is built the same way:
 - It calls `callLLM()` (from `src/shared/llm-client.ts`) to send data to Claude and get back an AI-generated analysis — or falls back to a rule-based estimate if no API key is set
 - It has a Roman Imperial persona — a name, title, and area of expertise that shows up in its output
 
+The distributed-agent refactor will move each specialist toward its own standalone MCP service with its own manifest, config, memory, evals, data integrations, and Linux deployment tutorial. Use [STANDALONE_AGENT_DEPLOYMENT.md](STANDALONE_AGENT_DEPLOYMENT.md) as the required documentation standard for each migrated agent.
+
 ---
 
 ## Core Analysis Agents
