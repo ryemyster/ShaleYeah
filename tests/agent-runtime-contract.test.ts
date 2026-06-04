@@ -216,10 +216,7 @@ console.log("\n🚫 Testing approvalMode: 'never' semantics...");
 		toolName: "agent-zero.inspect",
 		args: { subject: "test" },
 	});
-	assert(
-		unblocked.status === "completed",
-		"approvalMode: 'never' lets non-sensitive tools run without a challenge",
-	);
+	assert(unblocked.status === "completed", "approvalMode: 'never' lets non-sensitive tools run without a challenge");
 
 	await runtime.shutdown();
 }

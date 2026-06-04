@@ -137,7 +137,11 @@ export class LocalAgentRuntime implements AgentRuntime {
 
 		const modelBinding = this.config.modelRouting[tool.modelRequirement];
 		if (!modelBinding) {
-			return this.failed(tool.name, `No organization model route configured for ${tool.modelRequirement}`, tool.modelRequirement);
+			return this.failed(
+				tool.name,
+				`No organization model route configured for ${tool.modelRequirement}`,
+				tool.modelRequirement,
+			);
 		}
 
 		const handler = this.handlers[tool.name];
@@ -269,7 +273,11 @@ export class LocalAgentRuntime implements AgentRuntime {
 		return results;
 	}
 
-	private failed(toolName: string, error: string, modelRequirement: AgentExecutionMetadata["modelRequirement"] = "deterministic"): AgentExecutionResult {
+	private failed(
+		toolName: string,
+		error: string,
+		modelRequirement: AgentExecutionMetadata["modelRequirement"] = "deterministic",
+	): AgentExecutionResult {
 		return {
 			status: "failed",
 			error,

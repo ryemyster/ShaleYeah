@@ -48,41 +48,42 @@ export const AgentToolManifestSchema = z.object({
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
-export const AgentManifestSchema = z.object({
-	id: z.string().min(1),
-	role: z.string().min(1),
-	version: z.string().min(1),
-	description: z.string().min(1),
-	persona: AgentPersonaSchema,
-	capabilities: z.array(z.string().min(1)).default([]),
-	tools: z.array(AgentToolManifestSchema).default([]),
-	requiredScopes: z.array(z.string().min(1)).default([]),
-	providerRequirements: z.array(AgentProviderRequirementSchema).default([]),
-	compatibility: z.object({
-		agentRuntime: z.string().min(1),
-		remoteEndpoint: z.string().min(1),
-		mcp: z.string().regex(/^\d{4}-\d{2}$/, "mcp version must be YYYY-MM format"),
-	}),
-	health: z.object({
-		readinessChecks: z.array(z.string().min(1)).default([]),
-	}),
-	memory: z.object({
-		namespace: z.string().min(1),
-		reviewRequired: z.boolean().default(true),
-		sharedMemoryOptIn: z.boolean().default(false),
-	}),
-	evals: z.object({
-		defaultProfile: z.string().min(1),
-		requiredChecks: z.array(z.string().min(1)).default([]),
-	}),
-	autonomy: z.object({
-		defaultLevel: AgentAutonomyLevelSchema,
-		allowedLevels: z.array(AgentAutonomyLevelSchema).min(1),
-	}),
-}).refine(
-	(m) => m.tools.every((t) => t.requiredScopes.every((s) => m.requiredScopes.includes(s))),
-	{ message: "manifest requiredScopes must be a superset of all tool requiredScopes" },
-);
+export const AgentManifestSchema = z
+	.object({
+		id: z.string().min(1),
+		role: z.string().min(1),
+		version: z.string().min(1),
+		description: z.string().min(1),
+		persona: AgentPersonaSchema,
+		capabilities: z.array(z.string().min(1)).default([]),
+		tools: z.array(AgentToolManifestSchema).default([]),
+		requiredScopes: z.array(z.string().min(1)).default([]),
+		providerRequirements: z.array(AgentProviderRequirementSchema).default([]),
+		compatibility: z.object({
+			agentRuntime: z.string().min(1),
+			remoteEndpoint: z.string().min(1),
+			mcp: z.string().regex(/^\d{4}-\d{2}$/, "mcp version must be YYYY-MM format"),
+		}),
+		health: z.object({
+			readinessChecks: z.array(z.string().min(1)).default([]),
+		}),
+		memory: z.object({
+			namespace: z.string().min(1),
+			reviewRequired: z.boolean().default(true),
+			sharedMemoryOptIn: z.boolean().default(false),
+		}),
+		evals: z.object({
+			defaultProfile: z.string().min(1),
+			requiredChecks: z.array(z.string().min(1)).default([]),
+		}),
+		autonomy: z.object({
+			defaultLevel: AgentAutonomyLevelSchema,
+			allowedLevels: z.array(AgentAutonomyLevelSchema).min(1),
+		}),
+	})
+	.refine((m) => m.tools.every((t) => t.requiredScopes.every((s) => m.requiredScopes.includes(s))), {
+		message: "manifest requiredScopes must be a superset of all tool requiredScopes",
+	});
 export type AgentManifest = z.infer<typeof AgentManifestSchema>;
 
 export const ModelBindingSchema = z.object({
