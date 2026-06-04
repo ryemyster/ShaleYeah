@@ -10,7 +10,7 @@ npm-debug.log*
 !.env.example
 !**/.env.example
 
-# Build Output
+# Build Output (each package also owns its own .gitignore)
 dist/
 *.tsbuildinfo
 
