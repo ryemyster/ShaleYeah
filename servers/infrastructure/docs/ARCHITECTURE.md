@@ -1,20 +1,22 @@
 # Architecture — @shaleyeah/server-infrastructure
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Assesses midstream infrastructure needs — pipelines, processing, takeaway capacity.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `plan_infrastructure` | ✅ `callLLM` | Takeaway capacity, facility sizing, cost estimate |
+
+## Key exports
+
+`deriveDefaultInfrastructureInterpretation(wellCount, productionRate, location)` — deterministic fallback. Remote large projects produce "High" takeaway risk; Texas small projects produce "Low".
 
 ## Dependencies
 
 ```
 @shaleyeah/server-infrastructure
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

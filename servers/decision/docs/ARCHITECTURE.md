@@ -1,20 +1,29 @@
 # Architecture — @shaleyeah/server-decision
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Synthesizes outputs from other servers into a final investment go/no-go recommendation and bid strategy.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `screen_investment` | ✅ `callLLM` | Quick pass/fail screen against minimum thresholds |
+| `analyze_investment` | ✅ `callLLM` | Full multi-domain investment analysis synthesis |
+| `calculate_bid_strategy` | ✅ `callLLM` | Recommended bid range and strategy |
+| `analyze_portfolio_fit` | ✅ `callLLM` | Portfolio fit score and strategic rationale |
+
+## Key exports
+
+`calculateRecommendedBid()` and `countDomainsPresent()` are exported pure functions used in tests to verify determinism (no hardcoded stub values).
+
+## LLM pattern
+
+Takes structured inputs from other servers (geological confidence, NPV, IRR, risk score) as JSON and calls `callLLM()` once to synthesize a recommendation. Uses `DecisionSchema` from `@shaleyeah/sdk` to validate structured output.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-decision
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM, DecisionSchema)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

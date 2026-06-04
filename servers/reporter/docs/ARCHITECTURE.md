@@ -1,20 +1,23 @@
 # Architecture — @shaleyeah/server-reporter
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Generates professional investment reports and executive summaries from structured analysis inputs.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `generate_investment_decision` | ✅ `callLLM` | One-page go/no-go decision memo |
+| `create_executive_report` | ✅ `callLLM` | Full executive report with appendices |
+
+## LLM pattern
+
+Takes structured analysis results from other servers as input, calls `callLLM()` to synthesize into prose, and returns markdown-formatted reports. All formatting and structure decisions are in the prompt.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-reporter
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

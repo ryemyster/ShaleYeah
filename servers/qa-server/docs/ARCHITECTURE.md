@@ -1,20 +1,23 @@
 # Architecture — @shaleyeah/server-qa
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Quality assurance tooling — runs validation suites against other servers and generates quality reports.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `run_quality_tests` | ✅ `callLLM` | Run quality test suite against specified servers |
+| `generate_quality_report` | ✅ `callLLM` | Quality report with status, issues, recommendations |
+
+## Key exports
+
+`deriveDefaultQAResult(servers, accuracyThreshold)` — deterministic fallback. `accuracyThreshold >= 0.99` with multiple servers produces "WARNING"; `0.95` with one server produces "PASS".
 
 ## Dependencies
 
 ```
 @shaleyeah/server-qa
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

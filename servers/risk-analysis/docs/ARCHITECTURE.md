@@ -1,20 +1,30 @@
 # Architecture — @shaleyeah/server-risk-analysis
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Scores investment risk, runs Monte Carlo simulations, and identifies mitigation strategies.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `assess_investment_risk` | ✅ `callLLM` | Risk scoring across geological, economic, legal, market domains |
+
+## Monte Carlo
+
+`sampleUniform()`, `sampleTriangular()`, `sampleNormal()` in `src/index.ts` are intentional Monte Carlo samplers — the only legitimate uses of random in the codebase (named explicitly to distinguish from `Math.random()` stubs).
+
+## Key imports from sdk
+
+Uses `EconomicsSchema`, `FormationSchema`, and `RiskProfileSchema` from `@shaleyeah/sdk` to validate structured sections of the LLM output.
+
+## LLM pattern
+
+Constructs a multi-domain risk prompt, calls `callLLM()` once, validates the response against Zod schemas.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-risk-analysis
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM, EconomicsSchema, FormationSchema, RiskProfileSchema)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

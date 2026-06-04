@@ -1,20 +1,26 @@
 # Architecture — @shaleyeah/server-drilling
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Designs drilling programs, optimizes well trajectories, and estimates drilling costs.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `design_drilling_program` | ✅ `callLLM` | Well type, depth, completion strategy, cost estimate |
+
+## LLM pattern
+
+Takes well parameters (type, target depth, formation) and calls `callLLM()` to produce a drilling program recommendation. Deterministic risk classification first: deep horizontal wells are classified "High" program risk before the LLM call.
+
+## Key exports
+
+`deriveDefaultDrillingInterpretation(wellType, depth, formation)` — deterministic fallback.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-drilling
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

@@ -1,20 +1,29 @@
 # Architecture — @shaleyeah/server-curve-smith
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Fits Arps decline models to production history and computes EUR (Estimated Ultimate Recovery). Uses the local `decline-curve-analysis.ts` tool for the math.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `analyze_decline_curve` | ✅ `callLLM` | Fit exponential/hyperbolic Arps model to production data |
+| `generate_type_curve` | ✅ `callLLM` | Build a basin-specific type curve from analog wells |
+| `calculate_eur` | ✅ `callLLM` | EUR estimate from decline parameters |
+| `assess_curve_quality` | ✅ `callLLM` | Grade the quality of the decline curve fit |
+
+## Local tool (src/tools/)
+
+`decline-curve-analysis.ts` — pure math: Arps exponential/hyperbolic curve fitting, EUR integration, `fitExponentialDecline()` / `fitHyperbolicDecline()`. No LLM calls inside this file.
+
+## LLM pattern
+
+Handlers call the local math first, then pass results to `callLLM()` for interpretation and recommendation framing.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-curve-smith
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

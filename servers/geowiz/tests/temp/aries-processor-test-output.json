@@ -10,8 +10,8 @@
       "area": "Midland Basin",
       "projectType": "development",
       "status": "active",
-      "createdDate": "2026-06-04T20:16:52.113Z",
-      "modifiedDate": "2026-06-04T20:16:52.113Z",
+      "createdDate": "2026-06-04T20:41:57.121Z",
+      "modifiedDate": "2026-06-04T20:41:57.121Z",
       "wellCount": 12,
       "associatedWells": [
         "DEMO-001",
@@ -77,7 +77,7 @@
       "wellId": "WELL_001",
       "forecastName": "DEMO-001H Type Curve",
       "forecastType": "decline_curve",
-      "createdDate": "2026-06-04T20:16:52.113Z",
+      "createdDate": "2026-06-04T20:41:57.121Z",
       "createdBy": "Demo Analyst",
       "parameters": {
         "initialRate": 1200,
@@ -97,7 +97,7 @@
       "quality": {
         "r2": 0.92,
         "confidenceLevel": 0.85,
-        "lastUpdated": "2026-06-04T20:16:52.113Z"
+        "lastUpdated": "2026-06-04T20:41:57.121Z"
       }
     }
   ],
@@ -107,13 +107,13 @@
       "wellId": "WELL_001",
       "projectId": "PROJ_001",
       "economicsName": "DEMO-001H Base Case",
-      "analysisDate": "2026-06-04T20:16:52.113Z",
+      "analysisDate": "2026-06-04T20:41:57.121Z",
       "analysisType": "single_well",
       "pricing": {
         "oilPrice": 75,
         "gasPrice": 3.5,
         "nglPrice": 45,
-        "priceDate": "2026-06-04T20:16:52.113Z",
+        "priceDate": "2026-06-04T20:41:57.121Z",
         "escalation": 2
       },
       "costs": {
@@ -177,7 +177,7 @@
           "boeReserves": 1350000
         }
       ],
-      "reservesDate": "2026-06-04T20:16:52.113Z",
+      "reservesDate": "2026-06-04T20:41:57.122Z",
       "confidenceLevel": 0.85
     },
     "productionForecasting": {
@@ -193,7 +193,7 @@
         "oil": 360,
         "gas": 1500,
         "boe": 600,
-        "date": "2026-06-04T20:16:52.113Z"
+        "date": "2026-06-04T20:41:57.122Z"
       },
       "forecastLength": 300,
       "declineParameters": {

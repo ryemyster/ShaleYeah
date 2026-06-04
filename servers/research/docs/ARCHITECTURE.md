@@ -1,20 +1,31 @@
 # Architecture — @shaleyeah/server-research
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Fetches and synthesizes web-based market intelligence, competitive analysis, and industry research.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `conduct_market_research` | ✅ `callLLM` | Market trends, pricing outlook, supply/demand |
+| `analyze_competition` | ✅ `callLLM` | Competitor activity and positioning in a basin |
+
+## Local tool (src/tools/)
+
+`web-fetch.ts` — HTTP fetch wrapper. `fetchUrl(url)` returns typed `FetchResult` with raw content. No LLM calls inside.
+
+## LLM pattern
+
+Handlers call `fetchUrl()` to retrieve raw content, then pass it to `callLLM()` for synthesis and structured extraction.
+
+## Key exports
+
+`deriveDefaultResearchSummary()` and `deriveDefaultCompetitorEntry()` are exported pure functions — deterministic fallbacks and anti-stub test targets.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-research
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

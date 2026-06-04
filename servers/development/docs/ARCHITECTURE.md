@@ -1,20 +1,23 @@
 # Architecture — @shaleyeah/server-development
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Creates development plans and monitors project execution for O&G properties.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `create_development_plan` | ✅ `callLLM` | Well count, spacing, budget, schedule, risk assessment |
+| `monitor_development_progress` | ✅ `callLLM` | Schedule / budget / safety metrics against plan |
+
+## Key exports
+
+`deriveDefaultDevelopmentOutlook(wellCount, budget, risks)` — deterministic fallback. Tight budgets with many wells produce "High" budget risk; funded small projects produce "Low".
 
 ## Dependencies
 
 ```
 @shaleyeah/server-development
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.

@@ -1,20 +1,26 @@
 # Architecture — @shaleyeah/server-title
 
-## Tier placement
+## Role
 
-This package is a **Tier 1 MCP tool server**. It exposes domain-specific tools via the MCP protocol. It has no knowledge of Tier 2 agents or the orchestrator.
+Tier 1 MCP tool server. Verifies mineral rights ownership, identifies title defects, and assesses encumbrances.
+
+## Tools
+
+| Tool | LLM? | Purpose |
+|------|------|---------|
+| `examine_title` | ✅ `callLLM` | Ownership percentage, risk level, encumbrances, title notes |
+
+## LLM pattern
+
+Passes legal description, county, and chain of title age to `callLLM()`. The response is validated against a Zod schema that enforces `ownershipPercentage`, `riskLevel` (`low | medium | high`), `encumbrances`, and `notes` fields.
+
+## Key exports
+
+`deriveDefaultTitleFindings(description, county, chainAge)` — deterministic fallback. Complex multi-parcel descriptions produce lower ownership percentages than simple single-parcel descriptions.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-title
-  └── @shaleyeah/sdk   (MCPServer base, LLMClient, domain types)
+  └── @shaleyeah/sdk   (MCPServer, callLLM)
 ```
-
-## LLM calls
-
-All LLM calls use `callLLM()` from `@shaleyeah/sdk`, which wraps the shared `LLMClient`. No direct Anthropic SDK instantiation.
-
-## Orchestrator connection
-
-This server is consumed by agents in `agents/` via MCP tool calls. It does not import from any agent package.
