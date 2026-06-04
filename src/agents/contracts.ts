@@ -45,6 +45,9 @@ export const AgentToolManifestSchema = z.object({
 	requiredScopes: z.array(z.string().min(1)).default([]),
 	modelRequirement: ModelRequirementSchema,
 	evalProfile: z.string().min(1).optional(),
+	// Which mcpServers key in AgentRuntimeConfig this tool delegates to.
+	// Undefined means the tool is handled locally by the agent (e.g. memory ops).
+	mcpServer: z.string().min(1).optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
@@ -117,8 +120,16 @@ export type HitlPolicy = z.infer<typeof HitlPolicySchema>;
 export const MemoryPolicySchema = z.object({
 	enabled: z.boolean().default(true),
 	namespace: z.string().min(1),
-	vectorStoreEnabled: z.boolean().default(false),
-	vectorStoreProvider: z.string().min(1).optional(),
+	// Agent working memory — prior analysis context, cross-run learning.
+	// Separate from the MCP server's domain knowledge vector store.
+	vectorStore: z
+		.object({
+			enabled: z.boolean().default(false),
+			provider: z.string().min(1).optional(), // e.g. "pgvector", "pinecone", "weaviate"
+			url: z.string().optional(),
+			embeddingModel: z.string().min(1).optional(),
+		})
+		.default({ enabled: false }),
 	retentionDays: z.number().int().positive().default(30),
 	promotion: z.object({
 		requireHumanReview: z.boolean().default(true),
@@ -127,12 +138,34 @@ export const MemoryPolicySchema = z.object({
 });
 export type MemoryPolicy = z.infer<typeof MemoryPolicySchema>;
 
+// MCP server connection — Tier 1 tool server this agent calls into.
+export const McpServerConnectionSchema = z.object({
+	url: z.string().url(),
+	transport: z.enum(["stdio", "sse", "http"]).default("http"),
+	// Auth type only — credentials are injected at runtime, never stored in config.
+	authType: z.enum(["none", "bearer", "oauth2"]).default("none"),
+});
+export type McpServerConnection = z.infer<typeof McpServerConnectionSchema>;
+
+// Data connector — BYO integration (FTP, REST API, database, etc.)
+export const DataConnectorSchema = z.object({
+	type: z.string().min(1), // "ftp", "rest-api", "postgres", "s3", etc.
+	url: z.string().optional(),
+	description: z.string().min(1),
+	// Credentials injected at runtime via execution context, never stored here.
+});
+export type DataConnector = z.infer<typeof DataConnectorSchema>;
+
 export const AgentRuntimeConfigSchema = z.object({
 	autonomy: AgentAutonomyLevelSchema.default("assistive"),
 	modelRouting: z.record(ModelRequirementSchema, ModelBindingSchema),
 	hitl: HitlPolicySchema,
 	evals: EvalPolicySchema,
 	memory: MemoryPolicySchema,
+	// Tier 1 tool servers this agent delegates to. Keys match AgentToolManifest.mcpServer.
+	mcpServers: z.record(z.string(), McpServerConnectionSchema).default({}),
+	// BYO data integrations available to this agent's tool handlers.
+	dataConnectors: z.record(z.string(), DataConnectorSchema).default({}),
 });
 export type AgentRuntimeConfig = z.infer<typeof AgentRuntimeConfigSchema>;
 
