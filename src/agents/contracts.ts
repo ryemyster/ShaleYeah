@@ -39,7 +39,7 @@ export const AgentToolManifestSchema = z.object({
 	capabilities: z.array(z.string().min(1)).default([]),
 	inputSchema: z.record(z.string(), z.unknown()).default({}),
 	outputSchema: z.record(z.string(), z.unknown()).optional(),
-	readOnly: z.boolean(),
+	readOnly: z.boolean().default(false),
 	destructive: z.boolean().default(false),
 	requiresHumanApproval: z.boolean().default(false),
 	requiredScopes: z.array(z.string().min(1)).default([]),
@@ -61,7 +61,7 @@ export const AgentManifestSchema = z.object({
 	compatibility: z.object({
 		agentRuntime: z.string().min(1),
 		remoteEndpoint: z.string().min(1),
-		mcp: z.string().min(1),
+		mcp: z.string().regex(/^\d{4}-\d{2}$/, "mcp version must be YYYY-MM format"),
 	}),
 	health: z.object({
 		readinessChecks: z.array(z.string().min(1)).default([]),
@@ -79,7 +79,10 @@ export const AgentManifestSchema = z.object({
 		defaultLevel: AgentAutonomyLevelSchema,
 		allowedLevels: z.array(AgentAutonomyLevelSchema).min(1),
 	}),
-});
+}).refine(
+	(m) => m.tools.every((t) => t.requiredScopes.every((s) => m.requiredScopes.includes(s))),
+	{ message: "manifest requiredScopes must be a superset of all tool requiredScopes" },
+);
 export type AgentManifest = z.infer<typeof AgentManifestSchema>;
 
 export const ModelBindingSchema = z.object({
@@ -113,7 +116,8 @@ export type HitlPolicy = z.infer<typeof HitlPolicySchema>;
 export const MemoryPolicySchema = z.object({
 	enabled: z.boolean().default(true),
 	namespace: z.string().min(1),
-	vectorStore: z.string().min(1).default("disabled"),
+	vectorStoreEnabled: z.boolean().default(false),
+	vectorStoreProvider: z.string().min(1).optional(),
 	retentionDays: z.number().int().positive().default(30),
 	promotion: z.object({
 		requireHumanReview: z.boolean().default(true),

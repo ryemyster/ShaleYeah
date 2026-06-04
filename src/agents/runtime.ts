@@ -53,6 +53,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 	}
 
 	async health(): Promise<AgentHealth> {
+		const missingHandlers = this.missingHandlers();
 		const checks: AgentHealth["checks"] = [
 			{
 				name: "manifest",
@@ -66,11 +67,11 @@ export class LocalAgentRuntime implements AgentRuntime {
 			},
 			{
 				name: "tool-handlers",
-				status: this.missingHandlers().length === 0 ? "pass" : "fail",
+				status: missingHandlers.length === 0 ? "pass" : "fail",
 				message:
-					this.missingHandlers().length === 0
+					missingHandlers.length === 0
 						? "all tool handlers are registered"
-						: `missing handlers: ${this.missingHandlers().join(", ")}`,
+						: `missing handlers: ${missingHandlers.join(", ")}`,
 			},
 			{
 				name: "model-routing",
@@ -136,12 +137,12 @@ export class LocalAgentRuntime implements AgentRuntime {
 
 		const modelBinding = this.config.modelRouting[tool.modelRequirement];
 		if (!modelBinding) {
-			return this.failed(tool.name, `No organization model route configured for ${tool.modelRequirement}`);
+			return this.failed(tool.name, `No organization model route configured for ${tool.modelRequirement}`, tool.modelRequirement);
 		}
 
 		const handler = this.handlers[tool.name];
 		if (!handler) {
-			return this.failed(tool.name, `No handler registered for ${tool.name}`);
+			return this.failed(tool.name, `No handler registered for ${tool.name}`, tool.modelRequirement);
 		}
 
 		const safeArgs = redactSensitive(request.args) as Record<string, unknown>;
@@ -211,6 +212,10 @@ export class LocalAgentRuntime implements AgentRuntime {
 		const explicitApprovalRequired = tool.requiresHumanApproval;
 		const destructiveApprovalRequired = tool.destructive && this.config.hitl.requireForDestructive;
 		const alwaysApprovalRequired = this.config.hitl.approvalMode === "always";
+		// Tool-level requiresHumanApproval wins over approvalMode: "never". "never" only suppresses
+		// the config-level "always" gate — tools that explicitly require approval still require it.
+		// This is intentional: "never" unlocks the auto-approval path for ordinary tools in trusted
+		// operator contexts, not for tools that declare a mandatory review step.
 		const approvalRequired = explicitApprovalRequired || destructiveApprovalRequired || alwaysApprovalRequired;
 
 		if (!approvalRequired || request.approval?.approved) return null;
@@ -264,7 +269,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 		return results;
 	}
 
-	private failed(toolName: string, error: string): AgentExecutionResult {
+	private failed(toolName: string, error: string, modelRequirement: AgentExecutionMetadata["modelRequirement"] = "deterministic"): AgentExecutionResult {
 		return {
 			status: "failed",
 			error,
@@ -272,7 +277,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 			metadata: {
 				agentId: this.manifest.id,
 				toolName,
-				modelRequirement: "deterministic",
+				modelRequirement,
 				autonomy: this.config.autonomy,
 				timestamp: new Date().toISOString(),
 			},
@@ -315,6 +320,8 @@ export function redactSensitive(value: unknown): unknown {
 
 function containsSensitiveValue(value: unknown): boolean {
 	if (typeof value === "string") {
+		// Minimal pattern set — catches common prefixes only. Expand before enabling blocking
+		// redactSecrets eval in production: add sk-ant- (Anthropic), AIza (Google), AKIA (AWS).
 		return /sk-[a-z0-9_-]+|bearer\s+[a-z0-9._-]+/i.test(value);
 	}
 

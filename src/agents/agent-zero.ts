@@ -54,6 +54,7 @@ export const agentZeroManifest: AgentManifest = {
 		},
 	],
 	requiredScopes: ["read:analysis"],
+	requiredScopes: ["read:analysis", "write:memory"],
 	providerRequirements: [
 		{
 			type: "llm",
@@ -133,7 +134,7 @@ export const agentZeroConfig: AgentRuntimeConfig = {
 	memory: {
 		enabled: true,
 		namespace: "agent-zero",
-		vectorStore: "disabled",
+		vectorStoreEnabled: false,
 		retentionDays: 30,
 		promotion: {
 			requireHumanReview: true,

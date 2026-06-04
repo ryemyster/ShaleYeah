@@ -191,6 +191,56 @@ console.log("\n🧯 Testing invalid runtime config fails early...");
 	}
 }
 
+console.log("\n🚫 Testing approvalMode: 'never' semantics...");
+{
+	const neverApprovalConfig = {
+		...agentZeroConfig,
+		hitl: { ...agentZeroConfig.hitl, approvalMode: "never" as const },
+	};
+	const runtime = createAgentZeroRuntime(neverApprovalConfig);
+	await runtime.initialize();
+
+	// approvalMode: "never" disables the config-level "always" gate, but tool-level
+	// requiresHumanApproval: true still fires — tool intent wins over operator config.
+	const blocked = await runtime.execute({
+		toolName: "agent-zero.promote_memory",
+		args: { lesson: "test" },
+	});
+	assert(
+		blocked.status === "approval_required",
+		"approvalMode: 'never' does not override tool-level requiresHumanApproval: true",
+	);
+
+	// A plain tool (no requiresHumanApproval, non-destructive) should not be blocked.
+	const unblocked = await runtime.execute({
+		toolName: "agent-zero.inspect",
+		args: { subject: "test" },
+	});
+	assert(
+		unblocked.status === "completed",
+		"approvalMode: 'never' lets non-sensitive tools run without a challenge",
+	);
+
+	await runtime.shutdown();
+}
+
+console.log("\n🛑 Testing invalid manifest fails early...");
+{
+	try {
+		new LocalAgentRuntime({
+			manifest: { ...agentZeroManifest, id: "" } as typeof agentZeroManifest,
+			config: agentZeroConfig,
+			handlers: {
+				"agent-zero.inspect": async () => ({}),
+				"agent-zero.promote_memory": async () => ({}),
+			},
+		});
+		assert(false, "Empty manifest id should fail validation");
+	} catch {
+		assert(true, "Invalid manifest id fails at construction");
+	}
+}
+
 console.log("\n🔒 Testing direct redaction helper...");
 {
 	const redacted = redactSensitive({
@@ -202,6 +252,15 @@ console.log("\n🔒 Testing direct redaction helper...");
 	assert(redacted.apiKey === "[REDACTED]", "Top-level sensitive key redacted");
 	assert(redacted.normal === "visible", "Non-sensitive key preserved");
 	assert((redacted.nested as Record<string, unknown>).token === "[REDACTED]", "Nested sensitive key redacted");
+
+	// Arrays of objects must have sensitive keys redacted at each element.
+	const redactedArray = redactSensitive([
+		{ apiKey: "sk-secret", label: "first" },
+		{ token: "bearer abc", label: "second" },
+	]) as Array<Record<string, unknown>>;
+	assert(redactedArray[0].apiKey === "[REDACTED]", "Array element sensitive key redacted");
+	assert(redactedArray[0].label === "first", "Array element non-sensitive key preserved");
+	assert(redactedArray[1].token === "[REDACTED]", "Array element nested sensitive key redacted");
 }
 
 console.log("\n══════════════════════════════════════════════");
