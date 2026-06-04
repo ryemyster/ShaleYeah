@@ -1,128 +1,82 @@
-# Demo vs Production Modes
+# Demo vs Production
 
-SHALE YEAH has two ways to run. This page explains the difference so you know which one to use and what to expect.
+SHALE YEAH has two ways to run. This page explains what each one proves.
 
 ---
 
-## Demo Mode (`npm run demo`)
+## Demo mode (`pnpm demo`)
 
-Demo mode runs without any API key. Instead of calling Claude, each server uses **fixture data** — pre-written inputs that produce realistic but deterministic outputs. The same inputs always produce the same outputs, which makes demo mode great for testing that the plumbing works without spending money on API calls.
+Runs the **geologist agent standalone** — no API key, no kernel, no orchestrator.
 
-**When to use it:**
+```bash
+pnpm demo
+# Demo result: completed
+# Evals: [ 'schema: pass', 'redactSecrets: pass' ]
+# ✅ Geologist agent demo complete
+```
 
-- Verifying the system runs after a code change (the pre-commit gate runs `npm run demo`)
-- Showing the system to someone without needing a live API key
-- Developing and testing new code before wiring up the real LLM
+**What it proves:**
+- The two-tier architecture works: `agents/geologist/` wraps `servers/geowiz/` tools via direct TypeScript imports
+- The `LocalAgentRuntime` contract executes tools and enforces eval policies
+- The `AgentManifest` configuration boots without external dependencies
 
 **What it does NOT do:**
+- Call the Anthropic API — no real LLM synthesis happens
+- Run all 14 agents — only geologist is fully implemented; the other 12 are stubs pending migration issues #364–#375
+- Read real input files — `demo-placeholder.las` is a placeholder filename; the agent handles missing files gracefully
 
-- Call the Anthropic API — no real AI analysis happens
-- Read real LAS or Excel files — fixture data is used instead
-- Produce different output if you change the input — it's deterministic by design
+**When to use it:**
+- Verifying the system runs after a code change
+- CI smoke test (no API key needed)
+- Demonstrating standalone agent architecture to a new contributor
+
+---
+
+## Production mode (MCP server + live LLM)
+
+Each server runs as a standalone MCP server with real Anthropic API calls:
 
 ```bash
-npm run demo
-# Results appear in: outputs/demo/demo-YYYYMMDDTHHMMSS/
+cd servers/geowiz
+ANTHROPIC_API_KEY=sk-ant-... pnpm start
 ```
 
-**Output files:**
+**What it does:**
+- Boots the server's MCP transport (stdio)
+- Accepts tool calls from a connected MCP client (Claude Desktop, VS Code, etc.)
+- For each tool call: tries LLM synthesis via `callLLM()`, falls back to deterministic estimates if the key is absent or the network is down
 
-| File | What It Contains |
-| ---- | ---------------- |
-| `INVESTMENT_DECISION.md` | Go/no-go recommendation with confidence scores |
-| `DETAILED_ANALYSIS.md` | Findings from all 14 expert domains |
-| `FINANCIAL_MODEL.json` | Financial model with NPV, IRR, and other metrics |
+**Connecting to Claude Desktop:**
 
----
-
-## Production Mode (`npm run prod`)
-
-Production mode calls the real Claude API. Each server that has `callLLM` wired will generate a genuine AI response based on the actual data you provide. Servers that are not yet wired fall back to rule-based estimates (see LLM Integration Status below).
-
-**Requirements:**
-
-- `ANTHROPIC_API_KEY` set in your `.env` file — required for real AI output
-- `EIA_API_KEY` set in your `.env` file — optional, enables live commodity prices in `market.ts`
-- Real data files in `data/samples/` (see below)
-
-```bash
-# .env (never commit this file)
-ANTHROPIC_API_KEY=sk-ant-...
-EIA_API_KEY=your_eia_key_here   # optional
+```json
+{
+  "mcpServers": {
+    "geowiz": {
+      "command": "pnpm",
+      "args": ["--filter", "@shaleyeah/server-geowiz", "start"],
+      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+    }
+  }
+}
 ```
 
-```bash
-npm run prod
-# Results appear in: outputs/reports/
-```
+**All 14 servers:**
 
-**Required data files:**
+| Filter | Purpose |
+|--------|---------|
+| `@shaleyeah/server-geowiz` | Geological analysis |
+| `@shaleyeah/server-econobot` | Economic analysis |
+| `@shaleyeah/server-curve-smith` | Decline curves |
+| `@shaleyeah/server-decision` | Investment decision |
+| `@shaleyeah/server-reporter` | Report generation |
+| `@shaleyeah/server-research` | Web research |
+| `@shaleyeah/server-risk-analysis` | Monte Carlo risk |
+| `@shaleyeah/server-legal` | Legal/regulatory |
+| `@shaleyeah/server-market` | Commodity prices |
+| `@shaleyeah/server-title` | Title analysis |
+| `@shaleyeah/server-development` | Development planning |
+| `@shaleyeah/server-drilling` | Drilling engineering |
+| `@shaleyeah/server-infrastructure` | Midstream infrastructure |
+| `@shaleyeah/server-qa` | Quality assurance |
 
-| File | Format | Used By |
-| ---- | ------ | ------- |
-| `data/samples/demo.las` | LAS 2.0 well log | `geowiz`, `curve-smith` |
-| `data/samples/economics.csv` | CSV with Parameter/Value/Unit columns | `econobot` |
-
----
-
-## LLM Integration Status
-
-This table shows which servers actually call Claude and which still use rule-based fallbacks. When a server has `callLLM` wired, it sends the real data to Claude and uses the AI-generated response. When it doesn't, it computes an estimate from the numbers directly.
-
-| Server | Calls Claude? | What Claude Does |
-| ------ | ------------- | ---------------- |
-| `geowiz` | ✅ Yes | Synthesizes TOC estimate and geological recommendation from formation data |
-| `econobot` | ✅ Yes | Generates PROCEED/CONDITIONAL/DECLINE recommendation from financial metrics |
-| `curve-smith` | ✅ Yes | Interprets decline character, suggests basin analog, and flags anomalies from fitted Arps parameters |
-| `risk-analysis` | ✅ Yes | Interprets full risk profile, identifies top risk factor, and generates plain-English investment memo narrative from computed scores |
-| `decision` | ✅ Yes | Synthesizes all upstream domain data, identifies biggest risk and upside, and generates plain-English investment verdict from NPV/IRR/risk/geological inputs |
-| `reporter` | ✅ Yes | Writes a professional analyst narrative (under 500 words) from the full investment verdict — NPV, IRR, payback, risk factors, next steps. Falls back to a rule-based summary with real numbers when the API is unavailable. |
-| `legal` | ✅ Yes | Assesses regulatory exposure by jurisdiction and project type — replaces generic permit list with LLM risk rating |
-| `market` | ✅ Yes | Interprets live EIA prices into trend, volatility, 12-month outlook, and competitive activity narrative |
-| `title` | ✅ Yes | Evaluates realistic county-level title risk including ownership %, encumbrances, and notes |
-| `drilling` | ✅ Yes | Interprets drilling program risk from well type, depth, and formation — flags formation-specific hazards |
-| `infrastructure` | ✅ Yes | Assesses takeaway constraints and midstream risk based on well count, production, and location |
-| `development` | ✅ Yes | Assesses schedule and budget risk from project parameters — criticalPath from LLM, not hardcoded |
-| `research` | ✅ Yes | Synthesizes fetched web content into actionable market intelligence with key findings and recommendations |
-| `test` | ✅ Yes | Validates QA configuration and flags inconsistencies — overallStatus driven by LLM, not hardcoded PASS |
-
-**What "falls back" means:** If `ANTHROPIC_API_KEY` is absent or the API call fails, the server computes a rule-based estimate from the input data and returns that instead of crashing. The result is still a valid analysis — it just wasn't written by Claude.
-
----
-
-## Side-by-Side Comparison
-
-| | Demo Mode | Production Mode |
-| --- | --------- | --------------- |
-| **API key needed?** | No | Yes (for real AI output) |
-| **Data source** | Fixture data (pre-written) | Your real LAS/CSV files |
-| **LLM calls** | None | Yes (for wired servers) |
-| **Output location** | `outputs/demo/` | `outputs/reports/` |
-| **Speed** | ~0 seconds | Seconds to minutes |
-| **API cost** | $0 | Small (Claude API usage) |
-| **Good for** | Testing, CI, demos | Real investment analysis |
-
----
-
-## Setting Up Production
-
-```bash
-# 1. Create .env with your API key
-echo "ANTHROPIC_API_KEY=sk-ant-your-key-here" > .env
-
-# 2. Add your data files
-cp your-well-logs.las data/samples/demo.las
-cp your-economics.csv data/samples/economics.csv
-
-# 3. Verify the files exist
-ls data/samples/
-
-# 4. Run production analysis
-npm run prod
-```
-
-If you don't have real LAS or CSV files yet, see [docs/GETTING_STARTED.md](GETTING_STARTED.md) for example file formats.
-
----
-
-Generated with SHALE YEAH 2025 Ryan McDonald - Apache-2.0
+See [MCP_INTEGRATION.md](./MCP_INTEGRATION.md) for full client setup instructions.

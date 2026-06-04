@@ -4,7 +4,7 @@ SHALE YEAH has 14 AI agents, each one a specialist in a different part of oil an
 
 Every agent is built the same way:
 
-- It lives in `src/servers/<name>.ts`
+- It lives in `servers/<name>/src/index.ts`
 - It inherits from `MCPServer` (the base class in `src/shared/mcp-server.ts`), which handles the boring setup like registering tools and managing data directories
 - It calls `callLLM()` (from `src/shared/llm-client.ts`) to send data to Claude and get back an AI-generated analysis — or falls back to a rule-based estimate if no API key is set
 - It has a Roman Imperial persona — a name, title, and area of expertise that shows up in its output
@@ -30,7 +30,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 
 **LLM status:** ✅ Calls Claude. The LLM synthesizes the TOC estimate and writes a plain-English recommendation based on the formation data. Falls back to `deriveDefaultFormationProperties(formations, depthHint)` if no API key — uses formation-keyword and depth-tier lookup tables (shallow/mid/deep) to estimate TOC, porosity, and permeability so analysis always completes even without a real LAS file or API key.
 
-**Code:** [src/servers/geowiz.ts](../src/servers/geowiz.ts)
+**Code:** [servers/geowiz/src/index.ts](../servers/geowiz/src/index.ts)
 
 **Tests:** [tests/geowiz-anti-stub.test.ts](../tests/geowiz-anti-stub.test.ts)
 
@@ -51,7 +51,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 
 **LLM status:** ✅ Calls Claude. The LLM reads the financial metrics and returns PROCEED, CONDITIONAL, or DECLINE with a rationale. Falls back to rule-based thresholds if no API key.
 
-**Code:** [src/servers/econobot.ts](../src/servers/econobot.ts)
+**Code:** [servers/econobot/src/index.ts](../servers/econobot/src/index.ts)
 
 **Tests:** [tests/econobot-anti-stub.test.ts](../tests/econobot-anti-stub.test.ts)
 
@@ -69,7 +69,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 
 **LLM status:** ✅ Wired (issue [#213](https://github.com/ryemyster/ShaleYeah/issues/213)). After fitting Arps decline parameters (qi, Di, b) from production data, `synthesizeInterpretationWithLLM()` sends those parameters to Claude. Claude returns a plain-English description of the decline character (e.g. "hyperbolic with strong early transient flow"), the nearest basin analog, and any anomaly flags. Falls back to `deriveDefaultInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
-**Code:** [src/servers/curve-smith.ts](../src/servers/curve-smith.ts)
+**Code:** [servers/curve-smith/src/index.ts](../servers/curve-smith/src/index.ts)
 
 ---
 
@@ -86,7 +86,7 @@ These four agents do the most important work and run first (Phase 1 of a full an
 
 **LLM status:** ✅ Wired (issue [#214](https://github.com/ryemyster/ShaleYeah/issues/214)). After computing input-derived risk scores for all six categories (geological, technical, economic, regulatory, environmental, operational), `synthesizeRiskInterpretationWithLLM()` sends the full risk profile to Claude. Claude returns a plain-English `{ topRisk, mitigationPriority, riskNarrative }` interpretation. Falls back to `deriveDefaultRiskInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
-**Code:** [src/servers/risk-analysis.ts](../src/servers/risk-analysis.ts)
+**Code:** [servers/risk-analysis/src/index.ts](../servers/risk-analysis/src/index.ts)
 
 ---
 
@@ -104,7 +104,7 @@ These run after the core analysis is complete and synthesize everything into a f
 
 **LLM status:** ✅ Wired (issue [#215](https://github.com/ryemyster/ShaleYeah/issues/215)). After the rule-based scoring computes a preliminary INVEST/PASS/CONDITIONAL verdict, `synthesizeDecisionWithLLM()` sends all upstream numbers (NPV, IRR, payback, risk score, geological confidence, oil/gas price) to Claude. Claude returns a structured `{ verdict, biggestRisk, biggestUpside, rationale }` — and can upgrade or downgrade the preliminary call if the full picture warrants it. Confidence score scales with input completeness: 50% base + 10% per upstream domain present. Falls back to `deriveDefaultDecisionInterpretation()` when the API is unavailable — no crash, just rule-based defaults.
 
-**Code:** [src/servers/decision.ts](../src/servers/decision.ts)
+**Code:** [servers/decision/src/index.ts](../servers/decision/src/index.ts)
 
 **Tests:** [tests/decision-anti-stub.test.ts](../tests/decision-anti-stub.test.ts)
 
@@ -122,7 +122,7 @@ These run after the core analysis is complete and synthesize everything into a f
 
 **LLM status:** ✅ Wired (issue [#216](https://github.com/ryemyster/ShaleYeah/issues/216)) — `synthesizeReportWithLLM()` sends the full investment verdict (NPV, IRR, payback, confidence, risk factors, next steps, key findings) to Claude and gets back a professional analyst narrative under 500 words. Falls back to `deriveDefaultExecutiveSummary()` — a rule-based summary that still includes the real numbers — when the API is unavailable. Tested in [tests/reporter-anti-stub.test.ts](../tests/reporter-anti-stub.test.ts).
 
-**Code:** [src/servers/reporter.ts](../src/servers/reporter.ts)
+**Code:** [servers/reporter/src/index.ts](../servers/reporter/src/index.ts)
 
 ---
 
@@ -136,7 +136,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Gathers information about comparable wells, competitors, and technology trends in the target area.
 
-**Code:** [src/servers/research.ts](../src/servers/research.ts)
+**Code:** [servers/research/src/index.ts](../servers/research/src/index.ts)
 
 ---
 
@@ -146,7 +146,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Reviews contract terms, regulatory requirements, and legal risks associated with the investment.
 
-**Code:** [src/servers/legal.ts](../src/servers/legal.ts)
+**Code:** [servers/legal/src/index.ts](../servers/legal/src/index.ts)
 
 ---
 
@@ -156,7 +156,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Analyzes current and forecast commodity prices (oil and gas). Can pull live WTI and Henry Hub prices if `EIA_API_KEY` is set. Falls back to hardcoded price constants without it.
 
-**Code:** [src/servers/market.ts](../src/servers/market.ts)
+**Code:** [servers/market/src/index.ts](../servers/market/src/index.ts)
 
 ---
 
@@ -166,7 +166,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Verifies that the mineral rights ownership is clean — no disputes, liens, or gaps in the chain of title that could block the investment.
 
-**Code:** [src/servers/title.ts](../src/servers/title.ts)
+**Code:** [servers/title/src/index.ts](../servers/title/src/index.ts)
 
 ---
 
@@ -176,7 +176,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Plans how the development program would be structured — well count, spacing, timing, capital allocation.
 
-**Code:** [src/servers/development.ts](../src/servers/development.ts)
+**Code:** [servers/development/src/index.ts](../servers/development/src/index.ts)
 
 ---
 
@@ -186,7 +186,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Analyzes the drilling program: well design, depth, completion strategy, and cost optimization.
 
-**Code:** [src/servers/drilling.ts](../src/servers/drilling.ts)
+**Code:** [servers/drilling/src/index.ts](../servers/drilling/src/index.ts)
 
 ---
 
@@ -196,7 +196,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Evaluates what surface facilities are needed — pipelines, separators, storage — and estimates their cost.
 
-**Code:** [src/servers/infrastructure.ts](../src/servers/infrastructure.ts)
+**Code:** [servers/infrastructure/src/index.ts](../servers/infrastructure/src/index.ts)
 
 ---
 
@@ -206,7 +206,7 @@ These eight agents run in Phase 2 and provide specialized analysis that feeds in
 
 **What it does:** Runs a final validation pass over all analysis outputs. Flags anything that looks inconsistent, missing, or below confidence thresholds before the reporter generates the final report.
 
-**Code:** [src/servers/test.ts](../src/servers/test.ts)
+**Code:** [servers/qa-server/src/index.ts](../servers/qa-server/src/index.ts)
 
 ---
 
@@ -253,10 +253,10 @@ ANTHROPIC_API_KEY=sk-ant-... npx tsx tests/e2e-production.test.ts
 
 If you need to add a 15th agent:
 
-1. Copy an existing server file, e.g.: `cp src/servers/research.ts src/servers/myagent.ts`
+1. Copy an existing server file, e.g.: `cp servers/research/src/index.ts servers/myagent/src/index.ts`
 1. Change the class name, persona, and tool registration in the new file
 1. Add it to `src/mcp-client.ts` (the `serverConfigs` array) so the kernel knows it exists
-1. Add `npm run server:myagent` to `package.json` scripts
+1. Add `cd servers/ && pnpm --filter @shaleyeah/server-myagent` to `package.json` scripts
 1. Write a test in `tests/myagent-anti-stub.test.ts` following the pattern in `tests/geowiz-anti-stub.test.ts`
 1. Update this file (`docs/SERVERS.md`) with the new agent's entry
 
