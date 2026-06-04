@@ -53,7 +53,6 @@ export const agentZeroManifest: AgentManifest = {
 			evalProfile: "agent-zero-memory",
 		},
 	],
-	requiredScopes: ["read:analysis"],
 	requiredScopes: ["read:analysis", "write:memory"],
 	providerRequirements: [
 		{
