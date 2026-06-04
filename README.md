@@ -78,6 +78,8 @@ ShaleYeah/
 | See all 14 agents and what they each do | [docs/SERVERS.md](docs/SERVERS.md) |
 | Understand how the agents and kernel work together | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Understand the distributed standalone-agent refactor | [docs/DISTRIBUTED_AGENTS.md](docs/DISTRIBUTED_AGENTS.md) |
+| Review the minimal AgentRuntime contract sample before Geowiz migration | [docs/AGENT_ZERO.md](docs/AGENT_ZERO.md) |
+| Deploy one standalone agent on Linux | [docs/STANDALONE_AGENT_DEPLOYMENT.md](docs/STANDALONE_AGENT_DEPLOYMENT.md) |
 | Use the kernel from my own code | [docs/API_REFERENCE.md](docs/API_REFERENCE.md) |
 | Get free live oil and gas prices (EIA API) | [docs/EIA_API_SETUP.md](docs/EIA_API_SETUP.md) |
 | See which Agent OS patterns are implemented | [docs/ARCADE-PATTERNS.md](docs/ARCADE-PATTERNS.md) |
@@ -115,7 +117,9 @@ See [docs/SERVERS.md](docs/SERVERS.md) for details on each one.
 
 ## Running individual agents
 
-Each agent can also run on its own as a standalone MCP server. This is useful if you want to connect one agent to Claude Desktop or another MCP client:
+Each agent can also run on its own MCP server. This is useful if you want to connect one agent to Claude Desktop or another MCP client.
+
+The current commands below run the legacy per-agent MCP servers. The distributed refactor is moving each agent toward its own standalone package with its own manifest, config, memory, evals, Linux deployment tutorial, and MCP service. See [docs/STANDALONE_AGENT_DEPLOYMENT.md](docs/STANDALONE_AGENT_DEPLOYMENT.md) for the target standalone-agent deployment standard.
 
 ```bash
 npm run server:geowiz        # Geological analysis
