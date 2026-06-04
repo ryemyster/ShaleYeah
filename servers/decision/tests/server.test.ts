@@ -12,8 +12,8 @@
  */
 
 import assert from "node:assert";
-import { calculateRecommendedBid, countDomainsPresent } from "../src/index.js";
 import { callLLM } from "@shaleyeah/sdk";
+import { calculateRecommendedBid, countDomainsPresent } from "../src/index.js";
 
 let passed = 0;
 let failed = 0;

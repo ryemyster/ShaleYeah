@@ -4,10 +4,8 @@
  * Agent Zero proves the contract shape before Geowiz migrates onto it.
  */
 
-import { createAgentZeroEndpoint, createAgentZeroRuntime } from "../src/index.js";
-import { AgentManifestSchema, AgentRuntimeConfigSchema } from "@shaleyeah/sdk";
-import { agentZeroConfig, agentZeroManifest } from "../src/index.js";
-import { LocalAgentRuntime, redactSensitive } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime, redactSensitive } from "@shaleyeah/sdk";
+import { agentZeroConfig, agentZeroManifest, createAgentZeroEndpoint, createAgentZeroRuntime } from "../src/index.js";
 
 let passed = 0;
 let failed = 0;

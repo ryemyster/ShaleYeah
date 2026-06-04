@@ -1,52 +1,48 @@
 # SHALE YEAH — Claude Code Instructions
 
-Oil & gas investment analysis platform. 14 MCP servers behind an Agent OS kernel. Apache-2.0 / Ryan McDonald.
+pnpm workspace monorepo. 14 Tier 1 MCP servers + 14 Tier 2 agent packages + shared sdk. Apache-2.0 / Ryan McDonald.
 
 ## Architecture
 
-**Kernel** (`src/kernel/`) is the runtime — routes all execution: discovery, scatter-gather, bundles, sessions, RBAC, audit.
+**Two-tier.** See `ARCHITECTURE.md` for full topology.
 
-**14 MCP Servers** — all inherit `MCPServer` (`src/shared/mcp-server.ts`), have Roman personas, use `registerTool()`:
-- Core: `geowiz`, `econobot`, `curve-smith`, `decision`, `reporter`, `risk-analysis`, `research`
-- Support: `legal`, `market`, `title`, `development`, `drilling`, `infrastructure`, `test`
+- `sdk/` — `@shaleyeah/sdk`: contracts, LLM client, MCP base, parsers
+- `servers/<name>/` — Tier 1 MCP tool servers (14 total)
+- `agents/<name>/` — Tier 2 agent packages (geologist + agent-zero implemented; 12 stubs)
+- `orchestrator/` — stub, Temporal workflows (#362)
 
-**Entry points:**
-- `src/demo-runner.ts` — demo mode, fixture inputs, no API key required
-- `src/main.ts` — production CLI, requires `ANTHROPIC_API_KEY`
-- `src/mcp-client.ts` — `ShaleYeahMCPClient` wraps Kernel, `executeAnalysis()` → `kernel.fullAnalysis()`
-
-**LLM calls:** Only via `src/shared/llm-client.ts` (shared utility, wraps `@anthropic-ai/sdk`).
+**LLM calls:** Only via `callLLM()` from `@shaleyeah/sdk`. Never instantiate `@anthropic-ai/sdk` directly in server or agent code.
 
 ## SDLC
 
-Branch from `develop`, PR targets `develop` — always `--base develop`. See `.claude/rules/sdlc.md` for full workflow.
+Branch from `develop`, PR targets `develop` — always `--base develop`. See `.claude/rules/sdlc.md`.
 
-**Skills:** `/create-issue` `/new-issue-branch` `/pre-commit` `/finish-issue` `/compact` `/test-kernel`
+**Skills:** `/create-issue` `/new-issue-branch` `/pre-commit` `/finish-issue` `/compact`
 
 ## Standards
 
-- TypeScript strict mode — no `any`, explicit interfaces, Zod at all boundaries. Exception: `src/shared/mcp-server.ts` and `src/shared/server-factory.ts` use `any` for Zod runtime interop; all other files are `any`-free. No `z.any()` in Zod schemas — use explicit types.
-- No `Math.random()` in business logic — deterministic constants or real computation only. Exception: `sampleUniform`, `sampleTriangular`, `sampleNormal` in `src/servers/risk-analysis.ts` are intentional Monte Carlo samplers and are explicitly named as such.
-- Tests use simple assert pattern (not jest/vitest) — run via `npx tsx tests/<name>.test.ts`
-- New servers: inherit `MCPServer`, add Roman persona, use `registerTool()`
-- Code comments explain the "why", not the "what" — write for a reader who has never seen this codebase. Bad: `// set toc based on depth`. Good: `// Deeper rock has had more time to cook organic material, so we estimate higher TOC for deeper wells.`
+- TypeScript strict mode — no `any`. Exception: `sdk/src/mcp-server.ts` and `sdk/src/server-factory.ts` use `any` for Zod runtime interop.
+- No `Math.random()` in business logic. Exception: `sampleUniform`, `sampleTriangular`, `sampleNormal` in `servers/risk-analysis/src/index.ts` are intentional Monte Carlo samplers.
+- Tests use simple `node:assert` pattern — no jest/vitest. Run via `npx tsx <path>.test.ts`.
+- New servers: inherit `MCPServer` from `@shaleyeah/sdk`, Roman persona, `registerTool()`, add to `servers/` as its own package.
+- Comments explain the "why" — write for a reader who has never seen this codebase.
 
 ## Key Commands
 
 ```bash
-npm run demo                          # smoke test — all 14 servers must complete
-npm run test                          # all suites (auto-discovered via scripts/run-tests.sh)
-npx tsx tests/<name>.test.ts          # run one suite directly — no npm alias needed
-npm run build && npm run type-check   # compile gate
-npm run lint                          # Biome
-npm run server:geowiz                 # test individual server (all 14 available)
-npm run prod -- --files="*.las"       # production analysis
+pnpm turbo build                      # build all 30 packages (sdk → servers → agents)
+pnpm turbo test                       # all test suites
+pnpm turbo lint                       # Biome across all packages
+cd servers/geowiz && pnpm start       # run individual MCP server
+cd agents/geologist && pnpm test      # test individual package
+npx tsx servers/geowiz/tests/server.test.ts   # run one suite directly
 ```
 
 ## Key Files
 
 | Path | Purpose |
 |------|---------|
-| `src/shared/llm-client.ts` | Shared Anthropic SDK wrapper — source of truth for all LLM calls |
-| `docs/ARCHITECTURE.md` | Living architecture reference |
-| `CHANGELOG.md` | Updated per issue before PR |
+| `sdk/src/llm-client.ts` | Shared Anthropic SDK wrapper — source of truth for all LLM calls |
+| `sdk/src/contracts.ts` | AgentManifest, AgentRuntimeConfig Zod schemas |
+| `ARCHITECTURE.md` | Fleet topology, orchestrator workflow, package structure |
+| `CHANGELOG.md` | Updated per issue before PR (root + per-package) |

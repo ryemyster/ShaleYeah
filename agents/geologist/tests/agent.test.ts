@@ -5,14 +5,13 @@
  * and that the geologist manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createGeologistEndpoint,
 	createGeologistRuntime,
 	geologistConfig,
 	geologistManifest,
 } from "../src/agent/index.js";
-import { LocalAgentRuntime } from "@shaleyeah/sdk";
 
 let passed = 0;
 let failed = 0;

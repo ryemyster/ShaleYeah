@@ -12,13 +12,13 @@
  */
 
 import assert from "node:assert";
+import { callLLM } from "@shaleyeah/sdk";
 import {
 	assessEnvironmentalRisk,
 	assessOperationalRisk,
 	assessRegulatoryRisk,
 	assessTechnicalRisk,
 } from "../src/index.js";
-import { callLLM } from "@shaleyeah/sdk";
 
 let passed = 0;
 let failed = 0;

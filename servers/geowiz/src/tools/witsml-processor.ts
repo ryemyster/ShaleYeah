@@ -77,16 +77,10 @@ export async function processWITSMLFile(filePath: string): Promise<WITSMLData> {
 
 function parseWITSMLContent(xmlContent: string): WITSMLData {
 	// Extract WITSML version
-	const version =
-		extractAttribute(xmlContent, "witsml", "version") ||
-		extractValue(xmlContent, "version") ||
-		"1.4.1.1";
+	const version = extractAttribute(xmlContent, "witsml", "version") || extractValue(xmlContent, "version") || "1.4.1.1";
 
 	// Extract well information
-	const wellName =
-		extractValue(xmlContent, "name") ||
-		extractValue(xmlContent, "wellName") ||
-		"UNKNOWN_WELL";
+	const wellName = extractValue(xmlContent, "name") || extractValue(xmlContent, "wellName") || "UNKNOWN_WELL";
 
 	// Extract well metadata
 	const metadata = extractWellMetadata(xmlContent);
@@ -98,16 +92,13 @@ function parseWITSMLContent(xmlContent: string): WITSMLData {
 	const curves = extractCurves(xmlContent);
 
 	// Extract actual log data
-	const { depthData, curveData, depthStart, depthStop, depthStep, depthUnit } =
-		extractLogData(xmlContent, curves);
+	const { depthData, curveData, depthStart, depthStop, depthStep, depthUnit } = extractLogData(xmlContent, curves);
 
 	// Update curves with actual data
 	curves.forEach((curve, _index) => {
 		if (curveData[curve.mnemonic]) {
 			curve.data = curveData[curve.mnemonic];
-			const validData = curve.data.filter(
-				(v) => !Number.isNaN(v) && v !== -999.25,
-			);
+			const validData = curve.data.filter((v) => !Number.isNaN(v) && v !== -999.25);
 			curve.validPoints = validData.length;
 			curve.nullPoints = curve.data.length - validData.length;
 
@@ -141,9 +132,7 @@ function parseWITSMLContent(xmlContent: string): WITSMLData {
 
 function extractWellMetadata(xmlContent: string): Record<string, unknown> {
 	return {
-		wellId:
-			extractValue(xmlContent, "uid") ||
-			extractAttribute(xmlContent, "well", "uid"),
+		wellId: extractValue(xmlContent, "uid") || extractAttribute(xmlContent, "well", "uid"),
 		operator: extractValue(xmlContent, "operator"),
 		field: extractValue(xmlContent, "field"),
 		location: extractValue(xmlContent, "location"),
@@ -184,9 +173,7 @@ function extractCurves(xmlContent: string): WITSMLCurve[] {
 		const mnemonic = extractValue(curveContent, "mnemonic") || "UNKNOWN";
 		const unit = extractValue(curveContent, "unit") || "";
 		const description =
-			extractValue(curveContent, "curveDescription") ||
-			extractValue(curveContent, "typeLogData") ||
-			mnemonic;
+			extractValue(curveContent, "curveDescription") || extractValue(curveContent, "typeLogData") || mnemonic;
 
 		curves.push({
 			name: mnemonic,
@@ -259,8 +246,7 @@ function extractLogData(
 					if (index < values.length) {
 						const value = values[index];
 						// Handle null values
-						const processedValue =
-							value === -999.25 || Number.isNaN(value) ? NaN : value;
+						const processedValue = value === -999.25 || Number.isNaN(value) ? NaN : value;
 						curveData[curve.mnemonic].push(processedValue);
 					}
 				});
@@ -270,9 +256,7 @@ function extractLogData(
 
 	// If no actual data found, generate sample structure
 	if (depthData.length === 0 && depthStart !== depthStop) {
-		console.warn(
-			"No actual log data found in WITSML file. Generating sample structure.",
-		);
+		console.warn("No actual log data found in WITSML file. Generating sample structure.");
 		// This would typically be populated with actual WITSML data parsing
 	}
 
@@ -293,15 +277,8 @@ function extractValue(xmlContent: string, tagName: string): string | null {
 	return match ? match[1].trim() : null;
 }
 
-function extractAttribute(
-	xmlContent: string,
-	tagName: string,
-	attributeName: string,
-): string | null {
-	const regex = new RegExp(
-		`<${tagName}[^>]*${attributeName}="([^"]*)"[^>]*>`,
-		"i",
-	);
+function extractAttribute(xmlContent: string, tagName: string, attributeName: string): string | null {
+	const regex = new RegExp(`<${tagName}[^>]*${attributeName}="([^"]*)"[^>]*>`, "i");
 	const match = regex.exec(xmlContent);
 	return match ? match[1] : null;
 }
@@ -323,8 +300,7 @@ function calculateStatistics(data: number[]): {
 			? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
 			: sorted[Math.floor(sorted.length / 2)];
 
-	const variance =
-		data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
+	const variance = data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
 	const stdDev = Math.sqrt(variance);
 	const range = Math.max(...data) - Math.min(...data);
 
@@ -354,12 +330,7 @@ function calculateQualityMetrics(
 
 	// Consistency: measure of curves with valid data
 	const consistency =
-		curves.length > 0
-			? curves.reduce(
-					(sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0),
-					0,
-				) / curves.length
-			: 0;
+		curves.length > 0 ? curves.reduce((sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0), 0) / curves.length : 0;
 
 	// Overall confidence
 	const confidence = (completeness + continuity + consistency) / 3;
@@ -378,9 +349,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: witsml-processor <file.xml> [--json|--summary|--quality]",
-		);
+		console.error("Usage: witsml-processor <file.xml> [--json|--summary|--quality]");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
 		console.error("  --summary  Output metadata summary (default)");

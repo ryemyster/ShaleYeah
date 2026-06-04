@@ -36,21 +36,11 @@ export function parseProductionData(csvData: string): ProductionData[] {
 	const lines = csvData.trim().split("\n");
 	const headers = lines[0].toLowerCase().split(",");
 
-	const dateCol = headers.findIndex(
-		(h) => h.includes("date") || h.includes("time"),
-	);
-	const daysCol = headers.findIndex(
-		(h) => h.includes("days") || h.includes("day"),
-	);
-	const oilCol = headers.findIndex(
-		(h) => h.includes("oil") || h.includes("bopd"),
-	);
-	const gasCol = headers.findIndex(
-		(h) => h.includes("gas") || h.includes("mcfd"),
-	);
-	const waterCol = headers.findIndex(
-		(h) => h.includes("water") || h.includes("bwpd"),
-	);
+	const dateCol = headers.findIndex((h) => h.includes("date") || h.includes("time"));
+	const daysCol = headers.findIndex((h) => h.includes("days") || h.includes("day"));
+	const oilCol = headers.findIndex((h) => h.includes("oil") || h.includes("bopd"));
+	const gasCol = headers.findIndex((h) => h.includes("gas") || h.includes("mcfd"));
+	const waterCol = headers.findIndex((h) => h.includes("water") || h.includes("bwpd"));
 
 	return lines
 		.slice(1)
@@ -70,10 +60,7 @@ export function parseProductionData(csvData: string): ProductionData[] {
 /**
  * Fit exponential decline curve: q(t) = qi * exp(-D * t)
  */
-export function fitExponentialDecline(
-	data: ProductionData[],
-	product: "oil" | "gas",
-): CurveFitResult {
+export function fitExponentialDecline(data: ProductionData[], product: "oil" | "gas"): CurveFitResult {
 	const validData = data.filter((d) => d[product] > 0 && d.days >= 0);
 
 	if (validData.length < 3) {
@@ -143,10 +130,7 @@ export function fitExponentialDecline(
 /**
  * Fit hyperbolic decline curve: q(t) = qi / (1 + b * Di * t)^(1/b)
  */
-export function fitHyperbolicDecline(
-	data: ProductionData[],
-	product: "oil" | "gas",
-): CurveFitResult {
+export function fitHyperbolicDecline(data: ProductionData[], product: "oil" | "gas"): CurveFitResult {
 	const validData = data.filter((d) => d[product] > 0 && d.days >= 0);
 
 	if (validData.length < 4) {
@@ -176,15 +160,11 @@ export function fitHyperbolicDecline(
 	}
 
 	const predicted = t.map((ti) => qi / (1 + b * bestDi * ti) ** (1 / b));
-	const rmse = Math.sqrt(
-		q.reduce((sum, qi, i) => sum + (qi - predicted[i]) ** 2, 0) / q.length,
-	);
+	const rmse = Math.sqrt(q.reduce((sum, qi, i) => sum + (qi - predicted[i]) ** 2, 0) / q.length);
 
 	// Calculate EUR using Arps formula
 	const timeHorizon = 30; // years
-	const eur =
-		(qi / ((1 - b) * bestDi)) *
-		(1 - (1 + b * bestDi * timeHorizon) ** ((1 - b) / b));
+	const eur = (qi / ((1 - b) * bestDi)) * (1 - (1 + b * bestDi * timeHorizon) ** ((1 - b) / b));
 
 	// Generate forecast
 	const forecast: ProductionData[] = [];
@@ -223,20 +203,14 @@ export function fitHyperbolicDecline(
 function calculateR2(observed: number[], predicted: number[]): number {
 	const mean = observed.reduce((sum, val) => sum + val, 0) / observed.length;
 	const ss_tot = observed.reduce((sum, val) => sum + (val - mean) ** 2, 0);
-	const ss_res = observed.reduce(
-		(sum, val, i) => sum + (val - predicted[i]) ** 2,
-		0,
-	);
+	const ss_res = observed.reduce((sum, val, i) => sum + (val - predicted[i]) ** 2, 0);
 	return 1 - ss_res / ss_tot;
 }
 
 /**
  * Determine quality grade based on R² and data points
  */
-function getQualityGrade(
-	r2: number,
-	dataPoints: number,
-): "Excellent" | "Good" | "Fair" | "Poor" {
+function getQualityGrade(r2: number, dataPoints: number): "Excellent" | "Good" | "Fair" | "Poor" {
 	if (r2 > 0.9 && dataPoints >= 12) return "Excellent";
 	if (r2 > 0.8 && dataPoints >= 6) return "Good";
 	if (r2 > 0.6 && dataPoints >= 3) return "Fair";
@@ -249,14 +223,10 @@ function getQualityGrade(
 async function main() {
 	const filePath = process.argv[2];
 	const product = (process.argv[3] || "oil") as "oil" | "gas";
-	const curveType = (process.argv[4] || "hyperbolic") as
-		| "exponential"
-		| "hyperbolic";
+	const curveType = (process.argv[4] || "hyperbolic") as "exponential" | "hyperbolic";
 
 	if (!filePath) {
-		console.error(
-			"Usage: decline-curve-analysis.ts <production-file.csv> [oil|gas] [exponential|hyperbolic]",
-		);
+		console.error("Usage: decline-curve-analysis.ts <production-file.csv> [oil|gas] [exponential|hyperbolic]");
 		process.exit(1);
 	}
 

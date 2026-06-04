@@ -270,9 +270,7 @@ export interface PortfolioSummary {
 	portfolioRisk: "low" | "medium" | "high";
 }
 
-export async function processAriesDatabase(
-	filePath: string,
-): Promise<AriesData> {
+export async function processAriesDatabase(filePath: string): Promise<AriesData> {
 	try {
 		const stats = fs.statSync(filePath);
 		const databaseName = path.basename(filePath, path.extname(filePath));
@@ -286,27 +284,15 @@ export async function processAriesDatabase(
 		const version = await detectAriesVersion(filePath);
 
 		// Extract ARIES data (placeholder - requires ARIES API or database access)
-		const { projects, wells, forecasts, economics } =
-			await extractAriesData(filePath);
+		const { projects, wells, forecasts, economics } = await extractAriesData(filePath);
 
 		// Analyze oil & gas data
-		const oilGasAnalysis = await analyzeAriesData(
-			projects,
-			wells,
-			forecasts,
-			economics,
-		);
+		const oilGasAnalysis = await analyzeAriesData(projects, wells, forecasts, economics);
 
 		// Calculate quality metrics
-		const qualityMetrics = calculateAriesQuality(
-			projects,
-			wells,
-			forecasts,
-			economics,
-		);
+		const qualityMetrics = calculateAriesQuality(projects, wells, forecasts, economics);
 
-		const totalRecords =
-			projects.length + wells.length + forecasts.length + economics.length;
+		const totalRecords = projects.length + wells.length + forecasts.length + economics.length;
 
 		return {
 			format: "ARIES",
@@ -355,16 +341,12 @@ async function extractAriesData(_filePath: string): Promise<{
 	// Note: Full ARIES integration requires Halliburton/Landmark API or database drivers
 	// This is a placeholder implementation showing the structure
 
-	console.warn(
-		"ARIES database processing requires Halliburton/Landmark licensing:",
-	);
+	console.warn("ARIES database processing requires Halliburton/Landmark licensing:");
 	console.warn("- Valid ARIES software license");
 	console.warn("- DecisionSpace 365 subscription (cloud version)");
 	console.warn("- ARIES API access or database connectivity");
 	console.warn("Contact: LandmarkSupport@halliburton.com for licensing");
-	console.warn(
-		"User must have appropriate ARIES software license and access rights.",
-	);
+	console.warn("User must have appropriate ARIES software license and access rights.");
 
 	// Return demo structure for development
 	const _currentYear = new Date().getFullYear();
@@ -523,22 +505,10 @@ async function analyzeAriesData(
 	economics: AriesEconomics[],
 ): Promise<AriesData["oilGasAnalysis"]> {
 	// Reserves assessment
-	const totalOilReserves = forecasts.reduce(
-		(sum, f) => sum + (f.reserves.oilReserves || 0),
-		0,
-	);
-	const totalGasReserves = forecasts.reduce(
-		(sum, f) => sum + (f.reserves.gasReserves || 0),
-		0,
-	);
-	const totalNglReserves = forecasts.reduce(
-		(sum, f) => sum + (f.reserves.nglReserves || 0),
-		0,
-	);
-	const totalBoeReserves = forecasts.reduce(
-		(sum, f) => sum + (f.reserves.boeReserves || 0),
-		0,
-	);
+	const totalOilReserves = forecasts.reduce((sum, f) => sum + (f.reserves.oilReserves || 0), 0);
+	const totalGasReserves = forecasts.reduce((sum, f) => sum + (f.reserves.gasReserves || 0), 0);
+	const totalNglReserves = forecasts.reduce((sum, f) => sum + (f.reserves.nglReserves || 0), 0);
+	const totalBoeReserves = forecasts.reduce((sum, f) => sum + (f.reserves.boeReserves || 0), 0);
 
 	const reservesAssessment: ReservesAssessment = {
 		totalReserves: {
@@ -560,9 +530,7 @@ async function analyzeAriesData(
 			boeReserves: f.reserves.boeReserves || 0,
 		})),
 		reservesDate: new Date().toISOString(),
-		confidenceLevel:
-			forecasts.reduce((sum, f) => sum + f.quality.confidenceLevel, 0) /
-			forecasts.length,
+		confidenceLevel: forecasts.reduce((sum, f) => sum + f.quality.confidenceLevel, 0) / forecasts.length,
 	};
 
 	// Production forecasting
@@ -570,43 +538,22 @@ async function analyzeAriesData(
 		totalWells: wells.length,
 		producingWells: wells.filter((w) => w.status === "producing").length,
 		peakProduction: {
-			oil:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) *
-				0.6, // Assume 60% oil
-			gas:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) *
-				2.5, // GOR = 2500
-			boe: forecasts.reduce(
-				(sum, f) => sum + (f.parameters.initialRate || 0),
-				0,
-			),
+			oil: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) * 0.6, // Assume 60% oil
+			gas: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) * 2.5, // GOR = 2500
+			boe: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0),
 			peakMonth: "Month 1",
 		},
 		currentProduction: {
-			oil:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) *
-				0.3, // Declining
-			gas:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) *
-				1.25,
-			boe:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) *
-				0.5,
+			oil: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) * 0.3, // Declining
+			gas: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) * 1.25,
+			boe: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) * 0.5,
 			date: new Date().toISOString(),
 		},
-		forecastLength: Math.max(
-			...forecasts.map((f) => f.parameters.forecastLength),
-		),
+		forecastLength: Math.max(...forecasts.map((f) => f.parameters.forecastLength)),
 		declineParameters: {
-			averageDeclineRate:
-				forecasts.reduce((sum, f) => sum + (f.parameters.declineRate || 0), 0) /
-				forecasts.length,
-			averageBFactor:
-				forecasts.reduce((sum, f) => sum + (f.parameters.bFactor || 0), 0) /
-				forecasts.length,
-			averageInitialRate:
-				forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) /
-				forecasts.length,
+			averageDeclineRate: forecasts.reduce((sum, f) => sum + (f.parameters.declineRate || 0), 0) / forecasts.length,
+			averageBFactor: forecasts.reduce((sum, f) => sum + (f.parameters.bFactor || 0), 0) / forecasts.length,
+			averageInitialRate: forecasts.reduce((sum, f) => sum + (f.parameters.initialRate || 0), 0) / forecasts.length,
 		},
 	};
 
@@ -615,52 +562,28 @@ async function analyzeAriesData(
 		(sum, e) => sum + (e.costs.wellCost || 0) + (e.costs.facilitiesCost || 0),
 		0,
 	);
-	const totalRevenue = economics.reduce(
-		(sum, e) => sum + e.results.grossRevenue,
-		0,
-	);
-	const totalCosts = economics.reduce(
-		(sum, e) => sum + e.results.totalCosts,
-		0,
-	);
+	const totalRevenue = economics.reduce((sum, e) => sum + e.results.grossRevenue, 0);
+	const totalCosts = economics.reduce((sum, e) => sum + e.results.totalCosts, 0);
 
 	const economicEvaluation: EconomicEvaluation = {
 		totalInvestment,
 		totalRevenue,
 		totalCosts,
-		netCashFlow: economics.reduce(
-			(sum, e) => sum + e.results.beforeTaxCashFlow,
-			0,
-		),
+		netCashFlow: economics.reduce((sum, e) => sum + e.results.beforeTaxCashFlow, 0),
 		npv10: economics.reduce((sum, e) => sum + e.results.npv10, 0),
 		npv15: economics.reduce((sum, e) => sum + (e.results.npv15 || 0), 0),
-		irr:
-			economics.reduce((sum, e) => sum + e.results.irr, 0) / economics.length,
-		payout:
-			economics.reduce((sum, e) => sum + e.results.payout, 0) /
-			economics.length,
-		breakeven:
-			economics.reduce((sum, e) => sum + e.results.breakeven, 0) /
-			economics.length,
+		irr: economics.reduce((sum, e) => sum + e.results.irr, 0) / economics.length,
+		payout: economics.reduce((sum, e) => sum + e.results.payout, 0) / economics.length,
+		breakeven: economics.reduce((sum, e) => sum + e.results.breakeven, 0) / economics.length,
 		averageWellCost: totalInvestment / wells.length,
 		operatingMargin: ((totalRevenue - totalCosts) / totalRevenue) * 100,
 		fiscalSummary: {
-			averageRoyalty:
-				(economics.reduce((sum, e) => sum + e.fiscalTerms.royalty, 0) /
-					economics.length) *
-				100,
+			averageRoyalty: (economics.reduce((sum, e) => sum + e.fiscalTerms.royalty, 0) / economics.length) * 100,
 			averageWorkingInterest:
-				(economics.reduce((sum, e) => sum + e.fiscalTerms.workingInterest, 0) /
-					economics.length) *
-				100,
+				(economics.reduce((sum, e) => sum + e.fiscalTerms.workingInterest, 0) / economics.length) * 100,
 			totalTaxes:
-				economics.reduce(
-					(sum, e) =>
-						sum +
-						(e.fiscalTerms.severanceTax || 0) +
-						(e.fiscalTerms.adValoremTax || 0),
-					0,
-				) * totalRevenue,
+				economics.reduce((sum, e) => sum + (e.fiscalTerms.severanceTax || 0) + (e.fiscalTerms.adValoremTax || 0), 0) *
+				totalRevenue,
 		},
 	};
 
@@ -704,20 +627,14 @@ async function analyzeAriesData(
 		averagePayout: economicEvaluation.payout,
 		topPerformingWells: economics
 			.map((e) => ({
-				wellName:
-					wells.find((w) => w.wellId === e.wellId)?.wellName || "Unknown",
+				wellName: wells.find((w) => w.wellId === e.wellId)?.wellName || "Unknown",
 				npv: e.results.npv10,
 				irr: e.results.irr,
 				eur: e.results.eur,
 			}))
 			.sort((a, b) => b.npv - a.npv)
 			.slice(0, 5),
-		portfolioRisk:
-			economicEvaluation.irr > 20
-				? "low"
-				: economicEvaluation.irr > 15
-					? "medium"
-					: "high",
+		portfolioRisk: economicEvaluation.irr > 20 ? "low" : economicEvaluation.irr > 15 ? "medium" : "high",
 	};
 
 	return {
@@ -736,36 +653,23 @@ function calculateAriesQuality(
 	economics: AriesEconomics[],
 ): AriesData["qualityMetrics"] {
 	// Data completeness: percentage of wells with forecasts and economics
-	const wellsWithForecasts = wells.filter((w) =>
-		forecasts.some((f) => f.wellId === w.wellId),
-	).length;
-	const wellsWithEconomics = wells.filter((w) =>
-		economics.some((e) => e.wellId === w.wellId),
-	).length;
-	const dataCompleteness =
-		wells.length > 0
-			? (wellsWithForecasts + wellsWithEconomics) / (2 * wells.length)
-			: 0;
+	const wellsWithForecasts = wells.filter((w) => forecasts.some((f) => f.wellId === w.wellId)).length;
+	const wellsWithEconomics = wells.filter((w) => economics.some((e) => e.wellId === w.wellId)).length;
+	const dataCompleteness = wells.length > 0 ? (wellsWithForecasts + wellsWithEconomics) / (2 * wells.length) : 0;
 
 	// Forecast reliability: based on confidence levels and R² values
-	const avgConfidence =
-		forecasts.reduce((sum, f) => sum + f.quality.confidenceLevel, 0) /
-		forecasts.length;
-	const avgR2 =
-		forecasts.reduce((sum, f) => sum + (f.quality.r2 || 0), 0) /
-		forecasts.length;
+	const avgConfidence = forecasts.reduce((sum, f) => sum + f.quality.confidenceLevel, 0) / forecasts.length;
+	const avgR2 = forecasts.reduce((sum, f) => sum + (f.quality.r2 || 0), 0) / forecasts.length;
 	const forecastReliability = (avgConfidence + avgR2) / 2;
 
 	// Economic consistency: variance in key economic metrics
 	const irrs = economics.map((e) => e.results.irr);
 	const avgIrr = irrs.reduce((sum, irr) => sum + irr, 0) / irrs.length;
-	const irrVariance =
-		irrs.reduce((sum, irr) => sum + (irr - avgIrr) ** 2, 0) / irrs.length;
+	const irrVariance = irrs.reduce((sum, irr) => sum + (irr - avgIrr) ** 2, 0) / irrs.length;
 	const economicConsistency = Math.max(0, 1 - Math.sqrt(irrVariance) / avgIrr);
 
 	// Overall confidence
-	const confidence =
-		(dataCompleteness + forecastReliability + economicConsistency) / 3;
+	const confidence = (dataCompleteness + forecastReliability + economicConsistency) / 3;
 
 	return {
 		dataCompleteness: Math.round(dataCompleteness * 100) / 100,
@@ -781,9 +685,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: aries-processor <database.adb> [--json|--summary|--economics]",
-		);
+		console.error("Usage: aries-processor <database.adb> [--json|--summary|--economics]");
 		console.error("Options:");
 		console.error("  --json       Output full JSON data");
 		console.error("  --summary    Output project summary (default)");
@@ -827,12 +729,10 @@ const main = async () => {
 				economics: ariesData.economics.length,
 				totalRecords: ariesData.totalRecords,
 				portfolioSummary: {
-					totalReserves:
-						ariesData.oilGasAnalysis.portfolioSummary.totalReserves,
+					totalReserves: ariesData.oilGasAnalysis.portfolioSummary.totalReserves,
 					totalNPV: ariesData.oilGasAnalysis.portfolioSummary.totalNPV,
 					averageIRR: ariesData.oilGasAnalysis.portfolioSummary.averageIRR,
-					portfolioRisk:
-						ariesData.oilGasAnalysis.portfolioSummary.portfolioRisk,
+					portfolioRisk: ariesData.oilGasAnalysis.portfolioSummary.portfolioRisk,
 				},
 				quality: ariesData.qualityMetrics,
 				metadata: {

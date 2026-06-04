@@ -1,24 +1,25 @@
 {
-  "name": "@shaleyeah/server-qa",
-  "version": "0.1.0",
-  "description": "QA MCP server — quality assurance and test tooling",
-  "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "start": "tsx src/index.ts",
-    "test": "bash ../../scripts/run-tests.sh",
-    "lint": "biome check .",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@shaleyeah/sdk": "workspace:*"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^2.4.11",
-    "@types/node": "^25.6.0",
-    "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
-  }
+	"name": "@shaleyeah/server-qa",
+	"version": "0.1.0",
+	"description": "QA MCP server — quality assurance and test tooling",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "tsx src/index.ts",
+		"test": "bash ../../scripts/run-tests.sh",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@shaleyeah/sdk": "workspace:*",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.11",
+		"@types/node": "^25.6.0",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
 }

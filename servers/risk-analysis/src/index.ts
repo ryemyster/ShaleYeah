@@ -6,11 +6,18 @@
  */
 
 import fs from "node:fs/promises";
+import {
+	callLLM,
+	EconomicsSchema,
+	FormationSchema,
+	type MCPServer,
+	RiskProfileSchema,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
-import { EconomicsSchema, FormationSchema, RiskProfileSchema } from "@shaleyeah/sdk";
-import { callLLM } from "@shaleyeah/sdk";
-import { type MCPServer, runMCPServer } from "@shaleyeah/sdk";
-import { ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 
 interface LLMRiskInterpretation {
 	topRisk: string;

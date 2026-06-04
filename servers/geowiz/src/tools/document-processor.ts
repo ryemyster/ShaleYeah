@@ -71,13 +71,7 @@ export interface DocumentSection {
 	level: number;
 	pageNumber: number;
 	content: string;
-	type:
-		| "executive_summary"
-		| "technical"
-		| "financial"
-		| "legal"
-		| "appendix"
-		| "other";
+	type: "executive_summary" | "technical" | "financial" | "legal" | "appendix" | "other";
 }
 
 export interface EconomicDataPoint {
@@ -142,16 +136,11 @@ export async function processDocument(filePath: string): Promise<DocumentData> {
 	}
 }
 
-async function extractDocumentContent(
-	_filePath: string,
-	format: "PDF" | "DOCX" | "PPTX",
-): Promise<DocumentContent> {
+async function extractDocumentContent(_filePath: string, format: "PDF" | "DOCX" | "PPTX"): Promise<DocumentContent> {
 	// Note: Full document processing requires libraries like pdf-parse, mammoth, or officegen
 	// This is a placeholder implementation showing the structure
 
-	console.warn(
-		`Document processing for ${format} requires specialized libraries:`,
-	);
+	console.warn(`Document processing for ${format} requires specialized libraries:`);
 
 	switch (format) {
 		case "PDF":
@@ -165,9 +154,7 @@ async function extractDocumentContent(
 			break;
 	}
 
-	console.warn(
-		"User must have appropriate document access rights and software licenses.",
-	);
+	console.warn("User must have appropriate document access rights and software licenses.");
 
 	// Return demo structure for development
 	const demoContent: DocumentContent = {
@@ -175,12 +162,7 @@ async function extractDocumentContent(
 		tables: [
 			{
 				pageNumber: 1,
-				headers: [
-					"Well Name",
-					"Total Depth (ft)",
-					"Lateral Length (ft)",
-					"EUR (Mboe)",
-				],
+				headers: ["Well Name", "Total Depth (ft)", "Lateral Length (ft)", "EUR (Mboe)"],
 				rows: [
 					["DEMO-WELL-1", "12500", "8500", "1250"],
 					["DEMO-WELL-2", "13200", "9100", "1450"],
@@ -259,10 +241,7 @@ async function extractOilGasData(
 		table.rows.forEach((row) => {
 			// Look for well naming patterns
 			row.forEach((cell) => {
-				if (
-					typeof cell === "string" &&
-					cell.match(/^[A-Z0-9\-_]+WELL[0-9\-_]*$/i)
-				) {
+				if (typeof cell === "string" && cell.match(/^[A-Z0-9\-_]+WELL[0-9\-_]*$/i)) {
 					oilGasData.wellNames.push(cell);
 				}
 			});
@@ -310,10 +289,7 @@ async function extractOilGasData(
 						category = "drilling";
 					} else if (param.includes("completion") || param.includes("frac")) {
 						category = "completion";
-					} else if (
-						param.includes("reservoir") ||
-						param.includes("formation")
-					) {
+					} else if (param.includes("reservoir") || param.includes("formation")) {
 						category = "reservoir";
 					}
 
@@ -344,9 +320,7 @@ function calculateDocumentQuality(
 	oilGasData: DocumentData["oilGasData"],
 ): DocumentData["qualityMetrics"] {
 	// Completeness: based on presence of key sections and data
-	const hasExecutiveSummary = content.sections.some(
-		(s) => s.type === "executive_summary",
-	);
+	const hasExecutiveSummary = content.sections.some((s) => s.type === "executive_summary");
 	const hasTechnical = content.sections.some((s) => s.type === "technical");
 	const hasFinancial = content.sections.some((s) => s.type === "financial");
 	const completeness =
@@ -359,18 +333,13 @@ function calculateDocumentQuality(
 	// Readability: based on text length and structure
 	const hasReasonableLength = content.text.length > 100;
 	const hasStructure = content.sections.length > 1;
-	const readability =
-		((hasReasonableLength ? 1 : 0) + (hasStructure ? 1 : 0)) / 2;
+	const readability = ((hasReasonableLength ? 1 : 0) + (hasStructure ? 1 : 0)) / 2;
 
 	// Data extraction: based on amount of extracted oil & gas data
 	const hasWellData = oilGasData.wellNames.length > 0;
 	const hasEconomicData = oilGasData.economicData.length > 0;
 	const hasTechnicalData = oilGasData.technicalSpecs.length > 0;
-	const dataExtraction =
-		((hasWellData ? 1 : 0) +
-			(hasEconomicData ? 1 : 0) +
-			(hasTechnicalData ? 1 : 0)) /
-		3;
+	const dataExtraction = ((hasWellData ? 1 : 0) + (hasEconomicData ? 1 : 0) + (hasTechnicalData ? 1 : 0)) / 3;
 
 	// Overall confidence
 	const confidence = (completeness + readability + dataExtraction) / 3;
@@ -389,9 +358,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: document-processor <document.pdf|.docx|.pptx> [--json|--summary|--data]",
-		);
+		console.error("Usage: document-processor <document.pdf|.docx|.pptx> [--json|--summary|--data]");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");
 		console.error("  --summary  Output document summary (default)");

@@ -64,9 +64,7 @@ export interface WellLogCurve {
 }
 
 // File format detection
-export function detectWellLogFormat(
-	filePath: string,
-): "LAS" | "DLIS" | "WITSML" | "UNKNOWN" {
+export function detectWellLogFormat(filePath: string): "LAS" | "DLIS" | "WITSML" | "UNKNOWN" {
 	const ext = path.extname(filePath).toLowerCase();
 
 	switch (ext) {
@@ -91,9 +89,7 @@ export function detectWellLogFormat(
 }
 
 // Main processing function
-export async function processWellLogFile(
-	filePath: string,
-): Promise<WellLogData> {
+export async function processWellLogFile(filePath: string): Promise<WellLogData> {
 	const format = detectWellLogFormat(filePath);
 
 	switch (format) {
@@ -158,9 +154,7 @@ async function processDLISFile(_filePath: string): Promise<WellLogData> {
 	// Note: Full DLIS support would require Python dlisio library integration
 	// This is a placeholder implementation showing the structure
 
-	console.warn(
-		"DLIS support requires dlisio library. Returning demo data structure.",
-	);
+	console.warn("DLIS support requires dlisio library. Returning demo data structure.");
 	console.warn("For production use, install dlisio: pip install dlisio");
 	console.warn("User must have appropriate DLIS software license.");
 
@@ -290,8 +284,7 @@ function calculateStatistics(data: number[]): {
 			? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
 			: sorted[Math.floor(sorted.length / 2)];
 
-	const variance =
-		data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
+	const variance = data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
 	const stdDev = Math.sqrt(variance);
 	const range = Math.max(...data) - Math.min(...data);
 
@@ -320,20 +313,12 @@ function calculateQualityMetrics(
 	const depthContinuity =
 		depthData.length > 1
 			? 1 -
-				Math.abs(
-					depthData.length - (depthData[depthData.length - 1] - depthData[0]),
-				) /
-					depthData[depthData.length - 1]
+				Math.abs(depthData.length - (depthData[depthData.length - 1] - depthData[0])) / depthData[depthData.length - 1]
 			: 0;
 
 	// Consistency: measure of reasonable value ranges per curve type
 	const consistency =
-		curves.length > 0
-			? curves.reduce(
-					(sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0),
-					0,
-				) / curves.length
-			: 0;
+		curves.length > 0 ? curves.reduce((sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0), 0) / curves.length : 0;
 
 	// Overall confidence
 	const confidence = (completeness + depthContinuity + consistency) / 3;
@@ -352,9 +337,7 @@ const main = async () => {
 	const options = process.argv.slice(3);
 
 	if (!filePath) {
-		console.error(
-			"Usage: well-log-processor <file> [--json|--summary|--quality]",
-		);
+		console.error("Usage: well-log-processor <file> [--json|--summary|--quality]");
 		console.error("Supported formats: .las, .dlis, .xml (WITSML)");
 		console.error("Options:");
 		console.error("  --json     Output full JSON data");

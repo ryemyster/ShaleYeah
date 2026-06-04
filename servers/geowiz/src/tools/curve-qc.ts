@@ -33,10 +33,7 @@ interface CurveAnalysis {
 /**
  * Compute Root Mean Square Error (RMSE) and Normalized RMSE (NRMSE)
  */
-function computeRMSE_NRMSE(
-	values: number[],
-	fittedValues: number[],
-): QCMetrics {
+function computeRMSE_NRMSE(values: number[], fittedValues: number[]): QCMetrics {
 	if (values.length !== fittedValues.length || values.length === 0) {
 		return { rmse: NaN, nrmse: NaN };
 	}
@@ -90,8 +87,7 @@ function createLinearFit(values: number[]): number[] {
 		return values.slice();
 	}
 
-	const slope =
-		(validValues[validValues.length - 1] - validValues[0]) / validValues.length;
+	const slope = (validValues[validValues.length - 1] - validValues[0]) / validValues.length;
 	const startValue = validValues[0];
 
 	return values.map((_, i) => startValue + slope * i);
@@ -106,9 +102,7 @@ function analyzeLASCurve(filePath: string, curveName: string): CurveAnalysis {
 		const lasData: LASData = parseLASFile(filePath);
 
 		// Find the requested curve
-		const curve = lasData.curves.find(
-			(c) => c.name.toUpperCase() === curveName.toUpperCase(),
-		);
+		const curve = lasData.curves.find((c) => c.name.toUpperCase() === curveName.toUpperCase());
 
 		if (!curve) {
 			const availableCurves = lasData.curves.map((c) => c.name);
@@ -148,8 +142,7 @@ function analyzeLASCurve(filePath: string, curveName: string): CurveAnalysis {
 		// Calculate basic statistics
 		const minValue = Math.min(...validData);
 		const maxValue = Math.max(...validData);
-		const meanValue =
-			validData.reduce((sum, v) => sum + v, 0) / validData.length;
+		const meanValue = validData.reduce((sum, v) => sum + v, 0) / validData.length;
 
 		const analysis: CurveAnalysis = {
 			curve: curveName,
@@ -238,9 +231,4 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 	main();
 }
 
-export {
-	analyzeLASCurve,
-	computeRMSE_NRMSE,
-	type CurveAnalysis,
-	type QCMetrics,
-};
+export { analyzeLASCurve, type CurveAnalysis, computeRMSE_NRMSE, type QCMetrics };
