@@ -16,13 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - uses: pnpm/action-setup@fe02b74ab71559cf9b1f7e1fa3df4ef8b02a75a5  # v4.1.0
+        with:
+          version: 11
       - name: Setup Node.js
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
         with:
           node-version: '22.x'
-          cache: 'npm'
+          cache: 'pnpm'
       - name: Install dependencies
-        run: npm ci --legacy-peer-deps
+        run: pnpm install --frozen-lockfile
       - uses: github/codeql-action/init@480db559a14342288b67e54bd959dd52dc3ee68f  # v3
         with: { languages: javascript-typescript, queries: security-extended }
       - uses: github/codeql-action/analyze@480db559a14342288b67e54bd959dd52dc3ee68f  # v3

@@ -1,0 +1,19 @@
+{
+  "name": "@shaleyeah/drilling-engineer",
+  "version": "0.1.0",
+  "description": "Drilling Engineer — Tier 2 intelligence layer for drilling engineering",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@shaleyeah/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2"
+  }
+}

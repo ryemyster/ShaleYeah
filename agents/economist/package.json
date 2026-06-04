@@ -1,0 +1,19 @@
+{
+  "name": "@shaleyeah/economist",
+  "version": "0.1.0",
+  "description": "Economist — Tier 2 intelligence layer for economic analysis",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@shaleyeah/sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "typescript": "^6.0.2"
+  }
+}
