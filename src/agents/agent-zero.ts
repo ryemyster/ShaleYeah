@@ -133,7 +133,7 @@ export const agentZeroConfig: AgentRuntimeConfig = {
 	memory: {
 		enabled: true,
 		namespace: "agent-zero",
-		vectorStoreEnabled: false,
+		vectorStore: { enabled: false },
 		retentionDays: 30,
 		promotion: {
 			requireHumanReview: true,

@@ -62,6 +62,7 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-formation",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_gis",
@@ -88,6 +89,7 @@ export const geologistManifest: AgentManifest = {
 			requiresHumanApproval: false,
 			requiredScopes: ["read:geology"],
 			modelRequirement: "deterministic",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_well_logs",
@@ -110,6 +112,7 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-well-log",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.assess_quality",
@@ -136,6 +139,7 @@ export const geologistManifest: AgentManifest = {
 			requiresHumanApproval: false,
 			requiredScopes: ["read:geology"],
 			modelRequirement: "deterministic",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_access_database",
@@ -157,6 +161,7 @@ export const geologistManifest: AgentManifest = {
 			requiresHumanApproval: false,
 			requiredScopes: ["read:geology"],
 			modelRequirement: "deterministic",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_document",
@@ -178,6 +183,7 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-document",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_seismic_data",
@@ -199,6 +205,7 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-seismic",
+			mcpServer: "geowiz",
 		},
 		{
 			name: "geologist.process_aries_database",
@@ -220,6 +227,7 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-aries",
+			mcpServer: "geowiz",
 		},
 	],
 	requiredScopes: ["read:geology"],
@@ -303,11 +311,30 @@ export const geologistConfig: AgentRuntimeConfig = {
 	memory: {
 		enabled: true,
 		namespace: "geologist",
-		vectorStoreEnabled: false,
+		vectorStore: { enabled: false },
 		retentionDays: 90,
 		promotion: {
 			requireHumanReview: true,
 			allowSharedMemory: false,
+		},
+	},
+	// Tier 1 tool server — operator configures the actual URL at deployment time.
+	mcpServers: {
+		geowiz: {
+			url: "http://localhost:3001",
+			transport: "http",
+			authType: "none",
+		},
+	},
+	// Data integrations available to geology tool handlers.
+	dataConnectors: {
+		"las-repository": {
+			type: "ftp",
+			description: "FTP source for LAS well log files — operator-configured.",
+		},
+		"well-data-api": {
+			type: "rest-api",
+			description: "3rd-party well data API (e.g. IHS, Enverus) — operator-configured.",
 		},
 	},
 };
