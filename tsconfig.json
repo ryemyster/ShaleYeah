@@ -1,35 +1,24 @@
 {
-	"compilerOptions": {
-		"target": "ES2022",
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"strict": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"declaration": true,
-		"outDir": "./dist",
-		"rootDir": ".",
-		"resolveJsonModule": true,
-		"allowImportingTsExtensions": false,
-		"noEmitOnError": true,
-		"pretty": true,
-		"removeComments": false,
-		"sourceMap": true,
-		"lib": ["ES2022", "DOM"],
-		"types": ["node"],
-		"typeRoots": ["./node_modules/@types"],
-		"paths": {
-			"@/*": ["./src/*"],
-			"@/agents/*": ["./src/agents/*"],
-			"@/shared/*": ["./src/shared/*"],
-			"@/tools/*": ["./tools/*"]
-		}
-	},
-	"include": ["src/**/*", "tools/**/*", "scripts/**/*.ts"],
-	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "data/**/*", "*.py", "**/*.py"],
-	"ts-node": {
-		"esm": true
-	}
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./sdk" },
+    { "path": "./servers/geowiz" },
+    { "path": "./servers/econobot" },
+    { "path": "./servers/curve-smith" },
+    { "path": "./servers/decision" },
+    { "path": "./servers/reporter" },
+    { "path": "./servers/research" },
+    { "path": "./servers/risk-analysis" },
+    { "path": "./servers/legal" },
+    { "path": "./servers/market" },
+    { "path": "./servers/title" },
+    { "path": "./servers/development" },
+    { "path": "./servers/drilling" },
+    { "path": "./servers/infrastructure" },
+    { "path": "./servers/qa-server" },
+    { "path": "./agents/geologist" },
+    { "path": "./agents/agent-zero" },
+    { "path": "./orchestrator" }
+  ]
 }

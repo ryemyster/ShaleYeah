@@ -1,0 +1,102 @@
+{
+  "type": "FeatureCollection",
+  "name": "Demo Oil Gas Wells",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DEMO-WELL-001H",
+        "operator": "Demo Energy LLC",
+        "lease": "Demo Lease Block A",
+        "well_type": "horizontal_oil",
+        "status": "producing",
+        "spud_date": "2024-01-15",
+        "completion_date": "2024-03-20",
+        "first_production": "2024-04-01",
+        "total_depth": 12500,
+        "lateral_length": 8500,
+        "formation": "Wolfcamp A",
+        "initial_rate": 1200,
+        "current_rate": 650,
+        "cumulative_oil": 125000,
+        "cumulative_gas": 300000,
+        "permit": "RRC-123456"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-102.0123, 32.0456, 1050]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "DEMO-WELL-002H",
+        "operator": "Demo Energy LLC",
+        "lease": "Demo Lease Block A",
+        "well_type": "horizontal_oil",
+        "status": "producing",
+        "spud_date": "2024-02-20",
+        "completion_date": "2024-04-25",
+        "first_production": "2024-05-01",
+        "total_depth": 13200,
+        "lateral_length": 9100,
+        "formation": "Wolfcamp B",
+        "initial_rate": 1450,
+        "current_rate": 780,
+        "cumulative_oil": 89000,
+        "cumulative_gas": 245000,
+        "permit": "RRC-123457"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-102.0234, 32.0567, 1048]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lease Boundary",
+        "lease_name": "Demo Lease Block A",
+        "operator": "Demo Energy LLC",
+        "lease_type": "oil_gas",
+        "acres": 1280,
+        "royalty_rate": 18.75,
+        "lease_date": "2023-06-15",
+        "primary_term": 5,
+        "secondary_term": "HBP"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-102.0500, 32.0200, 0],
+          [-101.9800, 32.0200, 0],
+          [-101.9800, 32.0800, 0],
+          [-102.0500, 32.0800, 0],
+          [-102.0500, 32.0200, 0]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pipeline Route",
+        "operator": "Midstream Partners LLC",
+        "pipeline_type": "crude_oil",
+        "diameter": 12,
+        "capacity": 50000,
+        "pressure": 800,
+        "status": "active"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-102.0123, 32.0456, 0],
+          [-102.0234, 32.0567, 0],
+          [-101.9900, 32.0700, 0],
+          [-101.9800, 32.0800, 0]
+        ]
+      }
+    }
+  ]
+}

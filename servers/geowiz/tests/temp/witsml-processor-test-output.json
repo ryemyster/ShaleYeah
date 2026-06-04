@@ -1,0 +1,81 @@
+{
+  "format": "WITSML",
+  "version": "1.4.1.1",
+  "wellName": "DEMO_LOG",
+  "depthUnit": "FT",
+  "depthStart": 0,
+  "depthStop": 0,
+  "depthStep": 0,
+  "nullValue": -999.25,
+  "curves": [
+    {
+      "name": "DEPT",
+      "unit": "FT",
+      "description": "Depth",
+      "mnemonic": "DEPT",
+      "data": [
+        8400,
+        8401,
+        8402
+      ],
+      "validPoints": 3,
+      "nullPoints": 0,
+      "minValue": 8400,
+      "maxValue": 8402,
+      "statistics": {
+        "mean": 8401,
+        "median": 8401,
+        "stdDev": 0.816496580927726,
+        "range": 2
+      }
+    },
+    {
+      "name": "GR",
+      "unit": "GAPI",
+      "description": "Gamma Ray",
+      "mnemonic": "GR",
+      "data": [
+        45.2,
+        47.8,
+        52.1
+      ],
+      "validPoints": 3,
+      "nullPoints": 0,
+      "minValue": 45.2,
+      "maxValue": 52.1,
+      "statistics": {
+        "mean": 48.36666666666667,
+        "median": 47.8,
+        "stdDev": 2.8452689777164397,
+        "range": 6.899999999999999
+      }
+    }
+  ],
+  "depthData": [
+    8400,
+    8401,
+    8402
+  ],
+  "rows": 3,
+  "metadata": {
+    "wellId": null,
+    "operator": null,
+    "field": null,
+    "location": null,
+    "county": null,
+    "state": null,
+    "country": null,
+    "spudDate": null,
+    "totalDepth": 0,
+    "wellType": null,
+    "purpose": null,
+    "status": null,
+    "direction": null
+  },
+  "qualityMetrics": {
+    "completeness": 1,
+    "continuity": 1,
+    "consistency": 1,
+    "confidence": 1
+  }
+}

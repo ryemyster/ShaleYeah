@@ -29,6 +29,7 @@ logs/
 .cache/
 .npm/
 .eslintcache
+.turbo/
 
 # Coverage
 coverage/

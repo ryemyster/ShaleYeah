@@ -1,0 +1,7 @@
+packages:
+  - 'sdk'
+  - 'agents/*'
+  - 'servers/*'
+  - 'orchestrator'
+allowBuilds:
+  esbuild: true

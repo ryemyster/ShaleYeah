@@ -1,0 +1,274 @@
+{
+  "format": "ARIES",
+  "version": "5000+",
+  "databaseName": "sample",
+  "projects": [
+    {
+      "projectId": "PROJ_001",
+      "projectName": "Permian Basin Development",
+      "operator": "Demo Energy LLC",
+      "area": "Midland Basin",
+      "projectType": "development",
+      "status": "active",
+      "createdDate": "2026-06-04T20:16:52.113Z",
+      "modifiedDate": "2026-06-04T20:16:52.113Z",
+      "wellCount": 12,
+      "associatedWells": [
+        "DEMO-001",
+        "DEMO-002",
+        "DEMO-003"
+      ]
+    }
+  ],
+  "wells": [
+    {
+      "wellId": "WELL_001",
+      "wellName": "DEMO-001H",
+      "operator": "Demo Energy LLC",
+      "field": "Demo Field",
+      "projectId": "PROJ_001",
+      "location": {
+        "latitude": 32,
+        "longitude": -102,
+        "county": "Midland",
+        "state": "Texas",
+        "country": "USA"
+      },
+      "wellType": "oil",
+      "status": "producing",
+      "spudDate": "2023-01-15",
+      "completionDate": "2023-03-20",
+      "firstProductionDate": "2023-04-01",
+      "totalDepth": 12500,
+      "lateralLength": 8500,
+      "formations": [
+        "Wolfcamp A",
+        "Wolfcamp B"
+      ]
+    },
+    {
+      "wellId": "WELL_002",
+      "wellName": "DEMO-002H",
+      "operator": "Demo Energy LLC",
+      "field": "Demo Field",
+      "projectId": "PROJ_001",
+      "location": {
+        "latitude": 32.01,
+        "longitude": -102.01,
+        "county": "Midland",
+        "state": "Texas",
+        "country": "USA"
+      },
+      "wellType": "oil_gas",
+      "status": "producing",
+      "spudDate": "2023-02-20",
+      "completionDate": "2023-04-25",
+      "firstProductionDate": "2023-05-01",
+      "totalDepth": 13200,
+      "lateralLength": 9100,
+      "formations": [
+        "Wolfcamp A"
+      ]
+    }
+  ],
+  "forecasts": [
+    {
+      "forecastId": "FCST_001",
+      "wellId": "WELL_001",
+      "forecastName": "DEMO-001H Type Curve",
+      "forecastType": "decline_curve",
+      "createdDate": "2026-06-04T20:16:52.113Z",
+      "createdBy": "Demo Analyst",
+      "parameters": {
+        "initialRate": 1200,
+        "declineRate": 65,
+        "bFactor": 1.8,
+        "minimumRate": 10,
+        "economicLimit": 5,
+        "forecastLength": 300
+      },
+      "monthlyData": [],
+      "reserves": {
+        "oilReserves": 875000,
+        "gasReserves": 2100000,
+        "nglReserves": 125000,
+        "boeReserves": 1350000
+      },
+      "quality": {
+        "r2": 0.92,
+        "confidenceLevel": 0.85,
+        "lastUpdated": "2026-06-04T20:16:52.113Z"
+      }
+    }
+  ],
+  "economics": [
+    {
+      "economicsId": "ECON_001",
+      "wellId": "WELL_001",
+      "projectId": "PROJ_001",
+      "economicsName": "DEMO-001H Base Case",
+      "analysisDate": "2026-06-04T20:16:52.113Z",
+      "analysisType": "single_well",
+      "pricing": {
+        "oilPrice": 75,
+        "gasPrice": 3.5,
+        "nglPrice": 45,
+        "priceDate": "2026-06-04T20:16:52.113Z",
+        "escalation": 2
+      },
+      "costs": {
+        "wellCost": 8500000,
+        "facilitiesCost": 1500000,
+        "operatingCost": 25000,
+        "abandonmentCost": 150000
+      },
+      "fiscalTerms": {
+        "royalty": 0.1875,
+        "workingInterest": 0.8,
+        "netRevenueInterest": 0.65,
+        "severanceTax": 0.046,
+        "adValoremTax": 0.015
+      },
+      "results": {
+        "grossRevenue": 95600000,
+        "netRevenue": 62140000,
+        "totalCosts": 32500000,
+        "beforeTaxCashFlow": 29640000,
+        "afterTaxCashFlow": 21750000,
+        "npv10": 18200000,
+        "npv15": 14800000,
+        "irr": 28.5,
+        "payout": 18,
+        "eur": 1350000,
+        "eurPerWell": 1350000,
+        "breakeven": 42.5
+      }
+    }
+  ],
+  "totalRecords": 5,
+  "metadata": {
+    "filePath": "/Users/rmcdonald/Repos/ryemyster/ShaleYeah/servers/geowiz/tests/sample-files/sample.adb",
+    "fileSize": 1693,
+    "createdDate": "2026-06-04T20:02:23.154Z",
+    "modifiedDate": "2026-06-04T20:02:23.154Z",
+    "ariesVersion": "5000+",
+    "licenseRequired": true,
+    "isPasswordProtected": false
+  },
+  "oilGasAnalysis": {
+    "reservesAssessment": {
+      "totalReserves": {
+        "oil": 875000,
+        "gas": 2100000,
+        "ngl": 125000,
+        "boe": 1350000
+      },
+      "reservesByCategory": {
+        "proved": 944999.9999999999,
+        "probable": 270000,
+        "possible": 135000
+      },
+      "reservesByWell": [
+        {
+          "wellId": "WELL_001",
+          "wellName": "DEMO-001H",
+          "oilReserves": 875000,
+          "gasReserves": 2100000,
+          "boeReserves": 1350000
+        }
+      ],
+      "reservesDate": "2026-06-04T20:16:52.113Z",
+      "confidenceLevel": 0.85
+    },
+    "productionForecasting": {
+      "totalWells": 2,
+      "producingWells": 2,
+      "peakProduction": {
+        "oil": 720,
+        "gas": 3000,
+        "boe": 1200,
+        "peakMonth": "Month 1"
+      },
+      "currentProduction": {
+        "oil": 360,
+        "gas": 1500,
+        "boe": 600,
+        "date": "2026-06-04T20:16:52.113Z"
+      },
+      "forecastLength": 300,
+      "declineParameters": {
+        "averageDeclineRate": 65,
+        "averageBFactor": 1.8,
+        "averageInitialRate": 1200
+      }
+    },
+    "economicEvaluation": {
+      "totalInvestment": 10000000,
+      "totalRevenue": 95600000,
+      "totalCosts": 32500000,
+      "netCashFlow": 29640000,
+      "npv10": 18200000,
+      "npv15": 14800000,
+      "irr": 28.5,
+      "payout": 18,
+      "breakeven": 42.5,
+      "averageWellCost": 5000000,
+      "operatingMargin": 66.0041841004184,
+      "fiscalSummary": {
+        "averageRoyalty": 18.75,
+        "averageWorkingInterest": 80,
+        "totalTaxes": 5831600
+      }
+    },
+    "riskAnalysis": {
+      "riskFactors": [
+        {
+          "factor": "Oil Price Volatility",
+          "impact": "high",
+          "probability": "high",
+          "mitigation": "Hedging strategy recommended"
+        },
+        {
+          "factor": "Decline Rate Uncertainty",
+          "impact": "medium",
+          "probability": "medium",
+          "mitigation": "Additional well performance monitoring"
+        }
+      ],
+      "sensitivityAnalysis": {
+        "oilPriceImpact": 2730000,
+        "gasPriceImpact": 1456000,
+        "wellCostImpact": -2184000,
+        "declineRateImpact": -1820000
+      },
+      "confidenceIntervals": {
+        "p10": 25480000,
+        "p50": 18200000,
+        "p90": 10920000
+      }
+    },
+    "portfolioSummary": {
+      "totalProjects": 1,
+      "totalWells": 2,
+      "totalReserves": 1350000,
+      "totalNPV": 18200000,
+      "averageIRR": 28.5,
+      "averagePayout": 18,
+      "topPerformingWells": [
+        {
+          "wellName": "DEMO-001H",
+          "npv": 18200000,
+          "irr": 28.5,
+          "eur": 1350000
+        }
+      ],
+      "portfolioRisk": "low"
+    }
+  },
+  "qualityMetrics": {
+    "dataCompleteness": 0.5,
+    "forecastReliability": 0.89,
+    "economicConsistency": 1,
+    "confidence": 0.8
+  }
+}

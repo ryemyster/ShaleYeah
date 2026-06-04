@@ -1,87 +1,40 @@
 {
-	"name": "shale-yeah",
-	"version": "2.0.0",
-	"description": "Agent OS for oil & gas investment analysis — 14 MCP servers with kernel-based discovery, parallel execution, and composition",
-	"private": false,
-	"type": "module",
-	"main": "dist/main.js",
-	"scripts": {
-		"build": "tsc",
-		"build:watch": "tsc --watch",
-		"dev": "NODE_ENV=development tsx src/main.ts --mode=demo",
-		"start": "NODE_ENV=production tsx src/main.ts",
-		"demo": "npx tsx src/demo-runner.ts",
-		"prod": "npx tsx src/main.ts --mode=production",
-		"lint": "biome check .",
-		"type-check": "tsc --noEmit",
-		"clean": "npm run clean:dist && npm run clean:cache && npm run clean:demo",
-		"clean:dist": "rm -rf dist/",
-		"clean:cache": "rm -rf node_modules/.cache .tsx-cache",
-		"clean:demo": "bash scripts/cleanup-workspace.sh",
-		"clean:outputs": "rm -rf outputs/*",
-		"clean:autogen": "rm -rf .claude-flow/ .hive-mind/ dist/ outputs/ tests/mcp-test-outputs/ tests/temp/",
-		"clean:repo-push": "npm run clean && npm run clean:outputs && rm -rf node_modules/",
-		"clean:all": "npm run clean && npm run clean:outputs && rm -rf node_modules/ package-lock.json",
-		"clean:workspace": "bash scripts/cleanup-workspace.sh",
-		"test": "bash scripts/run-tests.sh",
-		"coverage": "bash scripts/run-coverage.sh",
-		"server:geowiz": "npx tsx src/servers/geowiz.ts",
-		"server:econobot": "npx tsx src/servers/econobot.ts",
-		"server:curve-smith": "npx tsx src/servers/curve-smith.ts",
-		"server:reporter": "npx tsx src/servers/reporter.ts",
-		"server:decision": "npx tsx src/servers/decision.ts",
-		"server:research": "npx tsx src/servers/research.ts",
-		"server:risk-analysis": "npx tsx src/servers/risk-analysis.ts",
-		"server:legal": "npx tsx src/servers/legal.ts",
-		"server:market": "npx tsx src/servers/market.ts",
-		"server:development": "npx tsx src/servers/development.ts",
-		"server:drilling": "npx tsx src/servers/drilling.ts",
-		"server:infrastructure": "npx tsx src/servers/infrastructure.ts",
-		"server:title": "npx tsx src/servers/title.ts",
-		"server:test": "npx tsx src/servers/test.ts"
-	},
-	"dependencies": {
-		"@anthropic-ai/sdk": "^0.88.0",
-		"@modelcontextprotocol/sdk": "^1.29.0",
-		"@turf/turf": "^7.3.4",
-		"dotenv": "^17.4.2",
-		"exceljs": "^4.4.0",
-		"glob": "^13.0.3",
-		"openai": "^6.34.0",
-		"proj4": "^2.20.8",
-		"shapefile": "^0.6.6",
-		"xml2js": "^0.6.2",
-		"yaml": "^2.8.3",
-		"zod": "^4.3.6"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^2.4.11",
-		"@types/node": "^25.6.0",
-		"@types/xml2js": "^0.4.14",
-		"c8": "^11.0.0",
-		"tsx": "^4.21.0",
-		"typescript": "^6.0.2"
-	},
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"keywords": [
-		"agent-os",
-		"mcp",
-		"tool-registry",
-		"scatter-gather",
-		"oil-gas",
-		"investment",
-		"ai-agents",
-		"llm",
-		"orchestration",
-		"geological-analysis",
-		"typescript"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/rmcdonald/ShaleYeah.git"
-	},
-	"author": "Ryan McDonald",
-	"license": "Apache-2.0"
+  "name": "shaleyeah",
+  "version": "2.0.0",
+  "description": "Agent OS for oil & gas investment due diligence — 14 specialist AI agents replacing a full deal team",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.5.1",
+  "scripts": {
+    "build": "pnpm turbo build",
+    "test": "pnpm turbo test",
+    "lint": "pnpm turbo lint",
+    "type-check": "pnpm turbo type-check",
+    "demo": "tsx demo.ts",
+    "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.11",
+    "turbo": "^2.5.4",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "keywords": [
+    "agent-os",
+    "mcp",
+    "oil-gas",
+    "investment",
+    "ai-agents",
+    "typescript"
+  ],
+  "author": "Ryan McDonald",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rmcdonald/ShaleYeah.git"
+  }
 }
