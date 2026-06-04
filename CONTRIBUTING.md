@@ -1,232 +1,125 @@
 # Contributing to SHALE YEAH
 
-Thank you for your interest in contributing to SHALE YEAH! This project aims to modernize oil & gas data workflows through open-source automation.
-
-## Getting Started
-
-1. Fork the repository on GitHub (click the "Fork" button in the top right)
-2. Clone your fork locally: `git clone https://github.com/YOUR-USERNAME/ShaleYeah.git`
-3. Create a branch for your work: `git checkout -b feature/your-feature-name`
-4. Install dependencies: `npm install --legacy-peer-deps`
-5. Run the demo to verify everything works: `npm run demo`
-
-## Development Guidelines
-
-### Code Style
-- Use TypeScript for CLI tools and HTTP integrations
-- Keep tools runnable from CLI with clear error messages
-- No giant dependencies - prefer lightweight, focused libraries
-
-### Output Requirements
-- Always write artifacts to `data/outputs/${RUN_ID}/`
-- Include attribution footer in human-facing outputs:
-  ```
-  Generated with SHALE YEAH 2025 Ryan McDonald - Apache-2.0
-  ```
-- Prefer open formats: CSV, GeoJSON, OMF, LAS
-- Declare units for depth, time, and spatial reference systems
-
-### Security
-- Never commit secrets, tokens, or credentials
-- Read sensitive config from environment variables
-- No proprietary or confidential data in examples
-- Follow secure coding practices
-
-## Submitting Your Work
-
-When your changes are ready:
-
-1. Push your branch to **your fork**: `git push origin feature/your-feature-name`
-2. Go to the [SHALE YEAH repo](https://github.com/ryemyster/ShaleYeah) on GitHub
-3. Click **"Compare & pull request"** (GitHub will prompt you automatically)
-4. **Target the `develop` branch** — not `main`. All work merges into `develop` first.
-5. Fill in the PR description explaining what you changed and why
-6. A maintainer will review, leave feedback, and merge when it's ready
-
-If your PR addresses a specific GitHub issue, reference it in the description (e.g., "Closes #123"). This links the PR to the issue and auto-closes it on merge.
-
-## Finding Work
-
-Not sure where to start? Check the [open issues](https://github.com/ryemyster/ShaleYeah/issues) and [milestones](https://github.com/ryemyster/ShaleYeah/milestones).
-
-Issues are organized by milestone and labeled by area:
-
-| Label | Meaning |
-|-------|---------|
-| `tier-1: production` | Production hardening — resilience, caching, reliability |
-| `tier-2: dev-experience` | Developer experience — tooling, observability, composition |
-| `tier-3: integration` | External integration — APIs, plugins, webhooks |
-| `tier-4: scale` | Scale & governance — multi-tenant, permissions, versioning |
-| `resilience` | Error handling, retries, circuit breakers |
-| `composition` | Bundles, pipelines, chaining |
-| `discovery` | Registry, search, introspection |
-| `security` | Auth, permissions, audit |
-| `observability` | Analytics, lineage, logging |
-| `api` | HTTP, streaming, async |
-
-Look for issues labeled `good first issue` if you're new to the project.
-
-## Pull Request Guidelines
-
-1. **Small PRs**: Keep changes focused and reviewable
-2. **Tests**: Include tests for new functionality
-3. **Documentation**: Update relevant docs and specs
-4. **Clean**: Outputs should be readable and well-formatted
-
-### PR Checklist
-- [ ] Branch targets `develop` (not `main`)
-- [ ] Code follows project style guidelines
-- [ ] Tests pass locally (`npm run build && npm run type-check && npm run lint && npm run test && npm run demo`)
-- [ ] Documentation updated
-- [ ] Attribution footer included in outputs
-- [ ] No secrets or proprietary data
-- [ ] CHANGELOG.md updated
-
-## Adding New Agents
-
-1. Create a new server file in `src/servers/<agent-name>.ts`
-2. Implement the agent logic — inherit `MCPServer`, add Roman persona
-3. Classify all tools as `query`, `command`, or `discovery` (see `src/kernel/types.ts`)
-4. Add tests and documentation
-5. Register the server in `src/mcp-client.ts` server configs — the kernel registry picks it up automatically
-
-## Adding Kernel Middleware
-
-The kernel middleware pipeline (`src/kernel/middleware/`) supports pluggable middleware:
-
-1. Create `src/kernel/middleware/<name>.ts` implementing your middleware class
-2. Wire it into `src/kernel/index.ts` (constructor + `callTool` pipeline)
-3. Add tests in `tests/kernel-<name>.test.ts` (use the simple assert pattern, not jest)
-4. Update `docs/API_REFERENCE.md` and `docs/ARCHITECTURE.md`
-5. Append entry to `CHANGELOG.md`
-
-Existing middleware: `auth.ts` (RBAC), `audit.ts` (JSONL logging), `resilience.ts` (error classification), `output.ts` (detail levels).
-
-## Testing
-
-### Running Tests
+## Setup
 
 ```bash
-npm run test              # Run all test suites (original + kernel)
-npm run demo              # Integration test via demo (14 servers through kernel)
-npm run server:geowiz     # Test individual server (all 14 available)
+git clone https://github.com/ryemyster/ShaleYeah.git
+cd ShaleYeah
+pnpm install
+pnpm turbo build
+pnpm turbo test
 ```
 
-### Kernel Tests
+## Branching
 
-Kernel tests use the **simple assert pattern** (not jest/vitest) and are self-contained with their own runner:
+Branch from `develop`. PRs target `develop` — never `main` directly.
 
 ```bash
-npx tsx tests/kernel-registry.test.ts    # Run a specific kernel test
-npx tsx tests/kernel-executor.test.ts    # Each file runs independently
+git checkout develop
+git checkout -b issue-<number>-<slug>
 ```
 
-Test files follow the naming convention `tests/kernel-<module>.test.ts`. Key conventions:
+## Pre-commit gate
 
-- Use `node:assert` for assertions (`strictEqual`, `deepStrictEqual`, `ok`, `throws`)
-- Each test file has its own runner at the bottom
-- Mock dependencies inline — no mock framework needed
-- Test both success and failure paths
-- No network calls or external file I/O
+All five must pass before opening a PR:
 
-### Testing Standards — Anti-Stub Pattern
+```bash
+pnpm turbo build
+pnpm turbo type-check
+pnpm turbo lint
+pnpm turbo test
+```
 
-Every server that calls the LLM **must** have three test types. These exist because servers
-were previously ghost-closed with hardcoded stubs while `npm run test` passed (#211–#217).
+Run per-package during development:
 
-See `tests/geowiz-anti-stub.test.ts` for the reference implementation.
+```bash
+cd servers/geowiz && pnpm build && pnpm test
+cd agents/geologist && pnpm build && pnpm test
+cd sdk && pnpm build && pnpm test
+```
 
-#### Type 1: Mock-SDK test — prove messages.create is called
+## Adding a new MCP server
 
-Set a syntactically valid but auth-invalid key; call `callLLM` (or the server's tool handler
-once wired); assert the error is a SDK auth/network error, not our missing-key guard.
-This proves the SDK was actually invoked.
+1. Create `servers/<name>/` — copy structure from an existing server (e.g. `servers/legal/`)
+2. Extend `MCPServer` from `@shaleyeah/sdk`, give it a Roman persona, register tools with `registerTool()`
+3. Wire `callLLM()` from `@shaleyeah/sdk` — never import `@anthropic-ai/sdk` directly
+4. Add `servers/<name>/package.json` with `"@shaleyeah/sdk": "workspace:*"` dep
+5. Write three tests in `servers/<name>/tests/server.test.ts` (see Anti-Stub Pattern below)
+6. Add `servers/<name>/docs/ARCHITECTURE.md` and `.env.example`
+7. Add to `pnpm-workspace.yaml` if not already covered by `servers/*`
+
+## Anti-stub test pattern
+
+Every server that calls `callLLM` must have all three types. These exist because servers were previously ghost-closed with hardcoded stubs while tests passed.
+
+**Type 1 — Mock-SDK:** prove `messages.create` is actually called.
 
 ```typescript
-process.env.ANTHROPIC_API_KEY = "sk-ant-api03-fake-key-...";
+process.env.ANTHROPIC_API_KEY = "sk-ant-api03-fake-key-for-testing-purposes-only-00000000000000000000000000";
 let err: Error | null = null;
 try { await callLLM({ prompt: "..." }); } catch (e) { err = e as Error; }
 assert.ok(err !== null);
-assert.ok(!err.message.includes("environment variable is not set")); // SDK was reached
+assert.ok(!err.message.includes("environment variable is not set")); // SDK was reached, not our guard
 ```
 
-#### Type 2: Determinism test — different inputs → different outputs
-
-Two different inputs must produce different outputs. Hardcoded returns fail this.
+**Type 2 — Determinism:** different inputs → different outputs (hardcoded returns fail this).
 
 ```typescript
-const r1 = await performAnalysis({ filePath: "wolfcamp_b.las", formations: ["Wolfcamp B"] });
-const r2 = await performAnalysis({ filePath: "austin_chalk.las", formations: ["Austin Chalk"] });
-assert.notStrictEqual(r1.recommendation, r2.recommendation);
+const r1 = deriveDefault("California", "exploration");
+const r2 = deriveDefault("Texas", "production");
+assert.notStrictEqual(r1, r2);
 ```
 
-#### Type 3: Demo-fallback test — no key → fixture data, not a crash
-
-Without `ANTHROPIC_API_KEY`, the server must catch the `callLLM` error and return valid fixture data.
+**Type 3 — Demo-fallback:** no key → clean error from `callLLM`, not a crash.
 
 ```typescript
 delete process.env.ANTHROPIC_API_KEY;
-const result = await performAnalysis({ filePath: "test.las" });
-assert.ok(result.formations.length > 0); // fixture data returned, not a crash
+let threw = false;
+try { await callLLM({ prompt: "test" }); } catch { threw = true; }
+assert.ok(threw);
 ```
 
-#### Ghost-close guard
+## Adding a new agent
 
-Before closing any server issue, grep must confirm implementation exists:
+1. Copy `agents/agent-zero/` as the starting point — it is the reference contract implementation
+2. Implement `AgentManifest` with tools, scopes, model requirements, and eval profiles
+3. Implement `AgentRuntimeConfig` with HITL policy, evals, memory, and `mcpServers` wiring
+4. Write handlers that call the corresponding Tier 1 server's exported functions
+5. Write tests (`agents/<name>/tests/agent.test.ts`) covering manifest validation, runtime boot, and HITL
+6. Add `agents/<name>/docs/ARCHITECTURE.md` — see `agents/geologist/docs/ARCHITECTURE.md` for the pattern
 
-```bash
-grep -n "callLLM" src/servers/<name>.ts   # must return at least one result
-grep -rn "messages.create" tests/         # must return at least one result per server
+## Test pattern
+
+All tests use Node's built-in `assert` — no jest, no vitest. Tests must pass without `ANTHROPIC_API_KEY`.
+
+```typescript
+import assert from "node:assert";
+
+let passed = 0; let failed = 0;
+function test(name: string, fn: () => void | Promise<void>) { ... }
+
+await test("does the thing", () => {
+  assert.strictEqual(actual, expected, "message");
+});
 ```
 
-### Pre-commit Checklist
+Run a single test: `npx tsx servers/geowiz/tests/server.test.ts`
 
-Run the full validation suite before every commit:
+## Code standards
 
-```bash
-npm run build && npm run type-check && npm run lint && npm run test && npm run demo
-```
+- TypeScript strict mode — no `any` except the two sdk files that need Zod runtime interop
+- No `Math.random()` in business logic — deterministic constants only (Monte Carlo samplers in risk-analysis are the explicit exception)
+- Comments explain the *why*, not the what — if removing the comment wouldn't confuse a future reader, don't write it
+- No `z.any()` in Zod schemas — use explicit types
 
-## Release Process
+## Changelog
 
-### Version Management
+Add an entry under `[Unreleased]` in the relevant package's `CHANGELOG.md` before opening a PR. Root `CHANGELOG.md` for workspace-level changes.
 
-SHALE YEAH follows **semantic versioning** (semver):
-- **Major (X.0.0)**: Breaking changes to public API
-- **Minor (0.X.0)**: New features, backward compatible
-- **Patch (0.0.X)**: Bug fixes, backward compatible
+## Security
 
-### Release Checklist
-
-```bash
-# 1. Full validation
-npm run build && npm run type-check && npm run lint && npm run test
-
-# 2. Demo works
-npm run demo
-
-# 3. Clean build test
-npm run clean && npm install --legacy-peer-deps && npm run build && npm run demo
-```
-
-Then:
-1. Update version in `package.json`
-2. Update `CHANGELOG.md` with release notes
-3. Create release branch: `git checkout -b release/vX.Y.Z`
-4. Create release tag: `git tag vX.Y.Z`
-5. Push and create GitHub release
-6. Merge to main
-
-## Reporting Issues
-
-- Use GitHub Issues for bugs and feature requests
-- Include reproduction steps and environment details
-- For security issues, see SECURITY.md
-
-## Code of Conduct
-
-This project follows a standard Code of Conduct. Be respectful, inclusive, and constructive in all interactions.
+Never commit secrets or credentials. Read from environment variables. See [SECURITY.md](SECURITY.md).
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the Apache 2.0 License.
+Contributions are licensed under Apache 2.0. See [LICENSE](LICENSE).

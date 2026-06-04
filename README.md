@@ -17,32 +17,57 @@ There are [~9,000 independent O&G operators](https://www.ipaa.org/independent-pr
 git clone https://github.com/ryemyster/ShaleYeah.git
 cd ShaleYeah
 pnpm install
-pnpm turbo build  # all 30 packages
-pnpm turbo test   # all suites
+pnpm turbo build
+pnpm turbo test
+```
+
+Connect any server to Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "geowiz": {
+      "command": "pnpm",
+      "args": ["--filter", "@shaleyeah/server-geowiz", "start"],
+      "cwd": "/path/to/ShaleYeah",
+      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+    }
+  }
+}
 ```
 
 ---
 
-## Documentation
+## The 14 agents
 
-| Topic | File |
-|-------|------|
-| Architecture — two-tier agents, package layout | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
-| Getting started for new contributors | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
-| All 14 servers — what they do, where they live | [docs/SERVERS.md](docs/SERVERS.md) |
-| Connect to Claude Desktop / VS Code / Claude CLI | [docs/MCP_INTEGRATION.md](docs/MCP_INTEGRATION.md) |
-| Demo mode vs production mode | [docs/DEMO_VS_PRODUCTION.md](docs/DEMO_VS_PRODUCTION.md) |
-| Distributed agent architecture | [docs/DISTRIBUTED_AGENTS.md](docs/DISTRIBUTED_AGENTS.md) |
-| O&G glossary for new engineers | [docs/GLOSSARY.md](docs/GLOSSARY.md) |
-| Role-based workflows by O&G profession | [docs/ROLES.md](docs/ROLES.md) |
-| CI/CD gates | [docs/CI_CD.md](docs/CI_CD.md) |
-| SHALE YEAH vs Claude Managed Agents | [docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md](docs/WHY_SHALEYEAH_IS_DEFENSIBLE.md) |
+| Package | Persona | Domain |
+|---------|---------|--------|
+| `@shaleyeah/server-geowiz` | Marcus Aurelius Geologicus | Geological analysis, LAS/GIS/seismic |
+| `@shaleyeah/server-econobot` | Caesar Augustus Economicus | NPV, IRR, DCF |
+| `@shaleyeah/server-curve-smith` | Lucius Technicus Engineer | Decline curves, EUR |
+| `@shaleyeah/server-risk-analysis` | Gaius Probabilis Assessor | Risk scoring, Monte Carlo |
+| `@shaleyeah/server-decision` | Augustus Decidius Maximus | Investment go/no-go |
+| `@shaleyeah/server-reporter` | Scriptor Reporticus Maximus | Executive reports |
+| `@shaleyeah/server-research` | Scientius Researchicus | Market intelligence |
+| `@shaleyeah/server-legal` | Legatus Juridicus | Lease risk, compliance |
+| `@shaleyeah/server-market` | Mercatus Analyticus | Commodity prices |
+| `@shaleyeah/server-title` | Titulus Verificatus | Mineral rights, title |
+| `@shaleyeah/server-development` | Architectus Developmentus | Development planning |
+| `@shaleyeah/server-drilling` | Perforator Maximus | Drilling programs |
+| `@shaleyeah/server-infrastructure` | Structura Ingenious | Midstream infrastructure |
+| `@shaleyeah/server-qa` | Testius Validatus | Quality assurance |
+
+---
+
+## Architecture
+
+See [ARCHITECTURE.md](ARCHITECTURE.md) — two-tier system, package layout, sdk contracts.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md). Branch from `develop`, write failing tests first, run `pnpm turbo build && pnpm turbo test` before opening a PR.
+See [CONTRIBUTING.md](CONTRIBUTING.md) — setup, branching, test pattern, adding servers/agents.
 
 ---
 
