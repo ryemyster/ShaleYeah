@@ -1,119 +1,200 @@
 # SHALE YEAH — Architecture
 
-**What it is:** A solo-company operating system for oil & gas investment due diligence. Replaces a full specialist deal team (geologist, economist, landman, reservoir engineer, risk analyst, lawyer, market analyst, reporter) with 14 specialist AI agents, each independently deployable.
+A solo-company OS for oil & gas investment due diligence. 14 specialist AI agents, each independently deployable, replacing a full deal team.
 
 **Open source. Enterprise target. BYOE (Bring Your Own Everything).**
 
 ---
 
-## The Two-Tier Employee Architecture
+## The building block — one two-tier employee
 
-Every specialist is a **two-tier employee**. The two tiers are mutually exclusive, independently deployed, and communicate only over HTTP.
+Every specialist is a two-tier employee. The two tiers are mutually exclusive and independently deployed.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Tier 2 — Agent (Employee)          e.g. geologist.internal:3002│
+│  Tier 2 — Agent                         agents/geologist/       │
 │                                                                  │
-│  AgentManifest — declares tools, scopes, model requirements     │
-│  AgentRuntimeConfig — MCP server connections, model routing,    │
-│                        HITL policy, evals, memory, data connectors│
-│  LocalAgentRuntime — executes tools, enforces contracts         │
-│  Handlers — call Tier 1 via MCP client (no direct imports)      │
+│  AgentManifest      — tools, scopes, model requirements         │
+│  AgentRuntimeConfig — MCP server URLs, model routing,           │
+│                        HITL policy, evals, memory               │
+│  LocalAgentRuntime  — executes tools, enforces contracts        │
 │                                                                  │
-│  Owns: BYO LLM routing · HITL challenges · eval scoring ·       │
+│  Owns: BYO LLM routing · HITL challenges · eval scoring         │
 │         secret redaction · agent working memory                 │
 └────────────────────────┬────────────────────────────────────────┘
-                         │ MCP over HTTP
+                         │ MCP over HTTP  (TypeScript import in monorepo dev)
 ┌────────────────────────▼────────────────────────────────────────┐
-│  Tier 1 — MCP Tool Server            e.g. geowiz.internal:3001  │
+│  Tier 1 — MCP Tool Server               servers/geowiz/         │
 │                                                                  │
 │  Exposes tools via MCP protocol                                 │
-│  Owns domain data processing + LLM synthesis for its domain     │
-│  Owns data integrations: FTP (LAS files), REST APIs (Enverus,   │
-│    IHS, EIA), Snowflake, PostgreSQL                             │
-│  Owns domain vector store / embeddings (geological formations,  │
-│    market data, etc.)                                           │
+│  Owns domain data processing + LLM synthesis                    │
+│  Owns data integrations (FTP, REST APIs, Snowflake, PostgreSQL) │
+│  Owns domain vector store / embeddings                          │
 │                                                                  │
-│  Stateless · fast · testable in complete isolation              │
+│  Stateless · testable in complete isolation                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Rule:** The agent NEVER imports from the server's source code. It calls the server at a configured URL. The server NEVER knows about the agent. Both have their own `llm-client` config, both have their own vector store.
+**Rule:** The agent never imports from the server's source in production — it calls the server at a configured URL. The server never knows about the agent. Both have their own LLM config and vector store.
+
+Note: In the current monorepo, `agents/geologist/` imports `servers/geowiz/` directly as a TypeScript package (no transport overhead). The production deployment uses MCP over HTTP. Same contracts either way.
 
 ---
 
-## Monorepo Structure (Issue #385)
+## The full fleet — 14 pairs
+
+```
+                    ┌─────────────────────────┐
+                    │     orchestrator/        │
+                    │  @shaleyeah/orchestrator │
+                    │  Temporal deal pipeline  │
+                    │      (planned #362)      │
+                    └────────────┬────────────┘
+                                 │ HTTP
+          ┌──────────────────────┼──────────────────────┐
+          │                      │                       │
+    Phase 1 (parallel)     Phase 2 (parallel)     Phase 3
+          │                      │                       │
+   ┌──────▼──────┐        ┌──────▼──────┐        ┌──────▼──────┐
+   │  geologist  │        │  economist  │        │  investment │
+   │  ─────────  │        │  ─────────  │        │    chair    │
+   │   geowiz    │        │  econobot   │        │  decision   │
+   └─────────────┘        └─────────────┘        └─────────────┘
+   ┌─────────────┐        ┌─────────────┐        ┌─────────────┐
+   │market-analyst        │res-engineer │        │  reporter   │
+   │  ─────────  │        │  ─────────  │        │  ─────────  │
+   │   market    │        │ curve-smith │        │  reporter   │
+   └─────────────┘        └─────────────┘        └─────────────┘
+   ┌─────────────┐        ┌─────────────┐
+   │title-analyst│        │ risk-analyst│
+   │  ─────────  │        │  ─────────  │
+   │    title    │        │risk-analysis│
+   └─────────────┘        └─────────────┘
+   ┌─────────────┐        ┌─────────────┐
+   │legal-analyst│        │  research   │
+   │  ─────────  │        │  ─────────  │
+   │    legal    │        │  research   │
+   └─────────────┘        └─────────────┘
+                          ┌─────────────┐
+                          │development  │
+                          │  planner    │
+                          │  ─────────  │
+                          │development  │
+                          └─────────────┘
+                          ┌─────────────┐
+                          │  drilling   │
+                          │  engineer   │
+                          │  ─────────  │
+                          │  drilling   │
+                          └─────────────┘
+                          ┌─────────────┐
+                          │infrastructure
+                          │  planner    │
+                          │  ─────────  │
+                          │infra struct │
+                          └─────────────┘
+```
+
+Each box is an `agent / server` pair. They can be deployed to the same host or spread across a network — the contract is the same either way.
+
+`qa-server` runs cross-cutting quality checks and is not shown in the phase diagram.
+
+---
+
+## Orchestrator workflow (planned — #362)
+
+The orchestrator runs a Temporal workflow that coordinates the fleet for a full deal analysis. Agents are called by HTTP; each has an `AgentEndpoint` that exposes `health`, `manifest`, `execute`, and `discover`.
+
+```
+trigger: deal_analysis({ tract, dataFiles })
+│
+├── Phase 1 — parallel, no dependencies
+│   ├── geologist.analyze_formation(las_files)
+│   ├── market-analyst.analyze_market_conditions(commodity_prices)
+│   ├── title-analyst.examine_title(legal_description)
+│   └── research-analyst.conduct_market_research(basin, operator)
+│
+├── Phase 2 — parallel, uses Phase 1 outputs
+│   ├── economist.analyze_economics(geology, market)
+│   ├── risk-analyst.assess_investment_risk(geology, economics, title)
+│   ├── legal-analyst.analyze_legal_framework(lease_terms, regulatory)
+│   ├── reservoir-engineer.analyze_decline_curve(production_history)
+│   ├── development-planner.create_development_plan(geology, economics)
+│   └── drilling-engineer.design_drilling_program(geology, development)
+│
+├── Phase 3 — sequential, uses all Phase 2 outputs
+│   └── investment-chair.analyze_investment(all_above)
+│
+└── Phase 4 — report
+    └── reporter.create_executive_report(decision, all_above)
+```
+
+Temporal handles retries, timeouts, human approval signals (HITL), and durable state across restarts. The orchestrator does not own domain knowledge — it only coordinates.
+
+---
+
+## Package structure
 
 ```
 shaleyeah/
+├── sdk/                @shaleyeah/sdk — shared language every package speaks
+│   └── src/
+│       ├── contracts.ts      AgentManifest, AgentRuntimeConfig (Zod schemas)
+│       ├── runtime.ts        LocalAgentRuntime
+│       ├── service.ts        LocalAgentEndpoint
+│       ├── llm-client.ts     callLLM() — sole LLM call site
+│       ├── mcp-server.ts     MCPServer base class
+│       ├── canonical-model.ts  FormationSchema, EconomicsSchema, etc.
+│       ├── types.ts          Domain types
+│       └── parsers/          LAS, Excel, GIS, SEGY
 │
-├── sdk/                    @shaleyeah/sdk
-│   ├── src/
-│   │   ├── contracts.ts    AgentManifest, AgentRuntimeConfig, all Zod schemas
-│   │   ├── runtime.ts      LocalAgentRuntime
-│   │   ├── service.ts      LocalAgentEndpoint
-│   │   ├── llm-client.ts   Shared LLM call utility (each package configures independently)
-│   │   ├── mcp-server.ts   MCPServer base class for Tier 1 servers
-│   │   ├── server-factory.ts ServerFactory, ServerUtils
-│   │   ├── types.ts        Global domain types (orchestrator-level contracts)
-│   │   ├── file-*.ts       File detection, integration, utils
-│   │   └── parsers/        LAS, Excel, GIS, SEGY parsers
-│   └── tests/
+├── servers/            Tier 1 — 14 MCP tool servers
+│   ├── geowiz/         @shaleyeah/server-geowiz
+│   ├── econobot/       @shaleyeah/server-econobot
+│   └── ... (12 more)
 │
-├── agents/                 Tier 2 — one package per employee
-│   ├── geologist/          @shaleyeah/geologist
-│   │   ├── src/agent/      Manifest, config, handlers (calls geowiz MCP server)
-│   │   ├── tests/
-│   │   └── package.json    { "@shaleyeah/sdk": "workspace:*" }
-│   ├── agent-zero/         Reference implementation for contract validation
-│   └── <12 stubs>/         Filled in when each migration issue is worked (#364-376)
+├── agents/             Tier 2 — 14 agent packages
+│   ├── geologist/      @shaleyeah/geologist  (implemented)
+│   ├── agent-zero/     @shaleyeah/agent-zero (reference contract)
+│   └── ... (12 stubs, #364-376)
 │
-├── servers/                Tier 1 — one package per MCP tool server
-│   ├── geowiz/             @shaleyeah/server-geowiz
-│   │   ├── src/            Tool implementations, LLM synthesis, deterministic fallbacks
-│   │   ├── tests/
-│   │   └── package.json    { "@shaleyeah/sdk": "workspace:*" }
-│   └── <13 more>/          econobot, curve-smith, decision, reporter, risk-analysis,
-│                           research, legal, market, title, development, drilling,
-│                           infrastructure, qa-server
-│
-├── orchestrator/           @shaleyeah/orchestrator (placeholder — Temporal workflows, #362)
+├── orchestrator/       @shaleyeah/orchestrator (stub — #362)
 │
 ├── pnpm-workspace.yaml
-├── turbo.json              Build/test pipeline (sdk → servers → agents, dependency order)
+├── turbo.json          build: sdk → servers → agents
 └── tsconfig.base.json
 ```
 
-**To pull any package into its own repo:**
+**To extract any package to its own repo:**
 ```bash
 mv agents/geologist ../shaleyeah-geologist
-# change "@shaleyeah/sdk": "workspace:*" → "^0.1.0" in package.json
-# remove path filter from CI workflow
+# change "@shaleyeah/sdk": "workspace:*" → "^0.1.0"
 ```
 
 ---
 
 ## @shaleyeah/sdk
 
-The shared language every package speaks. Published to npm. Every agent and every server imports it.
+The shared language. Every server and agent imports it.
 
 ```typescript
 import {
-  AgentManifest,           // what an agent declares it can do
-  AgentRuntimeConfig,      // how it's deployed (model routing, HITL, evals, etc.)
-  LocalAgentRuntime,       // executes tools, enforces the contract
-  LocalAgentEndpoint,      // HTTP endpoint wrapper
-  callLLM,                 // shared LLM utility — each package injects its own key
-  MCPServer,               // base class for Tier 1 servers
-  ServerFactory,           // DRY factory for MCP tool registration
+  AgentManifest,        // what an agent declares it can do
+  AgentRuntimeConfig,   // how it runs (model routing, HITL, evals, memory, MCP servers)
+  LocalAgentRuntime,    // executes tools, enforces the contract
+  LocalAgentEndpoint,   // HTTP endpoint wrapper (health, manifest, execute, discover)
+  callLLM,             // only LLM call site — each package injects its own key
+  MCPServer,           // base class for all Tier 1 servers
+  FormationSchema,     // canonical Zod schemas shared across servers
+  EconomicsSchema,
 } from "@shaleyeah/sdk";
 ```
 
 ---
 
-## Key Contracts
+## Key contracts
 
-### AgentRuntimeConfig (what the operator configures per deployment)
+### AgentRuntimeConfig
 
 ```typescript
 {
@@ -130,109 +211,28 @@ import {
     requireForDestructive: true,
     requireForMemoryPromotion: true,
   },
-  evals: { enabled, profile, checks: { schema, redactSecrets, ... } },
-  memory: {
-    namespace: string,
-    vectorStore: { enabled, provider, url, embeddingModel },
-    retentionDays: number,
-    promotion: { requireHumanReview, allowSharedMemory },
-  },
-  mcpServers: {               // where this agent's Tier 1 tool servers live
-    geowiz: { url, transport, authType }
-  },
-  dataConnectors: {           // BYO data integrations
-    "las-repository": { type: "ftp", description },
-    "well-data-api":  { type: "rest-api", description },
-  },
+  evals: { profile, checks: { schema, redactSecrets, confidenceMinimum, ... } },
+  memory: { namespace, vectorStore, retentionDays, promotion },
+  mcpServers: { geowiz: { url, transport, authType } },
+  dataConnectors: { "las-repo": { type: "ftp" }, "well-api": { type: "rest-api" } },
 }
 ```
 
-**Auth rule:** `authType` is declared in config. Actual credentials are injected at runtime via execution context — never stored in config, manifests, prompts, responses, logs, or memory.
+Model routing uses capability labels (`"standard-analysis"`), never provider names. The operator maps labels to actual models at deploy time — the agent code never changes.
 
-### AgentToolManifest (per tool)
-
-```typescript
-{
-  name: "geologist.analyze_formation",
-  type: "query" | "command",
-  modelRequirement: "standard-analysis",   // capability label, never a provider name
-  requiredScopes: ["read:geology"],
-  mcpServer: "geowiz",                     // which mcpServers key this tool calls
-  requiresHumanApproval: false,
-  readOnly: false,
-  destructive: false,
-}
-```
+Credentials are injected at runtime via execution context — never stored in config, manifests, prompts, responses, logs, or memory.
 
 ---
 
-## Infrastructure Stack
+## Infrastructure stack
 
 | Layer | Decision | Notes |
 |---|---|---|
-| API Gateway | **Kong** | Sits at public edge. TLS, rate limiting, auth, per-tenant policies. Wire before orchestrator ships. |
-| Workflow engine | **Temporal** | Orchestrator deal pipeline only — not inside individual agents. Durable execution for 14-agent analyses. |
-| Transport | **HTTP** | Agent↔server and orchestrator↔agent. Enterprise O&G orgs can consume it. |
-| Vector store | **Supabase pgvector** (default) | Swappable via `vectorStore.provider`. Never hardcode pgvector calls — always go through the provider field. |
-| Data integrations | **REST first** | Enverus, IHS, EIA, state regulatories all have REST APIs. FTP for legacy bulk. Snowflake is high-value for enterprise. |
-| Workspace | **pnpm + Turborepo** | `pnpm turbo build` builds all packages in dependency order. Each package builds independently. |
-| Observability | **Deferred** | When we do it: structured JSON logs ingestible by Splunk/AWS CloudWatch. `AgentExecutionResult.metadata` is already the right shape. |
+| API gateway | Kong | Public edge: TLS, rate limiting, per-tenant policies. Wire before orchestrator. |
+| Workflow engine | Temporal | Orchestrator only — not inside agents. Durable 14-agent deal pipelines. |
+| Transport | HTTP | Agent↔server, orchestrator↔agent. Enterprise O&G orgs can consume it. |
+| Vector store | Supabase pgvector (default) | Swappable via `vectorStore.provider`. Never call pgvector directly. |
+| Data integrations | REST first | Enverus, IHS, EIA, state regulatories all REST. FTP for legacy bulk. Snowflake for enterprise. |
+| Build | pnpm + Turborepo | `pnpm turbo build` runs sdk → servers → agents in dependency order. |
 
-**No-go:** LangChain/LangGraph (our AgentRuntime IS the abstraction), Temporal inside individual agents, Kong between internal services.
-
----
-
-## O&G Enterprise Reality
-
-- Most investment-side orgs are 10-20 years behind on tech. Snowflake is new for them.
-- Data vendors (Enverus, IHS Markit, PHDWin, ARIES) all have REST APIs now.
-- Common data stack: Snowflake or Excel/Access, SharePoint/Box for docs, ESRI ArcGIS.
-- REST + Snowflake connector covers 90% of real enterprise use cases.
-- Build for where they're going (cloud, REST), not where they are.
-
----
-
-## The 14 Employees
-
-| Employee | Server | Domain |
-|---|---|---|
-| geologist | geowiz | Formation analysis, well logs, GIS, seismic, ARIES |
-| economist | econobot | NPV, IRR, DCF, EIA market data |
-| reservoir-engineer | curve-smith | Arps decline curves, production forecasting |
-| risk-analyst | risk-analysis | Monte Carlo simulation, risk scoring |
-| investment-chair | decision | Investment decision synthesis |
-| reporter | reporter | Report assembly and delivery |
-| research-analyst | research | Web search, regulatory data, news |
-| legal-analyst | legal | Lease analysis, title review, compliance |
-| market-analyst | market | Commodity prices, market intelligence |
-| title-analyst | title | Mineral rights, title chain, acreage |
-| development-planner | development | Well spacing, pad design, capex sequencing |
-| drilling-engineer | drilling | AFE estimation, drilling program design |
-| infrastructure-planner | infrastructure | Pipeline, midstream, compression |
-| quality-assurance | qa-server | Output validation, cross-agent consistency |
-
----
-
-## Issue Roadmap
-
-| Issue | Description | Blocked by |
-|---|---|---|
-| #385 | **Monorepo conversion** — pnpm workspaces, sdk/, agents/, servers/, orchestrator/, kernel deleted | — (start here) |
-| #363 Phase 2 | Geologist agent calls geowiz MCP server via MCP client | #385 |
-| #364-376 | Migrate remaining 13 agents to two-tier pattern | #385 |
-| #362 | Orchestrator — Temporal deal pipeline | #364-376 |
-
----
-
-## Development Commands (post #385)
-
-```bash
-pnpm install                          # install all workspaces
-pnpm turbo build                      # build everything (sdk → servers → agents)
-pnpm turbo test                       # test everything
-pnpm demo                             # standalone geologist agent demo
-
-cd sdk && pnpm build                  # build just the SDK
-cd servers/geowiz && pnpm start       # run geowiz MCP server
-cd agents/geologist && pnpm start     # run geologist agent
-```
+**No-go:** LangChain/LangGraph, Temporal inside individual agents, Kong between internal services.
