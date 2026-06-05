@@ -1,15 +1,8 @@
 import type { AgentManifest, AgentRuntimeConfig } from "@shaleyeah/sdk";
 import { LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
-import {
-	assessDataQuality,
-	performFormationAnalysis,
-	processAccessDatabaseData,
-	processAriesAnalysis,
-	processDocumentData,
-	processEnhancedGIS,
-	processMultiFormatWellLog,
-	processSeismicAnalysis,
-} from "@shaleyeah/server-geowiz";
+import { callGeowizTool } from "./geowiz-client.js";
+
+export { callGeowizTool };
 
 export const geologistManifest: AgentManifest = {
 	id: "geologist",
@@ -338,54 +331,31 @@ export const geologistConfig: AgentRuntimeConfig = {
 	},
 };
 
+// Each handler resolves the geowiz URL from the runtime config and delegates via MCP over HTTP.
+// The server name "geowiz" matches AgentToolManifest.mcpServer and AgentRuntimeConfig.mcpServers key.
+function geowizUrl(config: AgentRuntimeConfig): string {
+	return config.mcpServers?.geowiz?.url ?? "http://localhost:3001";
+}
+
 const handlers: Record<string, StandaloneToolHandler> = {
-	"geologist.analyze_formation": async ({ args }) =>
-		performFormationAnalysis(
-			args as { filePath: string; formations?: string[]; analysisType?: string; outputPath?: string },
-		),
+	"geologist.analyze_formation": ({ args, config }) => callGeowizTool(geowizUrl(config), "analyze_formation", args),
 
-	"geologist.process_gis": async ({ args }) =>
-		processEnhancedGIS(
-			args as {
-				filePath: string;
-				analysisType?: string;
-				qualityAssessment?: boolean;
-				oilGasAnalysis?: boolean;
-				outputPath?: string;
-			},
-		),
+	"geologist.process_gis": ({ args, config }) => callGeowizTool(geowizUrl(config), "process_gis", args),
 
-	"geologist.process_well_logs": async ({ args }) =>
-		processMultiFormatWellLog(
-			args as { filePath: string; format?: string; qualityAssessment?: boolean; outputPath?: string },
-		),
+	"geologist.process_well_logs": ({ args, config }) => callGeowizTool(geowizUrl(config), "process_well_logs", args),
 
-	"geologist.assess_quality": async ({ args }) =>
-		assessDataQuality(
-			args as {
-				dataType: string;
-				thresholds?: { completeness: number; accuracy: number; consistency: number };
-			},
-		),
+	"geologist.assess_quality": ({ args, config }) => callGeowizTool(geowizUrl(config), "assess_data_quality", args),
 
-	"geologist.process_access_database": async ({ args }) =>
-		processAccessDatabaseData(
-			args as {
-				filePath: string;
-				extractTables?: string[];
-				outputFormat?: string;
-				outputPath?: string;
-			},
-		),
+	"geologist.process_access_database": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_access_database", args),
 
-	"geologist.process_document": async ({ args }) =>
-		processDocumentData(args as { filePath: string; extractionType?: string; outputPath?: string }),
+	"geologist.process_document": ({ args, config }) => callGeowizTool(geowizUrl(config), "process_document", args),
 
-	"geologist.process_seismic_data": async ({ args }) =>
-		processSeismicAnalysis(args as { filePath: string; analysisType?: string; outputPath?: string }),
+	"geologist.process_seismic_data": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_seismic_data", args),
 
-	"geologist.process_aries_database": async ({ args }) =>
-		processAriesAnalysis(args as { filePath: string; analysisType?: string; outputPath?: string }),
+	"geologist.process_aries_database": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_aries_database", args),
 };
 
 export function createGeologistRuntime(config: AgentRuntimeConfig = geologistConfig): LocalAgentRuntime {
