@@ -1,15 +1,8 @@
-import type { AgentManifest, AgentRuntimeConfig } from "@shaleyeah/sdk";
-import { LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
-import {
-	assessDataQuality,
-	performFormationAnalysis,
-	processAccessDatabaseData,
-	processAriesAnalysis,
-	processDocumentData,
-	processEnhancedGIS,
-	processMultiFormatWellLog,
-	processSeismicAnalysis,
-} from "@shaleyeah/server-geowiz";
+import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import { callGeowizTool } from "./geowiz-client.js";
+
+export { callGeowizTool };
 
 export const geologistManifest: AgentManifest = {
 	id: "geologist",
@@ -338,54 +331,36 @@ export const geologistConfig: AgentRuntimeConfig = {
 	},
 };
 
+function geowizUrl(config: AgentRuntimeConfig): string {
+	return config.mcpServers?.geowiz?.url ?? "http://localhost:3001";
+}
+
+// Each handler resolves the geowiz URL from runtime config and delegates via MCP over HTTP.
+// The server tool name is the agent tool name without the "geologist." prefix.
 const handlers: Record<string, StandaloneToolHandler> = {
-	"geologist.analyze_formation": async ({ args }) =>
-		performFormationAnalysis(
-			args as { filePath: string; formations?: string[]; analysisType?: string; outputPath?: string },
-		),
+	"geologist.analyze_formation": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "analyze_formation", args as Record<string, unknown>),
 
-	"geologist.process_gis": async ({ args }) =>
-		processEnhancedGIS(
-			args as {
-				filePath: string;
-				analysisType?: string;
-				qualityAssessment?: boolean;
-				oilGasAnalysis?: boolean;
-				outputPath?: string;
-			},
-		),
+	"geologist.process_gis": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_gis", args as Record<string, unknown>),
 
-	"geologist.process_well_logs": async ({ args }) =>
-		processMultiFormatWellLog(
-			args as { filePath: string; format?: string; qualityAssessment?: boolean; outputPath?: string },
-		),
+	"geologist.process_well_logs": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_well_logs", args as Record<string, unknown>),
 
-	"geologist.assess_quality": async ({ args }) =>
-		assessDataQuality(
-			args as {
-				dataType: string;
-				thresholds?: { completeness: number; accuracy: number; consistency: number };
-			},
-		),
+	"geologist.assess_quality": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "assess_quality", args as Record<string, unknown>),
 
-	"geologist.process_access_database": async ({ args }) =>
-		processAccessDatabaseData(
-			args as {
-				filePath: string;
-				extractTables?: string[];
-				outputFormat?: string;
-				outputPath?: string;
-			},
-		),
+	"geologist.process_access_database": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_access_database", args as Record<string, unknown>),
 
-	"geologist.process_document": async ({ args }) =>
-		processDocumentData(args as { filePath: string; extractionType?: string; outputPath?: string }),
+	"geologist.process_document": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_document", args as Record<string, unknown>),
 
-	"geologist.process_seismic_data": async ({ args }) =>
-		processSeismicAnalysis(args as { filePath: string; analysisType?: string; outputPath?: string }),
+	"geologist.process_seismic_data": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_seismic_data", args as Record<string, unknown>),
 
-	"geologist.process_aries_database": async ({ args }) =>
-		processAriesAnalysis(args as { filePath: string; analysisType?: string; outputPath?: string }),
+	"geologist.process_aries_database": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "process_aries_database", args as Record<string, unknown>),
 };
 
 export function createGeologistRuntime(config: AgentRuntimeConfig = geologistConfig): LocalAgentRuntime {
@@ -398,4 +373,168 @@ export function createGeologistRuntime(config: AgentRuntimeConfig = geologistCon
 
 export function createGeologistEndpoint(config: AgentRuntimeConfig = geologistConfig): LocalAgentEndpoint {
 	return new LocalAgentEndpoint(createGeologistRuntime(config));
+}
+
+/**
+ * Run a multi-step geological task driven by the LLM (Layer 2 execution loop).
+ *
+ * Accepts a natural language goal, reasons about which geowiz tools to call,
+ * executes them through the governed runtime (HITL + scope checks fire on every
+ * tool call — Arcade pattern #46: Permission Gate), and returns a synthesized answer.
+ *
+ * options.runtime    — use an already-initialized runtime (e.g. in tests or when the
+ *                      caller manages lifecycle). If omitted, one is created internally.
+ * options.onApprovalRequired — called when the runtime returns approval_required.
+ *                      If omitted and approval is required, the loop throws rather than
+ *                      silently bypassing the HITL gate.
+ *
+ * Deferred (#395): Context Injection — read/write agent memory namespace around the loop.
+ * Deferred (#396): Async Job — polling pattern for long-running tools (seismic, ARIES).
+ */
+export async function runGeologistTask(
+	goal: string,
+	options: {
+		config?: AgentRuntimeConfig;
+		apiKey?: string;
+		runtime?: LocalAgentRuntime;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+	} = {},
+): Promise<string> {
+	const config = options.config ?? geologistConfig;
+
+	// Create and initialize a runtime for this task if the caller didn't supply one.
+	let runtime = options.runtime;
+	let ownedRuntime = false;
+	if (!runtime) {
+		runtime = createGeologistRuntime(config);
+		await runtime.initialize();
+		ownedRuntime = true;
+	}
+
+	try {
+		return await executeLoop(goal, runtime, options);
+	} finally {
+		if (ownedRuntime) await runtime.shutdown();
+	}
+}
+
+function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
+	return history
+		.map((t) => {
+			if (t.role === "user") return `User: ${t.content}`;
+			if (t.role === "assistant") return `Assistant: ${t.content}`;
+			return `Tool result: ${t.content}`;
+		})
+		.join("\n\n");
+}
+
+function parseJson(
+	text: string,
+): { action?: string; tool?: string; args?: Record<string, unknown>; answer?: string } | null {
+	try {
+		const cleaned = text
+			.replace(/^```(?:json)?\s*/m, "")
+			.replace(/\s*```\s*$/m, "")
+			.trim();
+		return JSON.parse(cleaned);
+	} catch {
+		return null;
+	}
+}
+
+async function executeLoop(
+	goal: string,
+	runtime: LocalAgentRuntime,
+	options: {
+		apiKey?: string;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+	},
+): Promise<string> {
+	// TODO (#395): Context Injection — before building the system prompt, read from
+	// memory.namespace = "geologist" to surface relevant prior task context.
+	// Requires Supabase pgvector. Inject as an additional system prompt section.
+
+	const toolDefs = geologistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+
+	const system = `You are ${geologistManifest.persona.name}, ${geologistManifest.persona.role}.
+
+Available tools:
+${toolDefs}
+
+Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
+1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}
+2. Final answer: {"action":"done","answer":"<synthesized answer>"}
+
+Always use the full tool name (e.g. "geologist.analyze_formation").
+If you cannot complete the task with the available tools, respond with {"action":"done","answer":"<explanation>"}.`;
+
+	type Turn = { role: "user" | "assistant" | "tool"; content: string };
+	const history: Turn[] = [{ role: "user", content: goal }];
+	const MAX_STEPS = 8;
+
+	for (let step = 0; step < MAX_STEPS; step++) {
+		const response = await callLLM({
+			system,
+			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			apiKey: options.apiKey,
+		});
+
+		history.push({ role: "assistant", content: response });
+
+		const parsed = parseJson(response);
+		if (!parsed || parsed.action === "done" || !parsed.tool) {
+			return parsed?.answer ?? response;
+		}
+
+		// TODO (#396): Async Job — if the tool manifest declares timeoutMs > threshold,
+		// treat the result as a job ID and poll until completion before continuing the loop.
+
+		// Permission Gate: route through runtime.execute() so HITL + scope checks fire.
+		// This is the key change from the earlier direct callGeowizTool() path.
+		const execResult = await runtime.execute({
+			toolName: parsed.tool,
+			args: parsed.args ?? {},
+			runId: `task:step:${step}`,
+		});
+
+		if (execResult.status === "completed") {
+			history.push({ role: "tool", content: JSON.stringify(execResult.data) });
+		} else if (execResult.status === "approval_required") {
+			if (!options.onApprovalRequired) {
+				throw new Error(
+					`Tool ${parsed.tool} requires human approval. ` +
+						"Provide an onApprovalRequired callback to runGeologistTask, or set autonomy to 'autonomous'.",
+				);
+			}
+			const approval = await options.onApprovalRequired(execResult.challenge);
+			// Re-execute the same call with the approval token attached.
+			const approved = await runtime.execute({
+				toolName: parsed.tool,
+				args: parsed.args ?? {},
+				approval,
+				runId: `task:step:${step}:approved`,
+			});
+			if (approved.status === "completed") {
+				history.push({ role: "tool", content: JSON.stringify(approved.data) });
+			} else {
+				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
+				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
+			}
+		} else {
+			// Failed — include retryability hint so the LLM can decide whether to retry.
+			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
+			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+		}
+	}
+
+	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
+
+	// Max steps reached — force a synthesis pass.
+	const finalResponse = await callLLM({
+		system,
+		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		apiKey: options.apiKey,
+	});
+
+	return parseJson(finalResponse)?.answer ?? finalResponse;
 }

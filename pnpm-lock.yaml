@@ -78,12 +78,12 @@ importers:
 
   agents/geologist:
     dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
       '@shaleyeah/sdk':
         specifier: workspace:*
         version: link:../../sdk
-      '@shaleyeah/server-geowiz':
-        specifier: workspace:*
-        version: link:../../servers/geowiz
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.4.11

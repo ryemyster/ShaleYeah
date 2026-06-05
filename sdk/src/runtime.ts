@@ -11,10 +11,13 @@ import {
 	AgentRuntimeConfigSchema,
 	type AgentToolManifest,
 	type AgentToolSummary,
+	type AuditLogEntry,
+	type AuditLogger,
 	type EvalResult,
 	type HumanApprovalChallenge,
 	type ModelBinding,
 } from "./contracts.js";
+import { RetryableToolError } from "./errors.js";
 
 const SENSITIVE_KEY_PATTERN = /key|token|secret|password|credential|auth|bearer|api.?key/i;
 
@@ -32,18 +35,30 @@ export interface LocalAgentRuntimeOptions {
 	manifest: AgentManifest;
 	config: AgentRuntimeConfig;
 	handlers: Record<string, StandaloneToolHandler>;
+	/**
+	 * Audit sink — called after every execute() regardless of outcome.
+	 * Defaults to writing JSON lines to stderr so operators always get a record.
+	 * Pass a no-op `() => {}` to disable, or a custom writer for Supabase/CloudWatch.
+	 */
+	auditLogger?: AuditLogger;
 }
+
+const defaultAuditLogger: AuditLogger = (entry: AuditLogEntry) => {
+	process.stderr.write(`${JSON.stringify(entry)}\n`);
+};
 
 export class LocalAgentRuntime implements AgentRuntime {
 	private readonly manifest: AgentManifest;
 	private readonly config: AgentRuntimeConfig;
 	private readonly handlers: Record<string, StandaloneToolHandler>;
+	private readonly auditLogger: AuditLogger;
 	private initialized = false;
 
 	constructor(options: LocalAgentRuntimeOptions) {
 		this.manifest = AgentManifestSchema.parse(options.manifest);
 		this.config = AgentRuntimeConfigSchema.parse(options.config);
 		this.handlers = { ...options.handlers };
+		this.auditLogger = options.auditLogger ?? defaultAuditLogger;
 	}
 
 	async initialize(): Promise<void> {
@@ -121,6 +136,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 	}
 
 	async execute(request: AgentExecutionRequest): Promise<AgentExecutionResult> {
+		const startMs = Date.now();
 		const tool = this.findTool(request.toolName);
 		if (!tool) {
 			return this.failed(request.toolName, `Unknown tool: ${request.toolName}`);
@@ -128,11 +144,13 @@ export class LocalAgentRuntime implements AgentRuntime {
 
 		const approvalChallenge = this.approvalChallengeFor(tool, request);
 		if (approvalChallenge) {
-			return {
+			const result: AgentExecutionResult = {
 				status: "approval_required",
 				challenge: approvalChallenge,
 				metadata: this.metadataWithoutBinding(tool),
 			};
+			this.audit(tool.name, request.args, result, Date.now() - startMs);
+			return result;
 		}
 
 		const modelBinding = this.config.modelRouting[tool.modelRequirement];
@@ -160,19 +178,30 @@ export class LocalAgentRuntime implements AgentRuntime {
 				args: safeArgs,
 			});
 			const evals = this.evaluate(tool, data);
-			return {
+			const result: AgentExecutionResult = {
 				status: "completed",
 				data,
 				evals,
 				metadata: this.metadata(tool, modelBinding),
 			};
+			this.audit(tool.name, safeArgs, result, Date.now() - startMs);
+			return result;
 		} catch (error) {
-			return {
+			const result: AgentExecutionResult = {
 				status: "failed",
 				error: error instanceof Error ? error.message : String(error),
+				retryable: error instanceof RetryableToolError,
 				evals: [],
 				metadata: this.metadata(tool, modelBinding),
 			};
+			this.audit(
+				tool.name,
+				safeArgs,
+				result,
+				Date.now() - startMs,
+				error instanceof Error ? error.message : String(error),
+			);
+			return result;
 		}
 	}
 
@@ -271,6 +300,30 @@ export class LocalAgentRuntime implements AgentRuntime {
 		}
 
 		return results;
+	}
+
+	private audit(
+		toolName: string,
+		args: Record<string, unknown>,
+		result: AgentExecutionResult,
+		durationMs: number,
+		error?: string,
+	): void {
+		const entry: AuditLogEntry = {
+			timestamp: new Date().toISOString(),
+			agentId: this.manifest.id,
+			toolName,
+			args,
+			status: result.status,
+			durationMs,
+			...(error !== undefined && { error }),
+			...(result.status === "failed" && result.retryable !== undefined && { retryable: result.retryable }),
+		};
+		try {
+			this.auditLogger(entry);
+		} catch {
+			// Audit logger must never crash the agent — swallow failures silently.
+		}
 	}
 
 	private failed(

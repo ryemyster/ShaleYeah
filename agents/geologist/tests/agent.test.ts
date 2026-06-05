@@ -26,6 +26,19 @@ function assert(condition: boolean, message: string): void {
 	}
 }
 
+async function geowizReachable(): Promise<boolean> {
+	try {
+		const url = geologistConfig.mcpServers?.geowiz?.url ?? "http://localhost:3001";
+		const ctrl = new AbortController();
+		const timer = setTimeout(() => ctrl.abort(), 500);
+		await fetch(url, { method: "HEAD", signal: ctrl.signal });
+		clearTimeout(timer);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 console.log("🧪 Starting Geologist Agent Contract Tests (#363)\n");
 
 console.log("📋 Testing manifest and config validation...");
@@ -85,31 +98,36 @@ console.log("\n🔎 Testing progressive discovery...");
 
 console.log("\n🧭 Testing organization-owned model routing...");
 {
-	const runtime = createGeologistRuntime({
-		...geologistConfig,
-		modelRouting: {
-			...geologistConfig.modelRouting,
-			"standard-analysis": {
-				provider: "acme-geology-llm",
-				model: "operator-selected-model",
+	const live = await geowizReachable();
+	if (!live) {
+		console.log("  ⚠️  [skipped] geowiz not reachable — execute() tests require live server");
+		console.log("     Start with: cd servers/geowiz && PORT=3001 pnpm start");
+	} else {
+		const runtime = createGeologistRuntime({
+			...geologistConfig,
+			modelRouting: {
+				...geologistConfig.modelRouting,
+				"standard-analysis": {
+					provider: "acme-geology-llm",
+					model: "operator-selected-model",
+				},
 			},
-		},
-	});
-	await runtime.initialize();
+		});
+		await runtime.initialize();
 
-	// assess_quality is deterministic — no real file needed, the function doesn't read disk
-	const result = await runtime.execute({
-		toolName: "geologist.assess_quality",
-		args: { filePath: "test.las", dataType: "las" },
-	});
+		const result = await runtime.execute({
+			toolName: "geologist.assess_quality",
+			args: { filePath: "test.las", dataType: "las" },
+		});
 
-	assert(result.status === "completed", "Deterministic quality-assessment tool completes");
-	if (result.status === "completed") {
-		assert(result.metadata.modelRequirement === "deterministic", "assess_quality routes to deterministic");
-		assert(result.metadata.modelBinding.provider === "rule-based", "Deterministic tools use rule-based provider");
+		assert(result.status === "completed", "Deterministic quality-assessment tool completes");
+		if (result.status === "completed") {
+			assert(result.metadata.modelRequirement === "deterministic", "assess_quality routes to deterministic");
+			assert(result.metadata.modelBinding.provider === "rule-based", "Deterministic tools use rule-based provider");
+		}
+
+		await runtime.shutdown();
 	}
-
-	await runtime.shutdown();
 }
 
 console.log("\n📡 Testing model capability routing across requirement classes...");
@@ -132,17 +150,24 @@ console.log("\n📡 Testing model capability routing across requirement classes.
 
 console.log("\n🙋 Testing HITL policy wires through to config...");
 {
-	const runtime = createGeologistRuntime();
-	await runtime.initialize();
+	const live = await geowizReachable();
 
-	// No tool has requiresHumanApproval: true — verify inspect-style tools run freely
-	const result = await runtime.execute({
-		toolName: "geologist.assess_quality",
-		args: { filePath: "test.las", dataType: "las" },
-	});
-	assert(result.status === "completed", "Analysis tools complete without approval challenge");
+	if (live) {
+		const runtime = createGeologistRuntime();
+		await runtime.initialize();
 
-	// approvalMode: "always" forces a challenge even for non-marked tools
+		const result = await runtime.execute({
+			toolName: "geologist.assess_quality",
+			args: { filePath: "test.las", dataType: "las" },
+		});
+		assert(result.status === "completed", "Analysis tools complete without approval challenge");
+
+		await runtime.shutdown();
+	} else {
+		console.log("  ⚠️  [skipped] execute() test requires live geowiz server");
+	}
+
+	// approvalMode: "always" blocks BEFORE calling the handler — no server needed
 	const strictRuntime = createGeologistRuntime({
 		...geologistConfig,
 		hitl: { ...geologistConfig.hitl, approvalMode: "always" },
@@ -158,37 +183,41 @@ console.log("\n🙋 Testing HITL policy wires through to config...");
 		assert(blocked.challenge.agentId === "geologist", "Challenge identifies geologist agent");
 	}
 
-	await runtime.shutdown();
 	await strictRuntime.shutdown();
 }
 
 console.log("\n🧪 Testing evals run on tool output...");
 {
-	const runtime = createGeologistRuntime();
-	await runtime.initialize();
+	const live = await geowizReachable();
+	if (!live) {
+		console.log("  ⚠️  [skipped] eval test requires live geowiz server");
+	} else {
+		const runtime = createGeologistRuntime();
+		await runtime.initialize();
 
-	const result = await runtime.execute({
-		toolName: "geologist.assess_quality",
-		args: { filePath: "test.las", dataType: "las" },
-	});
+		const result = await runtime.execute({
+			toolName: "geologist.assess_quality",
+			args: { filePath: "test.las", dataType: "las" },
+		});
 
-	assert(result.status === "completed", "assess_quality completes for eval test");
-	if (result.status === "completed") {
-		assert(
-			result.evals.some((e) => e.check === "schema"),
-			"Schema eval ran",
-		);
-		assert(
-			result.evals.some((e) => e.check === "redactSecrets"),
-			"Secret-redaction eval ran",
-		);
-		assert(
-			result.evals.every((e) => e.status === "pass"),
-			"All evals pass on clean geology output",
-		);
+		assert(result.status === "completed", "assess_quality completes for eval test");
+		if (result.status === "completed") {
+			assert(
+				result.evals.some((e) => e.check === "schema"),
+				"Schema eval ran",
+			);
+			assert(
+				result.evals.some((e) => e.check === "redactSecrets"),
+				"Secret-redaction eval ran",
+			);
+			assert(
+				result.evals.every((e) => e.status === "pass"),
+				"All evals pass on clean geology output",
+			);
+		}
+
+		await runtime.shutdown();
 	}
-
-	await runtime.shutdown();
 }
 
 console.log("\n🏥 Testing health endpoint and standalone boot...");

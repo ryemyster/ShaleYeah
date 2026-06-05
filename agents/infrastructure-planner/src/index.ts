@@ -1,5 +1,20 @@
-// Agent stub — migration tracked in issue #375
-// Full implementation pending #385 monorepo foundation.
-// When migrated, this file will export the agent manifest, runtime factory,
-// and re-export the corresponding server package's tools.
+/**
+ * Infrastructure Planner Agent — stub, migration tracked in issue #375
+ *
+ * Implementation guide: .claude/rules/agent-template.md
+ * Reference implementation: agents/geologist/src/agent/index.ts
+ *
+ * When implemented:
+ *   src/agent/index.ts                  — manifest + config + handlers + runInfrastructurePlannerTask
+ *   src/agent/infrastructure-client.ts  — callInfrastructureTool (copy geowiz-client.ts, rename)
+ *   tests/mcp-client.test.ts            — copy geologist mcp-client.test.ts
+ *   tests/agent.test.ts                 — copy geologist agent.test.ts
+ *
+ * Target server: infrastructure (servers/infrastructure, default port 3012)
+ * Env var: INFRASTRUCTURE_MCP_URL
+ */
+
 export const AGENT_ID = "infrastructure-planner";
+
+// Uncomment and switch to this export once src/agent/index.ts is implemented:
+// export * from "./agent/index.js";

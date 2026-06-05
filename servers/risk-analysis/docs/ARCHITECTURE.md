@@ -2,25 +2,36 @@
 
 ## Role
 
-Tier 1 MCP tool server. Scores investment risk, runs Monte Carlo simulations, and identifies mitigation strategies.
+Tier 1 MCP tool server. Scores investment risk and runs Monte Carlo simulations across geological, economic, legal, and market domains. Paired with the `risk-analyst` agent (port 4005).
 
-## Tools
+## Tool inventory
 
-| Tool | LLM? | Purpose |
-|------|------|---------|
-| `assess_investment_risk` | ✅ `callLLM` | Risk scoring across geological, economic, legal, market domains |
+| Tool | Handler | LLM? | Purpose |
+|------|---------|------|---------|
+| `assess_investment_risk` | `callLLM()` | ✅ `callLLM` | Risk scoring: geological, economic, legal, market, regulatory |
+| `monte_carlo_simulation` | `sampleUniform/Triangular/Normal()` | ✅ `callLLM` | Monte Carlo NPV distribution with P10/P50/P90 |
 
-## Monte Carlo
+## Monte Carlo samplers
 
-`sampleUniform()`, `sampleTriangular()`, `sampleNormal()` in `src/index.ts` are intentional Monte Carlo samplers — the only legitimate uses of random in the codebase (named explicitly to distinguish from `Math.random()` stubs).
+`sampleUniform()`, `sampleTriangular()`, `sampleNormal()` in `src/index.ts` are intentional Monte Carlo samplers — the only legitimate uses of randomness in the codebase. These are named explicitly to distinguish from accidental `Math.random()` stubs.
 
-## Key imports from sdk
+## LLM + fallback pattern
 
-Uses `EconomicsSchema`, `FormationSchema`, and `RiskProfileSchema` from `@shaleyeah/sdk` to validate structured sections of the LLM output.
+Constructs a multi-domain risk prompt (geological confidence, NPV, IRR, location, project type), calls `callLLM()` once, validates response against `RiskProfileSchema`, `EconomicsSchema`, and `FormationSchema` from `@shaleyeah/sdk`.
 
-## LLM pattern
+## Transport modes
 
-Constructs a multi-domain risk prompt, calls `callLLM()` once, validates the response against Zod schemas.
+- **stdio** (default): used by Claude Desktop and MCP CLI
+- **HTTP** (when `PORT=3005`): `StreamableHTTPServerTransport` — used by the agent fleet
+
+## Data flow
+
+```
+MCP tool call: assess_investment_risk { location, projectType, npv, irr, ... }
+  → callLLM(multi-domain risk prompt)
+    → RiskProfileSchema.parse(response)
+  ↘ fallback: deterministic risk rules by location/project type
+```
 
 ## Dependencies
 

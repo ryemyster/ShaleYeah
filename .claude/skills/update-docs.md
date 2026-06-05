@@ -10,7 +10,19 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
 
 ## Steps
 
-1. **Identify changed files** since the branch diverged from develop:
+1. **Scan impacted doc directories via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   For each package touched by the current branch diff, scan its `docs/` directory:
+
+   ```bash
+   curl -s -X POST http://localhost:8088/scan \
+     -H "Content-Type: application/json" \
+     -d '{"path": "ryemyster/ShaleYeah/<package>/docs"}'
+   ```
+
+   Read the scan output from `~/Library/Application Support/context-store/artifacts/scan-*.md`. Use it to identify stale sections, orphaned files, and outdated status markers before opening any doc file manually.
+
+2. **Identify changed files** since the branch diverged from develop:
 
    ```bash
    git diff develop...HEAD --name-only
@@ -20,22 +32,20 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
 
    | Changed area | Docs to review |
    | --- | --- |
-   | `src/servers/<name>.ts` | `docs/SERVERS.md` (agent entry), `docs/DEMO_VS_PRODUCTION.md` (LLM status table), `README.md` (agent quick list), `docs/MCP_INTEGRATION.md` (if server name or launch command changed) |
-   | `src/kernel/` | `docs/ARCHITECTURE.md`, `docs/API_REFERENCE.md`, `docs/GLOSSARY.md` (kernel section), `docs/ARCADE-PATTERNS.md` (if a pattern status changes) |
-   | `src/shared/llm-client.ts` | `docs/GLOSSARY.md` (callLLM section), `docs/ARCHITECTURE.md`, `docs/ARCADE-PATTERNS.md` (if provider or adapter pattern changes) |
-   | `src/fixtures/` | `docs/DEMO_VS_PRODUCTION.md` |
-   | `tools/` | `docs/ARCHITECTURE.md` |
-   | `tests/` | `docs/ARCHITECTURE.md` (test suite table), `docs/GETTING_STARTED.md` (if test commands changed) |
-   | `package.json` scripts | `README.md` (Running individual agents, Contributing), `docs/GETTING_STARTED.md` |
-   | New oil/gas concept introduced | `docs/GLOSSARY.md` — add an entry explaining the term, why it matters, and which file handles it |
+   | `servers/<name>/src/` | `servers/<name>/README.md`, `servers/<name>/docs/ARCHITECTURE.md`, root `README.md` (server list), root `ARCHITECTURE.md` |
+   | `agents/<name>/src/` | `agents/<name>/README.md`, `agents/<name>/docs/ARCHITECTURE.md`, `agents/<name>/docs/DEPLOYMENT.md`, root `README.md` |
+   | `sdk/src/llm-client.ts` | Root `ARCHITECTURE.md` (callLLM section), root `README.md` |
+   | `sdk/src/mcp-server.ts` or `sdk/src/runtime.ts` | Root `ARCHITECTURE.md`, `CONTRIBUTING.md` |
+   | `sdk/src/contracts.ts` | Root `ARCHITECTURE.md`, root `README.md` (any manifest/config docs) |
+   | `*/package.json` or `pnpm-workspace.yaml` | Root `README.md` (setup steps), `CONTRIBUTING.md` |
+   | New oil/gas concept introduced | Root `README.md` or relevant package README — add an entry explaining the term, why it matters, and which file handles it |
 
 3. **Read each impacted doc** and check for stale content:
-   - LLM Integration Status table — update when a server gets `callLLM` wired (mark ✅, remove "Planned")
-   - Test suite table in ARCHITECTURE.md — update counts when new test files are added
-   - Command examples that reference removed or renamed scripts
+   - Server/agent table rows — update when a server gets `callLLM` wired (mark ✅, remove "Planned")
+   - Test command examples that reference removed or renamed scripts
    - Any line that says a feature is "planned" or "coming soon" when it has now shipped
-   - Output directory paths — verify they match actual runtime behavior
-   - **`docs/ARCADE-PATTERNS.md`** — if this issue implements, partially implements, or removes an Arcade pattern, update that pattern's row (✅ / 🔶 / ❌), update the `Implementation` description, update the coverage summary table at the bottom, and update the `Last audited` date at the top.
+   - Package paths — verify they reference `servers/<name>/` or `agents/<name>/` not the old `src/servers/` layout
+   - Per-package `docs/DEPLOYMENT.md` — verify launch commands match current `package.json` scripts
 
 4. **Update only what changed.** Do not rewrite docs wholesale. Edit the specific stale sentence or table row. Preserve the existing voice and formatting around your change.
 
@@ -53,10 +63,11 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
    - When a command is shown, always say what it does and where the output goes
 
 6. **README.md checklist** — always verify these sections are current:
-   - LLM Integration Status table reflects which servers have `callLLM` wired
+   - Server/agent table reflects current implementation status
    - Quick Start git clone URL is `github.com/ryemyster/ShaleYeah`
    - Prerequisites correctly says `ANTHROPIC_API_KEY` is required for real AI output
-   - Individual Expert Servers list matches the 14 servers in `src/servers/`
+   - Server list matches the 14 packages in `servers/`
+   - Setup steps use `pnpm install` and `pnpm turbo build`, not `npm install`
    - Contributing steps match the current branch/PR workflow
 
 7. **Stage doc changes** — do not commit yet; let `/finish-issue` handle the commit.

@@ -1,5 +1,6 @@
 export * from "./canonical-model.js";
 export * from "./contracts.js";
+export * from "./errors.js";
 export * from "./file-detector.js";
 export * from "./file-integration.js";
 export * from "./file-utils.js";

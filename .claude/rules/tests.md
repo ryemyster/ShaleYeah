@@ -1,6 +1,8 @@
 ---
 paths:
-  - "tests/**/*.test.ts"
+  - "servers/*/tests/**/*.test.ts"
+  - "agents/*/tests/**/*.test.ts"
+  - "sdk/tests/**/*.test.ts"
 ---
 
 # Test Rules
@@ -19,7 +21,14 @@ function test(name: string, fn: () => void | Promise<void>) {
 }
 ```
 
-Run any test file directly: `npx tsx tests/<name>.test.ts`
+Run a test file directly (from the package root):
+```bash
+cd servers/geowiz && npx tsx tests/server.test.ts
+cd agents/geologist && npx tsx tests/mcp-client.test.ts
+cd sdk && npx tsx tests/llm-client.test.ts
+```
+
+Run all tests: `pnpm turbo test`
 
 ## CI constraint
 Tests must pass without `ANTHROPIC_API_KEY`. Mock the Anthropic SDK:

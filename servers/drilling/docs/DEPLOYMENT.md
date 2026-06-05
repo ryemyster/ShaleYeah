@@ -1,32 +1,68 @@
 # Deployment — @shaleyeah/server-drilling
 
-## Standalone MCP server
+## Transport modes
+
+| Mode | When | Use case |
+|------|------|----------|
+| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
+| **HTTP** | `PORT=3003` | Agent fleet, Docker, Kong |
 
 ```bash
-pnpm build
-pnpm start
-```
+# stdio mode
+pnpm build && pnpm start
 
-Listens on stdio (MCP default transport).
-
-## Docker
-
-```dockerfile
-FROM node:22-alpine
-WORKDIR /app
-COPY dist/ ./dist/
-COPY package.json ./
-RUN npm install --omit=dev
-CMD ["node", "dist/index.js"]
+# HTTP mode
+PORT=3003 pnpm start
 ```
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `ANTHROPIC_API_KEY` | Yes | LLM synthesis calls |
-| `DATA_PATH` | No | Path to data directory (default: ./data) |
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Perforator Maximus) |
+| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3003`) |
+| `DATA_PATH` | No | `./data` | Path to drilling data directory |
+| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+
+## Build and run
+
+```bash
+cd servers/drilling
+pnpm install && pnpm build
+PORT=3003 ANTHROPIC_API_KEY=sk-... pnpm start
+```
+
+## Docker Compose (agent pair)
+
+```yaml
+services:
+  drilling:
+    image: shaleyeah/drilling:latest
+    environment:
+      PORT: "3003"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    ports:
+      - "3003:3003"
+  drilling-engineer:
+    image: shaleyeah/drilling-engineer:latest
+    environment:
+      DRILLING_MCP_URL: http://drilling:3003
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on: [drilling]
+```
 
 ## Kong gateway
 
-Register as `drilling` upstream. Route: `/mcp/drilling` → `<host>:3000`.
+```bash
+curl -X POST http://kong:8001/upstreams -d name=drilling
+curl -X POST http://kong:8001/upstreams/drilling/targets -d target=drilling:3003
+curl -X POST http://kong:8001/services -d name=drilling -d host=drilling
+curl -X POST http://kong:8001/services/drilling/routes -d paths[]=/mcp/drilling
+```
+
+## Production checklist
+
+- [ ] `ANTHROPIC_API_KEY` set and valid
+- [ ] `PORT=3003` set
+- [ ] Registered with Kong at `/mcp/drilling`
+- [ ] Paired with `drilling-engineer` agent at port 4003

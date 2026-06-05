@@ -26,13 +26,23 @@ output should be grounded in this context:
 
 See [`docs/SERVERS.md`](../../docs/SERVERS.md) for the full server and tool reference — domains, personas, LLM status, key data needs, and industry standards (LAS/DLIS, WITSML, OSDU, PPDM, ARIES, Volve, EIA, FracFocus).
 
-**Architectural constraints:** All LLM calls via `src/shared/llm-client.ts`. Integrations config-driven (`integrations.config.json`), CI-safe (mock or free-tier), TypeScript strict. Code quality rules in `CLAUDE.md ## Standards`.
+**Architectural constraints:** All LLM calls via `callLLM()` from `@shaleyeah/sdk`. Integrations config-driven, CI-safe (mock or free-tier), TypeScript strict. Code quality rules in `CLAUDE.md ## Standards`.
 
 ---
 
 ## Steps
 
-1. **Clarify scope** — Identify which server(s) the research affects, what decision it informs
+1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   ```bash
+   curl -s -X POST http://localhost:8088/find \
+     -H "Content-Type: application/json" \
+     -d '{"concept": "<research topic>", "paths": ["ryemyster/ShaleYeah/servers","ryemyster/ShaleYeah/agents","ryemyster/ShaleYeah/sdk"]}'
+   ```
+
+   Read the output to understand what currently exists before researching what to build.
+
+2. **Clarify scope** — Identify which server(s) the research affects, what decision it informs
    (issue creation, integration spec, architecture choice), and what "done" looks like.
 
 2. **Ground in domain** — Before fetching, state what a real O&G professional would use for

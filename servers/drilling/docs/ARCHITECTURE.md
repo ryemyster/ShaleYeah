@@ -2,25 +2,47 @@
 
 ## Role
 
-Tier 1 MCP tool server. Designs drilling programs, optimizes well trajectories, and estimates drilling costs.
+Tier 1 MCP tool server. Designs drilling programs, optimizes well trajectories, and estimates drilling costs. Paired with the `drilling-engineer` agent (port 4003).
 
-## Tools
+## Tool inventory
 
-| Tool | LLM? | Purpose |
-|------|------|---------|
-| `design_drilling_program` | ✅ `callLLM` | Well type, depth, completion strategy, cost estimate |
+| Tool | Handler | LLM? | Purpose |
+|------|---------|------|---------|
+| `design_drilling_program` | `synthesizeDrillingAnalysisWithLLM()` | ✅ `callLLM` | Well program: trajectory, casing, cost estimate, risk assessment |
 
-## LLM pattern
+## LLM + fallback pattern
 
-Takes well parameters (type, target depth, formation) and calls `callLLM()` to produce a drilling program recommendation. Deterministic risk classification first: deep horizontal wells are classified "High" program risk before the LLM call.
+Computes deterministic cost/timeline estimates from well parameters, then calls `callLLM()` once for Perforator Maximus to interpret risks. Falls back to `deriveDefaultDrillingInterpretation()` if the API is unavailable.
+
+```typescript
+const interpretation = await synthesizeDrillingAnalysisWithLLM(params);
+// Falls back to:
+const interpretation = deriveDefaultDrillingInterpretation(wellType, targetDepth, formation);
+```
+
+## Transport modes
+
+- **stdio** (default): used by Claude Desktop and MCP CLI
+- **HTTP** (when `PORT=3003`): `StreamableHTTPServerTransport` — used by the agent fleet
+
+## Data flow
+
+```
+MCP tool call: design_drilling_program { wellParameters, location, constraints }
+  → Compute deterministic cost (depth × rate factor by well type)
+  → synthesizeDrillingAnalysisWithLLM(params) → callLLM()
+  ↘ fallback: deriveDefaultDrillingInterpretation()
+  → Return full drilling program JSON
+```
 
 ## Key exports
 
-`deriveDefaultDrillingInterpretation(wellType, depth, formation)` — deterministic fallback.
+`deriveDefaultDrillingInterpretation(wellType, depth, formation)` — exported, used by tests.
+`synthesizeDrillingAnalysisWithLLM(params)` — exported, used by anti-stub tests.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-drilling
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
+  └── @shaleyeah/sdk   (MCPServer, callLLM, ServerFactory)
 ```

@@ -42,8 +42,14 @@ Verify the primary new symbol (class, function, or type) mentioned in the issue 
 actually exists in source:
 
 ```bash
-# Example for canonical model:
-grep -rn "WellAnalysisContextSchema\|mergeCanonical\|getCanonical" src/kernel/ 2>/dev/null
+# Example for an SDK export:
+grep -rn "MyNewExport" sdk/src/ 2>/dev/null
+
+# Example for a server tool:
+grep -rn "callLLM\|registerTool" servers/<name>/src/ 2>/dev/null
+
+# Example for an agent:
+grep -rn "callGeowizTool\|createGeologistRuntime" agents/<name>/src/ 2>/dev/null
 ```
 
 If the symbol is missing: STOP — do not proceed to pre-commit. The issue is not implemented.
@@ -51,16 +57,27 @@ If the symbol is missing: STOP — do not proceed to pre-commit. The issue is no
 ### 5. Test coverage spot-check
 
 For each new exported function or class added in this issue:
-- Confirm there is at least one `assert` call in `tests/` that exercises it
-- For kernel changes: confirm the test file is in `tests/kernel-*.test.ts`
-- For server changes: confirm there is a corresponding anti-stub test or canonical model conformance test
+- Confirm there is at least one `assert` call in the package's `tests/` that exercises it
+- For SDK changes: confirm the test file is in `sdk/tests/`
+- For server changes: confirm there is a corresponding anti-stub or server test in `servers/<name>/tests/`
+- For agent changes: confirm tests exist in `agents/<name>/tests/`
 
 ```bash
-# Check that canonical-model test exercises the new exports
-grep -rn "WellAnalysisContextSchema\|mergeCanonical\|getCanonical" tests/ 2>/dev/null
+# Example:
+grep -rn "MyNewExport" servers/<name>/tests/ agents/<name>/tests/ sdk/tests/ 2>/dev/null
 ```
 
-### 6. Comment quality spot-check
+### 6. Diff summary via context-engine
+
+```bash
+curl -sf http://localhost:8088/healthcheck >/dev/null 2>&1 && curl -s -X POST http://localhost:8088/diff-summary \
+  -H "Content-Type: application/json" \
+  -d "{\"diff\": \"$(git diff develop 2>/dev/null | head -400)\"}"
+```
+
+Read `~/Library/Application Support/context-store/artifacts/diff-*.md`. Flag any `risks` entries that indicate scope creep, missing tests, or architectural violations. If the engine is down, skip this step.
+
+### 7. Comment quality spot-check
 
 Scan new lines (from the git diff) for what-not-why comments. Flag these patterns:
 
@@ -75,7 +92,7 @@ git diff develop -- "*.ts" | grep "^+" | grep -E "^\+\s*//\s*(set |call |return 
 
 Each flagged comment should be rewritten to explain *why* the code does what it does, not *what* it does.
 
-### 7. Report
+### 8. Report
 
 Output a summary:
 
@@ -93,6 +110,9 @@ Ghost-close:       ✅ Primary symbols found in source
 
 Test coverage:     ✅ All new exports have test coverage
                    ❌ <export> has no test assertions
+
+Diff summary:      ✅ No blocking risks flagged by context-engine
+                   ❌ <risk> — address before committing
 
 Comment quality:   ✅ No what-not-why comments found
                    ❌ <file>:<line> — rewrite comment

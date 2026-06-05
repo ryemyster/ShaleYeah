@@ -48,6 +48,9 @@ export const AgentToolManifestSchema = z.object({
 	// Which mcpServers key in AgentRuntimeConfig this tool delegates to.
 	// Undefined means the tool is handled locally by the agent (e.g. memory ops).
 	mcpServer: z.string().min(1).optional(),
+	// Maximum milliseconds to wait for the tool call to complete.
+	// Implements Arcade pattern #28: Timeout Boundary.
+	timeoutMs: z.number().int().positive().optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
@@ -230,6 +233,9 @@ export type AgentExecutionResult =
 	| {
 			status: "failed";
 			error: string;
+			// true when the failure is transient and the caller may retry the same operation.
+			// Implements Arcade pattern #40: Error Classification.
+			retryable?: boolean;
 			evals: EvalResult[];
 			metadata: Omit<AgentExecutionMetadata, "modelBinding"> & { modelBinding?: ModelBinding };
 	  };
@@ -247,3 +253,26 @@ export interface AgentRuntime {
 
 export type AgentDiscoverySummary = Pick<AgentManifest, "id" | "role" | "version" | "description" | "capabilities">;
 export type AgentToolSummary = Omit<AgentToolManifest, "inputSchema" | "outputSchema">;
+
+/**
+ * One record written per tool invocation — timestamp, outcome, duration.
+ * Sensitive args are already redacted before this is populated.
+ * Implements Arcade pattern #48: Audit Trail.
+ */
+export interface AuditLogEntry {
+	timestamp: string;
+	agentId: string;
+	toolName: string;
+	args: Record<string, unknown>;
+	status: AgentExecutionResult["status"];
+	durationMs: number;
+	error?: string;
+	retryable?: boolean;
+}
+
+/**
+ * Operator-supplied sink for audit entries.
+ * Default behaviour (when omitted from LocalAgentRuntimeOptions) is to write
+ * JSON lines to stderr. Swap in a Supabase / CloudWatch writer at the deployment layer.
+ */
+export type AuditLogger = (entry: AuditLogEntry) => void;
