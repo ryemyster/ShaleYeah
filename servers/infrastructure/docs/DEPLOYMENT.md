@@ -1,32 +1,60 @@
 # Deployment — @shaleyeah/server-infrastructure
 
-## Standalone MCP server
+## Transport modes
+
+| Mode | When | Use case |
+|------|------|----------|
+| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
+| **HTTP** | `PORT=3012` | Agent fleet, Docker, Kong |
 
 ```bash
-pnpm build
-pnpm start
-```
+# stdio mode
+pnpm build && pnpm start
 
-Listens on stdio (MCP default transport).
-
-## Docker
-
-```dockerfile
-FROM node:22-alpine
-WORKDIR /app
-COPY dist/ ./dist/
-COPY package.json ./
-RUN npm install --omit=dev
-CMD ["node", "dist/index.js"]
+# HTTP mode
+PORT=3012 pnpm start
 ```
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `ANTHROPIC_API_KEY` | Yes | LLM synthesis calls |
-| `DATA_PATH` | No | Path to data directory (default: ./data) |
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Structura Ingenious) |
+| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3012`) |
+| `DATA_PATH` | No | `./data` | Path to infrastructure data |
+| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+
+## Docker Compose (agent pair)
+
+```yaml
+services:
+  infrastructure:
+    image: shaleyeah/infrastructure:latest
+    environment:
+      PORT: "3012"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    ports:
+      - "3012:3012"
+  infrastructure-planner:
+    image: shaleyeah/infrastructure-planner:latest
+    environment:
+      INFRASTRUCTURE_MCP_URL: http://infrastructure:3012
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on: [infrastructure]
+```
 
 ## Kong gateway
 
-Register as `infrastructure` upstream. Route: `/mcp/infrastructure` → `<host>:3000`.
+```bash
+curl -X POST http://kong:8001/upstreams -d name=infrastructure
+curl -X POST http://kong:8001/upstreams/infrastructure/targets -d target=infrastructure:3012
+curl -X POST http://kong:8001/services -d name=infrastructure -d host=infrastructure
+curl -X POST http://kong:8001/services/infrastructure/routes -d paths[]=/mcp/infrastructure
+```
+
+## Production checklist
+
+- [ ] `ANTHROPIC_API_KEY` set and valid
+- [ ] `PORT=3012` set
+- [ ] Registered with Kong at `/mcp/infrastructure`
+- [ ] Paired with `infrastructure-planner` agent at port 4012

@@ -1,32 +1,68 @@
 # Deployment — @shaleyeah/server-risk-analysis
 
-## Standalone MCP server
+## Transport modes
+
+| Mode | When | Use case |
+|------|------|----------|
+| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
+| **HTTP** | `PORT=3005` | Agent fleet, Docker, Kong |
 
 ```bash
-pnpm build
-pnpm start
-```
+# stdio mode
+pnpm build && pnpm start
 
-Listens on stdio (MCP default transport).
-
-## Docker
-
-```dockerfile
-FROM node:22-alpine
-WORKDIR /app
-COPY dist/ ./dist/
-COPY package.json ./
-RUN npm install --omit=dev
-CMD ["node", "dist/index.js"]
+# HTTP mode
+PORT=3005 pnpm start
 ```
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `ANTHROPIC_API_KEY` | Yes | LLM synthesis calls |
-| `DATA_PATH` | No | Path to data directory (default: ./data) |
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Gaius Probabilis Assessor) |
+| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3005`) |
+| `DATA_PATH` | No | `./data` | Path to risk data directory |
+| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+
+## Build and run
+
+```bash
+cd servers/risk-analysis
+pnpm install && pnpm build
+PORT=3005 ANTHROPIC_API_KEY=sk-... pnpm start
+```
+
+## Docker Compose (agent pair)
+
+```yaml
+services:
+  risk-analysis:
+    image: shaleyeah/risk-analysis:latest
+    environment:
+      PORT: "3005"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    ports:
+      - "3005:3005"
+  risk-analyst:
+    image: shaleyeah/risk-analyst:latest
+    environment:
+      RISK_ANALYSIS_MCP_URL: http://risk-analysis:3005
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on: [risk-analysis]
+```
 
 ## Kong gateway
 
-Register as `risk-analysis` upstream. Route: `/mcp/risk-analysis` → `<host>:3000`.
+```bash
+curl -X POST http://kong:8001/upstreams -d name=risk-analysis
+curl -X POST http://kong:8001/upstreams/risk-analysis/targets -d target=risk-analysis:3005
+curl -X POST http://kong:8001/services -d name=risk-analysis -d host=risk-analysis
+curl -X POST http://kong:8001/services/risk-analysis/routes -d paths[]=/mcp/risk-analysis
+```
+
+## Production checklist
+
+- [ ] `ANTHROPIC_API_KEY` set and valid
+- [ ] `PORT=3005` set
+- [ ] Registered with Kong at `/mcp/risk-analysis`
+- [ ] Paired with `risk-analyst` agent at port 4005

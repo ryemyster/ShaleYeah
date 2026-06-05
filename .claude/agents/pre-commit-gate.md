@@ -11,17 +11,17 @@ You are a focused pre-commit gate runner for the ShaleYeah project. Run each ste
 Run these greps from the repo root. Each is a hard failure except the last (warning only).
 
 ```bash
-# No direct SDK imports in server files
-grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" src/servers/ 2>/dev/null && echo "FAIL" || echo "OK"
+# No direct Anthropic SDK imports in server or agent files
+grep -rn "from '@anthropic-ai/sdk'\|from \"@anthropic-ai/sdk\"" servers/ agents/ 2>/dev/null | grep -v "node_modules" && echo "FAIL" || echo "OK"
 
-# No Math.random() in business logic (named Monte Carlo samplers in risk-analysis.ts are exempt)
-grep -rn "Math\.random()" src/servers/ src/kernel/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample" && echo "FAIL" || echo "OK"
+# No Math.random() in business logic (named Monte Carlo samplers in risk-analysis are exempt)
+grep -rn "Math\.random()" servers/ agents/ sdk/src/ 2>/dev/null | grep -v "sampleUniform\|sampleTriangular\|sampleNormal\|function sample\|node_modules" && echo "FAIL" || echo "OK"
 
-# No z.any() in Zod schemas (mcp-server.ts and server-factory.ts are exempt)
-grep -rn "z\.any()" src/servers/ src/kernel/ 2>/dev/null && echo "FAIL" || echo "OK"
+# No z.any() in Zod schemas (sdk/src/mcp-server.ts and sdk/src/server-factory.ts are exempt)
+grep -rn "z\.any()" servers/ agents/ 2>/dev/null | grep -v "node_modules" && echo "FAIL" || echo "OK"
 
 # Warning: silent ?.field || 0 defaults (report but don't block if intentional)
-grep -rn "\?\.\w\+[[:space:]]*||[[:space:]]*0\b" src/servers/ src/kernel/ 2>/dev/null | grep -v "node_modules\|\.test\." || true
+grep -rn "\?\.\w\+[[:space:]]*||[[:space:]]*0\b" servers/ agents/ sdk/src/ 2>/dev/null | grep -v "node_modules\|\.test\." || true
 ```
 
 If any non-warning grep fires: report the exact file:line, explain the rule it violates, stop. Fix before proceeding.
@@ -29,30 +29,28 @@ If any non-warning grep fires: report the exact file:line, explain the rule it v
 ## Step 2 — Quality gate (run each command separately so failures are pinpointed)
 
 ```bash
-npm run build
+pnpm turbo build
 ```
 ```bash
-npm run type-check
+pnpm turbo lint
 ```
 ```bash
-npm run lint
-```
-```bash
-npm run test
-```
-```bash
-npm run demo
+pnpm turbo test
 ```
 
 Run them one at a time. On failure: show the error output, identify the root cause, suggest the specific fix. Do not chain them — chaining hides which step failed.
 
 ## Step 3 — Coverage gate
 
+Run per-package (turbo doesn't aggregate coverage yet):
+
 ```bash
-npm run coverage
+cd sdk && pnpm test
+cd servers/geowiz && pnpm test
+# repeat for the packages touched in this issue
 ```
 
-Gate thresholds: Lines ≥ 90%, Functions ≥ 85%, Branches ≥ 80%. If any threshold is missed, identify the uncovered files from the report and tell the user which tests to add.
+For each package: verify no new uncovered exports were added. The goal is lines ≥ 90% per package. If coverage drops, identify the uncovered files and tell the user which tests to add.
 
 ## Step 4 — Diff summary (skip if context-engine is down)
 

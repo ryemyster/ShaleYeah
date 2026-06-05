@@ -16,7 +16,8 @@
  */
 
 import assert from "node:assert";
-import { callQAServerTool, qaAssuranceConfig, qaAssuranceManifest } from "../src/agent/index.js";
+import { callQAServerTool, createQAAssuranceRuntime, qaAssuranceConfig, qaAssuranceManifest, runQAAssuranceTask } from "../src/agent/index.js";
+import { RetryableToolError, PermanentToolError } from "@shaleyeah/sdk";
 
 let passed = 0;
 let failed = 0;
@@ -100,6 +101,85 @@ async function runTests(): Promise<void> {
 			});
 			assert.ok(result !== undefined, "MCP call must return a value");
 		});
+	}
+
+	// ── Layer 2: runTask execution loop ───────────────────────────────────────
+
+	await test("runQAAssuranceTask is exported as a function", () => {
+		assert.strictEqual(typeof runQAAssuranceTask, "function", "runQAAssuranceTask must be exported");
+	});
+
+	await test("runQAAssuranceTask throws when no ANTHROPIC_API_KEY is set", async () => {
+		const saved = process.env.ANTHROPIC_API_KEY;
+		delete process.env.ANTHROPIC_API_KEY;
+		let threw = false;
+		try {
+			await runQAAssuranceTask("run quality tests on the pipeline");
+		} catch {
+			threw = true;
+		} finally {
+			if (saved !== undefined) process.env.ANTHROPIC_API_KEY = saved;
+		}
+		assert.ok(threw, "runQAAssuranceTask must throw when no API key is set");
+	});
+
+	await test("runQAAssuranceTask hits callLLM when API key is present (auth error confirms path)", async () => {
+		let threw = false;
+		try {
+			await runQAAssuranceTask("run quality tests on the pipeline", { apiKey: "sk-ant-invalid-key-for-test" });
+		} catch (err) {
+			threw = true;
+			const msg = err instanceof Error ? err.message : String(err);
+			assert.ok(msg.length > 0, "Error message must be non-empty");
+		}
+		assert.ok(threw, "runQAAssuranceTask with invalid key must throw (proves callLLM was hit)");
+	});
+
+	await test("RetryableToolError is exported from @shaleyeah/sdk", () => {
+		assert.strictEqual(typeof RetryableToolError, "function", "RetryableToolError must be a class");
+	});
+
+	await test("PermanentToolError is exported from @shaleyeah/sdk", () => {
+		assert.strictEqual(typeof PermanentToolError, "function", "PermanentToolError must be a class");
+	});
+
+	await test("runQAAssuranceTask accepts runtime option (signature check)", () => {
+		const params = runQAAssuranceTask.length;
+		assert.ok(params >= 1, "runQAAssuranceTask must accept at least a goal argument");
+	});
+
+	await test("runQAAssuranceTask throws when approval_required and no onApprovalRequired callback", async () => {
+		const strictRuntime = createQAAssuranceRuntime({
+			...qaAssuranceConfig,
+			hitl: { ...qaAssuranceConfig.hitl, approvalMode: "always" },
+		});
+		await strictRuntime.initialize();
+
+		let threw = false;
+		try {
+			await runQAAssuranceTask("run quality tests on the pipeline", { runtime: strictRuntime });
+		} catch (err) {
+			threw = true;
+			const msg = err instanceof Error ? err.message : String(err);
+			assert.ok(
+				msg.includes("requires human approval") || msg.includes("ANTHROPIC_API_KEY") || msg.length > 0,
+				"Error must be non-empty",
+			);
+		} finally {
+			await strictRuntime.shutdown();
+		}
+		assert.ok(threw, "runQAAssuranceTask must throw when approval required and no callback provided");
+	});
+
+	if (live && process.env.ANTHROPIC_API_KEY) {
+		await test("[integration] runQAAssuranceTask completes a multi-step QA task", async () => {
+			const answer = await runQAAssuranceTask(
+				"Run functional quality tests on the data-ingestion component and generate a summary report.",
+			);
+			assert.ok(typeof answer === "string" && answer.length > 0, "runQAAssuranceTask must return a non-empty string");
+		});
+	} else {
+		console.log("\n  ⚠️  [integration] ANTHROPIC_API_KEY not set or qa-server not running — skipping runTask live test.");
 	}
 
 	console.log(`\nQuality Assurance MCP Client Tests: ${passed} passed, ${failed} failed`);

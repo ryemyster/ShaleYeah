@@ -1,18 +1,18 @@
 ---
 paths:
-  - "src/servers/**/*.ts"
-  - "tests/*-anti-stub.test.ts"
+  - "servers/*/src/**/*.ts"
+  - "servers/*/tests/**/*.test.ts"
 ---
 
 # Server Implementation Rules
 
-All 14 MCP servers follow the same pattern. When editing any server:
+All 14 MCP servers live at `servers/<name>/` and follow the same pattern. When editing any server:
 
 ## Structure
-- Inherit `MCPServer` from `src/shared/mcp-server.ts`
+- Inherit `MCPServer` from `@shaleyeah/sdk`
 - Roman persona in the class docstring (e.g., "Marcus Aurelius Geologicus")
 - Register tools via `registerTool()` — never expose methods directly
-- All LLM calls go through `src/shared/llm-client.ts` — no direct `@anthropic-ai/sdk` calls in server files
+- All LLM calls go through `callLLM()` from `@shaleyeah/sdk` — no direct `@anthropic-ai/sdk` calls in server files
 
 ## LLM wiring pattern
 Every server that calls Claude must have:
@@ -28,6 +28,13 @@ try {
   return deriveDefault(input);
 }
 ```
+
+## HTTP transport
+Each server runs standalone. Set `PORT` env var to enable HTTP mode:
+```bash
+PORT=3001 cd servers/geowiz && pnpm start
+```
+Without `PORT`, the server uses stdio (Claude Desktop / MCP CLI mode).
 
 ## Anti-stub test requirement
 Every server with `callLLM` wired must have a corresponding `tests/<server>-anti-stub.test.ts`

@@ -1,34 +1,35 @@
 ---
 paths:
-  - "src/kernel/**/*.ts"
-  - "tests/kernel-*.test.ts"
+  - "sdk/src/**/*.ts"
+  - "sdk/tests/**/*.test.ts"
 ---
 
-# Kernel Implementation Rules
+# SDK Implementation Rules
 
-The kernel (`src/kernel/`) is the runtime that routes all execution. Its 6 files have distinct roles:
+The SDK (`sdk/src/`) is the shared foundation all servers and agents build on. The kernel was merged into the SDK during the monorepo conversion (#385).
 
 | File | Role |
 |---|---|
-| `index.ts` | Kernel class — entry point, middleware pipeline, high-level methods |
-| `registry.ts` | Tool registry — 14 servers, capability matching, type classification |
-| `executor.ts` | Execution engine — single, parallel scatter-gather, bundles, confirmation gate |
-| `context.ts` | Session manager — identity anchoring, context injection, result storage |
-| `bundles.ts` | Pre-built task bundles (QUICK_SCREEN, FULL_DUE_DILIGENCE, etc.) |
-| `middleware/` | auth.ts (RBAC), audit.ts (JSONL trail), resilience.ts, output.ts |
+| `llm-client.ts` | `callLLM()` — only allowed path for Anthropic SDK calls |
+| `mcp-server.ts` | `MCPServer` abstract base — all 14 servers inherit from this |
+| `server-factory.ts` | `runMCPServer()` — entry point for server processes |
+| `runtime.ts` | `LocalAgentRuntime`, `LocalAgentEndpoint` — agent execution contract |
+| `contracts.ts` | `AgentManifest`, `AgentRuntimeConfig` Zod schemas |
+| `canonical-model.ts` | Shared canonical model types for cross-server data exchange |
+| `service.ts` | `AgentService` — HTTP service layer for agent endpoints |
+| `types.ts` | Shared TypeScript types |
 
 ## Rules
-- All kernel types live in `types.ts` — do not define new types inline in implementation files
-- Middleware runs in order: auth → audit → resilience → output. New middleware inserts here.
-- `executor.ts` handles all retry/fallback logic — servers never retry themselves
-- `context.ts` owns session state — do not store state in the Kernel class directly
-- `secrets.ts` owns secret resolution — `kernel.secrets.resolve(key)` is the only access path
+- All shared types live in `sdk/src/types.ts` or `sdk/src/contracts.ts` — do not define shared types inline in server/agent files
+- All LLM calls go through `callLLM()` from `@shaleyeah/sdk` — never import `@anthropic-ai/sdk` directly in a server or agent
+- `mcp-server.ts` and `server-factory.ts` are exempt from the `no z.any()` rule (Zod runtime interop)
+- HTTP transport mode: set `PORT` env var — `MCPServer` constructor detects and uses `StreamableHTTPServerTransport`
 
 ## Test pattern
-Kernel tests use the simple assert pattern:
+SDK tests use the simple assert pattern:
 ```typescript
 import assert from "node:assert";
 // ...
 assert.strictEqual(actual, expected, "description");
 ```
-Run a single suite: `npx tsx tests/kernel-<name>.test.ts`
+Run a single suite: `cd sdk && npx tsx tests/<name>.test.ts`

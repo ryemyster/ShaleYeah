@@ -14,7 +14,17 @@ Examples:
 
 ## Steps
 
-1. **Check open issues** to avoid duplicates and understand sequencing:
+1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   ```bash
+   curl -s -X POST http://localhost:8088/context \
+     -H "Content-Type: application/json" \
+     -d '{"task": "Create issue: <title>", "paths": ["ryemyster/ShaleYeah/servers","ryemyster/ShaleYeah/agents","ryemyster/ShaleYeah/sdk"], "focus": ["<relevant terms>"]}'
+   ```
+
+   Read `~/Library/Application Support/context-store/artifacts/context-bundle.md`. Note `suggested_files` and `risks` — use these to write a more accurate issue body.
+
+2. **Check open issues** to avoid duplicates and understand sequencing:
 
    ```bash
    gh issue list --state open --limit 50 --json number,title,labels
@@ -31,7 +41,7 @@ Examples:
    ## Acceptance Criteria
    - [ ] <Specific, testable outcome 1>
    - [ ] <Specific, testable outcome 2>
-   - [ ] All pre-commit checks pass (`npm run build && npm run type-check && npm run lint && npm run test && npm run demo`)
+   - [ ] All pre-commit checks pass (`pnpm turbo build && pnpm turbo lint && pnpm turbo test`)
 
    ## TDD Checklist
    - [ ] Write failing test first (describe what the real implementation should return)

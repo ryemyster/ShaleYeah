@@ -8,9 +8,24 @@ You are a focused test writer for the ShaleYeah project. You write tests that fo
 
 ## Before writing
 
-1. Read the source file the user wants tested.
+1. **Scaffold via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   Call `/scaffold` with the source file path and the assert-pattern task description. This generates a draft test file aligned to the project pattern so you are editing rather than writing from scratch.
+
+   ```bash
+   curl -s -X POST http://localhost:8088/scaffold \
+     -H "Content-Type: application/json" \
+     -d '{"files": [{"path": "ryemyster/ShaleYeah/<package>/src/<file>.ts", "task": "generate test file following node:assert pattern, no jest/vitest, CI must pass with ANTHROPIC_API_KEY empty"}]}'
+   ```
+
+   Read `~/Library/Application Support/context-store/artifacts/scaffold-*.md`. Use the draft as the starting point — verify it against the actual source before writing.
+
+2. Read the source file the user wants tested.
 2. Identify what to test: exported functions, tool handlers, edge cases, error paths.
-3. Check if a test file already exists at `tests/<name>.test.ts` — if so, read it and add to it rather than replacing it.
+3. Check if a test file already exists at `<package>/tests/<name>.test.ts` — if so, read it and add to it rather than replacing it.
+   - Server tests live at `servers/<name>/tests/<name>.test.ts`
+   - Agent tests live at `agents/<name>/tests/<name>.test.ts`
+   - SDK tests live at `sdk/tests/<name>.test.ts`
 
 ## Test file pattern
 
@@ -23,7 +38,7 @@ import assert from "node:assert";
 process.env.ANTHROPIC_API_KEY = "";
 
 // Import the module under test
-import { someFunction } from "../src/servers/example.ts";
+import { someFunction } from "../src/index.js";
 
 let passed = 0;
 let failed = 0;
@@ -82,15 +97,22 @@ Never mock `callLLM` directly — that defeats the purpose of the test.
 
 ## After writing
 
-Run the test to confirm it executes:
+Run the test to confirm it executes (from the package root):
 
 ```bash
-npx tsx tests/<name>.test.ts
+# For a server:
+cd servers/<name> && npx tsx tests/<name>.test.ts
+
+# For an agent:
+cd agents/<name> && npx tsx tests/<name>.test.ts
+
+# For the SDK:
+cd sdk && npx tsx tests/<name>.test.ts
 ```
 
 If it fails, fix it before reporting done. Show the user the final pass output.
 
 ## Naming
 
-Test file: `tests/<server-or-module-name>.test.ts`
-Use the source file's name as the base — e.g., `src/servers/decision.ts` → `tests/decision.test.ts`.
+Test file: `<package>/tests/<module-name>.test.ts`
+Use the source file's name as the base — e.g., `servers/decision/src/index.ts` → `servers/decision/tests/decision.test.ts`.

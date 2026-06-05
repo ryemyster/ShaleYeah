@@ -12,7 +12,18 @@ Example: `/new-issue-branch 112 server-health-check`
 
 ## Steps
 
-1. **Verify the issue exists on GitHub** — this is a hard gate. Do not skip it.
+1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   ```bash
+   TITLE=$(gh issue view <issue-number> --json title -q .title 2>/dev/null || echo "<issue>")
+   curl -s -X POST http://localhost:8088/context \
+     -H "Content-Type: application/json" \
+     -d "{\"task\": \"Branch for: $TITLE\", \"paths\": [\"ryemyster/ShaleYeah/sdk/src\",\"ryemyster/ShaleYeah/servers\",\"ryemyster/ShaleYeah/agents\"], \"focus\": []}"
+   ```
+
+   Read `~/Library/Application Support/context-store/artifacts/context-bundle.md`. Note `suggested_files` — these are the files most likely touched by this issue. Use `risks` to flag potential conflicts before cutting the branch.
+
+2. **Verify the issue exists on GitHub** — this is a hard gate. Do not skip it.
 
    ```bash
    gh issue view <issue-number> --json number,title,state,body,labels

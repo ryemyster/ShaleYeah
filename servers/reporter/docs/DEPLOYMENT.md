@@ -1,32 +1,60 @@
 # Deployment — @shaleyeah/server-reporter
 
-## Standalone MCP server
+## Transport modes
+
+| Mode | When | Use case |
+|------|------|----------|
+| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
+| **HTTP** | `PORT=3009` | Agent fleet, Docker, Kong |
 
 ```bash
-pnpm build
-pnpm start
-```
+# stdio mode
+pnpm build && pnpm start
 
-Listens on stdio (MCP default transport).
-
-## Docker
-
-```dockerfile
-FROM node:22-alpine
-WORKDIR /app
-COPY dist/ ./dist/
-COPY package.json ./
-RUN npm install --omit=dev
-CMD ["node", "dist/index.js"]
+# HTTP mode
+PORT=3009 pnpm start
 ```
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `ANTHROPIC_API_KEY` | Yes | LLM synthesis calls |
-| `DATA_PATH` | No | Path to data directory (default: ./data) |
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Scriptor Reporticus Maximus) |
+| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3009`) |
+| `DATA_PATH` | No | `./data` | Path to report templates directory |
+| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+
+## Docker Compose (agent pair)
+
+```yaml
+services:
+  reporter:
+    image: shaleyeah/reporter:latest
+    environment:
+      PORT: "3009"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    ports:
+      - "3009:3009"
+  reporter-agent:
+    image: shaleyeah/reporter-agent:latest
+    environment:
+      REPORTER_MCP_URL: http://reporter:3009
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    depends_on: [reporter]
+```
 
 ## Kong gateway
 
-Register as `reporter` upstream. Route: `/mcp/reporter` → `<host>:3000`.
+```bash
+curl -X POST http://kong:8001/upstreams -d name=reporter
+curl -X POST http://kong:8001/upstreams/reporter/targets -d target=reporter:3009
+curl -X POST http://kong:8001/services -d name=reporter -d host=reporter
+curl -X POST http://kong:8001/services/reporter/routes -d paths[]=/mcp/reporter
+```
+
+## Production checklist
+
+- [ ] `ANTHROPIC_API_KEY` set and valid
+- [ ] `PORT=3009` set
+- [ ] Registered with Kong at `/mcp/reporter`
+- [ ] Paired with `reporter-agent` at port 4009
