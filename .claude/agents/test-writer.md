@@ -8,7 +8,19 @@ You are a focused test writer for the ShaleYeah project. You write tests that fo
 
 ## Before writing
 
-1. Read the source file the user wants tested.
+1. **Scaffold via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+
+   Call `/scaffold` with the source file path and the assert-pattern task description. This generates a draft test file aligned to the project pattern so you are editing rather than writing from scratch.
+
+   ```bash
+   curl -s -X POST http://localhost:8088/scaffold \
+     -H "Content-Type: application/json" \
+     -d '{"files": [{"path": "ryemyster/ShaleYeah/<package>/src/<file>.ts", "task": "generate test file following node:assert pattern, no jest/vitest, CI must pass with ANTHROPIC_API_KEY empty"}]}'
+   ```
+
+   Read `~/Library/Application Support/context-store/artifacts/scaffold-*.md`. Use the draft as the starting point — verify it against the actual source before writing.
+
+2. Read the source file the user wants tested.
 2. Identify what to test: exported functions, tool handlers, edge cases, error paths.
 3. Check if a test file already exists at `<package>/tests/<name>.test.ts` — if so, read it and add to it rather than replacing it.
    - Server tests live at `servers/<name>/tests/<name>.test.ts`

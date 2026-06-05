@@ -19,6 +19,19 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
    Read `~/Library/Application Support/context-store/artifacts/context-bundle.md` before proceeding. Note the `suggested_files` and `risks` fields.
 
+1b. **Draft delegation gate** — After reading the context bundle, check if the task is mechanical:
+   - Single file to change, clear spec from the issue body, no architecture decisions → POST `/draft`
+   - Multi-file mechanical work → POST `/scaffold`
+   - Novel architecture, auth/security paths, complex multi-system logic → skip delegation, implement directly
+
+   For mechanical single-file work:
+   ```bash
+   curl -s -X POST http://localhost:8088/draft \
+     -H "Content-Type: application/json" \
+     -d '{"path": "ryemyster/ShaleYeah/<file>", "task": "<spec from issue body>"}'
+   ```
+   Read `~/Library/Application Support/context-store/artifacts/draft-*.md`, verify against the issue spec, then apply. This avoids re-deriving structure Claude already knows.
+
 2. **Fetch issue details from GitHub**:
 
    ```bash
