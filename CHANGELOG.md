@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Quality Assurance agent** (`agents/quality-assurance/`) (#376) — new Tier 2 agent wrapping the `@shaleyeah/server-qa` MCP server via `StreamableHTTPClientTransport`. Exports `qaAssuranceManifest`, `qaAssuranceConfig`, `createQAAssuranceRuntime()`, `createQAAssuranceEndpoint()`, and `callQAServerTool()`. Manifests 2 QA tools (`quality-assurance.run_quality_tests`, `quality-assurance.generate_quality_report`) with model capability requirements (`standard-analysis`, `deterministic`), `read:qa` scopes, eval profiles, and HITL config. Follows the exact geologist agent pattern. 42 tests pass (5 MCP-client + 37 contract). (closes #376)
+
 ### Changed
 
 - **HTTP transport for geowiz + geologist MCP wiring (#363)** — `MCPServer` in `@shaleyeah/sdk` now supports `StreamableHTTPServerTransport` when `PORT` is set; all 14 servers gain HTTP mode without code changes. Geologist agent handlers replaced direct `@shaleyeah/server-geowiz` imports with `callGeowizTool()` (new `geowiz-client.ts`), which calls geowiz over HTTP via `StreamableHTTPClientTransport` using the URL from `AgentRuntimeConfig.mcpServers.geowiz`.
