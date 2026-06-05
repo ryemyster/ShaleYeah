@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Quality Assurance agent** (`agents/quality-assurance/`) (#376) — new Tier 2 agent wrapping the `@shaleyeah/server-qa` MCP server via `StreamableHTTPClientTransport`. Exports `qaAssuranceManifest`, `qaAssuranceConfig`, `createQAAssuranceRuntime()`, `createQAAssuranceEndpoint()`, and `callQAServerTool()`. Manifests 2 QA tools (`quality-assurance.run_quality_tests`, `quality-assurance.generate_quality_report`) with model capability requirements (`standard-analysis`, `deterministic`), `read:qa` scopes, eval profiles, and HITL config. Follows the exact geologist agent pattern. 42 tests pass (5 MCP-client + 37 contract). (closes #376)
+
 ### Changed
 
 - **Monorepo conversion (#385)** — Restructured from a single npm package to a pnpm workspace with Turborepo. `src/` and `tools/` deleted; all code lives in packages: `sdk/` (shared language), `servers/*/` (14 Tier 1 MCP servers), `agents/*/` (14 Tier 2 agent packages — geologist and agent-zero fully implemented, 12 stubs), `orchestrator/` (stub, Temporal workflows deferred to #362). Kernel deleted (retired Arcade.dev pattern). `biome.json` moved to per-package. CI updated to pnpm + Turborepo. `pnpm demo` proves the geologist agent boots standalone. Dead-code greps return zero. (closes #385)
