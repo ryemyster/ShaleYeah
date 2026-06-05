@@ -186,7 +186,7 @@ console.log("\n🙋 Testing HITL policy wires through to config...");
 	await strictRuntime.shutdown();
 }
 
-console.log("\n🧪 Testing evals run on tool output...");
+console.log("\n🧪 Testing evals policy is configured correctly...");
 {
 	const live = await geowizReachable();
 	if (!live) {

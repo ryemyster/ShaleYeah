@@ -331,11 +331,12 @@ export const geologistConfig: AgentRuntimeConfig = {
 	},
 };
 
+// Each handler resolves the geowiz URL from the runtime config and delegates via MCP over HTTP.
+// The server name "geowiz" matches AgentToolManifest.mcpServer and AgentRuntimeConfig.mcpServers key.
 function geowizUrl(config: AgentRuntimeConfig): string {
 	return config.mcpServers?.geowiz?.url ?? "http://localhost:3001";
 }
 
-// Each handler resolves the geowiz URL from runtime config and delegates via MCP over HTTP.
 // The server tool name is the agent tool name without the "geologist." prefix.
 const handlers: Record<string, StandaloneToolHandler> = {
 	"geologist.analyze_formation": ({ args, config }) =>

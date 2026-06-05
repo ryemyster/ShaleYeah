@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **HTTP transport for geowiz + geologist MCP wiring (#363)** — `MCPServer` in `@shaleyeah/sdk` now supports `StreamableHTTPServerTransport` when `PORT` is set; all 14 servers gain HTTP mode without code changes. Geologist agent handlers replaced direct `@shaleyeah/server-geowiz` imports with `callGeowizTool()` (new `geowiz-client.ts`), which calls geowiz over HTTP via `StreamableHTTPClientTransport` using the URL from `AgentRuntimeConfig.mcpServers.geowiz`.
+
 - **Monorepo conversion (#385)** — Restructured from a single npm package to a pnpm workspace with Turborepo. `src/` and `tools/` deleted; all code lives in packages: `sdk/` (shared language), `servers/*/` (14 Tier 1 MCP servers), `agents/*/` (14 Tier 2 agent packages — geologist and agent-zero fully implemented, 12 stubs), `orchestrator/` (stub, Temporal workflows deferred to #362). Kernel deleted (retired Arcade.dev pattern). `biome.json` moved to per-package. CI updated to pnpm + Turborepo. `pnpm demo` proves the geologist agent boots standalone. Dead-code greps return zero. (closes #385)
 
 ### Added
