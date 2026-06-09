@@ -83,6 +83,14 @@ export abstract class MCPServer {
 			const httpTransport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
 			this.transport = httpTransport;
 			this._httpServer = http.createServer((req, res) => {
+				// Health probe — responds before MCP transport to avoid blocking the caller
+				// while the MCP session handshake is in progress.
+				if (req.method === "GET" && req.url === "/health") {
+					const body = JSON.stringify({ status: "ok", server: this.config.name, version: this.config.version });
+					res.writeHead(200, { "Content-Type": "application/json" });
+					res.end(body);
+					return;
+				}
 				httpTransport.handleRequest(req, res).catch((err) => {
 					console.error(`❌ HTTP request error on ${this.config.name}:`, err);
 					res.writeHead(500).end();

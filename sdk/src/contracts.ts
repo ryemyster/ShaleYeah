@@ -207,6 +207,13 @@ export interface AgentExecutionRequest {
 	args: Record<string, unknown>;
 	runId?: string;
 	approval?: HumanApproval;
+	/**
+	 * Scopes granted by the caller for this execution context.
+	 * When present, runtime enforces tool.requiredScopes ⊆ grantedScopes.
+	 * When absent, scope enforcement is skipped (backward-compatible with callers
+	 * that predate scope-aware routing). Implements Arcade #46: Permission Gate.
+	 */
+	grantedScopes?: string[];
 }
 
 export interface AgentExecutionMetadata {

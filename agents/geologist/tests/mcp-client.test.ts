@@ -64,9 +64,16 @@ async function runTests(): Promise<void> {
 		assert.strictEqual(conn.transport, "http", "geowiz transport must be http");
 	});
 
-	await test("all 8 geologist tools declare mcpServer: 'geowiz'", () => {
+	await test("all 9 geologist tools declare mcpServer: 'geowiz'", () => {
 		const wrong = geologistManifest.tools.filter((t) => t.mcpServer !== "geowiz");
 		assert.strictEqual(wrong.length, 0, `Tools without mcpServer='geowiz': ${wrong.map((t) => t.name).join(", ")}`);
+	});
+
+	await test("geologistConfig.modelRouting['standard-analysis'] uses a real model ID (not placeholder)", () => {
+		const binding = geologistConfig.modelRouting["standard-analysis"];
+		assert.ok(binding, "standard-analysis binding must be present");
+		assert.notStrictEqual(binding?.model, "configured-by-operator", "model must not be a placeholder");
+		assert.strictEqual(binding?.provider, "anthropic", "provider must be anthropic");
 	});
 
 	await test("callGeowizTool rejects with a clear error when server is unreachable", async () => {

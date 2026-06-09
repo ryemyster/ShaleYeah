@@ -221,8 +221,39 @@ export const geologistManifest: AgentManifest = {
 			evalProfile: "geologist-aries",
 			mcpServer: "geowiz",
 		},
+		{
+			// Closes the Observe→Think→Act→Learn loop. Persists a key geological finding to
+			// the geowiz findings store so it can be surfaced in future tasks (memory namespace:
+			// "geologist"). Backed by local JSON for now; Supabase pgvector promoted when #405 ships.
+			name: "geologist.save_finding",
+			description: "Persist a key geological finding (formation, well-log, seismic, quality) to the agent memory store for recall in future tasks.",
+			type: "command",
+			capabilities: ["memory-write"],
+			inputSchema: {
+				type: "object",
+				properties: {
+					findingType: {
+						type: "string",
+						enum: ["formation", "well-log", "quality-assessment", "seismic", "document", "general"],
+						description: "Category of geological finding",
+					},
+					title: { type: "string", description: "Short human-readable title for this finding" },
+					summary: { type: "string", description: "Detailed summary of the geological finding" },
+					confidence: { type: "number", description: "Confidence score 0–1", minimum: 0, maximum: 1 },
+					dataSource: { type: "string", description: "File path or external reference that produced this finding" },
+					metadata: { type: "object", description: "Optional structured metadata (porosity, depth, formation name, etc.)" },
+				},
+				required: ["findingType", "title", "summary", "confidence", "dataSource"],
+			},
+			readOnly: false,
+			destructive: false,
+			requiresHumanApproval: true,
+			requiredScopes: ["write:geology"],
+			modelRequirement: "deterministic",
+			mcpServer: "geowiz",
+		},
 	],
-	requiredScopes: ["read:geology"],
+	requiredScopes: ["read:geology", "write:geology"],
 	providerRequirements: [
 		{
 			type: "llm",
@@ -261,27 +292,16 @@ export const geologistManifest: AgentManifest = {
 
 export const geologistConfig: AgentRuntimeConfig = {
 	autonomy: "reviewed",
+	// Dev defaults — operators override these bindings at deploy time via env-driven config.
+	// provider: "anthropic" here means the standard Anthropic API path through callLLM().
+	// provider: "rule-based" means the tool handler is deterministic; callLLM() is not invoked.
 	modelRouting: {
-		"small-fast": {
-			provider: "organization-small-model",
-			model: "configured-by-operator",
-		},
-		"standard-analysis": {
-			provider: "organization-standard-model",
-			model: "configured-by-operator",
-		},
-		"deep-reasoning": {
-			provider: "organization-deep-model",
-			model: "configured-by-operator",
-		},
-		"local-private": {
-			provider: "organization-local-model",
-			model: "configured-by-operator",
-		},
-		deterministic: {
-			provider: "rule-based",
-			model: "no-model",
-		},
+		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
+		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
+		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		// rule-based: no LLM invoked — handler returns deterministic output from domain constants.
+		deterministic: { provider: "rule-based", model: "no-model" },
 	},
 	hitl: {
 		approvalMode: "when-sensitive",
@@ -362,6 +382,9 @@ const handlers: Record<string, StandaloneToolHandler> = {
 
 	"geologist.process_aries_database": ({ args, config }) =>
 		callGeowizTool(geowizUrl(config), "process_aries_database", args as Record<string, unknown>),
+
+	"geologist.save_finding": ({ args, config }) =>
+		callGeowizTool(geowizUrl(config), "save_finding", args as Record<string, unknown>),
 };
 
 export function createGeologistRuntime(config: AgentRuntimeConfig = geologistConfig): LocalAgentRuntime {
@@ -413,7 +436,7 @@ export async function runGeologistTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, options);
+		return await executeLoop(goal, runtime, { ...options, config });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -443,10 +466,34 @@ function parseJson(
 	}
 }
 
+// Retry budgets — Arcade pattern #40: Error Classification.
+// Retryable errors (network transients, server restarts) get up to MAX_TOOL_RETRIES attempts
+// with exponential backoff before the error is surfaced to the LLM as a recoverable hint.
+const MAX_TOOL_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 500;
+
+async function executeWithRetry(
+	runtime: LocalAgentRuntime,
+	request: Parameters<typeof runtime.execute>[0],
+): Promise<ReturnType<LocalAgentRuntime["execute"]>> {
+	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
+	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
+		if (attempt > 0) {
+			// Exponential backoff: 500ms, 1000ms, 2000ms
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+		}
+		const result = await runtime.execute(request);
+		if (result.status !== "failed" || !result.retryable) return result;
+		last = result;
+	}
+	return last!;
+}
+
 async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
 	options: {
+		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	},
@@ -454,6 +501,13 @@ async function executeLoop(
 	// TODO (#395): Context Injection — before building the system prompt, read from
 	// memory.namespace = "geologist" to surface relevant prior task context.
 	// Requires Supabase pgvector. Inject as an additional system prompt section.
+
+	const config = options.config ?? geologistConfig;
+
+	// Resolve the model that drives the reasoning loop from the operator's routing table.
+	// The loop itself is always standard-analysis class — tool-level model requirements are
+	// for the tool handlers (e.g. deterministic tools skip the LLM entirely).
+	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
 	const toolDefs = geologistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -477,6 +531,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		const response = await callLLM({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			model: reasoningModel,
 			apiKey: options.apiKey,
 		});
 
@@ -491,8 +546,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 		// treat the result as a job ID and poll until completion before continuing the loop.
 
 		// Permission Gate: route through runtime.execute() so HITL + scope checks fire.
-		// This is the key change from the earlier direct callGeowizTool() path.
-		const execResult = await runtime.execute({
+		// executeWithRetry transparently retries transient (retryable) failures before
+		// surfacing the error to the LLM as a recoverable hint.
+		const execResult = await executeWithRetry(runtime, {
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
@@ -508,7 +564,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 				);
 			}
 			const approval = await options.onApprovalRequired(execResult.challenge);
-			// Re-execute the same call with the approval token attached.
+			// Re-execute the same call with the approval token — no retry on the approved path.
 			const approved = await runtime.execute({
 				toolName: parsed.tool,
 				args: parsed.args ?? {},
@@ -522,7 +578,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
 			}
 		} else {
-			// Failed — include retryability hint so the LLM can decide whether to retry.
+			// Failed — include retryability hint so the LLM can decide whether to reformulate.
 			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
 			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
 		}
@@ -534,6 +590,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const finalResponse = await callLLM({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		model: reasoningModel,
 		apiKey: options.apiKey,
 	});
 
