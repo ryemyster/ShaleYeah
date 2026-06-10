@@ -92,3 +92,14 @@ The agent layer reads `error_type` to decide whether to retry or escalate.
 ## MCP protocol version
 
 Geowiz declares `mcp: "2025-03"` in its SDK compatibility block. Agents must connect with a compatible MCP client version.
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, Claude Desktop config, tool table
+- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
+- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly
+- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist

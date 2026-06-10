@@ -198,3 +198,14 @@ runGeologistTask               → LocalAgentRuntime directly (in-process)
 ## Using from the orchestrator (#362)
 
 When the Temporal orchestrator is implemented, it will call `LocalAgentEndpoint.execute()` via the `AgentRuntime` interface. No API changes are required — the endpoint already speaks the contract. Wire in a `workflowId` as `runId` and the audit trail will correlate entries across the workflow.
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
+- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing
+- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes

@@ -134,3 +134,14 @@ Runtime peer dependency (not in package.json):
 ```
 
 The geologist does NOT depend on the orchestrator or any other agent and can be deployed in complete isolation.
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
+- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
+- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing
+- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes

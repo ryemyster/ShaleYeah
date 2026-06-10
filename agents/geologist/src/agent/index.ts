@@ -596,3 +596,28 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 	return parseJson(finalResponse)?.answer ?? finalResponse;
 }
+
+// ── CLI entrypoint ────────────────────────────────────────────────────────────
+// Run a geological task from the command line:
+//   ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts "Analyze test.las"
+import { fileURLToPath } from "node:url";
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+	const goal = process.argv.slice(2).join(" ").trim();
+	if (!goal) {
+		console.error("Usage: npx tsx src/agent/index.ts <goal>");
+		console.error('  Example: npx tsx src/agent/index.ts "Analyze the Permian Basin well log at data/test.las"');
+		process.exit(1);
+	}
+	const answer = await runGeologistTask(goal, {
+		onApprovalRequired: async (challenge) => {
+			console.log(`\n⏸  Approval required for: ${challenge.toolName}`);
+			console.log(`   Reason: ${challenge.reason ?? "tool requires human review"}`);
+			console.log("   Auto-approving in CLI mode...\n");
+			return { approved: true, reviewerId: "cli", reason: "CLI auto-approve" };
+		},
+	}).catch((err: unknown) => {
+		console.error(err instanceof Error ? err.message : String(err));
+		process.exit(1);
+	});
+	console.log(answer);
+}

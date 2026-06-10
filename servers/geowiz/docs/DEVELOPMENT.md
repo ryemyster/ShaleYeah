@@ -88,3 +88,14 @@ pnpm turbo lint --filter=@shaleyeah/server-geowiz
 # or
 cd servers/geowiz && npx biome check src/
 ```
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, Claude Desktop config, tool table
+- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
+- [INTEGRATION.md](INTEGRATION.md) — calling geowiz tools from an agent or MCP client
+- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly

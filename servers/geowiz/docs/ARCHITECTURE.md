@@ -70,3 +70,14 @@ All in `src/index.ts`. Each handler constructs its own prompt from parsed data a
   ├── shapefile            (Shapefile parsing in gis-processor)
   └── xml2js               (KML/WITSML XML parsing)
 ```
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, Claude Desktop config, tool table
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
+- [INTEGRATION.md](INTEGRATION.md) — calling geowiz tools from an agent or MCP client
+- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly
+- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist

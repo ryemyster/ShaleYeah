@@ -113,3 +113,14 @@ The geologist agent follows the `AgentManifest` contract — a job description f
 - "Here's my model routing table"
 
 Any system that speaks the `AgentRuntime` language (orchestrator, Claude Desktop, test harness) can call the geologist the same way.
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
+- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
+- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing
+- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes

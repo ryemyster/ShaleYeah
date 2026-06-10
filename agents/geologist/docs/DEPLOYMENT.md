@@ -158,3 +158,14 @@ Requests to the fleet then go through: `Kong → geologist:4001 → geowiz:3001`
 - [ ] Kong route registered
 - [ ] Resource limits set (memory: 512Mi, CPU: 0.5 per container is a reasonable starting point)
 - [ ] Model routing overridden if using non-Anthropic LLM provider
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
+- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing
+- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes

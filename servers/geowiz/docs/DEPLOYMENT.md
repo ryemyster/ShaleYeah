@@ -103,3 +103,14 @@ curl -X POST http://kong:8001/services/geowiz/routes \
 - [ ] Resource limits set (256 MB RAM recommended)
 - [ ] `LOG_LEVEL=warn` or `error` in production
 - [ ] Paired with `geologist` agent at port 4001
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, Claude Desktop config, tool table
+- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
+- [INTEGRATION.md](INTEGRATION.md) — calling geowiz tools from an agent or MCP client
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly
+- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist
