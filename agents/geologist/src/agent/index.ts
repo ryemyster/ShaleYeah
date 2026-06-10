@@ -226,7 +226,8 @@ export const geologistManifest: AgentManifest = {
 			// the geowiz findings store so it can be surfaced in future tasks (memory namespace:
 			// "geologist"). Backed by local JSON for now; Supabase pgvector promoted when #405 ships.
 			name: "geologist.save_finding",
-			description: "Persist a key geological finding (formation, well-log, seismic, quality) to the agent memory store for recall in future tasks.",
+			description:
+				"Persist a key geological finding (formation, well-log, seismic, quality) to the agent memory store for recall in future tasks.",
 			type: "command",
 			capabilities: ["memory-write"],
 			inputSchema: {
@@ -241,7 +242,10 @@ export const geologistManifest: AgentManifest = {
 					summary: { type: "string", description: "Detailed summary of the geological finding" },
 					confidence: { type: "number", description: "Confidence score 0–1", minimum: 0, maximum: 1 },
 					dataSource: { type: "string", description: "File path or external reference that produced this finding" },
-					metadata: { type: "object", description: "Optional structured metadata (porosity, depth, formation name, etc.)" },
+					metadata: {
+						type: "object",
+						description: "Optional structured metadata (porosity, depth, formation name, etc.)",
+					},
 				},
 				required: ["findingType", "title", "summary", "confidence", "dataSource"],
 			},
@@ -601,6 +605,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 // Run a geological task from the command line:
 //   ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts "Analyze test.las"
 import { fileURLToPath } from "node:url";
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const goal = process.argv.slice(2).join(" ").trim();
 	if (!goal) {

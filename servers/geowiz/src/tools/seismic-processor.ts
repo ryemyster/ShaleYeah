@@ -354,7 +354,7 @@ async function extractSeismicTraces(
 			const amplitude =
 				Math.sin(2 * Math.PI * freq * time) *
 				Math.exp(-time * 2) * // decay envelope
-				(0.8 + 0.4 * Math.random()); // add noise
+				(0.8 + 0.4 * Math.abs(Math.sin(i * 97.3 + j * 31.7))); // deterministic per-sample variation
 			amplitudes.push(amplitude);
 		}
 

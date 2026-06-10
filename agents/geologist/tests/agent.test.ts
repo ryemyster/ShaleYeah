@@ -271,10 +271,8 @@ console.log("\n🧱 Testing blocking eval halt (issue #404)...");
 	// A handler that returns undefined triggers the schema blocking eval.
 	// The runtime must return status: "failed" rather than status: "completed".
 	const undefinedHandler = async () => undefined;
-	const allHandlers = Object.fromEntries(
-		geologistManifest.tools.map((t) => [t.name, undefinedHandler]),
-	);
-	const strictRuntime = createGeologistRuntime({
+	const allHandlers = Object.fromEntries(geologistManifest.tools.map((t) => [t.name, undefinedHandler]));
+	const _strictRuntime = createGeologistRuntime({
 		...geologistConfig,
 		evals: { ...geologistConfig.evals, checks: { ...geologistConfig.evals.checks, schema: "blocking" } },
 	});
@@ -308,10 +306,7 @@ console.log("\n🔀 Testing model routing resolution (issue #402)...");
 		standardAnalysis?.model !== "configured-by-operator",
 		"standard-analysis model is a real model ID, not a placeholder",
 	);
-	assert(
-		standardAnalysis?.provider === "anthropic",
-		"standard-analysis provider is anthropic",
-	);
+	assert(standardAnalysis?.provider === "anthropic", "standard-analysis provider is anthropic");
 
 	// write:geology scope must be declared at the manifest level
 	assert(

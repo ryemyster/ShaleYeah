@@ -16,8 +16,14 @@
  */
 
 import assert from "node:assert";
-import { callQAServerTool, createQAAssuranceRuntime, qaAssuranceConfig, qaAssuranceManifest, runQAAssuranceTask } from "../src/agent/index.js";
-import { RetryableToolError, PermanentToolError } from "@shaleyeah/sdk";
+import { PermanentToolError, RetryableToolError } from "@shaleyeah/sdk";
+import {
+	callQAServerTool,
+	createQAAssuranceRuntime,
+	qaAssuranceConfig,
+	qaAssuranceManifest,
+	runQAAssuranceTask,
+} from "../src/agent/index.js";
 
 let passed = 0;
 let failed = 0;
@@ -179,7 +185,9 @@ async function runTests(): Promise<void> {
 			assert.ok(typeof answer === "string" && answer.length > 0, "runQAAssuranceTask must return a non-empty string");
 		});
 	} else {
-		console.log("\n  ⚠️  [integration] ANTHROPIC_API_KEY not set or qa-server not running — skipping runTask live test.");
+		console.log(
+			"\n  ⚠️  [integration] ANTHROPIC_API_KEY not set or qa-server not running — skipping runTask live test.",
+		);
 	}
 
 	console.log(`\nQuality Assurance MCP Client Tests: ${passed} passed, ${failed} failed`);

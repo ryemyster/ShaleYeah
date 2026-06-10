@@ -176,10 +176,10 @@ const reporterTemplate: ServerTemplate = {
 			z.object({
 				tractName: z.string().describe("Investment tract name"),
 				analysisResults: z.object({
-					geological: z.any().optional(),
-					economic: z.any().optional(),
-					engineering: z.any().optional(),
-					risk: z.any().optional(),
+					geological: z.record(z.string(), z.unknown()).optional(),
+					economic: z.record(z.string(), z.unknown()).optional(),
+					engineering: z.record(z.string(), z.unknown()).optional(),
+					risk: z.record(z.string(), z.unknown()).optional(),
 				}),
 				decisionCriteria: z
 					.object({
@@ -205,7 +205,7 @@ const reporterTemplate: ServerTemplate = {
 			"Create comprehensive executive report",
 			z.object({
 				tractName: z.string(),
-				decision: z.any(),
+				decision: z.record(z.string(), z.unknown()),
 				reportType: z.enum(["executive", "technical", "board"]).default("executive"),
 				includeCharts: z.boolean().default(true),
 				includeAppendices: z.boolean().default(true),
@@ -245,7 +245,7 @@ const reporterTemplate: ServerTemplate = {
 				analyses: z.array(
 					z.object({
 						domain: z.string(),
-						results: z.any(),
+						results: z.record(z.string(), z.unknown()),
 						confidence: z.number(),
 					}),
 				),
