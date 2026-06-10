@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CI: invalid pnpm/action-setup SHA** — replaced non-existent commit hash `fe02b74` with correct v4.1.0 SHA `a7487c7e` in `ci.yml`, `codeql.yml`, and `release.yml`; both "PR checks" and "CodeQL Security Analysis" jobs were failing at "Set up job" before running any code.
+
 ### Changed
 
 - **Geologist + geowiz foundation fixes** (`agents/geologist/`, `servers/geowiz/`, `sdk/`) (#402–#407) — Six targeted fixes that upgrade the geologist to the full five-component agent framework (Goal / Perception / Reasoning / Action / Memory).
