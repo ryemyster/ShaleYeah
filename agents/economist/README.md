@@ -1,6 +1,6 @@
 # @shaleyeah/economist
 
-> **Status: Stub** — implementation tracked in [#364](https://github.com/ryemyster/ShaleYeah/issues/364). Reference implementation: `agents/geologist/`.
+> **Status: Tier 2 agent** — implemented from the `agents/geologist/` and `agents/quality-assurance/` runtime pattern.
 
 The economist agent analyzes the financial viability of oil & gas projects — NPV, IRR, break-even prices, sensitivity tables, and capital budgeting decisions. It pairs with the **econobot** Tier 1 MCP server (port 3002).
 
@@ -11,7 +11,7 @@ The economist agent analyzes the financial viability of oil & gas projects — N
 | Tier 1 (tools) | `@shaleyeah/server-econobot` | 3002 |
 | Tier 2 (agent) | `@shaleyeah/economist` | 4002 |
 
-## Quick start (once implemented)
+## Quick start
 
 ```bash
 # Terminal 1 — Tier 1 server
@@ -22,9 +22,15 @@ cd agents/economist
 ANTHROPIC_API_KEY=sk-ant-... ECONOBOT_MCP_URL=http://localhost:3002 pnpm test
 ```
 
-## Implementing this agent
+`ECONOBOT_MCP_URL` is the deployment-time URL for the paired econobot MCP server. The default local runtime config uses `mcpServers.econobot.url = "http://localhost:3002"`.
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `economist` and `geowiz` → `econobot`.
+## Runtime
+
+The agent exports `createEconomistRuntime()`, `createEconomistEndpoint()`, `runEconomistTask()`, and `callEconobotTool()`. Agent tools delegate to the Tier 1 `econobot` MCP server over HTTP:
+
+- `economist.analyze_economics` -> `analyze_economics`
+- `economist.calculate_dcf` -> `calculate_dcf`
+- `economist.sensitivity_analysis` -> `sensitivity_analysis`
 
 ## Docs
 

@@ -1,19 +1,25 @@
 {
-  "name": "@shaleyeah/economist",
-  "version": "0.1.0",
-  "description": "Economist — Tier 2 intelligence layer for economic analysis",
-  "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@shaleyeah/sdk": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "typescript": "^6.0.2"
-  }
+	"name": "@shaleyeah/economist",
+	"version": "0.1.0",
+	"description": "Economist — Tier 2 intelligence layer for economic analysis",
+	"private": true,
+	"type": "module",
+	"main": "dist/agent/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "tsx src/agent/index.ts",
+		"test": "bash ../../scripts/run-tests.sh",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@shaleyeah/sdk": "workspace:*"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.11",
+		"@types/node": "^25.6.0",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
 }

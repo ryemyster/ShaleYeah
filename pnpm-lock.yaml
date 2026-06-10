@@ -65,13 +65,22 @@ importers:
 
   agents/economist:
     dependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
       '@shaleyeah/sdk':
         specifier: workspace:*
         version: link:../../sdk
     devDependencies:
+      '@biomejs/biome':
+        specifier: ^2.4.11
+        version: 2.4.16
       '@types/node':
         specifier: ^25.6.0
         version: 25.9.1
+      tsx:
+        specifier: ^4.21.0
+        version: 4.22.4
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
