@@ -112,3 +112,14 @@ try {
 | `Error: ANTHROPIC_API_KEY is required` | Missing env var | Set `ANTHROPIC_API_KEY` |
 | `Missing model route for standard-analysis` | Config missing routing | Check `geologistConfig.modelRouting` |
 | Tests show ⚠️ skip warnings | Live geowiz not running | Normal — unit tests pass without the server |
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
+- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
+- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
+- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes

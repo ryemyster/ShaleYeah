@@ -202,6 +202,23 @@ const geowizTemplate: ServerTemplate = {
 				return result;
 			},
 		),
+		ServerFactory.createAnalysisTool(
+			"save_finding",
+			"Persist a key geological finding to the agent memory store for recall in future tasks. Closes the Observe→Think→Act→Learn loop.",
+			z.object({
+				findingType: z
+					.enum(["formation", "well-log", "quality-assessment", "seismic", "document", "general"])
+					.describe("Category of geological finding"),
+				title: z.string().min(1).describe("Short human-readable title"),
+				summary: z.string().min(1).describe("Detailed summary of the finding"),
+				confidence: z.number().min(0).max(1).describe("Confidence score 0–1"),
+				dataSource: z.string().min(1).describe("File path or reference that produced this finding"),
+				metadata: z.record(z.string(), z.unknown()).optional().describe("Optional structured metadata"),
+			}),
+			async (args) => {
+				return saveFinding(args);
+			},
+		),
 	],
 };
 
@@ -1588,6 +1605,52 @@ function generateAriesRecommendations(ariesData: any): string[] {
 	}
 
 	return recommendations.length > 0 ? recommendations : ["Standard ARIES analysis protocols applied"];
+}
+
+// ── save_finding — closes the Observe→Think→Act→Learn loop ─────────────────
+// Persists a key geological finding to ./data/geowiz/findings/<id>.json.
+// The agent memory layer (#405, Supabase pgvector) will promote these to vector
+// storage when it ships; for now, local JSON ensures the write path exists and
+// tests can verify the Learn step works end-to-end without a database.
+
+interface SavedFinding {
+	findingId: string;
+	findingType: string;
+	title: string;
+	summary: string;
+	confidence: number;
+	dataSource: string;
+	metadata?: Record<string, unknown>;
+	savedAt: string;
+}
+
+async function saveFinding(args: {
+	findingType: string;
+	title: string;
+	summary: string;
+	confidence: number;
+	dataSource: string;
+	metadata?: Record<string, unknown>;
+}): Promise<{ findingId: string; stored: boolean; path: string }> {
+	const findingId = `geo-${Date.now()}-${Math.floor(args.confidence * 100)}`;
+	const findingsDir = "./data/geowiz/findings";
+	await fs.mkdir(findingsDir, { recursive: true });
+
+	const finding: SavedFinding = {
+		findingId,
+		findingType: args.findingType,
+		title: args.title,
+		summary: args.summary,
+		confidence: args.confidence,
+		dataSource: args.dataSource,
+		metadata: args.metadata,
+		savedAt: new Date().toISOString(),
+	};
+
+	const filePath = `${findingsDir}/${findingId}.json`;
+	await fs.writeFile(filePath, JSON.stringify(finding, null, 2));
+
+	return { findingId, stored: true, path: filePath };
 }
 
 // Create the server using factory

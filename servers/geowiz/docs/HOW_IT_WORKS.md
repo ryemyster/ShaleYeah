@@ -10,7 +10,7 @@ It doesn't remember anything between calls — every request is fresh. It just r
 
 ## Technical explanation
 
-Geowiz is a **Tier 1 MCP tool server** — a stateless process that exposes 8 geological analysis tools over the Model Context Protocol. It has no knowledge of agents, sessions, or business logic. Its only job is: receive tool call → parse data → call LLM → return structured result.
+Geowiz is a **Tier 1 MCP tool server** — a stateless process that exposes 9 geological analysis tools over the Model Context Protocol. It has no knowledge of agents, sessions, or business logic. Its only job is: receive tool call → parse data → call LLM → return structured result.
 
 ### Request lifecycle
 
@@ -43,6 +43,7 @@ Agent (geologist)
 | `process_document` | Extracts text and tables from reports | PDF, Word, text |
 | `process_seismic_data` | Parses trace headers and amplitude data | SEG-Y |
 | `process_aries_database` | Reads production history and well metadata | ARIES |
+| `save_finding` | Persists a key geological finding to `./data/geowiz/findings/` as JSON | JSON payload |
 
 ### LLM + fallback pattern
 

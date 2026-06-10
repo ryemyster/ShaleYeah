@@ -79,3 +79,14 @@ GEOWIZ_MCP_URL=http://localhost:19999 npx tsx tests/mcp-client.test.ts
 | LAS parse errors | File encoding or version mismatch | Check LAS 2.0 format; DLIS needs `process_well_logs` |
 | `Cannot find module` | Build needed | `pnpm build` first |
 | Tests hang | stdio mode conflict | Tests use stdio mock — don't set `PORT` when running unit tests |
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, Claude Desktop config, tool table
+- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
+- [INTEGRATION.md](INTEGRATION.md) — calling geowiz tools from an agent or MCP client
+- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
+- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist

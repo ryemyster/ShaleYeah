@@ -50,7 +50,7 @@ console.log("📋 Testing manifest and config validation...");
 	const config = AgentRuntimeConfigSchema.safeParse(geologistConfig);
 	assert(config.success, "Geologist runtime config validates");
 
-	assert(geologistManifest.tools.length === 8, "Geologist exposes 8 geology tools");
+	assert(geologistManifest.tools.length === 9, "Geologist exposes 9 geology tools (8 read + 1 write)");
 	assert(
 		geologistManifest.tools.every((t) => t.name.startsWith("geologist.")),
 		"All tools follow geologist. naming convention",
@@ -80,7 +80,7 @@ console.log("\n🔎 Testing progressive discovery...");
 	assert(!("tools" in summary), "Summary discovery does not include tool list");
 
 	const tools = runtime.discover("tools");
-	assert(Array.isArray(tools) && tools.length === 8, "Tool discovery returns 8 tools");
+	assert(Array.isArray(tools) && tools.length === 9, "Tool discovery returns 9 tools");
 	assert(!("inputSchema" in tools[0]), "Tool list omits input schemas");
 
 	const schema = runtime.discover("schema", "geologist.analyze_formation");
@@ -230,10 +230,96 @@ console.log("\n🏥 Testing health endpoint and standalone boot...");
 
 	const manifest = await endpoint.manifest();
 	assert(manifest.id === "geologist", "Endpoint exposes geologist manifest");
-	assert(manifest.tools.length === 8, "Endpoint manifest has 8 tools");
+	assert(manifest.tools.length === 9, "Endpoint manifest has 9 tools");
 
 	const toolSchema = await endpoint.discoveryToolSchema("geologist.process_gis");
 	assert(toolSchema !== null, "Endpoint exposes tool schemas by name");
+}
+
+console.log("\n🔒 Testing scope enforcement (issue #403)...");
+{
+	// When grantedScopes is provided, runtime must reject tool calls missing required scopes.
+	const runtime = createGeologistRuntime();
+	await runtime.initialize();
+
+	const blocked = await runtime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+		grantedScopes: [],
+	});
+	assert(blocked.status === "failed", "Missing scope blocks tool execution");
+	if (blocked.status === "failed") {
+		assert(blocked.error.includes("Missing required scopes"), "Error message names missing scopes");
+	}
+
+	const allowed = await runtime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+		grantedScopes: ["read:geology"],
+	});
+	// Server may not be live — we only care that scope check passed (no scope error)
+	assert(
+		allowed.status !== "failed" || !allowed.error.includes("Missing required scopes"),
+		"Correct scopes are accepted",
+	);
+
+	await runtime.shutdown();
+}
+
+console.log("\n🧱 Testing blocking eval halt (issue #404)...");
+{
+	// A handler that returns undefined triggers the schema blocking eval.
+	// The runtime must return status: "failed" rather than status: "completed".
+	const undefinedHandler = async () => undefined;
+	const allHandlers = Object.fromEntries(geologistManifest.tools.map((t) => [t.name, undefinedHandler]));
+	const _strictRuntime = createGeologistRuntime({
+		...geologistConfig,
+		evals: { ...geologistConfig.evals, checks: { ...geologistConfig.evals.checks, schema: "blocking" } },
+	});
+	// Swap handlers to ones that return undefined — overrides are not public, so build via constructor.
+	const { LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	const testRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: geologistConfig,
+		handlers: allHandlers,
+	});
+	await testRuntime.initialize();
+	const result = await testRuntime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+	});
+	assert(result.status === "failed", "Blocking eval failure returns status: failed");
+	if (result.status === "failed") {
+		assert(result.error.includes("Blocking eval"), "Error message references blocking eval");
+		assert(result.retryable === false, "Blocking eval failures are not retryable");
+	}
+	await testRuntime.shutdown();
+}
+
+console.log("\n🔀 Testing model routing resolution (issue #402)...");
+{
+	// After fixing geologistConfig.modelRouting, the standard-analysis binding must use a real
+	// Anthropic model ID — not the old "configured-by-operator" placeholder.
+	const standardAnalysis = geologistConfig.modelRouting["standard-analysis"];
+	assert(standardAnalysis !== undefined, "standard-analysis binding is present");
+	assert(
+		standardAnalysis?.model !== "configured-by-operator",
+		"standard-analysis model is a real model ID, not a placeholder",
+	);
+	assert(standardAnalysis?.provider === "anthropic", "standard-analysis provider is anthropic");
+
+	// write:geology scope must be declared at the manifest level
+	assert(
+		geologistManifest.requiredScopes.includes("write:geology"),
+		"Manifest declares write:geology scope (save_finding requires it)",
+	);
+
+	// save_finding must exist in the tool list
+	const saveFinding = geologistManifest.tools.find((t) => t.name === "geologist.save_finding");
+	assert(saveFinding !== undefined, "geologist.save_finding is in the manifest");
+	assert(saveFinding?.type === "command", "save_finding is a command type (has side effects)");
+	assert(saveFinding?.requiredScopes.includes("write:geology"), "save_finding requires write:geology");
+	assert(saveFinding?.requiresHumanApproval === true, "save_finding requires human approval (memory promotion)");
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");

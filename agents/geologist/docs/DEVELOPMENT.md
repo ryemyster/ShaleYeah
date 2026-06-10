@@ -94,3 +94,14 @@ const runtime = createGeologistRuntime(config, {
 ```
 
 The default logger writes JSON lines to stderr. Pass `() => {}` to disable.
+
+---
+
+## See also
+
+- [README](../README.md) — quick start, tool table, commands
+- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
+- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
+- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
+- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
+- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing

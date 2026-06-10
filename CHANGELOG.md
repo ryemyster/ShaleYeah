@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Geologist + geowiz foundation fixes** (`agents/geologist/`, `servers/geowiz/`, `sdk/`) (#402–#407) — Six targeted fixes that upgrade the geologist to the full five-component agent framework (Goal / Perception / Reasoning / Action / Memory).
+  - (#402) **Model routing wired** — `executeLoop` now resolves `config.modelRouting["standard-analysis"].model` and passes it to all `callLLM()` calls; `geologistConfig` ships with real Anthropic model IDs instead of `"configured-by-operator"` placeholders.
+  - (#403) **Scope enforcement activated** — `AgentExecutionRequest` gains `grantedScopes?: string[]`; `LocalAgentRuntime.execute()` checks `tool.requiredScopes ⊆ grantedScopes` when provided; backward-compatible when omitted.
+  - (#404) **Blocking eval halt** — `LocalAgentRuntime.execute()` now returns `status: "failed", retryable: false` when any eval with `blocking: true` fails, instead of surfacing bad data as `status: "completed"`.
+  - (#406) **Retry with exponential backoff** — `executeWithRetry()` wraps every tool call in the loop; 3 retries at 500ms/1000ms/2000ms for `RetryableToolError`; permanent failures surface immediately.
+  - (#407) **`geologist.save_finding` write tool** — closes the Memory (Learn) loop. Writes JSON findings to `./data/geowiz/findings/` via geowiz. Requires `write:geology` scope + human approval. geowiz gains a new `save_finding` MCP tool backed by `fs.mkdir + fs.writeFile`.
+  - **SDK** — added `grantedScopes` to `AgentExecutionRequest`, blocking eval check in `runtime.ts`; `/health` HTTP endpoint added to `MCPServer` base (`GET /health → { status, server, version }` — all 14 servers gain this automatically).
+  - **Docs** — `agents/geologist/docs/` fully rewritten: `ARCHITECTURE.md` (topology, five-component table, Arcade patterns, model routing), `HOW_IT_WORKS.md` (five components, retry behavior, BYOE), `DEPLOYMENT.md` (scope/findings/BYOE sections added), `INTEGRATION.md` (`save_finding` example, `grantedScopes` usage, retry behavior, upstream/downstream map).
+
 ### Added
 
 - **Server documentation suite** — All 14 Tier 1 MCP servers now have a complete `docs/` directory: `DEPLOYMENT.md` (dual-mode stdio/HTTP transport, port assignments, Docker Compose agent pairs, Kong registration, env var table), `ARCHITECTURE.md` (tool inventory with LLM column, HTTP transport section, key exports, data flow diagram), `HOW_IT_WORKS.md` (12-year-old plain-language + technical lifecycle), `DEVELOPMENT.md` (setup, TDD checklist, LLM wiring checklist, constraints), `INTEGRATION.md` (agent-side call example, tool reference table, error types), and `LOCAL_TESTING.md` (stdio/HTTP/anti-stub test commands, common issues table). The `decision` server ARCHITECTURE.md was corrected — stale tools `screen_investment`/`analyze_investment` replaced with actual tools `make_investment_decision`/`calculate_bid_strategy`/`analyze_portfolio_fit`. The `reporter` server ARCHITECTURE.md was updated to add the missing `synthesize_analysis` tool.

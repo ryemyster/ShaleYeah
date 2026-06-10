@@ -142,6 +142,16 @@ export class LocalAgentRuntime implements AgentRuntime {
 			return this.failed(request.toolName, `Unknown tool: ${request.toolName}`);
 		}
 
+		// Scope enforcement — Arcade #46: Permission Gate.
+		// Only enforced when the caller supplies grantedScopes; omitting them skips enforcement
+		// so existing callers without scope-aware routing continue to work unchanged.
+		if (request.grantedScopes) {
+			const missing = tool.requiredScopes.filter((s) => !request.grantedScopes!.includes(s));
+			if (missing.length > 0) {
+				return this.failed(tool.name, `Missing required scopes: ${missing.join(", ")}`, tool.modelRequirement);
+			}
+		}
+
 		const approvalChallenge = this.approvalChallengeFor(tool, request);
 		if (approvalChallenge) {
 			const result: AgentExecutionResult = {
@@ -178,6 +188,23 @@ export class LocalAgentRuntime implements AgentRuntime {
 				args: safeArgs,
 			});
 			const evals = this.evaluate(tool, data);
+
+			// Blocking eval failure halts execution — Arcade #46: Permission Gate.
+			// Advisory failures are recorded but do not block the result.
+			const blockingFailure = evals.find((e) => e.blocking && e.status === "fail");
+			if (blockingFailure) {
+				const evalError = `Blocking eval [${blockingFailure.check}]: ${blockingFailure.message}`;
+				const failed: AgentExecutionResult = {
+					status: "failed",
+					error: evalError,
+					retryable: false,
+					evals,
+					metadata: this.metadata(tool, modelBinding),
+				};
+				this.audit(tool.name, safeArgs, failed, Date.now() - startMs, evalError);
+				return failed;
+			}
+
 			const result: AgentExecutionResult = {
 				status: "completed",
 				data,
