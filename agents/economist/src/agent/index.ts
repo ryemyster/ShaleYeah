@@ -175,27 +175,16 @@ export const economistManifest: AgentManifest = {
 
 export const economistConfig: AgentRuntimeConfig = {
 	autonomy: "reviewed",
+	// Dev defaults — operators override these bindings at deploy time via env-driven config.
+	// provider: "anthropic" here means the standard Anthropic API path through callLLM().
+	// provider: "rule-based" means the tool handler is deterministic; callLLM() is not invoked.
 	modelRouting: {
-		"small-fast": {
-			provider: "organization-small-model",
-			model: "configured-by-operator",
-		},
-		"standard-analysis": {
-			provider: "organization-standard-model",
-			model: "configured-by-operator",
-		},
-		"deep-reasoning": {
-			provider: "organization-deep-model",
-			model: "configured-by-operator",
-		},
-		"local-private": {
-			provider: "organization-local-model",
-			model: "configured-by-operator",
-		},
-		deterministic: {
-			provider: "rule-based",
-			model: "no-model",
-		},
+		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
+		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
+		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		// rule-based: no LLM invoked — handler returns deterministic output from domain constants.
+		deterministic: { provider: "rule-based", model: "no-model" },
 	},
 	hitl: {
 		approvalMode: "when-sensitive",
@@ -298,7 +287,7 @@ export async function runEconomistTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, options);
+		return await executeLoop(goal, runtime, { ...options, config });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -312,6 +301,29 @@ function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; c
 			return `Tool result: ${t.content}`;
 		})
 		.join("\n\n");
+}
+
+// Retry budgets — Arcade pattern #40: Error Classification.
+// Retryable errors (network transients, server restarts) get up to MAX_TOOL_RETRIES attempts
+// with exponential backoff before the error is surfaced to the LLM as a recoverable hint.
+const MAX_TOOL_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 500;
+
+async function executeWithRetry(
+	runtime: LocalAgentRuntime,
+	request: Parameters<typeof runtime.execute>[0],
+): Promise<ReturnType<LocalAgentRuntime["execute"]>> {
+	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
+	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
+		if (attempt > 0) {
+			// Exponential backoff: 500ms, 1000ms, 2000ms
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+		}
+		const result = await runtime.execute(request);
+		if (result.status !== "failed" || !result.retryable) return result;
+		last = result;
+	}
+	return last!;
 }
 
 function parseJson(
@@ -332,12 +344,20 @@ async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
 	options: {
+		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — before building the system prompt, read from
 	// memory.namespace = "economist" to surface relevant prior task context.
+
+	const config = options.config ?? economistConfig;
+
+	// Resolve the model that drives the reasoning loop from the operator's routing table.
+	// The loop itself is always standard-analysis class — tool-level model requirements are
+	// for the tool handlers (e.g. deterministic tools skip the LLM entirely).
+	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
 	const toolDefs = economistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -361,6 +381,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		const response = await callLLM({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			model: reasoningModel,
 			apiKey: options.apiKey,
 		});
 
@@ -373,7 +394,10 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 		// TODO (#396): Async Job — detect long-running economic analyses and poll for completion.
 
-		const execResult = await runtime.execute({
+		// Permission Gate: route through runtime.execute() so HITL + scope checks fire.
+		// executeWithRetry transparently retries transient (retryable) failures before
+		// surfacing the error to the LLM as a recoverable hint.
+		const execResult = await executeWithRetry(runtime, {
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
@@ -412,8 +436,37 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const finalResponse = await callLLM({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		model: reasoningModel,
 		apiKey: options.apiKey,
 	});
 
 	return parseJson(finalResponse)?.answer ?? finalResponse;
+}
+
+// ── CLI entrypoint ────────────────────────────────────────────────────────────
+// Run an economics task from the command line:
+//   ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts "Calculate DCF for ..."
+import { fileURLToPath } from "node:url";
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+	const goal = process.argv.slice(2).join(" ").trim();
+	if (!goal) {
+		console.error("Usage: npx tsx src/agent/index.ts <goal>");
+		console.error(
+			'  Example: npx tsx src/agent/index.ts "Calculate DCF for -1000, 400, 500, 600 at 10% discount rate"',
+		);
+		process.exit(1);
+	}
+	const answer = await runEconomistTask(goal, {
+		onApprovalRequired: async (challenge) => {
+			console.log(`\n⏸  Approval required for: ${challenge.toolName}`);
+			console.log(`   Reason: ${challenge.reason ?? "tool requires human review"}`);
+			console.log("   Auto-approving in CLI mode...\n");
+			return { approved: true, reviewerId: "cli", reason: "CLI auto-approve" };
+		},
+	}).catch((err: unknown) => {
+		console.error(err instanceof Error ? err.message : String(err));
+		process.exit(1);
+	});
+	console.log(answer);
 }
