@@ -22,9 +22,9 @@ export interface LeaseAnalysis {
 
 /** Parse common lease term strings to months. Defaults to 36 months if unparseable. */
 export function parseLeaseTermMonths(primaryTerm: string): number {
-	const yearMatch = primaryTerm.match(/(\d+)\s{0,10}year/i);
+	const yearMatch = primaryTerm.match(/(\d{1,4})\s{0,10}year/i);
 	if (yearMatch) return parseInt(yearMatch[1], 10) * 12;
-	const monthMatch = primaryTerm.match(/(\d+)\s{0,10}month/i);
+	const monthMatch = primaryTerm.match(/(\d{1,4})\s{0,10}month/i);
 	if (monthMatch) return parseInt(monthMatch[1], 10);
 	return 36; // industry default primary term
 }
