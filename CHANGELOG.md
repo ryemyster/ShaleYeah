@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **legal / legal-analyst pair — Steps A + B** (#370) — Tier 1 server modularization and Tier 2 agent for oil & gas legal analysis.
+  - `servers/legal/src/tools/` — 3 domain modules: `regulatory.ts` (jurisdiction risk + permit planning), `contract.ts` (JOA/lease/farmout risk classification), `compliance.ts` (environmental/safety/tax requirements); `tests/tools.test.ts` (32 tests)
+  - `agents/legal-analyst/src/agent/` — manifest (3 tools, port 3006), runtime config, `runLegalAnalystTask()` Layer 2 loop, legal MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (41)
+
 - **title / title-analyst pair — Steps A + B** (#372) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas title analysis.
   - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
   - `agents/title-analyst/src/agent/` — manifest (4 tools, port 3010), runtime config, `runTitleAnalystTask()` Layer 2 loop, title MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (31)

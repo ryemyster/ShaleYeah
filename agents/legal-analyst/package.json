@@ -1,19 +1,25 @@
 {
   "name": "@shaleyeah/legal-analyst",
   "version": "0.1.0",
-  "description": "Legal Analyst — Tier 2 intelligence layer for legal review",
+  "description": "Legal Analyst — Tier 2 intelligence layer for legal review and regulatory analysis",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/agent/index.js",
   "scripts": {
     "build": "tsc",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "npx tsx tests/mcp-client.test.ts && npx tsx tests/agent.test.ts",
+    "lint": "biome check src/ tests/",
+    "start": "node dist/agent/index.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@shaleyeah/sdk": "workspace:*"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^25.6.0",
+    "tsx": "^4.19.4",
     "typescript": "^6.0.2"
   }
 }
