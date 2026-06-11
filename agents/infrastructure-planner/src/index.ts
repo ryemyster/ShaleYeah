@@ -15,6 +15,4 @@
  */
 
 export const AGENT_ID = "infrastructure-planner";
-
-// Uncomment and switch to this export once src/agent/index.ts is implemented:
-// export * from "./agent/index.js";
+export * from "./agent/index.js";

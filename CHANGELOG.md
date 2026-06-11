@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **drilling / drilling-engineer pair — Steps A + B** (#374) — Full Tier 1 server modularization and Tier 2 agent implementation for well drilling engineering.
-  - `servers/drilling/src/tools/` — 3 focused modules (program, costs, risks) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (30 tests)
-  - `agents/drilling-engineer/src/agent/` — manifest (3 tools, port 3003), runtime config, `runDrillingEngineerTask()` Layer 2 loop, drilling MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (34)
+- **infrastructure / infrastructure-planner pair — Steps A + B** (#375) — Full Tier 1 server modularization and Tier 2 agent implementation for O&G infrastructure planning.
+  - `servers/infrastructure/src/tools/` — 4 focused modules (pipeline, facilities, cost-estimation, compliance) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (28 tests)
+  - `agents/infrastructure-planner/src/agent/` — manifest (4 tools, port 3012), runtime config, `runInfrastructurePlannerTask()` Layer 2 loop, infrastructure MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (31)
 
 - **title / title-analyst pair — Steps A + B** (#372) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas title analysis.
   - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
