@@ -1,15 +1,5 @@
-import type {
-	AgentManifest,
-	AgentRuntimeConfig,
-	HumanApproval,
-	HumanApprovalChallenge,
-} from "@shaleyeah/sdk";
-import {
-	callLLM,
-	LocalAgentEndpoint,
-	LocalAgentRuntime,
-	type StandaloneToolHandler,
-} from "@shaleyeah/sdk";
+import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 import { callInfrastructureTool } from "./infrastructure-client.js";
 
 export { callInfrastructureTool };
@@ -33,17 +23,11 @@ export const infrastructurePlannerManifest: AgentManifest = {
 			"Midstream takeaway capacity planning",
 		],
 	},
-	capabilities: [
-		"pipeline-planning",
-		"facility-sizing",
-		"cost-estimation",
-		"compliance-assessment",
-	],
+	capabilities: ["pipeline-planning", "facility-sizing", "cost-estimation", "compliance-assessment"],
 	tools: [
 		{
 			name: "infrastructure-planner.plan_pipeline",
-			description:
-				"Plan gathering and transmission pipeline infrastructure — routing, capacity, and takeaway risk",
+			description: "Plan gathering and transmission pipeline infrastructure — routing, capacity, and takeaway risk",
 			type: "query",
 			capabilities: ["pipeline-planning"],
 			inputSchema: {
@@ -74,8 +58,7 @@ export const infrastructurePlannerManifest: AgentManifest = {
 		},
 		{
 			name: "infrastructure-planner.size_facilities",
-			description:
-				"Size surface facilities — batteries, separators, compressors, and salt water disposal wells",
+			description: "Size surface facilities — batteries, separators, compressors, and salt water disposal wells",
 			type: "query",
 			capabilities: ["facility-sizing"],
 			inputSchema: {
@@ -100,8 +83,7 @@ export const infrastructurePlannerManifest: AgentManifest = {
 		},
 		{
 			name: "infrastructure-planner.estimate_costs",
-			description:
-				"Estimate infrastructure CAPEX — pipelines, facilities, compression, and SWD wells",
+			description: "Estimate infrastructure CAPEX — pipelines, facilities, compression, and SWD wells",
 			type: "query",
 			capabilities: ["cost-estimation"],
 			inputSchema: {
@@ -173,12 +155,7 @@ export const infrastructurePlannerManifest: AgentManifest = {
 		mcp: "2025-03",
 	},
 	health: {
-		readinessChecks: [
-			"manifest",
-			"runtime-config",
-			"tool-handlers",
-			"model-routing",
-		],
+		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
 	},
 	memory: {
 		namespace: "infrastructure-planner",
@@ -256,29 +233,13 @@ function infrastructureUrl(config: AgentRuntimeConfig): string {
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"infrastructure-planner.plan_pipeline": ({ args, config }) =>
-		callInfrastructureTool(
-			infrastructureUrl(config),
-			"plan_pipeline",
-			args as Record<string, unknown>,
-		),
+		callInfrastructureTool(infrastructureUrl(config), "plan_pipeline", args as Record<string, unknown>),
 	"infrastructure-planner.size_facilities": ({ args, config }) =>
-		callInfrastructureTool(
-			infrastructureUrl(config),
-			"size_facilities",
-			args as Record<string, unknown>,
-		),
+		callInfrastructureTool(infrastructureUrl(config), "size_facilities", args as Record<string, unknown>),
 	"infrastructure-planner.estimate_costs": ({ args, config }) =>
-		callInfrastructureTool(
-			infrastructureUrl(config),
-			"estimate_costs",
-			args as Record<string, unknown>,
-		),
+		callInfrastructureTool(infrastructureUrl(config), "estimate_costs", args as Record<string, unknown>),
 	"infrastructure-planner.assess_compliance": ({ args, config }) =>
-		callInfrastructureTool(
-			infrastructureUrl(config),
-			"assess_compliance",
-			args as Record<string, unknown>,
-		),
+		callInfrastructureTool(infrastructureUrl(config), "assess_compliance", args as Record<string, unknown>),
 };
 
 // ── Runtime + Endpoint factories ──────────────────────────────────────────────
@@ -316,9 +277,7 @@ export async function runInfrastructurePlannerTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? infrastructurePlannerConfig;
@@ -338,9 +297,7 @@ export async function runInfrastructurePlannerTask(
 	}
 }
 
-function buildTranscript(
-	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
-): string {
+function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -372,14 +329,10 @@ async function executeLoop(
 	runtime: LocalAgentRuntime,
 	options: {
 		apiKey?: string;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
-	const toolDefs = infrastructurePlannerManifest.tools
-		.map((t) => `  ${t.name}: ${t.description}`)
-		.join("\n");
+	const toolDefs = infrastructurePlannerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
 	const system = `You are ${infrastructurePlannerManifest.persona.name}, ${infrastructurePlannerManifest.persona.role}.
 
@@ -436,19 +389,14 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err =
-					approved.status === "failed"
-						? approved.error
-						: "approval re-execution failed";
+				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
 				history.push({
 					role: "tool",
 					content: `Error after approval for ${parsed.tool}: ${err}`,
 				});
 			}
 		} else {
-			const hint = execResult.retryable
-				? " (retryable — server may be temporarily unavailable)"
-				: " (permanent)";
+			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
 			history.push({
 				role: "tool",
 				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,

@@ -6,11 +6,7 @@
  * acceptance criteria.
  */
 
-import {
-	AgentManifestSchema,
-	AgentRuntimeConfigSchema,
-	LocalAgentRuntime,
-} from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createInfrastructurePlannerEndpoint,
 	createInfrastructurePlannerRuntime,
@@ -33,9 +29,7 @@ function assert(condition: boolean, message: string): void {
 
 async function infrastructureServerReachable(): Promise<boolean> {
 	try {
-		const url =
-			infrastructurePlannerConfig.mcpServers?.infrastructure?.url ??
-			"http://localhost:3012";
+		const url = infrastructurePlannerConfig.mcpServers?.infrastructure?.url ?? "http://localhost:3012";
 		const ctrl = new AbortController();
 		const timer = setTimeout(() => ctrl.abort(), 500);
 		await fetch(url, { method: "HEAD", signal: ctrl.signal });
@@ -54,43 +48,25 @@ console.log("📋 Testing manifest and config validation...");
 	assert(manifest.success, "Infrastructure planner manifest validates");
 	if (!manifest.success) console.error("  ", manifest.error.format());
 
-	const config = AgentRuntimeConfigSchema.safeParse(
-		infrastructurePlannerConfig,
-	);
+	const config = AgentRuntimeConfigSchema.safeParse(infrastructurePlannerConfig);
 	assert(config.success, "Infrastructure planner runtime config validates");
 
+	assert(infrastructurePlannerManifest.tools.length === 4, "Infrastructure planner exposes 4 tools");
 	assert(
-		infrastructurePlannerManifest.tools.length === 4,
-		"Infrastructure planner exposes 4 tools",
-	);
-	assert(
-		infrastructurePlannerManifest.tools.every((t) =>
-			t.name.startsWith("infrastructure-planner."),
-		),
+		infrastructurePlannerManifest.tools.every((t) => t.name.startsWith("infrastructure-planner.")),
 		"All tools follow infrastructure-planner. naming convention",
 	);
 	assert(
-		infrastructurePlannerManifest.tools.every(
-			(t) => !t.modelRequirement.includes("claude"),
-		),
+		infrastructurePlannerManifest.tools.every((t) => !t.modelRequirement.includes("claude")),
 		"Model requirements are capability labels, not provider names",
 	);
-	const allToolScopes = new Set(
-		infrastructurePlannerManifest.tools.flatMap((t) => t.requiredScopes),
-	);
+	const allToolScopes = new Set(infrastructurePlannerManifest.tools.flatMap((t) => t.requiredScopes));
 	assert(
-		[...allToolScopes].every((s) =>
-			infrastructurePlannerManifest.requiredScopes.includes(s),
-		),
+		[...allToolScopes].every((s) => infrastructurePlannerManifest.requiredScopes.includes(s)),
 		"Manifest requiredScopes is a superset of all tool requiredScopes",
 	);
-	const llmReq = infrastructurePlannerManifest.providerRequirements.find(
-		(p) => p.type === "llm",
-	);
-	assert(
-		llmReq?.required === true,
-		"LLM provider requirement is marked required",
-	);
+	const llmReq = infrastructurePlannerManifest.providerRequirements.find((p) => p.type === "llm");
+	assert(llmReq?.required === true, "LLM provider requirement is marked required");
 }
 
 console.log("\n🔎 Testing progressive discovery...");
@@ -103,29 +79,17 @@ console.log("\n🔎 Testing progressive discovery...");
 	assert(!("tools" in summary), "Summary discovery does not include tool list");
 
 	const tools = runtime.discover("tools");
-	assert(
-		Array.isArray(tools) && tools.length === 4,
-		"Tool discovery returns 4 tools",
-	);
+	assert(Array.isArray(tools) && tools.length === 4, "Tool discovery returns 4 tools");
 	assert(!("inputSchema" in tools[0]), "Tool list omits input schemas");
 
-	const schema = runtime.discover(
-		"schema",
-		"infrastructure-planner.plan_pipeline",
-	);
-	assert(
-		schema?.inputSchema !== undefined,
-		"Schema discovery returns plan_pipeline input schema",
-	);
+	const schema = runtime.discover("schema", "infrastructure-planner.plan_pipeline");
+	assert(schema?.inputSchema !== undefined, "Schema discovery returns plan_pipeline input schema");
 	assert(
 		(schema?.inputSchema as Record<string, unknown>)?.required !== undefined,
 		"plan_pipeline schema declares required fields",
 	);
 
-	const missing = runtime.discover(
-		"schema",
-		"infrastructure-planner.nonexistent",
-	);
+	const missing = runtime.discover("schema", "infrastructure-planner.nonexistent");
 	assert(missing === null, "Schema discovery returns null for unknown tool");
 
 	await runtime.shutdown();
@@ -136,13 +100,8 @@ console.log("\n📡 Testing model capability routing...");
 	const runtime = createInfrastructurePlannerRuntime();
 	await runtime.initialize();
 
-	const modelRequirements = new Set(
-		infrastructurePlannerManifest.tools.map((t) => t.modelRequirement),
-	);
-	assert(
-		modelRequirements.has("standard-analysis"),
-		"standard-analysis requirement present in tool suite",
-	);
+	const modelRequirements = new Set(infrastructurePlannerManifest.tools.map((t) => t.modelRequirement));
+	assert(modelRequirements.has("standard-analysis"), "standard-analysis requirement present in tool suite");
 
 	for (const req of modelRequirements) {
 		const binding = infrastructurePlannerConfig.modelRouting[req];
@@ -168,16 +127,11 @@ console.log("\n🙋 Testing HITL policy...");
 				location: "Reeves County, Texas",
 			},
 		});
-		assert(
-			result.status === "completed",
-			"plan_pipeline completes without approval challenge",
-		);
+		assert(result.status === "completed", "plan_pipeline completes without approval challenge");
 
 		await runtime.shutdown();
 	} else {
-		console.log(
-			"  ⚠️  [skipped] execute() test requires live infrastructure server",
-		);
+		console.log("  ⚠️  [skipped] execute() test requires live infrastructure server");
 	}
 
 	const strictRuntime = createInfrastructurePlannerRuntime({
@@ -193,19 +147,10 @@ console.log("\n🙋 Testing HITL policy...");
 			location: "Reeves County, Texas",
 		},
 	});
-	assert(
-		blocked.status === "approval_required",
-		"approvalMode: 'always' blocks all tools",
-	);
+	assert(blocked.status === "approval_required", "approvalMode: 'always' blocks all tools");
 	if (blocked.status === "approval_required") {
-		assert(
-			blocked.challenge.type === "human_approval_required",
-			"Challenge is structured",
-		);
-		assert(
-			blocked.challenge.agentId === "infrastructure-planner",
-			"Challenge identifies infrastructure-planner agent",
-		);
+		assert(blocked.challenge.type === "human_approval_required", "Challenge is structured");
+		assert(blocked.challenge.agentId === "infrastructure-planner", "Challenge identifies infrastructure-planner agent");
 	}
 
 	await strictRuntime.shutdown();
@@ -229,10 +174,7 @@ console.log("\n🧪 Testing evals policy...");
 			},
 		});
 
-		assert(
-			result.status === "completed",
-			"plan_pipeline completes for eval test",
-		);
+		assert(result.status === "completed", "plan_pipeline completes for eval test");
 		if (result.status === "completed") {
 			assert(
 				result.evals.some((e) => e.check === "schema"),
@@ -256,25 +198,14 @@ console.log("\n🏥 Testing health endpoint and standalone boot...");
 {
 	const endpoint = createInfrastructurePlannerEndpoint();
 	const health = await endpoint.health();
-	assert(
-		health.agentId === "infrastructure-planner",
-		"Health endpoint identifies infrastructure-planner",
-	);
-	assert(
-		health.status !== "not_ready",
-		"Infrastructure planner boots without external dependencies",
-	);
+	assert(health.agentId === "infrastructure-planner", "Health endpoint identifies infrastructure-planner");
+	assert(health.status !== "not_ready", "Infrastructure planner boots without external dependencies");
 
 	const manifest = await endpoint.manifest();
-	assert(
-		manifest.id === "infrastructure-planner",
-		"Endpoint exposes infrastructure-planner manifest",
-	);
+	assert(manifest.id === "infrastructure-planner", "Endpoint exposes infrastructure-planner manifest");
 	assert(manifest.tools.length === 4, "Endpoint manifest has 4 tools");
 
-	const toolSchema = await endpoint.discoveryToolSchema(
-		"infrastructure-planner.size_facilities",
-	);
+	const toolSchema = await endpoint.discoveryToolSchema("infrastructure-planner.size_facilities");
 	assert(toolSchema !== null, "Endpoint exposes tool schemas by name");
 }
 
@@ -294,10 +225,7 @@ console.log("\n🔒 Testing scope enforcement...");
 	});
 	assert(blocked.status === "failed", "Missing scope blocks tool execution");
 	if (blocked.status === "failed") {
-		assert(
-			blocked.error.includes("Missing required scopes"),
-			"Error message names missing scopes",
-		);
+		assert(blocked.error.includes("Missing required scopes"), "Error message names missing scopes");
 	}
 
 	const allowed = await runtime.execute({
@@ -310,8 +238,7 @@ console.log("\n🔒 Testing scope enforcement...");
 		grantedScopes: ["read:infrastructure"],
 	});
 	assert(
-		allowed.status !== "failed" ||
-			!allowed.error.includes("Missing required scopes"),
+		allowed.status !== "failed" || !allowed.error.includes("Missing required scopes"),
 		"Correct scopes are accepted",
 	);
 
@@ -321,9 +248,7 @@ console.log("\n🔒 Testing scope enforcement...");
 console.log("\n🧱 Testing blocking eval halt...");
 {
 	const undefinedHandler = async () => undefined;
-	const allHandlers = Object.fromEntries(
-		infrastructurePlannerManifest.tools.map((t) => [t.name, undefinedHandler]),
-	);
+	const allHandlers = Object.fromEntries(infrastructurePlannerManifest.tools.map((t) => [t.name, undefinedHandler]));
 	const testRuntime = new LocalAgentRuntime({
 		manifest: infrastructurePlannerManifest,
 		config: infrastructurePlannerConfig,
@@ -338,19 +263,10 @@ console.log("\n🧱 Testing blocking eval halt...");
 			location: "Reeves County, Texas",
 		},
 	});
-	assert(
-		result.status === "failed",
-		"Blocking eval failure returns status: failed",
-	);
+	assert(result.status === "failed", "Blocking eval failure returns status: failed");
 	if (result.status === "failed") {
-		assert(
-			result.error.includes("Blocking eval"),
-			"Error message references blocking eval",
-		);
-		assert(
-			result.retryable === false,
-			"Blocking eval failures are not retryable",
-		);
+		assert(result.error.includes("Blocking eval"), "Error message references blocking eval");
+		assert(result.retryable === false, "Blocking eval failures are not retryable");
 	}
 	await testRuntime.shutdown();
 }
@@ -364,12 +280,7 @@ console.log("\n🛑 Testing invalid manifest fails early...");
 				id: "",
 			} as typeof infrastructurePlannerManifest,
 			config: infrastructurePlannerConfig,
-			handlers: Object.fromEntries(
-				infrastructurePlannerManifest.tools.map((t) => [
-					t.name,
-					async () => ({}),
-				]),
-			),
+			handlers: Object.fromEntries(infrastructurePlannerManifest.tools.map((t) => [t.name, async () => ({})])),
 		});
 		assert(false, "Empty manifest id should fail validation");
 	} catch {
@@ -378,9 +289,7 @@ console.log("\n🛑 Testing invalid manifest fails early...");
 }
 
 console.log("\n══════════════════════════════════════════════");
-console.log(
-	`Infrastructure Planner Agent Contract Tests: ${passed} passed, ${failed} failed`,
-);
+console.log(`Infrastructure Planner Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
 
 if (failed > 0) {

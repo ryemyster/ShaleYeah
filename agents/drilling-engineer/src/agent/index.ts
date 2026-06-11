@@ -1,15 +1,5 @@
-import type {
-	AgentManifest,
-	AgentRuntimeConfig,
-	HumanApproval,
-	HumanApprovalChallenge,
-} from "@shaleyeah/sdk";
-import {
-	LocalAgentEndpoint,
-	LocalAgentRuntime,
-	type StandaloneToolHandler,
-	callLLM,
-} from "@shaleyeah/sdk";
+import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 import { callDrillingTool } from "./drilling-client.js";
 
 export { callDrillingTool };
@@ -43,8 +33,7 @@ export const drillingEngineerManifest: AgentManifest = {
 	tools: [
 		{
 			name: "drilling-engineer.design_drilling_program",
-			description:
-				"Design comprehensive drilling program with casing schedule and mud program.",
+			description: "Design comprehensive drilling program with casing schedule and mud program.",
 			type: "query",
 			capabilities: ["drilling-program-design"],
 			inputSchema: {
@@ -82,8 +71,7 @@ export const drillingEngineerManifest: AgentManifest = {
 		},
 		{
 			name: "drilling-engineer.estimate_well_costs",
-			description:
-				"Estimate drilling, completion, and facilities cost breakdown for a well.",
+			description: "Estimate drilling, completion, and facilities cost breakdown for a well.",
 			type: "query",
 			capabilities: ["well-cost-estimation"],
 			inputSchema: {
@@ -115,8 +103,7 @@ export const drillingEngineerManifest: AgentManifest = {
 		},
 		{
 			name: "drilling-engineer.assess_drilling_risks",
-			description:
-				"Assess geological, operational, and environmental drilling risks with mitigations.",
+			description: "Assess geological, operational, and environmental drilling risks with mitigations.",
 			type: "query",
 			capabilities: ["drilling-risk-assessment"],
 			inputSchema: {
@@ -164,12 +151,7 @@ export const drillingEngineerManifest: AgentManifest = {
 		mcp: "2025-03",
 	},
 	health: {
-		readinessChecks: [
-			"manifest",
-			"runtime-config",
-			"tool-handlers",
-			"model-routing",
-		],
+		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
 	},
 	memory: {
 		namespace: "drilling-engineer",
@@ -247,30 +229,16 @@ function drillingUrl(config: AgentRuntimeConfig): string {
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"drilling-engineer.design_drilling_program": ({ args, config }) =>
-		callDrillingTool(
-			drillingUrl(config),
-			"design_drilling_program",
-			args as Record<string, unknown>,
-		),
+		callDrillingTool(drillingUrl(config), "design_drilling_program", args as Record<string, unknown>),
 	"drilling-engineer.estimate_well_costs": ({ args, config }) =>
-		callDrillingTool(
-			drillingUrl(config),
-			"estimate_well_costs",
-			args as Record<string, unknown>,
-		),
+		callDrillingTool(drillingUrl(config), "estimate_well_costs", args as Record<string, unknown>),
 	"drilling-engineer.assess_drilling_risks": ({ args, config }) =>
-		callDrillingTool(
-			drillingUrl(config),
-			"assess_drilling_risks",
-			args as Record<string, unknown>,
-		),
+		callDrillingTool(drillingUrl(config), "assess_drilling_risks", args as Record<string, unknown>),
 };
 
 // ── Runtime + Endpoint factories ──────────────────────────────────────────────
 
-export function createDrillingEngineerRuntime(
-	config: AgentRuntimeConfig = drillingEngineerConfig,
-): LocalAgentRuntime {
+export function createDrillingEngineerRuntime(config: AgentRuntimeConfig = drillingEngineerConfig): LocalAgentRuntime {
 	return new LocalAgentRuntime({
 		manifest: drillingEngineerManifest,
 		config,
@@ -303,9 +271,7 @@ export async function runDrillingEngineerTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? drillingEngineerConfig;
@@ -325,9 +291,7 @@ export async function runDrillingEngineerTask(
 	}
 }
 
-function buildTranscript(
-	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
-): string {
+function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -359,16 +323,12 @@ async function executeLoop(
 	runtime: LocalAgentRuntime,
 	options: {
 		apiKey?: string;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
 
-	const toolDefs = drillingEngineerManifest.tools
-		.map((t) => `  ${t.name}: ${t.description}`)
-		.join("\n");
+	const toolDefs = drillingEngineerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
 	const system = `You are ${drillingEngineerManifest.persona.name}, ${drillingEngineerManifest.persona.role}.
 
@@ -428,19 +388,14 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err =
-					approved.status === "failed"
-						? approved.error
-						: "approval re-execution failed";
+				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
 				history.push({
 					role: "tool",
 					content: `Error after approval for ${parsed.tool}: ${err}`,
 				});
 			}
 		} else {
-			const hint = execResult.retryable
-				? " (retryable — server may be temporarily unavailable)"
-				: " (permanent)";
+			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
 			history.push({
 				role: "tool",
 				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,

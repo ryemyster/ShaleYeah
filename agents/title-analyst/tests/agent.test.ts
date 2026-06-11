@@ -5,11 +5,7 @@
  * and that the title-analyst manifest satisfies all Arcade acceptance criteria.
  */
 
-import {
-	AgentManifestSchema,
-	AgentRuntimeConfigSchema,
-	LocalAgentRuntime,
-} from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createTitleAnalystEndpoint,
 	createTitleAnalystRuntime,
@@ -32,8 +28,7 @@ function assert(condition: boolean, message: string): void {
 
 async function titleServerReachable(): Promise<boolean> {
 	try {
-		const url =
-			titleAnalystConfig.mcpServers?.title?.url ?? "http://localhost:3010";
+		const url = titleAnalystConfig.mcpServers?.title?.url ?? "http://localhost:3010";
 		const ctrl = new AbortController();
 		const timer = setTimeout(() => ctrl.abort(), 500);
 		await fetch(url, { method: "HEAD", signal: ctrl.signal });
@@ -55,38 +50,22 @@ console.log("📋 Testing manifest and config validation...");
 	const config = AgentRuntimeConfigSchema.safeParse(titleAnalystConfig);
 	assert(config.success, "Title analyst runtime config validates");
 
+	assert(titleAnalystManifest.tools.length === 4, "Title analyst exposes 4 title tools");
 	assert(
-		titleAnalystManifest.tools.length === 4,
-		"Title analyst exposes 4 title tools",
-	);
-	assert(
-		titleAnalystManifest.tools.every((t) =>
-			t.name.startsWith("title-analyst."),
-		),
+		titleAnalystManifest.tools.every((t) => t.name.startsWith("title-analyst.")),
 		"All tools follow title-analyst. naming convention",
 	);
 	assert(
-		titleAnalystManifest.tools.every(
-			(t) => !t.modelRequirement.includes("claude"),
-		),
+		titleAnalystManifest.tools.every((t) => !t.modelRequirement.includes("claude")),
 		"Model requirements are capability labels, not provider names",
 	);
-	const allToolScopes = new Set(
-		titleAnalystManifest.tools.flatMap((t) => t.requiredScopes),
-	);
+	const allToolScopes = new Set(titleAnalystManifest.tools.flatMap((t) => t.requiredScopes));
 	assert(
-		[...allToolScopes].every((s) =>
-			titleAnalystManifest.requiredScopes.includes(s),
-		),
+		[...allToolScopes].every((s) => titleAnalystManifest.requiredScopes.includes(s)),
 		"Manifest requiredScopes is a superset of all tool requiredScopes",
 	);
-	const llmReq = titleAnalystManifest.providerRequirements.find(
-		(p) => p.type === "llm",
-	);
-	assert(
-		llmReq?.required === true,
-		"LLM provider requirement is marked required",
-	);
+	const llmReq = titleAnalystManifest.providerRequirements.find((p) => p.type === "llm");
+	assert(llmReq?.required === true, "LLM provider requirement is marked required");
 }
 
 console.log("\n🔎 Testing progressive discovery...");
@@ -99,17 +78,11 @@ console.log("\n🔎 Testing progressive discovery...");
 	assert(!("tools" in summary), "Summary discovery does not include tool list");
 
 	const tools = runtime.discover("tools");
-	assert(
-		Array.isArray(tools) && tools.length === 4,
-		"Tool discovery returns 4 tools",
-	);
+	assert(Array.isArray(tools) && tools.length === 4, "Tool discovery returns 4 tools");
 	assert(!("inputSchema" in tools[0]), "Tool list omits input schemas");
 
 	const schema = runtime.discover("schema", "title-analyst.examine_ownership");
-	assert(
-		schema?.inputSchema !== undefined,
-		"Schema discovery returns examine_ownership input schema",
-	);
+	assert(schema?.inputSchema !== undefined, "Schema discovery returns examine_ownership input schema");
 	assert(
 		(schema?.inputSchema as Record<string, unknown>)?.required !== undefined,
 		"examine_ownership schema declares required fields",
@@ -121,20 +94,13 @@ console.log("\n🔎 Testing progressive discovery...");
 	await runtime.shutdown();
 }
 
-console.log(
-	"\n📡 Testing model capability routing across requirement classes...",
-);
+console.log("\n📡 Testing model capability routing across requirement classes...");
 {
 	const runtime = createTitleAnalystRuntime();
 	await runtime.initialize();
 
-	const modelRequirements = new Set(
-		titleAnalystManifest.tools.map((t) => t.modelRequirement),
-	);
-	assert(
-		modelRequirements.has("standard-analysis"),
-		"standard-analysis requirement present in tool suite",
-	);
+	const modelRequirements = new Set(titleAnalystManifest.tools.map((t) => t.modelRequirement));
+	assert(modelRequirements.has("standard-analysis"), "standard-analysis requirement present in tool suite");
 
 	for (const req of modelRequirements) {
 		const binding = titleAnalystConfig.modelRouting[req];
@@ -160,10 +126,7 @@ console.log("\n🙋 Testing HITL policy wires through to config...");
 				state: "TX",
 			},
 		});
-		assert(
-			result.status === "completed",
-			"Ownership tool completes without approval challenge",
-		);
+		assert(result.status === "completed", "Ownership tool completes without approval challenge");
 
 		await runtime.shutdown();
 	} else {
@@ -184,19 +147,10 @@ console.log("\n🙋 Testing HITL policy wires through to config...");
 			state: "TX",
 		},
 	});
-	assert(
-		blocked.status === "approval_required",
-		"approvalMode: 'always' blocks all tools",
-	);
+	assert(blocked.status === "approval_required", "approvalMode: 'always' blocks all tools");
 	if (blocked.status === "approval_required") {
-		assert(
-			blocked.challenge.type === "human_approval_required",
-			"Challenge is structured",
-		);
-		assert(
-			blocked.challenge.agentId === "title-analyst",
-			"Challenge identifies title-analyst agent",
-		);
+		assert(blocked.challenge.type === "human_approval_required", "Challenge is structured");
+		assert(blocked.challenge.agentId === "title-analyst", "Challenge identifies title-analyst agent");
 	}
 
 	await strictRuntime.shutdown();
@@ -220,10 +174,7 @@ console.log("\n🧪 Testing evals policy is configured correctly...");
 			},
 		});
 
-		assert(
-			result.status === "completed",
-			"examine_ownership completes for eval test",
-		);
+		assert(result.status === "completed", "examine_ownership completes for eval test");
 		if (result.status === "completed") {
 			assert(
 				result.evals.some((e) => e.check === "schema"),
@@ -247,25 +198,14 @@ console.log("\n🏥 Testing health endpoint and standalone boot...");
 {
 	const endpoint = createTitleAnalystEndpoint();
 	const health = await endpoint.health();
-	assert(
-		health.agentId === "title-analyst",
-		"Health endpoint identifies title-analyst",
-	);
-	assert(
-		health.status !== "not_ready",
-		"Title analyst boots without external dependencies",
-	);
+	assert(health.agentId === "title-analyst", "Health endpoint identifies title-analyst");
+	assert(health.status !== "not_ready", "Title analyst boots without external dependencies");
 
 	const manifest = await endpoint.manifest();
-	assert(
-		manifest.id === "title-analyst",
-		"Endpoint exposes title-analyst manifest",
-	);
+	assert(manifest.id === "title-analyst", "Endpoint exposes title-analyst manifest");
 	assert(manifest.tools.length === 4, "Endpoint manifest has 4 tools");
 
-	const toolSchema = await endpoint.discoveryToolSchema(
-		"title-analyst.analyze_lease",
-	);
+	const toolSchema = await endpoint.discoveryToolSchema("title-analyst.analyze_lease");
 	assert(toolSchema !== null, "Endpoint exposes tool schemas by name");
 }
 
@@ -285,10 +225,7 @@ console.log("\n🔒 Testing scope enforcement...");
 	});
 	assert(blocked.status === "failed", "Missing scope blocks tool execution");
 	if (blocked.status === "failed") {
-		assert(
-			blocked.error.includes("Missing required scopes"),
-			"Error message names missing scopes",
-		);
+		assert(blocked.error.includes("Missing required scopes"), "Error message names missing scopes");
 	}
 
 	const allowed = await runtime.execute({
@@ -301,8 +238,7 @@ console.log("\n🔒 Testing scope enforcement...");
 		grantedScopes: ["read:title"],
 	});
 	assert(
-		allowed.status !== "failed" ||
-			!allowed.error.includes("Missing required scopes"),
+		allowed.status !== "failed" || !allowed.error.includes("Missing required scopes"),
 		"Correct scopes are accepted",
 	);
 
@@ -312,9 +248,7 @@ console.log("\n🔒 Testing scope enforcement...");
 console.log("\n🧱 Testing blocking eval halt...");
 {
 	const undefinedHandler = async () => undefined;
-	const allHandlers = Object.fromEntries(
-		titleAnalystManifest.tools.map((t) => [t.name, undefinedHandler]),
-	);
+	const allHandlers = Object.fromEntries(titleAnalystManifest.tools.map((t) => [t.name, undefinedHandler]));
 	const testRuntime = new LocalAgentRuntime({
 		manifest: titleAnalystManifest,
 		config: titleAnalystConfig,
@@ -329,19 +263,10 @@ console.log("\n🧱 Testing blocking eval halt...");
 			state: "TX",
 		},
 	});
-	assert(
-		result.status === "failed",
-		"Blocking eval failure returns status: failed",
-	);
+	assert(result.status === "failed", "Blocking eval failure returns status: failed");
 	if (result.status === "failed") {
-		assert(
-			result.error.includes("Blocking eval"),
-			"Error message references blocking eval",
-		);
-		assert(
-			result.retryable === false,
-			"Blocking eval failures are not retryable",
-		);
+		assert(result.error.includes("Blocking eval"), "Error message references blocking eval");
+		assert(result.retryable === false, "Blocking eval failures are not retryable");
 	}
 	await testRuntime.shutdown();
 }
@@ -355,9 +280,7 @@ console.log("\n🛑 Testing invalid manifest fails early...");
 				id: "",
 			} as typeof titleAnalystManifest,
 			config: titleAnalystConfig,
-			handlers: Object.fromEntries(
-				titleAnalystManifest.tools.map((t) => [t.name, async () => ({})]),
-			),
+			handlers: Object.fromEntries(titleAnalystManifest.tools.map((t) => [t.name, async () => ({})])),
 		});
 		assert(false, "Empty manifest id should fail validation");
 	} catch {
@@ -366,9 +289,7 @@ console.log("\n🛑 Testing invalid manifest fails early...");
 }
 
 console.log("\n══════════════════════════════════════════════");
-console.log(
-	`Title Analyst Agent Contract Tests: ${passed} passed, ${failed} failed`,
-);
+console.log(`Title Analyst Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
 
 if (failed > 0) {

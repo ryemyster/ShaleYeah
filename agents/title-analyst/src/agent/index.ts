@@ -1,15 +1,5 @@
-import type {
-	AgentManifest,
-	AgentRuntimeConfig,
-	HumanApproval,
-	HumanApprovalChallenge,
-} from "@shaleyeah/sdk";
-import {
-	callLLM,
-	LocalAgentEndpoint,
-	LocalAgentRuntime,
-	type StandaloneToolHandler,
-} from "@shaleyeah/sdk";
+import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 import { callTitleTool } from "./title-client.js";
 
 export { callTitleTool };
@@ -31,19 +21,11 @@ export const titleAnalystManifest: AgentManifest = {
 			"Chain of title validation and curative requirements",
 		],
 	},
-	capabilities: [
-		"ownership-analysis",
-		"lease-analysis",
-		"burden-check",
-		"chain-of-title",
-		"model-routing",
-		"evals",
-	],
+	capabilities: ["ownership-analysis", "lease-analysis", "burden-check", "chain-of-title", "model-routing", "evals"],
 	tools: [
 		{
 			name: "title-analyst.examine_ownership",
-			description:
-				"Analyze working interest (WI) and net revenue interest (NRI) for an O&G property.",
+			description: "Analyze working interest (WI) and net revenue interest (NRI) for an O&G property.",
 			type: "query",
 			capabilities: ["ownership-analysis"],
 			inputSchema: {
@@ -72,8 +54,7 @@ export const titleAnalystManifest: AgentManifest = {
 		},
 		{
 			name: "title-analyst.analyze_lease",
-			description:
-				"Parse lease terms and assess expiry risk, depth severance, and acreage limitations.",
+			description: "Parse lease terms and assess expiry risk, depth severance, and acreage limitations.",
 			type: "query",
 			capabilities: ["lease-analysis"],
 			inputSchema: {
@@ -103,8 +84,7 @@ export const titleAnalystManifest: AgentManifest = {
 		},
 		{
 			name: "title-analyst.check_burdens",
-			description:
-				"Identify ORRI, production payments, liens, and other encumbrances on an O&G property.",
+			description: "Identify ORRI, production payments, liens, and other encumbrances on an O&G property.",
 			type: "query",
 			capabilities: ["burden-check"],
 			inputSchema: {
@@ -133,8 +113,7 @@ export const titleAnalystManifest: AgentManifest = {
 		},
 		{
 			name: "title-analyst.trace_chain_of_title",
-			description:
-				"Validate conveyance chain, identify gaps, and list curative requirements.",
+			description: "Validate conveyance chain, identify gaps, and list curative requirements.",
 			type: "query",
 			capabilities: ["chain-of-title"],
 			inputSchema: {
@@ -168,8 +147,7 @@ export const titleAnalystManifest: AgentManifest = {
 		{
 			type: "llm",
 			required: true,
-			description:
-				"Anthropic Claude — standard analysis for title synthesis across ownership, lease, and chain tools.",
+			description: "Anthropic Claude — standard analysis for title synthesis across ownership, lease, and chain tools.",
 		},
 	],
 	compatibility: {
@@ -178,12 +156,7 @@ export const titleAnalystManifest: AgentManifest = {
 		mcp: "2025-03",
 	},
 	health: {
-		readinessChecks: [
-			"manifest",
-			"runtime-config",
-			"tool-handlers",
-			"model-routing",
-		],
+		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
 	},
 	memory: {
 		namespace: "title-analyst",
@@ -255,37 +228,19 @@ function titleUrl(config: AgentRuntimeConfig): string {
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"title-analyst.examine_ownership": ({ args, config }) =>
-		callTitleTool(
-			titleUrl(config),
-			"examine_ownership",
-			args as Record<string, unknown>,
-		),
+		callTitleTool(titleUrl(config), "examine_ownership", args as Record<string, unknown>),
 
 	"title-analyst.analyze_lease": ({ args, config }) =>
-		callTitleTool(
-			titleUrl(config),
-			"analyze_lease",
-			args as Record<string, unknown>,
-		),
+		callTitleTool(titleUrl(config), "analyze_lease", args as Record<string, unknown>),
 
 	"title-analyst.check_burdens": ({ args, config }) =>
-		callTitleTool(
-			titleUrl(config),
-			"check_burdens",
-			args as Record<string, unknown>,
-		),
+		callTitleTool(titleUrl(config), "check_burdens", args as Record<string, unknown>),
 
 	"title-analyst.trace_chain_of_title": ({ args, config }) =>
-		callTitleTool(
-			titleUrl(config),
-			"trace_chain_of_title",
-			args as Record<string, unknown>,
-		),
+		callTitleTool(titleUrl(config), "trace_chain_of_title", args as Record<string, unknown>),
 };
 
-export function createTitleAnalystRuntime(
-	config: AgentRuntimeConfig = titleAnalystConfig,
-): LocalAgentRuntime {
+export function createTitleAnalystRuntime(config: AgentRuntimeConfig = titleAnalystConfig): LocalAgentRuntime {
 	return new LocalAgentRuntime({
 		manifest: titleAnalystManifest,
 		config,
@@ -293,9 +248,7 @@ export function createTitleAnalystRuntime(
 	});
 }
 
-export function createTitleAnalystEndpoint(
-	config: AgentRuntimeConfig = titleAnalystConfig,
-): LocalAgentEndpoint {
+export function createTitleAnalystEndpoint(config: AgentRuntimeConfig = titleAnalystConfig): LocalAgentEndpoint {
 	return new LocalAgentEndpoint(createTitleAnalystRuntime(config));
 }
 
@@ -317,9 +270,7 @@ export async function runTitleAnalystTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? titleAnalystConfig;
@@ -339,9 +290,7 @@ export async function runTitleAnalystTask(
 	}
 }
 
-function buildTranscript(
-	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
-): string {
+function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -373,16 +322,12 @@ async function executeLoop(
 	runtime: LocalAgentRuntime,
 	options: {
 		apiKey?: string;
-		onApprovalRequired?: (
-			challenge: HumanApprovalChallenge,
-		) => Promise<HumanApproval>;
+		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
 
-	const toolDefs = titleAnalystManifest.tools
-		.map((t) => `  ${t.name}: ${t.description}`)
-		.join("\n");
+	const toolDefs = titleAnalystManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
 	const system = `You are ${titleAnalystManifest.persona.name}, ${titleAnalystManifest.persona.role}.
 
@@ -443,19 +388,14 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err =
-					approved.status === "failed"
-						? approved.error
-						: "approval re-execution failed";
+				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
 				history.push({
 					role: "tool",
 					content: `Error after approval for ${parsed.tool}: ${err}`,
 				});
 			}
 		} else {
-			const hint = execResult.retryable
-				? " (retryable — server may be temporarily unavailable)"
-				: " (permanent)";
+			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
 			history.push({
 				role: "tool",
 				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,

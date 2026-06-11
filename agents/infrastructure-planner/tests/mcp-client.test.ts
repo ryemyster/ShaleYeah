@@ -26,18 +26,14 @@ function test(name: string, fn: () => void | Promise<void>): Promise<void> {
 			passed++;
 		})
 		.catch((err) => {
-			console.error(
-				`  ❌ ${name}: ${err instanceof Error ? err.message : err}`,
-			);
+			console.error(`  ❌ ${name}: ${err instanceof Error ? err.message : err}`);
 			failed++;
 		});
 }
 
 const LIVE_SERVER = await (async () => {
 	try {
-		const url =
-			infrastructurePlannerConfig.mcpServers?.infrastructure?.url ??
-			"http://localhost:3012";
+		const url = infrastructurePlannerConfig.mcpServers?.infrastructure?.url ?? "http://localhost:3012";
 		const ctrl = new AbortController();
 		const timer = setTimeout(() => ctrl.abort(), 500);
 		await fetch(url, { method: "HEAD", signal: ctrl.signal });
@@ -61,37 +57,27 @@ await test("infrastructure server URL defaults to localhost:3012", () => {
 });
 
 await test("infrastructure server transport is http", () => {
-	const transport =
-		infrastructurePlannerConfig.mcpServers?.infrastructure?.transport;
+	const transport = infrastructurePlannerConfig.mcpServers?.infrastructure?.transport;
 	assert.strictEqual(transport, "http");
 });
 
 await test("all 4 infrastructure-planner tools declare mcpServer: 'infrastructure'", () => {
-	const all = infrastructurePlannerManifest.tools.every(
-		(t) => t.mcpServer === "infrastructure",
-	);
+	const all = infrastructurePlannerManifest.tools.every((t) => t.mcpServer === "infrastructure");
 	assert.ok(all, "Every tool must point to the infrastructure server");
 });
 
 await test("standard-analysis model requirement uses real model", () => {
 	const binding = infrastructurePlannerConfig.modelRouting["standard-analysis"];
-	assert.ok(
-		binding?.model.includes("claude"),
-		"Must reference a real Claude model",
-	);
+	assert.ok(binding?.model.includes("claude"), "Must reference a real Claude model");
 });
 
 await test("callInfrastructureTool throws RetryableToolError for unreachable server", async () => {
 	try {
-		await callInfrastructureTool(
-			"http://localhost:19999/transport",
-			"plan_pipeline",
-			{
-				wellCount: 10,
-				expectedProduction: 5000,
-				location: "Reeves County, Texas",
-			},
-		);
+		await callInfrastructureTool("http://localhost:19999/transport", "plan_pipeline", {
+			wellCount: 10,
+			expectedProduction: 5000,
+			location: "Reeves County, Texas",
+		});
 		assert.fail("Should have thrown");
 	} catch (err) {
 		assert.ok(
@@ -101,9 +87,7 @@ await test("callInfrastructureTool throws RetryableToolError for unreachable ser
 	}
 });
 
-console.log(
-	"\n🔄 Layer 2 — runInfrastructurePlannerTask export and LLM wiring...",
-);
+console.log("\n🔄 Layer 2 — runInfrastructurePlannerTask export and LLM wiring...");
 await test("runInfrastructurePlannerTask is exported", () => {
 	assert.strictEqual(typeof runInfrastructurePlannerTask, "function");
 });
@@ -112,9 +96,7 @@ await test("runInfrastructurePlannerTask throws without API key", async () => {
 	const origKey = process.env.ANTHROPIC_API_KEY;
 	process.env.ANTHROPIC_API_KEY = "";
 	try {
-		await runInfrastructurePlannerTask(
-			"Plan pipeline for 10 wells in Reeves County, Texas",
-		);
+		await runInfrastructurePlannerTask("Plan pipeline for 10 wells in Reeves County, Texas");
 		assert.fail("Should have thrown");
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
@@ -133,12 +115,9 @@ await test("runInfrastructurePlannerTask throws without API key", async () => {
 
 await test("runInfrastructurePlannerTask with invalid key hits callLLM (auth error)", async () => {
 	try {
-		await runInfrastructurePlannerTask(
-			"Plan pipeline for 5 wells in Midland, Texas",
-			{
-				apiKey: "sk-ant-invalid-key-for-test",
-			},
-		);
+		await runInfrastructurePlannerTask("Plan pipeline for 5 wells in Midland, Texas", {
+			apiKey: "sk-ant-invalid-key-for-test",
+		});
 		assert.fail("Should have thrown with auth error");
 	} catch (err) {
 		const msg = err instanceof Error ? err.message : String(err);
@@ -154,17 +133,11 @@ await test("runInfrastructurePlannerTask with invalid key hits callLLM (auth err
 
 console.log("\n🔒 Error classification exports...");
 await test("RetryableToolError is importable from sdk", () => {
-	assert.ok(
-		RetryableToolError,
-		"RetryableToolError must be exported from @shaleyeah/sdk",
-	);
+	assert.ok(RetryableToolError, "RetryableToolError must be exported from @shaleyeah/sdk");
 });
 
 await test("PermanentToolError is importable from sdk", () => {
-	assert.ok(
-		PermanentToolError,
-		"PermanentToolError must be exported from @shaleyeah/sdk",
-	);
+	assert.ok(PermanentToolError, "PermanentToolError must be exported from @shaleyeah/sdk");
 });
 
 console.log("\n🙋 HITL approval_required contract (no live server needed)...");
@@ -188,9 +161,7 @@ await test("approvalMode: 'always' returns approval_required before calling hand
 
 console.log("\n🌐 Integration tests (live infrastructure server required)...");
 if (!LIVE_SERVER) {
-	console.log(
-		"  ⚠️  [skipped] infrastructure server not reachable at localhost:3012",
-	);
+	console.log("  ⚠️  [skipped] infrastructure server not reachable at localhost:3012");
 } else {
 	await test("plan_pipeline returns pipeline plan via live server", async () => {
 		const result = await callInfrastructureTool(
@@ -207,9 +178,7 @@ if (!LIVE_SERVER) {
 }
 
 console.log("\n══════════════════════════════════════════════");
-console.log(
-	`Infrastructure Planner MCP Client Tests: ${passed} passed, ${failed} failed`,
-);
+console.log(`Infrastructure Planner MCP Client Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
 
 if (failed > 0) process.exit(1);

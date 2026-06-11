@@ -26,12 +26,7 @@ export async function callDrillingTool(
 	// client continues in the background until its own connection handling cleans up.
 	const timeoutPromise = new Promise<never>((_, reject) =>
 		setTimeout(
-			() =>
-				reject(
-					new RetryableToolError(
-						`Tool call to ${toolName} timed out after ${timeoutMs}ms`,
-					),
-				),
+			() => reject(new RetryableToolError(`Tool call to ${toolName} timed out after ${timeoutMs}ms`)),
 			timeoutMs,
 		),
 	);
@@ -52,25 +47,16 @@ export async function callDrillingTool(
 		return await Promise.race([callPromise, timeoutPromise]);
 	} catch (err) {
 		// Preserve already-classified errors from the timeout promise.
-		if (err instanceof RetryableToolError || err instanceof PermanentToolError)
-			throw err;
+		if (err instanceof RetryableToolError || err instanceof PermanentToolError) throw err;
 
 		const msg = err instanceof Error ? err.message : String(err);
 
 		// Network-level failures are transient — the server may be starting or briefly overloaded.
-		if (
-			/ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|fetch failed/i.test(msg)
-		) {
-			throw new RetryableToolError(
-				`Network error calling ${toolName}: ${msg}`,
-				err instanceof Error ? err : undefined,
-			);
+		if (/ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|fetch failed/i.test(msg)) {
+			throw new RetryableToolError(`Network error calling ${toolName}: ${msg}`, err instanceof Error ? err : undefined);
 		}
 
 		// Everything else (bad tool name, invalid args, auth, file not found) is permanent.
-		throw new PermanentToolError(
-			`Tool call to ${toolName} failed: ${msg}`,
-			err instanceof Error ? err : undefined,
-		);
+		throw new PermanentToolError(`Tool call to ${toolName} failed: ${msg}`, err instanceof Error ? err : undefined);
 	}
 }
