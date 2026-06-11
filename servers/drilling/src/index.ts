@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 /**
- * Drilling MCP Server - DRY Refactored
- * Perforator Maximus - Master Drilling Strategist
+ * Drilling MCP Server — Perforator Maximus, Master Drilling Strategist.
+ * Thin facade — all domain logic lives in src/tools/.
  */
 
-import fs from "node:fs/promises";
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 
+import { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
+import { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
+import { deriveDrillingRiskProfile, synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
+
 // ---------------------------------------------------------------------------
-// Exported helpers (used by tests)
+// Backward-compat exports — existing tests import these from ../src/index.js
 // ---------------------------------------------------------------------------
 
 export interface DrillingInterpretation {
@@ -18,34 +21,14 @@ export interface DrillingInterpretation {
 	recommendation: string;
 }
 
-/**
- * Rule-based drilling interpretation — fallback when the API is unavailable.
- * Uses actual well parameters so output differs across inputs.
- */
 export function deriveDefaultDrillingInterpretation(
 	wellType: string,
 	targetDepth: number,
 	formation: string,
 ): DrillingInterpretation {
-	const isDeep = targetDepth > 12000;
-	const isHorizontal = wellType === "horizontal";
-	const riskLevel = isDeep && isHorizontal ? "High" : isDeep || isHorizontal ? "Medium" : "Low";
-
-	return {
-		programRisk: riskLevel,
-		keyConsiderations: [
-			`${wellType} well to ${targetDepth}ft in ${formation}`,
-			isDeep ? "Deep target — elevated pore pressure risk" : "Moderate depth — standard drilling hazards apply",
-			isHorizontal ? "Lateral section requires careful torque and drag management" : "Vertical profile — standard BHA",
-		],
-		recommendation: `Proceed with ${riskLevel.toLowerCase()}-risk mitigation plan. ${isHorizontal ? "Optimize lateral length vs. cost." : "Standard casing program appropriate."}`,
-	};
+	return deriveDrillingProgram(wellType as "vertical" | "horizontal" | "directional", targetDepth, formation);
 }
 
-/**
- * Ask Claude (Perforator Maximus) to interpret the drilling program and flag risks.
- * Falls back to deriveDefaultDrillingInterpretation() if the API is unavailable.
- */
 export async function synthesizeDrillingAnalysisWithLLM(params: {
 	wellType: string;
 	targetDepth: number;
@@ -53,42 +36,30 @@ export async function synthesizeDrillingAnalysisWithLLM(params: {
 	estimatedDays: number;
 	totalCost: number;
 }): Promise<DrillingInterpretation> {
-	const { wellType, targetDepth, formation, estimatedDays, totalCost } = params;
-
-	const prompt = `You are Perforator Maximus, a master drilling strategist.
-
-Interpret this drilling program and identify the key risks and recommendations. Return a JSON object.
-
-WELL PROGRAM:
-Well type: ${wellType}
-Target depth: ${targetDepth} ft
-Formation: ${formation}
-Estimated drill time: ${estimatedDays} days
-Total estimated cost: $${(totalCost / 1_000_000).toFixed(2)}M
-
-Return ONLY valid JSON in this exact shape:
-{
-  "programRisk": "High" | "Medium" | "Low",
-  "keyConsiderations": ["<risk or consideration 1>", "<risk or consideration 2>", "<risk or consideration 3>"],
-  "recommendation": "<one sentence drilling program recommendation>"
-}`;
-
-	try {
-		const raw = await callLLM({ prompt, maxTokens: 350 });
-		const match = raw.match(/\{[\s\S]*\}/);
-		if (!match) throw new Error("No JSON in response");
-		const parsed = JSON.parse(match[0]) as Partial<DrillingInterpretation>;
-		const validRisks = ["High", "Medium", "Low"];
-		if (!validRisks.includes(parsed.programRisk ?? "")) throw new Error("Invalid programRisk");
-		return {
-			programRisk: parsed.programRisk as string,
-			keyConsiderations: parsed.keyConsiderations ?? [],
-			recommendation: parsed.recommendation ?? "",
-		};
-	} catch (_err) {
-		return deriveDefaultDrillingInterpretation(wellType, targetDepth, formation);
-	}
+	return synthesizeDrillingProgramWithLLM({
+		wellType: params.wellType as "vertical" | "horizontal" | "directional",
+		targetDepth: params.targetDepth,
+		formation: params.formation,
+	});
 }
+
+// Re-export tool types for consumers
+export type { DrillingProgram } from "./tools/program.js";
+export type { WellCostBreakdown } from "./tools/costs.js";
+export type { DrillingRiskProfile } from "./tools/risks.js";
+export { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
+export { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
+export { deriveDrillingRiskProfile, synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
+
+// ---------------------------------------------------------------------------
+// Server template
+// ---------------------------------------------------------------------------
+
+const wellParamsSchema = z.object({
+	targetDepth: z.number(),
+	wellType: z.enum(["vertical", "horizontal", "directional"]),
+	formation: z.string(),
+});
 
 const drillingTemplate: ServerTemplate = {
 	name: "drilling",
@@ -108,85 +79,61 @@ const drillingTemplate: ServerTemplate = {
 	tools: [
 		ServerFactory.createAnalysisTool(
 			"design_drilling_program",
-			"Design comprehensive drilling program",
+			"Design comprehensive drilling program with casing schedule and mud program",
 			z.object({
-				wellParameters: z.object({
-					targetDepth: z.number(),
-					wellType: z.enum(["vertical", "horizontal", "directional"]),
-					formation: z.string(),
-				}),
-				location: z.object({
-					latitude: z.number(),
-					longitude: z.number(),
-					surface: z.string(),
-				}),
+				wellParameters: wellParamsSchema,
 				constraints: z
 					.object({
 						budget: z.number().optional(),
 						timeline: z.string().optional(),
-						environmental: z.array(z.string()).optional(),
 					})
 					.optional(),
-				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const wellCost =
-					args.wellParameters.targetDepth *
-					(args.wellParameters.wellType === "horizontal"
-						? 180
-						: args.wellParameters.wellType === "directional"
-							? 140
-							: 120);
-
-				const estimatedDays = Math.ceil(
-					args.wellParameters.targetDepth / (args.wellParameters.wellType === "horizontal" ? 400 : 600),
-				);
-				const totalCost = Math.round(wellCost * 1.8);
-
-				// Ask Claude to interpret the program and flag formation-specific risks.
-				// Falls back to rule-based interpretation if API is unavailable.
-				const interpretation = await synthesizeDrillingAnalysisWithLLM({
+				const result = await synthesizeDrillingProgramWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
 					formation: args.wellParameters.formation,
-					estimatedDays,
-					totalCost,
+					budget: args.constraints?.budget,
+					timeline: args.constraints?.timeline,
 				});
+				return { ...result, confidence: ServerUtils.calculateConfidence(0.82, 0.88) };
+			},
+		),
 
-				const analysis = {
-					well: args.wellParameters,
-					location: args.location,
-					drilling: {
-						estimatedDays,
-						mudProgram: `${args.wellParameters.formation} optimized system`,
-						casingProgram: [
-							'20" conductor to 100ft',
-							'13 3/8" surface to 2,000ft',
-							args.wellParameters.wellType === "horizontal" ? '9 5/8" intermediate to TD' : '7" production to TD',
-						],
-						completion:
-							args.wellParameters.wellType === "horizontal" ? "Multi-stage fracturing" : "Conventional completion",
-					},
-					costs: {
-						drilling: Math.round(wellCost),
-						completion: Math.round(wellCost * 0.6),
-						facilities: Math.round(wellCost * 0.2),
-						total: totalCost,
-					},
-					risks: {
-						geological: args.wellParameters.formation.includes("shale") ? "Medium" : "Low",
-						operational: interpretation.programRisk,
-						environmental: args.constraints?.environmental?.length > 0 ? "Medium" : "Low",
-					},
-					interpretation,
-					confidence: ServerUtils.calculateConfidence(0.82, 0.88),
-				};
+		ServerFactory.createAnalysisTool(
+			"estimate_well_costs",
+			"Estimate drilling, completion, and facilities cost breakdown for a well",
+			z.object({
+				wellParameters: wellParamsSchema,
+				location: z.string().optional(),
+			}),
+			async (args) => {
+				const result = await synthesizeWellCostsWithLLM({
+					wellType: args.wellParameters.wellType,
+					targetDepth: args.wellParameters.targetDepth,
+					formation: args.wellParameters.formation,
+					location: args.location ?? "unspecified",
+				});
+				return { ...result, confidence: ServerUtils.calculateConfidence(0.80, 0.85) };
+			},
+		),
 
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
-				}
-
-				return analysis;
+		ServerFactory.createAnalysisTool(
+			"assess_drilling_risks",
+			"Assess geological, operational, and environmental drilling risks with mitigations",
+			z.object({
+				wellParameters: wellParamsSchema,
+				environmentalConstraints: z.array(z.string()).optional(),
+			}),
+			async (args) => {
+				const result = await synthesizeDrillingRisksWithLLM({
+					wellType: args.wellParameters.wellType,
+					targetDepth: args.wellParameters.targetDepth,
+					formation: args.wellParameters.formation,
+					environmentalConstraints: args.environmentalConstraints ?? [],
+				});
+				return { ...result, confidence: ServerUtils.calculateConfidence(0.80, 0.88) };
 			},
 		),
 	],
