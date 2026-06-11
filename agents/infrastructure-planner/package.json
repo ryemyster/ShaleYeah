@@ -1,19 +1,25 @@
 {
   "name": "@shaleyeah/infrastructure-planner",
   "version": "0.1.0",
-  "description": "Infrastructure Planner — Tier 2 intelligence layer for infrastructure assessment",
+  "description": "Infrastructure Planner — Tier 2 intelligence layer for infrastructure planning",
   "private": true,
   "type": "module",
-  "main": "dist/index.js",
+  "main": "dist/agent/index.js",
   "scripts": {
     "build": "tsc",
+    "start": "tsx src/agent/index.ts",
+    "test": "bash ../../scripts/run-tests.sh",
+    "lint": "biome check .",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@shaleyeah/sdk": "workspace:*"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.11",
     "@types/node": "^25.6.0",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2"
   }
 }
