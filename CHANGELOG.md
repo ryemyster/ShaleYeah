@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **title / title-analyst pair — Steps A + B** (#372) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas title analysis.
+  - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
+  - `agents/title-analyst/src/agent/` — manifest (4 tools, port 3010), runtime config, `runTitleAnalystTask()` Layer 2 loop, title MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (31)
+
 ### Fixed
 
 - **CI: invalid pnpm/action-setup SHA** — replaced non-existent commit hash `fe02b74` with correct v4.1.0 SHA `a7487c7e` in `ci.yml`, `codeql.yml`, and `release.yml`; both "PR checks" and "CodeQL Security Analysis" jobs were failing at "Set up job" before running any code.

@@ -16,5 +16,4 @@
 
 export const AGENT_ID = "title-analyst";
 
-// Uncomment and switch to this export once src/agent/index.ts is implemented:
-// export * from "./agent/index.js";
+export * from "./agent/index.js";
