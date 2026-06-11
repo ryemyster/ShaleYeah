@@ -28,8 +28,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -50,8 +50,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.19.3
         version: 4.22.4
@@ -72,8 +72,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.19.2
         version: 4.22.4
@@ -94,8 +94,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -116,8 +116,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -138,8 +138,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -154,8 +154,8 @@ importers:
         version: link:../../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -173,8 +173,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.19.4
         version: 4.22.4
@@ -189,8 +189,8 @@ importers:
         version: link:../../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -208,8 +208,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -224,8 +224,8 @@ importers:
         version: link:../../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -243,8 +243,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -259,8 +259,8 @@ importers:
         version: link:../../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -272,8 +272,8 @@ importers:
         version: link:../../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -291,8 +291,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -307,8 +307,8 @@ importers:
         version: link:../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -344,8 +344,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
@@ -369,8 +369,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -391,8 +391,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -413,8 +413,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -435,8 +435,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -460,8 +460,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -494,8 +494,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
@@ -519,8 +519,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -541,8 +541,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -563,8 +563,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -585,8 +585,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -607,8 +607,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -629,8 +629,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -651,8 +651,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -673,8 +673,8 @@ importers:
         specifier: ^2.4.11
         version: 2.4.16
       '@types/node':
-        specifier: ^25.6.0
-        version: 25.9.1
+        specifier: ^25.9.3
+        version: 25.9.3
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -1322,8 +1322,8 @@ packages:
   '@types/node@14.18.63':
     resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
 
-  '@types/node@25.9.1':
-    resolution: {integrity: sha512-xfrlY7UD5rMJk3ZVJP8BNzS28J36YJg+xp+LPXV1TdWxr8uMH5A860QNxYDGQe/ylDSgjxE52Q9VnO7p75tJxg==}
+  '@types/node@25.9.3':
+    resolution: {integrity: sha512-603BddQMv3pUcr4U2dhujk83N2tTDVr/34wII2B6bJy6g+8WD6yUb11jszNs0gdi4PesVWl7ABt8nYMVpnLUcg==}
 
   '@types/xml2js@0.4.14':
     resolution: {integrity: sha512-4YnrRemBShWRO2QjvUin8ESA41rH+9nQGLUGZV/1IDhi3SL9OhdpNC/MrulTWuptXKwhx/aDxE7toV0f/ypIXQ==}
@@ -3434,13 +3434,13 @@ snapshots:
 
   '@types/node@14.18.63': {}
 
-  '@types/node@25.9.1':
+  '@types/node@25.9.3':
     dependencies:
       undici-types: 7.24.6
 
   '@types/xml2js@0.4.14':
     dependencies:
-      '@types/node': 25.9.1
+      '@types/node': 25.9.3
 
   accepts@2.0.0:
     dependencies:
