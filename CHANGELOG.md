@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **development / development-planner pair — Steps A + B** (#373) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas project development planning.
-  - `servers/development/src/tools/` — 3 focused modules (planning, phases, monitoring) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (28 tests)
-  - Added `estimate_project_timeline` as a 3rd MCP tool backed by the new `phases.ts` module
-  - `agents/development-planner/src/agent/` — manifest (3 tools, port 3011), runtime config, `runDevelopmentPlannerTask()` Layer 2 loop, development MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (42)
+- **qa-server Tier 1 split** (#411) — Modularized `servers/qa-server/src/index.ts` into 2 focused domain modules.
+  - `validation.ts` — `QAValidationResult`, `deriveDefaultQAResult`, `synthesizeQAValidationWithLLM`
+  - `reporting.ts` — `QAReport`, `deriveQualityReport` (extracted deterministic fallback from handler)
+  - 23 new domain logic tests in `tests/tools.test.ts`; all 2 existing server tests still pass
 
 - **title / title-analyst pair — Steps A + B** (#372) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas title analysis.
   - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
