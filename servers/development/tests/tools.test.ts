@@ -5,9 +5,9 @@
  */
 
 import assert from "node:assert";
-import { deriveDefaultDevelopmentOutlook } from "../src/tools/planning.js";
-import { deriveDevelopmentPhases } from "../src/tools/phases.js";
 import { deriveProgressReport } from "../src/tools/monitoring.js";
+import { deriveDevelopmentPhases } from "../src/tools/phases.js";
+import { deriveDefaultDevelopmentOutlook } from "../src/tools/planning.js";
 
 let passed = 0;
 let failed = 0;

@@ -1,5 +1,15 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	HumanApproval,
+	HumanApprovalChallenge,
+} from "@shaleyeah/sdk";
+import {
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+	callLLM,
+} from "@shaleyeah/sdk";
 import { callDrillingTool } from "./drilling-client.js";
 
 export { callDrillingTool };
@@ -33,7 +43,8 @@ export const drillingEngineerManifest: AgentManifest = {
 	tools: [
 		{
 			name: "drilling-engineer.design_drilling_program",
-			description: "Design comprehensive drilling program with casing schedule and mud program.",
+			description:
+				"Design comprehensive drilling program with casing schedule and mud program.",
 			type: "query",
 			capabilities: ["drilling-program-design"],
 			inputSchema: {
@@ -43,7 +54,10 @@ export const drillingEngineerManifest: AgentManifest = {
 						type: "object",
 						properties: {
 							targetDepth: { type: "number" },
-							wellType: { type: "string", enum: ["vertical", "horizontal", "directional"] },
+							wellType: {
+								type: "string",
+								enum: ["vertical", "horizontal", "directional"],
+							},
 							formation: { type: "string" },
 						},
 						required: ["targetDepth", "wellType", "formation"],
@@ -68,7 +82,8 @@ export const drillingEngineerManifest: AgentManifest = {
 		},
 		{
 			name: "drilling-engineer.estimate_well_costs",
-			description: "Estimate drilling, completion, and facilities cost breakdown for a well.",
+			description:
+				"Estimate drilling, completion, and facilities cost breakdown for a well.",
 			type: "query",
 			capabilities: ["well-cost-estimation"],
 			inputSchema: {
@@ -78,7 +93,10 @@ export const drillingEngineerManifest: AgentManifest = {
 						type: "object",
 						properties: {
 							targetDepth: { type: "number" },
-							wellType: { type: "string", enum: ["vertical", "horizontal", "directional"] },
+							wellType: {
+								type: "string",
+								enum: ["vertical", "horizontal", "directional"],
+							},
 							formation: { type: "string" },
 						},
 						required: ["targetDepth", "wellType", "formation"],
@@ -97,7 +115,8 @@ export const drillingEngineerManifest: AgentManifest = {
 		},
 		{
 			name: "drilling-engineer.assess_drilling_risks",
-			description: "Assess geological, operational, and environmental drilling risks with mitigations.",
+			description:
+				"Assess geological, operational, and environmental drilling risks with mitigations.",
 			type: "query",
 			capabilities: ["drilling-risk-assessment"],
 			inputSchema: {
@@ -107,12 +126,18 @@ export const drillingEngineerManifest: AgentManifest = {
 						type: "object",
 						properties: {
 							targetDepth: { type: "number" },
-							wellType: { type: "string", enum: ["vertical", "horizontal", "directional"] },
+							wellType: {
+								type: "string",
+								enum: ["vertical", "horizontal", "directional"],
+							},
 							formation: { type: "string" },
 						},
 						required: ["targetDepth", "wellType", "formation"],
 					},
-					environmentalConstraints: { type: "array", items: { type: "string" } },
+					environmentalConstraints: {
+						type: "array",
+						items: { type: "string" },
+					},
 				},
 				required: ["wellParameters"],
 			},
@@ -127,7 +152,11 @@ export const drillingEngineerManifest: AgentManifest = {
 	],
 	requiredScopes: ["read:drilling"],
 	providerRequirements: [
-		{ type: "llm", required: true, description: "Anthropic Claude — standard analysis" },
+		{
+			type: "llm",
+			required: true,
+			description: "Anthropic Claude — standard analysis",
+		},
 	],
 	compatibility: {
 		agentRuntime: "^0.1.0",
@@ -135,7 +164,12 @@ export const drillingEngineerManifest: AgentManifest = {
 		mcp: "2025-03",
 	},
 	health: {
-		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
+		readinessChecks: [
+			"manifest",
+			"runtime-config",
+			"tool-handlers",
+			"model-routing",
+		],
 	},
 	memory: {
 		namespace: "drilling-engineer",
@@ -160,8 +194,14 @@ export const drillingEngineerConfig: AgentRuntimeConfig = {
 		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
 		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
 		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
-		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
-		deterministic: { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"local-private": {
+			provider: "anthropic",
+			model: "claude-haiku-4-5-20251001",
+		},
+		deterministic: {
+			provider: "anthropic",
+			model: "claude-haiku-4-5-20251001",
+		},
 	},
 	hitl: {
 		approvalMode: "when-sensitive",
@@ -200,27 +240,47 @@ export const drillingEngineerConfig: AgentRuntimeConfig = {
 // ── URL helper ────────────────────────────────────────────────────────────────
 
 function drillingUrl(config: AgentRuntimeConfig): string {
-	return config.mcpServers?.["drilling"]?.url ?? "http://localhost:3003";
+	return config.mcpServers?.drilling?.url ?? "http://localhost:3003";
 }
 
 // ── Handler map ───────────────────────────────────────────────────────────────
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"drilling-engineer.design_drilling_program": ({ args, config }) =>
-		callDrillingTool(drillingUrl(config), "design_drilling_program", args as Record<string, unknown>),
+		callDrillingTool(
+			drillingUrl(config),
+			"design_drilling_program",
+			args as Record<string, unknown>,
+		),
 	"drilling-engineer.estimate_well_costs": ({ args, config }) =>
-		callDrillingTool(drillingUrl(config), "estimate_well_costs", args as Record<string, unknown>),
+		callDrillingTool(
+			drillingUrl(config),
+			"estimate_well_costs",
+			args as Record<string, unknown>,
+		),
 	"drilling-engineer.assess_drilling_risks": ({ args, config }) =>
-		callDrillingTool(drillingUrl(config), "assess_drilling_risks", args as Record<string, unknown>),
+		callDrillingTool(
+			drillingUrl(config),
+			"assess_drilling_risks",
+			args as Record<string, unknown>,
+		),
 };
 
 // ── Runtime + Endpoint factories ──────────────────────────────────────────────
 
-export function createDrillingEngineerRuntime(config: AgentRuntimeConfig = drillingEngineerConfig): LocalAgentRuntime {
-	return new LocalAgentRuntime({ manifest: drillingEngineerManifest, config, handlers });
+export function createDrillingEngineerRuntime(
+	config: AgentRuntimeConfig = drillingEngineerConfig,
+): LocalAgentRuntime {
+	return new LocalAgentRuntime({
+		manifest: drillingEngineerManifest,
+		config,
+		handlers,
+	});
 }
 
-export function createDrillingEngineerEndpoint(config: AgentRuntimeConfig = drillingEngineerConfig): LocalAgentEndpoint {
+export function createDrillingEngineerEndpoint(
+	config: AgentRuntimeConfig = drillingEngineerConfig,
+): LocalAgentEndpoint {
 	return new LocalAgentEndpoint(createDrillingEngineerRuntime(config));
 }
 
@@ -243,7 +303,9 @@ export async function runDrillingEngineerTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? drillingEngineerConfig;
@@ -263,7 +325,9 @@ export async function runDrillingEngineerTask(
 	}
 }
 
-function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
+function buildTranscript(
+	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
+): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -273,9 +337,12 @@ function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; c
 		.join("\n\n");
 }
 
-function parseJson(
-	text: string,
-): { action?: string; tool?: string; args?: Record<string, unknown>; answer?: string } | null {
+function parseJson(text: string): {
+	action?: string;
+	tool?: string;
+	args?: Record<string, unknown>;
+	answer?: string;
+} | null {
 	try {
 		const cleaned = text
 			.replace(/^```(?:json)?\s*/m, "")
@@ -292,12 +359,16 @@ async function executeLoop(
 	runtime: LocalAgentRuntime,
 	options: {
 		apiKey?: string;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
 
-	const toolDefs = drillingEngineerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolDefs = drillingEngineerManifest.tools
+		.map((t) => `  ${t.name}: ${t.description}`)
+		.join("\n");
 
 	const system = `You are ${drillingEngineerManifest.persona.name}, ${drillingEngineerManifest.persona.role}.
 
@@ -344,8 +415,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		} else if (execResult.status === "approval_required") {
 			if (!options.onApprovalRequired) {
 				throw new Error(
-					`Tool ${parsed.tool} requires human approval. ` +
-						"Provide an onApprovalRequired callback to runDrillingEngineerTask, or set autonomy to 'autonomous'.",
+					`Tool ${parsed.tool} requires human approval. Provide an onApprovalRequired callback to runDrillingEngineerTask, or set autonomy to 'autonomous'.`,
 				);
 			}
 			const approval = await options.onApprovalRequired(execResult.challenge);
@@ -358,12 +428,23 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
-				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
+				const err =
+					approved.status === "failed"
+						? approved.error
+						: "approval re-execution failed";
+				history.push({
+					role: "tool",
+					content: `Error after approval for ${parsed.tool}: ${err}`,
+				});
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
-			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+			const hint = execResult.retryable
+				? " (retryable — server may be temporarily unavailable)"
+				: " (permanent)";
+			history.push({
+				role: "tool",
+				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,
+			});
 		}
 	}
 

@@ -5,9 +5,9 @@
  */
 
 import assert from "node:assert";
-import { deriveRegulatoryAssessment } from "../src/tools/regulatory.js";
-import { deriveContractReview } from "../src/tools/contract.js";
 import { deriveComplianceRequirements } from "../src/tools/compliance.js";
+import { deriveContractReview } from "../src/tools/contract.js";
+import { deriveRegulatoryAssessment } from "../src/tools/regulatory.js";
 
 let passed = 0;
 let failed = 0;

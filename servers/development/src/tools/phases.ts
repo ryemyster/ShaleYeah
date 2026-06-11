@@ -96,9 +96,9 @@ Return ONLY valid JSON in this exact shape:
 			totalDuration: parsed.totalDuration ?? base.totalDuration,
 			totalPhases: parsed.phases.length,
 			strategy:
-				parsed.strategy === "Single phase" || parsed.strategy === "Phased development" ?
-					parsed.strategy
-				:	base.strategy,
+				parsed.strategy === "Single phase" || parsed.strategy === "Phased development"
+					? parsed.strategy
+					: base.strategy,
 		};
 	} catch (_err) {
 		return base;

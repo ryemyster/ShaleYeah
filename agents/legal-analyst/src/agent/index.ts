@@ -1,5 +1,15 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	HumanApproval,
+	HumanApprovalChallenge,
+} from "@shaleyeah/sdk";
+import {
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+	callLLM,
+} from "@shaleyeah/sdk";
 import { callLegalTool } from "./legal-client.js";
 
 export { callLegalTool };
@@ -33,13 +43,17 @@ export const legalAnalystManifest: AgentManifest = {
 	tools: [
 		{
 			name: "legal-analyst.analyze_legal_framework",
-			description: "Analyze regulatory and legal exposure for a jurisdiction and project type.",
+			description:
+				"Analyze regulatory and legal exposure for a jurisdiction and project type.",
 			type: "query",
 			capabilities: ["regulatory-analysis", "legal-risk-analysis"],
 			inputSchema: {
 				type: "object",
 				properties: {
-					jurisdiction: { type: "string", description: "State or jurisdiction (e.g. Texas, California)" },
+					jurisdiction: {
+						type: "string",
+						description: "State or jurisdiction (e.g. Texas, California)",
+					},
 					projectType: {
 						type: "string",
 						enum: ["exploration", "development", "production", "abandonment"],
@@ -50,7 +64,10 @@ export const legalAnalystManifest: AgentManifest = {
 						items: { type: "string" },
 						description: "List of asset names or descriptions",
 					},
-					timeline: { type: "string", description: "Optional project timeline description" },
+					timeline: {
+						type: "string",
+						description: "Optional project timeline description",
+					},
 				},
 				required: ["jurisdiction", "projectType", "assets"],
 			},
@@ -103,18 +120,25 @@ export const legalAnalystManifest: AgentManifest = {
 		},
 		{
 			name: "legal-analyst.assess_compliance",
-			description: "Assess environmental, safety, and tax compliance requirements for a project.",
+			description:
+				"Assess environmental, safety, and tax compliance requirements for a project.",
 			type: "query",
 			capabilities: ["compliance-assessment", "permit-planning"],
 			inputSchema: {
 				type: "object",
 				properties: {
-					jurisdiction: { type: "string", description: "State or jurisdiction" },
+					jurisdiction: {
+						type: "string",
+						description: "State or jurisdiction",
+					},
 					projectType: {
 						type: "string",
 						enum: ["exploration", "development", "production", "abandonment"],
 					},
-					assetCount: { type: "number", description: "Number of assets in the project" },
+					assetCount: {
+						type: "number",
+						description: "Number of assets in the project",
+					},
 				},
 				required: ["jurisdiction", "projectType", "assetCount"],
 			},
@@ -132,7 +156,8 @@ export const legalAnalystManifest: AgentManifest = {
 		{
 			type: "llm",
 			required: true,
-			description: "Anthropic Claude — standard analysis for regulatory and contract synthesis.",
+			description:
+				"Anthropic Claude — standard analysis for regulatory and contract synthesis.",
 		},
 	],
 	compatibility: {
@@ -141,7 +166,12 @@ export const legalAnalystManifest: AgentManifest = {
 		mcp: "2025-06",
 	},
 	health: {
-		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
+		readinessChecks: [
+			"manifest",
+			"runtime-config",
+			"tool-handlers",
+			"model-routing",
+		],
 	},
 	memory: {
 		namespace: "legal-analyst",
@@ -164,7 +194,10 @@ export const legalAnalystConfig: AgentRuntimeConfig = {
 		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
 		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
 		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
-		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"local-private": {
+			provider: "anthropic",
+			model: "claude-haiku-4-5-20251001",
+		},
 		deterministic: { provider: "rule-based", model: "no-model" },
 	},
 	hitl: {
@@ -210,16 +243,30 @@ function legalUrl(config: AgentRuntimeConfig): string {
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"legal-analyst.analyze_legal_framework": ({ args, config }) =>
-		callLegalTool(legalUrl(config), "analyze_legal_framework", args as Record<string, unknown>),
+		callLegalTool(
+			legalUrl(config),
+			"analyze_legal_framework",
+			args as Record<string, unknown>,
+		),
 
 	"legal-analyst.review_contract": ({ args, config }) =>
-		callLegalTool(legalUrl(config), "review_contract", args as Record<string, unknown>),
+		callLegalTool(
+			legalUrl(config),
+			"review_contract",
+			args as Record<string, unknown>,
+		),
 
 	"legal-analyst.assess_compliance": ({ args, config }) =>
-		callLegalTool(legalUrl(config), "assess_compliance", args as Record<string, unknown>),
+		callLegalTool(
+			legalUrl(config),
+			"assess_compliance",
+			args as Record<string, unknown>,
+		),
 };
 
-export function createLegalAnalystRuntime(config: AgentRuntimeConfig = legalAnalystConfig): LocalAgentRuntime {
+export function createLegalAnalystRuntime(
+	config: AgentRuntimeConfig = legalAnalystConfig,
+): LocalAgentRuntime {
 	return new LocalAgentRuntime({
 		manifest: legalAnalystManifest,
 		config,
@@ -227,7 +274,9 @@ export function createLegalAnalystRuntime(config: AgentRuntimeConfig = legalAnal
 	});
 }
 
-export function createLegalAnalystEndpoint(config: AgentRuntimeConfig = legalAnalystConfig): LocalAgentEndpoint {
+export function createLegalAnalystEndpoint(
+	config: AgentRuntimeConfig = legalAnalystConfig,
+): LocalAgentEndpoint {
 	return new LocalAgentEndpoint(createLegalAnalystRuntime(config));
 }
 
@@ -250,7 +299,9 @@ export async function runLegalAnalystTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? legalAnalystConfig;
@@ -270,7 +321,9 @@ export async function runLegalAnalystTask(
 	}
 }
 
-function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
+function buildTranscript(
+	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
+): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -291,18 +344,25 @@ async function executeWithRetry(
 	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
 	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
 		if (attempt > 0) {
-			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+			await new Promise((r) =>
+				setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)),
+			);
 		}
 		const result = await runtime.execute(request);
 		if (result.status !== "failed" || !result.retryable) return result;
 		last = result;
 	}
-	return last!;
+	if (last === null)
+		throw new Error("executeWithRetry: loop completed without a result");
+	return last;
 }
 
-function parseJson(
-	text: string,
-): { action?: string; tool?: string; args?: Record<string, unknown>; answer?: string } | null {
+function parseJson(text: string): {
+	action?: string;
+	tool?: string;
+	args?: Record<string, unknown>;
+	answer?: string;
+} | null {
 	try {
 		const cleaned = text
 			.replace(/^```(?:json)?\s*/m, "")
@@ -320,7 +380,9 @@ async function executeLoop(
 	options: {
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
@@ -328,7 +390,9 @@ async function executeLoop(
 	const config = options.config ?? legalAnalystConfig;
 	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
-	const toolDefs = legalAnalystManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolDefs = legalAnalystManifest.tools
+		.map((t) => `  ${t.name}: ${t.description}`)
+		.join("\n");
 
 	const system = `You are ${legalAnalystManifest.persona.name}, ${legalAnalystManifest.persona.role}.
 
@@ -375,8 +439,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		} else if (execResult.status === "approval_required") {
 			if (!options.onApprovalRequired) {
 				throw new Error(
-					`Tool ${parsed.tool} requires human approval. ` +
-						"Provide an onApprovalRequired callback to runLegalAnalystTask, or set autonomy to 'autonomous'.",
+					`Tool ${parsed.tool} requires human approval. Provide an onApprovalRequired callback to runLegalAnalystTask, or set autonomy to 'autonomous'.`,
 				);
 			}
 			const approval = await options.onApprovalRequired(execResult.challenge);
@@ -389,12 +452,23 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
-				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
+				const err =
+					approved.status === "failed"
+						? approved.error
+						: "approval re-execution failed";
+				history.push({
+					role: "tool",
+					content: `Error after approval for ${parsed.tool}: ${err}`,
+				});
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
-			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+			const hint = execResult.retryable
+				? " (retryable — server may be temporarily unavailable)"
+				: " (permanent)";
+			history.push({
+				role: "tool",
+				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,
+			});
 		}
 	}
 
@@ -417,13 +491,17 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const goal = process.argv.slice(2).join(" ").trim();
 	if (!goal) {
 		console.error("Usage: npx tsx src/agent/index.ts <goal>");
-		console.error('  Example: npx tsx src/agent/index.ts "Analyze legal exposure for Texas exploration project"');
+		console.error(
+			'  Example: npx tsx src/agent/index.ts "Analyze legal exposure for Texas exploration project"',
+		);
 		process.exit(1);
 	}
 	const answer = await runLegalAnalystTask(goal, {
 		onApprovalRequired: async (challenge) => {
 			console.log(`\n⏸  Approval required for: ${challenge.toolName}`);
-			console.log(`   Reason: ${challenge.reason ?? "tool requires human review"}`);
+			console.log(
+				`   Reason: ${challenge.reason ?? "tool requires human review"}`,
+			);
 			console.log("   Auto-approving in CLI mode...\n");
 			return { approved: true, reviewerId: "cli", reason: "CLI auto-approve" };
 		},

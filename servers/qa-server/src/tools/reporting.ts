@@ -24,11 +24,7 @@ export interface QAReport {
  * All live-telemetry fields return "N/A" intentionally — they require
  * Prometheus/Datadog integration to populate.
  */
-export function deriveQualityReport(
-	reportType: string,
-	period: string,
-	requestedMetrics: string[],
-): QAReport {
+export function deriveQualityReport(reportType: string, period: string, requestedMetrics: string[]): QAReport {
 	return {
 		report: {
 			type: reportType,

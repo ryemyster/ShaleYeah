@@ -1,13 +1,13 @@
 import { callLLM } from "@shaleyeah/sdk";
 
 export interface InfrastructureCostEstimate {
-    pipelineCost: number;
-    facilitiesCost: number;
-    compressorCost: number;
-    swdCost: number;
-    totalCost: number;
-    costPerWell: number;
-    contingencyPct: number;
+	pipelineCost: number;
+	facilitiesCost: number;
+	compressorCost: number;
+	swdCost: number;
+	totalCost: number;
+	costPerWell: number;
+	contingencyPct: number;
 }
 
 /**
@@ -19,34 +19,34 @@ export interface InfrastructureCostEstimate {
  *   - Contingency: 15% for remote locations, 10% for established areas
  */
 export function deriveInfrastructureCostEstimate(
-    wellCount: number,
-    compressors: number,
-    swdWells: number,
-    location: string,
+	wellCount: number,
+	compressors: number,
+	swdWells: number,
+	location: string,
 ): InfrastructureCostEstimate {
-    const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
-    const pipelineCost = wellCount * 250_000;
-    const facilitiesCost = wellCount * 180_000;
-    const compressorCost = compressors * 400_000;
-    const swdCost = swdWells * 1_200_000;
-    const subtotal = pipelineCost + facilitiesCost + compressorCost + swdCost;
-    const contingencyPct = isRemote ? 15 : 10;
-    const totalCost = Math.round(subtotal * (1 + contingencyPct / 100));
-    const costPerWell = Math.round(totalCost / wellCount);
+	const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
+	const pipelineCost = wellCount * 250_000;
+	const facilitiesCost = wellCount * 180_000;
+	const compressorCost = compressors * 400_000;
+	const swdCost = swdWells * 1_200_000;
+	const subtotal = pipelineCost + facilitiesCost + compressorCost + swdCost;
+	const contingencyPct = isRemote ? 15 : 10;
+	const totalCost = Math.round(subtotal * (1 + contingencyPct / 100));
+	const costPerWell = Math.round(totalCost / wellCount);
 
-    return { pipelineCost, facilitiesCost, compressorCost, swdCost, totalCost, costPerWell, contingencyPct };
+	return { pipelineCost, facilitiesCost, compressorCost, swdCost, totalCost, costPerWell, contingencyPct };
 }
 
 export async function synthesizeCostEstimateWithLLM(params: {
-    wellCount: number;
-    compressors: number;
-    swdWells: number;
-    location: string;
+	wellCount: number;
+	compressors: number;
+	swdWells: number;
+	location: string;
 }): Promise<InfrastructureCostEstimate> {
-    const { wellCount, compressors, swdWells, location } = params;
-    const fallback = deriveInfrastructureCostEstimate(wellCount, compressors, swdWells, location);
+	const { wellCount, compressors, swdWells, location } = params;
+	const fallback = deriveInfrastructureCostEstimate(wellCount, compressors, swdWells, location);
 
-    const prompt = `You are Structura Ingenious, a master O&G infrastructure architect.
+	const prompt = `You are Structura Ingenious, a master O&G infrastructure architect.
 
 Estimate infrastructure capital costs (CAPEX) for this project.
 
@@ -68,12 +68,12 @@ Return ONLY valid JSON matching this exact shape:
   "contingencyPct": <number — contingency percentage applied>
 }`;
 
-    try {
-        const raw = await callLLM({ prompt, maxTokens: 300 });
-        const match = raw.match(/\{[\s\S]*\}/);
-        if (!match) throw new Error("No JSON in response");
-        return JSON.parse(match[0]) as InfrastructureCostEstimate;
-    } catch {
-        return fallback;
-    }
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 300 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		return JSON.parse(match[0]) as InfrastructureCostEstimate;
+	} catch {
+		return fallback;
+	}
 }

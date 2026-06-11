@@ -6,10 +6,9 @@
 
 import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-
-import { deriveRegulatoryAssessment, synthesizeRegulatoryAssessmentWithLLM } from "./tools/regulatory.js";
-import { deriveContractReview, synthesizeContractReviewWithLLM } from "./tools/contract.js";
 import { deriveComplianceRequirements, synthesizeComplianceRequirementsWithLLM } from "./tools/compliance.js";
+import { deriveContractReview, synthesizeContractReviewWithLLM } from "./tools/contract.js";
+import { deriveRegulatoryAssessment, synthesizeRegulatoryAssessmentWithLLM } from "./tools/regulatory.js";
 
 // ---------------------------------------------------------------------------
 // Backward-compat exports — existing tests import these from ../src/index.js
@@ -34,13 +33,13 @@ export async function synthesizeLegalAnalysisWithLLM(params: {
 	});
 }
 
+export type { ComplianceRequirements } from "./tools/compliance.js";
+export { deriveComplianceRequirements, synthesizeComplianceRequirementsWithLLM } from "./tools/compliance.js";
+export type { ContractReview } from "./tools/contract.js";
+export { deriveContractReview, synthesizeContractReviewWithLLM } from "./tools/contract.js";
 // Re-export tool types and functions for consumers
 export type { RegulatoryAssessment } from "./tools/regulatory.js";
-export type { ContractReview } from "./tools/contract.js";
-export type { ComplianceRequirements } from "./tools/compliance.js";
 export { deriveRegulatoryAssessment, synthesizeRegulatoryAssessmentWithLLM } from "./tools/regulatory.js";
-export { deriveContractReview, synthesizeContractReviewWithLLM } from "./tools/contract.js";
-export { deriveComplianceRequirements, synthesizeComplianceRequirementsWithLLM } from "./tools/compliance.js";
 
 // ---------------------------------------------------------------------------
 // Server template

@@ -1,5 +1,15 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	HumanApproval,
+	HumanApprovalChallenge,
+} from "@shaleyeah/sdk";
+import {
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+	callLLM,
+} from "@shaleyeah/sdk";
 import { callDevelopmentTool } from "./development-client.js";
 
 export { callDevelopmentTool };
@@ -33,7 +43,8 @@ export const developmentPlannerManifest: AgentManifest = {
 	tools: [
 		{
 			name: "development-planner.create_development_plan",
-			description: "Create comprehensive development plan for oil & gas project.",
+			description:
+				"Create comprehensive development plan for oil & gas project.",
 			type: "query",
 			capabilities: ["development-planning", "phase-scheduling"],
 			inputSchema: {
@@ -72,15 +83,22 @@ export const developmentPlannerManifest: AgentManifest = {
 		},
 		{
 			name: "development-planner.estimate_project_timeline",
-			description: "Estimate phased development timeline and milestones for a well program.",
+			description:
+				"Estimate phased development timeline and milestones for a well program.",
 			type: "query",
 			capabilities: ["timeline-estimation", "phase-scheduling"],
 			inputSchema: {
 				type: "object",
 				properties: {
 					projectName: { type: "string" },
-					wellCount: { type: "number", description: "Total number of wells in the program" },
-					budget: { type: "number", description: "Total project budget in USD" },
+					wellCount: {
+						type: "number",
+						description: "Total number of wells in the program",
+					},
+					budget: {
+						type: "number",
+						description: "Total project budget in USD",
+					},
 					constraints: { type: "array", items: { type: "string" } },
 				},
 				required: ["projectName", "wellCount", "budget"],
@@ -95,7 +113,8 @@ export const developmentPlannerManifest: AgentManifest = {
 		},
 		{
 			name: "development-planner.monitor_development_progress",
-			description: "Monitor and analyze development project progress across schedule, budget, safety, and quality KPIs.",
+			description:
+				"Monitor and analyze development project progress across schedule, budget, safety, and quality KPIs.",
 			type: "query",
 			capabilities: ["progress-monitoring"],
 			inputSchema: {
@@ -103,7 +122,10 @@ export const developmentPlannerManifest: AgentManifest = {
 				properties: {
 					projectId: { type: "string" },
 					metrics: { type: "array", items: { type: "string" } },
-					reportingPeriod: { type: "string", enum: ["weekly", "monthly", "quarterly"] },
+					reportingPeriod: {
+						type: "string",
+						enum: ["weekly", "monthly", "quarterly"],
+					},
 					outputPath: { type: "string" },
 				},
 				required: ["projectId"],
@@ -122,7 +144,8 @@ export const developmentPlannerManifest: AgentManifest = {
 		{
 			type: "llm",
 			required: true,
-			description: "Anthropic Claude — standard analysis for development plan synthesis and timeline estimation.",
+			description:
+				"Anthropic Claude — standard analysis for development plan synthesis and timeline estimation.",
 		},
 	],
 	compatibility: {
@@ -131,7 +154,12 @@ export const developmentPlannerManifest: AgentManifest = {
 		mcp: "2025-06",
 	},
 	health: {
-		readinessChecks: ["manifest", "runtime-config", "tool-handlers", "model-routing"],
+		readinessChecks: [
+			"manifest",
+			"runtime-config",
+			"tool-handlers",
+			"model-routing",
+		],
 	},
 	memory: {
 		namespace: "development-planner",
@@ -154,7 +182,10 @@ export const developmentPlannerConfig: AgentRuntimeConfig = {
 		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
 		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
 		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
-		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"local-private": {
+			provider: "anthropic",
+			model: "claude-haiku-4-5-20251001",
+		},
 		deterministic: { provider: "rule-based", model: "no-model" },
 	},
 	hitl: {
@@ -200,16 +231,30 @@ function developmentUrl(config: AgentRuntimeConfig): string {
 
 const handlers: Record<string, StandaloneToolHandler> = {
 	"development-planner.create_development_plan": ({ args, config }) =>
-		callDevelopmentTool(developmentUrl(config), "create_development_plan", args as Record<string, unknown>),
+		callDevelopmentTool(
+			developmentUrl(config),
+			"create_development_plan",
+			args as Record<string, unknown>,
+		),
 
 	"development-planner.estimate_project_timeline": ({ args, config }) =>
-		callDevelopmentTool(developmentUrl(config), "estimate_project_timeline", args as Record<string, unknown>),
+		callDevelopmentTool(
+			developmentUrl(config),
+			"estimate_project_timeline",
+			args as Record<string, unknown>,
+		),
 
 	"development-planner.monitor_development_progress": ({ args, config }) =>
-		callDevelopmentTool(developmentUrl(config), "monitor_development_progress", args as Record<string, unknown>),
+		callDevelopmentTool(
+			developmentUrl(config),
+			"monitor_development_progress",
+			args as Record<string, unknown>,
+		),
 };
 
-export function createDevelopmentPlannerRuntime(config: AgentRuntimeConfig = developmentPlannerConfig): LocalAgentRuntime {
+export function createDevelopmentPlannerRuntime(
+	config: AgentRuntimeConfig = developmentPlannerConfig,
+): LocalAgentRuntime {
 	return new LocalAgentRuntime({
 		manifest: developmentPlannerManifest,
 		config,
@@ -242,7 +287,9 @@ export async function runDevelopmentPlannerTask(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? developmentPlannerConfig;
@@ -262,7 +309,9 @@ export async function runDevelopmentPlannerTask(
 	}
 }
 
-function buildTranscript(history: Array<{ role: "user" | "assistant" | "tool"; content: string }>): string {
+function buildTranscript(
+	history: Array<{ role: "user" | "assistant" | "tool"; content: string }>,
+): string {
 	return history
 		.map((t) => {
 			if (t.role === "user") return `User: ${t.content}`;
@@ -282,18 +331,25 @@ async function executeWithRetry(
 	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
 	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
 		if (attempt > 0) {
-			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+			await new Promise((r) =>
+				setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)),
+			);
 		}
 		const result = await runtime.execute(request);
 		if (result.status !== "failed" || !result.retryable) return result;
 		last = result;
 	}
-	return last!;
+	if (last === null)
+		throw new Error("executeWithRetry: loop completed without a result");
+	return last;
 }
 
-function parseJson(
-	text: string,
-): { action?: string; tool?: string; args?: Record<string, unknown>; answer?: string } | null {
+function parseJson(text: string): {
+	action?: string;
+	tool?: string;
+	args?: Record<string, unknown>;
+	answer?: string;
+} | null {
 	try {
 		const cleaned = text
 			.replace(/^```(?:json)?\s*/m, "")
@@ -311,7 +367,9 @@ async function executeLoop(
 	options: {
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
-		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		onApprovalRequired?: (
+			challenge: HumanApprovalChallenge,
+		) => Promise<HumanApproval>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
@@ -319,7 +377,9 @@ async function executeLoop(
 	const config = options.config ?? developmentPlannerConfig;
 	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
-	const toolDefs = developmentPlannerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolDefs = developmentPlannerManifest.tools
+		.map((t) => `  ${t.name}: ${t.description}`)
+		.join("\n");
 
 	const system = `You are ${developmentPlannerManifest.persona.name}, ${developmentPlannerManifest.persona.role}.
 
@@ -366,8 +426,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		} else if (execResult.status === "approval_required") {
 			if (!options.onApprovalRequired) {
 				throw new Error(
-					`Tool ${parsed.tool} requires human approval. ` +
-						"Provide an onApprovalRequired callback to runDevelopmentPlannerTask, or set autonomy to 'autonomous'.",
+					`Tool ${parsed.tool} requires human approval. Provide an onApprovalRequired callback to runDevelopmentPlannerTask, or set autonomy to 'autonomous'.`,
 				);
 			}
 			const approval = await options.onApprovalRequired(execResult.challenge);
@@ -380,12 +439,23 @@ If you cannot complete the task with the available tools, respond with {"action"
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
 			} else {
-				const err = approved.status === "failed" ? approved.error : "approval re-execution failed";
-				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
+				const err =
+					approved.status === "failed"
+						? approved.error
+						: "approval re-execution failed";
+				history.push({
+					role: "tool",
+					content: `Error after approval for ${parsed.tool}: ${err}`,
+				});
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
-			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+			const hint = execResult.retryable
+				? " (retryable — server may be temporarily unavailable)"
+				: " (permanent)";
+			history.push({
+				role: "tool",
+				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,
+			});
 		}
 	}
 
@@ -416,7 +486,9 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 	const answer = await runDevelopmentPlannerTask(goal, {
 		onApprovalRequired: async (challenge) => {
 			console.log(`\n⏸  Approval required for: ${challenge.toolName}`);
-			console.log(`   Reason: ${challenge.reason ?? "tool requires human review"}`);
+			console.log(
+				`   Reason: ${challenge.reason ?? "tool requires human review"}`,
+			);
 			console.log("   Auto-approving in CLI mode...\n");
 			return { approved: true, reviewerId: "cli", reason: "CLI auto-approve" };
 		},

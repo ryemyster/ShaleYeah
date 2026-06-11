@@ -5,8 +5,8 @@
  */
 
 import assert from "node:assert";
-import { deriveDrillingProgram } from "../src/tools/program.js";
 import { deriveWellCostBreakdown } from "../src/tools/costs.js";
+import { deriveDrillingProgram } from "../src/tools/program.js";
 import { deriveDrillingRiskProfile } from "../src/tools/risks.js";
 
 let passed = 0;

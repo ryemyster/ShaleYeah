@@ -30,11 +30,7 @@ export function deriveRegulatoryAssessment(
 
 	const approvalTimelineMonths = regulatoryRisk === "High" ? 12 : regulatoryRisk === "Medium" ? 6 : 3;
 
-	const requiredPermits = [
-		"Drilling/Operations Permit",
-		"Environmental Clearance",
-		"Land Use Approval",
-	];
+	const requiredPermits = ["Drilling/Operations Permit", "Environmental Clearance", "Land Use Approval"];
 	if (projectType === "exploration") requiredPermits.push("Exploration License");
 	if (isHighJurisdiction) requiredPermits.push("State-Specific Regulatory Filing");
 

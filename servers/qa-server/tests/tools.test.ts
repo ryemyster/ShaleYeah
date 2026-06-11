@@ -5,8 +5,8 @@
  */
 
 import assert from "node:assert";
-import { deriveDefaultQAResult } from "../src/tools/validation.js";
 import { deriveQualityReport } from "../src/tools/reporting.js";
+import { deriveDefaultQAResult } from "../src/tools/validation.js";
 
 let passed = 0;
 let failed = 0;

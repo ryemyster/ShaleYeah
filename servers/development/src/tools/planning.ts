@@ -22,10 +22,7 @@ export function deriveDefaultDevelopmentOutlook(
 	const hasConstraints = technicalConstraints.length > 0;
 
 	const scheduleRisk: "High" | "Medium" | "Low" = isLarge ? "Medium" : "Low";
-	const budgetRisk: "High" | "Medium" | "Low" =
-		isTightBudget ? "High"
-		: hasConstraints ? "Medium"
-		: "Low";
+	const budgetRisk: "High" | "Medium" | "Low" = isTightBudget ? "High" : hasConstraints ? "Medium" : "Low";
 
 	return {
 		scheduleRisk,

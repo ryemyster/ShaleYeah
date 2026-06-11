@@ -24,14 +24,14 @@ export function deriveComplianceRequirements(
 	const isHighCost = HIGH_COST_JURISDICTIONS.some((j) => jLower.includes(j));
 
 	const complianceRisk: "High" | "Medium" | "Low" =
-		isHighCost || projectType === "exploration" ? "High"
-		: assetCount > 5 || projectType === "development" ? "Medium"
-		: "Low";
+		isHighCost || projectType === "exploration"
+			? "High"
+			: assetCount > 5 || projectType === "development"
+				? "Medium"
+				: "Low";
 
 	const estimatedComplianceCost: "Low (<$100K)" | "Medium ($100K–$500K)" | "High (>$500K)" =
-		complianceRisk === "High" ? "High (>$500K)"
-		: complianceRisk === "Medium" ? "Medium ($100K–$500K)"
-		: "Low (<$100K)";
+		complianceRisk === "High" ? "High (>$500K)" : complianceRisk === "Medium" ? "Medium ($100K–$500K)" : "Low (<$100K)";
 
 	const environmentalRequirements = ["NEPA review", "State environmental laws", "Local ordinances"];
 	if (isHighCost) environmentalRequirements.push("Air quality monitoring program");

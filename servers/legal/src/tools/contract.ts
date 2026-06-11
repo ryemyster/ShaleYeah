@@ -24,26 +24,25 @@ export function deriveContractReview(
 	riskProfile: "conservative" | "moderate" | "aggressive",
 ): ContractReview {
 	const overallRisk: "High" | "Medium" | "Low" =
-		riskProfile === "conservative" ? "Low"
-		: riskProfile === "aggressive" ? "High"
-		: HIGH_RISK_CONTRACT_TYPES.includes(contractType) ? "High"
-		: "Medium";
+		riskProfile === "conservative"
+			? "Low"
+			: riskProfile === "aggressive"
+				? "High"
+				: HIGH_RISK_CONTRACT_TYPES.includes(contractType)
+					? "High"
+					: "Medium";
 
 	return {
 		contractType,
 		overallRisk,
 		financialTerms: keyTerms.filter(
 			(t) =>
-				t.toLowerCase().includes("payment") ||
-				t.toLowerCase().includes("royalty") ||
-				t.toLowerCase().includes("bonus"),
+				t.toLowerCase().includes("payment") || t.toLowerCase().includes("royalty") || t.toLowerCase().includes("bonus"),
 		),
 		operationalTerms: keyTerms.filter(
 			(t) => t.toLowerCase().includes("drilling") || t.toLowerCase().includes("operation"),
 		),
-		legalTerms: keyTerms.filter(
-			(t) => t.toLowerCase().includes("liability") || t.toLowerCase().includes("indemnity"),
-		),
+		legalTerms: keyTerms.filter((t) => t.toLowerCase().includes("liability") || t.toLowerCase().includes("indemnity")),
 		negotiabilityNotes: "Standard terms with room for negotiation",
 		recommendations: [
 			"Review indemnification clauses carefully",

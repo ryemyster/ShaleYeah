@@ -77,9 +77,18 @@ Return ONLY valid JSON in this exact shape:
 		const validRisks = ["High", "Medium", "Low"];
 		if (!validRisks.includes(parsed.overallRisk ?? "")) throw new Error("Invalid overallRisk");
 		return {
-			geologicalRisk: (validRisks.includes(parsed.geologicalRisk ?? "") ? parsed.geologicalRisk : "Low") as "High" | "Medium" | "Low",
-			operationalRisk: (validRisks.includes(parsed.operationalRisk ?? "") ? parsed.operationalRisk : "Low") as "High" | "Medium" | "Low",
-			environmentalRisk: (validRisks.includes(parsed.environmentalRisk ?? "") ? parsed.environmentalRisk : "Low") as "High" | "Medium" | "Low",
+			geologicalRisk: (validRisks.includes(parsed.geologicalRisk ?? "") ? parsed.geologicalRisk : "Low") as
+				| "High"
+				| "Medium"
+				| "Low",
+			operationalRisk: (validRisks.includes(parsed.operationalRisk ?? "") ? parsed.operationalRisk : "Low") as
+				| "High"
+				| "Medium"
+				| "Low",
+			environmentalRisk: (validRisks.includes(parsed.environmentalRisk ?? "") ? parsed.environmentalRisk : "Low") as
+				| "High"
+				| "Medium"
+				| "Low",
 			overallRisk: parsed.overallRisk as "High" | "Medium" | "Low",
 			mitigations: parsed.mitigations ?? [],
 		};

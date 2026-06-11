@@ -7,24 +7,25 @@
 import fs from "node:fs/promises";
 import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-
-import { deriveDefaultDevelopmentOutlook, synthesizeDevelopmentOutlookWithLLM } from "./tools/planning.js";
-import { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM } from "./tools/phases.js";
 import { deriveProgressReport } from "./tools/monitoring.js";
+import { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM } from "./tools/phases.js";
+import { deriveDefaultDevelopmentOutlook, synthesizeDevelopmentOutlookWithLLM } from "./tools/planning.js";
 
 // ---------------------------------------------------------------------------
 // Backward-compat exports — existing tests import these from ../src/index.js
 // ---------------------------------------------------------------------------
 
-export { deriveDefaultDevelopmentOutlook };
-export type { DevelopmentOutlook } from "./tools/planning.js";
-export type { DevelopmentPhase, PhaseSchedule } from "./tools/phases.js";
 export type { DevelopmentProgress } from "./tools/monitoring.js";
-
-export { deriveDefaultDevelopmentOutlook as synthesizeDevelopmentAnalysisWithLLM };
-export { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM };
-export { deriveProgressReport };
-export { synthesizeDevelopmentOutlookWithLLM };
+export type { DevelopmentPhase, PhaseSchedule } from "./tools/phases.js";
+export type { DevelopmentOutlook } from "./tools/planning.js";
+export {
+	deriveDefaultDevelopmentOutlook,
+	deriveDefaultDevelopmentOutlook as synthesizeDevelopmentAnalysisWithLLM,
+	deriveDevelopmentPhases,
+	deriveProgressReport,
+	synthesizeDevelopmentOutlookWithLLM,
+	synthesizeDevelopmentPhasesWithLLM,
+};
 
 // ---------------------------------------------------------------------------
 // Server template

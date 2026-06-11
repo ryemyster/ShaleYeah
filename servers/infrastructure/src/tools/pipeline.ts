@@ -1,12 +1,12 @@
 import { callLLM } from "@shaleyeah/sdk";
 
 export interface PipelinePlan {
-    gatheringMiles: number;
-    transmissionMiles: number;
-    capacityBopd: number;
-    pressureRequirementPsi: number;
-    takeawayRisk: "High" | "Medium" | "Low";
-    recommendation: string;
+	gatheringMiles: number;
+	transmissionMiles: number;
+	capacityBopd: number;
+	pressureRequirementPsi: number;
+	takeawayRisk: "High" | "Medium" | "Low";
+	recommendation: string;
 }
 
 /**
@@ -16,34 +16,37 @@ export interface PipelinePlan {
  * Pressure: remote locations require higher compression due to longer haul distances.
  */
 export function derivePipelinePlan(wellCount: number, expectedProduction: number, location: string): PipelinePlan {
-    const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
-    const gatheringMiles = Math.ceil(wellCount * 1.2);
-    const transmissionMiles = 12;
-    const capacityBopd = Math.round(expectedProduction * 1.1);
-    const pressureRequirementPsi = isRemote ? 1200 : 800;
-    const takeawayRisk: "High" | "Medium" | "Low" =
-        isRemote ? "High" : wellCount > 20 || expectedProduction > 10000 ? "Medium" : "Low";
+	const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
+	const gatheringMiles = Math.ceil(wellCount * 1.2);
+	const transmissionMiles = 12;
+	const capacityBopd = Math.round(expectedProduction * 1.1);
+	const pressureRequirementPsi = isRemote ? 1200 : 800;
+	const takeawayRisk: "High" | "Medium" | "Low" = isRemote
+		? "High"
+		: wellCount > 20 || expectedProduction > 10000
+			? "Medium"
+			: "Low";
 
-    return {
-        gatheringMiles,
-        transmissionMiles,
-        capacityBopd,
-        pressureRequirementPsi,
-        takeawayRisk,
-        recommendation: isRemote
-            ? "Secure midstream transport agreement before committing capital — no existing tie-in available."
-            : `Connect to existing midstream network via ${transmissionMiles}-mile transmission line.`,
-    };
+	return {
+		gatheringMiles,
+		transmissionMiles,
+		capacityBopd,
+		pressureRequirementPsi,
+		takeawayRisk,
+		recommendation: isRemote
+			? "Secure midstream transport agreement before committing capital — no existing tie-in available."
+			: `Connect to existing midstream network via ${transmissionMiles}-mile transmission line.`,
+	};
 }
 
 export async function synthesizePipelinePlanWithLLM(params: {
-    wellCount: number;
-    expectedProduction: number;
-    location: string;
+	wellCount: number;
+	expectedProduction: number;
+	location: string;
 }): Promise<PipelinePlan> {
-    const { wellCount, expectedProduction, location } = params;
+	const { wellCount, expectedProduction, location } = params;
 
-    const prompt = `You are Structura Ingenious, a master O&G infrastructure architect.
+	const prompt = `You are Structura Ingenious, a master O&G infrastructure architect.
 
 Plan the pipeline gathering and transmission infrastructure for this project.
 
@@ -62,15 +65,15 @@ Return ONLY valid JSON matching this exact shape:
   "recommendation": "<one sentence pipeline strategy>"
 }`;
 
-    try {
-        const raw = await callLLM({ prompt, maxTokens: 300 });
-        const match = raw.match(/\{[\s\S]*\}/);
-        if (!match) throw new Error("No JSON in response");
-        const parsed = JSON.parse(match[0]) as Partial<PipelinePlan>;
-        const validRisks = ["High", "Medium", "Low"];
-        if (!validRisks.includes(parsed.takeawayRisk ?? "")) throw new Error("Invalid takeawayRisk");
-        return parsed as PipelinePlan;
-    } catch {
-        return derivePipelinePlan(wellCount, expectedProduction, location);
-    }
+	try {
+		const raw = await callLLM({ prompt, maxTokens: 300 });
+		const match = raw.match(/\{[\s\S]*\}/);
+		if (!match) throw new Error("No JSON in response");
+		const parsed = JSON.parse(match[0]) as Partial<PipelinePlan>;
+		const validRisks = ["High", "Medium", "Low"];
+		if (!validRisks.includes(parsed.takeawayRisk ?? "")) throw new Error("Invalid takeawayRisk");
+		return parsed as PipelinePlan;
+	} catch {
+		return derivePipelinePlan(wellCount, expectedProduction, location);
+	}
 }

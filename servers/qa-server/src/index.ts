@@ -12,18 +12,16 @@
 import fs from "node:fs/promises";
 import { type MCPServer, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-
-import { deriveDefaultQAResult, synthesizeQAValidationWithLLM } from "./tools/validation.js";
 import { deriveQualityReport } from "./tools/reporting.js";
+import { deriveDefaultQAResult, synthesizeQAValidationWithLLM } from "./tools/validation.js";
 
 // ---------------------------------------------------------------------------
 // Backward-compat exports — existing tests import these from ../src/index.js
 // ---------------------------------------------------------------------------
 
-export { deriveDefaultQAResult, synthesizeQAValidationWithLLM };
-export type { QAValidationResult } from "./tools/validation.js";
-export { deriveQualityReport };
 export type { QAReport } from "./tools/reporting.js";
+export type { QAValidationResult } from "./tools/validation.js";
+export { deriveDefaultQAResult, deriveQualityReport, synthesizeQAValidationWithLLM };
 
 // ---------------------------------------------------------------------------
 // Server template

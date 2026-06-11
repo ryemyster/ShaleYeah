@@ -6,9 +6,8 @@
 
 import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-
-import { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
 import { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
+import { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
 import { deriveDrillingRiskProfile, synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
 
 // ---------------------------------------------------------------------------
@@ -43,12 +42,12 @@ export async function synthesizeDrillingAnalysisWithLLM(params: {
 	});
 }
 
+export type { WellCostBreakdown } from "./tools/costs.js";
+export { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
 // Re-export tool types for consumers
 export type { DrillingProgram } from "./tools/program.js";
-export type { WellCostBreakdown } from "./tools/costs.js";
-export type { DrillingRiskProfile } from "./tools/risks.js";
 export { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
-export { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
+export type { DrillingRiskProfile } from "./tools/risks.js";
 export { deriveDrillingRiskProfile, synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
 
 // ---------------------------------------------------------------------------
@@ -115,7 +114,7 @@ const drillingTemplate: ServerTemplate = {
 					formation: args.wellParameters.formation,
 					location: args.location ?? "unspecified",
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.80, 0.85) };
+				return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
 			},
 		),
 
@@ -133,7 +132,7 @@ const drillingTemplate: ServerTemplate = {
 					formation: args.wellParameters.formation,
 					environmentalConstraints: args.environmentalConstraints ?? [],
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.80, 0.88) };
+				return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.88) };
 			},
 		),
 	],

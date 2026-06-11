@@ -48,9 +48,7 @@ export function deriveDrillingProgram(
 		keyConsiderations: [
 			`${wellType} well to ${targetDepth}ft in ${formation}`,
 			isDeep ? "Deep target — elevated pore pressure risk" : "Moderate depth — standard drilling hazards apply",
-			isHorizontal
-				? "Lateral section requires careful torque and drag management"
-				: "Vertical profile — standard BHA",
+			isHorizontal ? "Lateral section requires careful torque and drag management" : "Vertical profile — standard BHA",
 		],
 		recommendation: `Proceed with ${programRisk.toLowerCase()}-risk mitigation plan. ${isHorizontal ? "Optimize lateral length vs. cost." : "Standard casing program appropriate."}`,
 	};
@@ -87,7 +85,9 @@ Return ONLY valid JSON in this exact shape:
 		const raw = await callLLM({ prompt, maxTokens: 350 });
 		const match = raw.match(/\{[\s\S]*\}/);
 		if (!match) throw new Error("No JSON in response");
-		const parsed = JSON.parse(match[0]) as Partial<Pick<DrillingProgram, "programRisk" | "keyConsiderations" | "recommendation">>;
+		const parsed = JSON.parse(match[0]) as Partial<
+			Pick<DrillingProgram, "programRisk" | "keyConsiderations" | "recommendation">
+		>;
 		const validRisks: string[] = ["High", "Medium", "Low"];
 		if (!validRisks.includes(parsed.programRisk ?? "")) throw new Error("Invalid programRisk");
 

@@ -1,19 +1,19 @@
 {
-  "name": "@shaleyeah/risk-analyst",
-  "version": "0.1.0",
-  "description": "Risk Analyst — Tier 2 intelligence layer for risk assessment",
-  "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "scripts": {
-    "build": "tsc",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@shaleyeah/sdk": "workspace:*"
-  },
-  "devDependencies": {
-    "@types/node": "^25.6.0",
-    "typescript": "^6.0.2"
-  }
+	"name": "@shaleyeah/risk-analyst",
+	"version": "0.1.0",
+	"description": "Risk Analyst — Tier 2 intelligence layer for risk assessment",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@shaleyeah/sdk": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^25.6.0",
+		"typescript": "^6.0.2"
+	}
 }

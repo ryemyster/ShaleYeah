@@ -15,43 +15,57 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { PermanentToolError, RetryableToolError } from "@shaleyeah/sdk";
 
 export async function callTitleTool(
-    url: string,
-    toolName: string,
-    args: Record<string, unknown>,
-    options: { timeoutMs?: number } = {},
+	url: string,
+	toolName: string,
+	args: Record<string, unknown>,
+	options: { timeoutMs?: number } = {},
 ): Promise<unknown> {
-    const timeoutMs = options.timeoutMs ?? 30_000;
+	const timeoutMs = options.timeoutMs ?? 30_000;
 
-    const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(
-            () => reject(new RetryableToolError(`Tool call to ${toolName} timed out after ${timeoutMs}ms`)),
-            timeoutMs,
-        ),
-    );
+	const timeoutPromise = new Promise<never>((_, reject) =>
+		setTimeout(
+			() =>
+				reject(
+					new RetryableToolError(
+						`Tool call to ${toolName} timed out after ${timeoutMs}ms`,
+					),
+				),
+			timeoutMs,
+		),
+	);
 
-    const callPromise = (async () => {
-        const transport = new StreamableHTTPClientTransport(new URL(url));
-        const client = new Client({ name: "title-analyst", version: "0.1.0" });
-        await client.connect(transport);
-        try {
-            const result = await client.callTool({ name: toolName, arguments: args });
-            return result.content;
-        } finally {
-            await client.close().catch(() => {});
-        }
-    })();
+	const callPromise = (async () => {
+		const transport = new StreamableHTTPClientTransport(new URL(url));
+		const client = new Client({ name: "title-analyst", version: "0.1.0" });
+		await client.connect(transport);
+		try {
+			const result = await client.callTool({ name: toolName, arguments: args });
+			return result.content;
+		} finally {
+			await client.close().catch(() => {});
+		}
+	})();
 
-    try {
-        return await Promise.race([callPromise, timeoutPromise]);
-    } catch (err) {
-        if (err instanceof RetryableToolError || err instanceof PermanentToolError) throw err;
+	try {
+		return await Promise.race([callPromise, timeoutPromise]);
+	} catch (err) {
+		if (err instanceof RetryableToolError || err instanceof PermanentToolError)
+			throw err;
 
-        const msg = err instanceof Error ? err.message : String(err);
+		const msg = err instanceof Error ? err.message : String(err);
 
-        if (/ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|fetch failed/i.test(msg)) {
-            throw new RetryableToolError(`Network error calling ${toolName}: ${msg}`, err instanceof Error ? err : undefined);
-        }
+		if (
+			/ECONNREFUSED|ECONNRESET|ETIMEDOUT|ENETUNREACH|fetch failed/i.test(msg)
+		) {
+			throw new RetryableToolError(
+				`Network error calling ${toolName}: ${msg}`,
+				err instanceof Error ? err : undefined,
+			);
+		}
 
-        throw new PermanentToolError(`Tool call to ${toolName} failed: ${msg}`, err instanceof Error ? err : undefined);
-    }
+		throw new PermanentToolError(
+			`Tool call to ${toolName} failed: ${msg}`,
+			err instanceof Error ? err : undefined,
+		);
+	}
 }
