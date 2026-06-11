@@ -4,4 +4,5 @@ packages:
   - 'servers/*'
   - 'orchestrator'
 allowBuilds:
+  '@biomejs/biome': set this to true or false
   esbuild: true
