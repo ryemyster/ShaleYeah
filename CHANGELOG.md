@@ -17,6 +17,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
   - `agents/title-analyst/src/agent/` — manifest (4 tools, port 3010), runtime config, `runTitleAnalystTask()` Layer 2 loop, title MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (31)
 
+- **infrastructure / infrastructure-planner pair — Steps A + B** (#375) — Tier 1 server modularization (single `plan_infrastructure` → 4 focused tools) and Tier 2 agent for O&G surface infrastructure planning.
+  - `servers/infrastructure/src/tools/` — 4 domain modules: `pipeline.ts` (gathering/transmission routing), `facilities.ts` (battery/separator/compressor/SWD sizing), `cost-estimation.ts` (CAPEX with contingency), `compliance.ts` (permits and approval timeline); `tests/tools.test.ts` (28 tests)
+  - `agents/infrastructure-planner/src/agent/` — manifest (4 tools: `plan_pipeline`, `size_facilities`, `estimate_costs`, `assess_compliance`, port 3012), runtime config, `runInfrastructurePlannerTask()` Layer 2 loop, infrastructure MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (31)
+
+- **drilling / drilling-engineer pair — Steps A + B** (#374) — Tier 1 server modularization and Tier 2 agent for O&G well design and drilling operations.
+  - `servers/drilling/src/tools/` — 3 domain modules: `program.ts` (drilling program design), `costs.ts` (well cost estimation with depth/type breakdown), `risks.ts` (geological, operational, and environmental risk scoring); `tests/tools.test.ts` (30 tests)
+  - `agents/drilling-engineer/src/agent/` — manifest (3 tools: `design_drilling_program`, `estimate_well_costs`, `assess_drilling_risks`, port 3003), runtime config, `runDrillingEngineerTask()` Layer 2 loop, drilling MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (34)
+
+- **development-planner Step B** (#373) — Tier 2 agent implementation for O&G field development planning, wrapping the `servers/development` MCP server.
+  - `agents/development-planner/src/agent/` — manifest (3 tools: `create_development_plan`, `estimate_project_timeline`, `monitor_development_progress`, port 3011), runtime config, `runDevelopmentPlannerTask()` Layer 2 loop, development MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (42)
+
+- **qa-server Tier 1 split** (#411) — Split monolithic `servers/qa-server/src/index.ts` into focused domain modules; clarified that the QA server validates O&G analysis outputs (peer review of deal analysis), not runtime software monitoring.
+  - `servers/qa-server/src/tools/validation.ts` — `QAValidationResult`, `deriveDefaultQAResult()`, `synthesizeQAValidationWithLLM()`
+  - `servers/qa-server/src/tools/reporting.ts` — `QAReport`, `deriveQualityReport()` (extracted from inline handler)
+  - `servers/qa-server/tests/tools.test.ts` — 23 domain logic tests covering threshold boundaries, metric presence, and N/A telemetry fields
+  - `src/index.ts` is now a thin facade preserving all backward-compat exports
+
+- **Deleted stale SDK kernel test files** — removed `sdk/tests/kernel-dependency-hints.test.ts` and `sdk/tests/kernel-resource-reference.test.ts` which imported from `sdk/src/kernel/registry.js` and `sdk/src/kernel/context.js` — the kernel was deleted in the monorepo conversion (#385) and these files caused `ERR_MODULE_NOT_FOUND` at runtime, blocking `pnpm turbo test`. All other sdk test failures were cascade effects of this exit-1.
+
 ### Fixed
 
 - **CI: invalid pnpm/action-setup SHA** — replaced non-existent commit hash `fe02b74` with correct v4.1.0 SHA `a7487c7e` in `ci.yml`, `codeql.yml`, and `release.yml`; both "PR checks" and "CodeQL Security Analysis" jobs were failing at "Set up job" before running any code.
