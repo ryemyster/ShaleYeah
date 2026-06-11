@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **research / research-analyst pair — Steps A + B + C** (#369) — Tier 1 server modularization and full Tier 2 agent for O&G market intelligence.
+  - `servers/research/src/tools/` — 2 domain modules: `market-research.ts` (web intelligence, trend analysis, price forecasts, LLM synthesis), `competitive-analysis.ts` (competitor profiles, threat classification); re-exports test helpers from `index.ts`
+  - `agents/research-analyst/src/agent/` — manifest (2 tools, port 3008), runtime config, `runResearchAnalystTask()` Layer 2 loop with Permission Gate + HITL, `callResearchTool` MCP HTTP client (Arcade #28 #39 #40); `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (34)
+
 - **legal / legal-analyst pair — Steps A + B** (#370) — Tier 1 server modularization and Tier 2 agent for oil & gas legal analysis.
   - `servers/legal/src/tools/` — 3 domain modules: `regulatory.ts` (jurisdiction risk + permit planning), `contract.ts` (JOA/lease/farmout risk classification), `compliance.ts` (environmental/safety/tax requirements); `tests/tools.test.ts` (32 tests)
   - `agents/legal-analyst/src/agent/` — manifest (3 tools, port 3006), runtime config, `runLegalAnalystTask()` Layer 2 loop, legal MCP HTTP client; `tests/mcp-client.test.ts` (12) + `tests/agent.test.ts` (41)

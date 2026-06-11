@@ -1,8 +1,8 @@
 # @shaleyeah/research-analyst
 
-> **Status: Stub** — implementation tracked in [#369](https://github.com/ryemyster/ShaleYeah/issues/369). Reference implementation: `agents/geologist/`.
+O&G market intelligence agent. Pairs with the **research** Tier 1 MCP server to deliver competitive landscape analysis, price forecasting, and evidence-backed recommendations.
 
-The research analyst agent searches technical literature, operator activity reports, permit databases, and competitor filings to build intelligence packages. It pairs with the **research** Tier 1 MCP server (port 3008).
+Implemented in [#369](https://github.com/ryemyster/ShaleYeah/issues/369). Reference implementation: `agents/geologist/`.
 
 ## Pair
 
@@ -11,20 +11,30 @@ The research analyst agent searches technical literature, operator activity repo
 | Tier 1 (tools) | `@shaleyeah/server-research` | 3008 |
 | Tier 2 (agent) | `@shaleyeah/research-analyst` | 4008 |
 
-## Quick start (once implemented)
+## Quick start
 
 ```bash
 # Terminal 1 — Tier 1 server
 cd servers/research && PORT=3008 pnpm start
 
-# Terminal 2 — Tier 2 agent
+# Terminal 2 — run a task
 cd agents/research-analyst
-ANTHROPIC_API_KEY=sk-ant-... RESEARCH_MCP_URL=http://localhost:3008 pnpm test
+ANTHROPIC_API_KEY=sk-ant-... RESEARCH_MCP_URL=http://localhost:3008 \
+  npx tsx src/agent/index.ts "Research Permian Basin competitive landscape"
 ```
 
-## Implementing this agent
+## Tools
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `researchAnalyst` and `geowiz` → `research`.
+| Tool | Description |
+|------|-------------|
+| `research-analyst.conduct_market_research` | Web intelligence, trend analysis, price forecasts, LLM synthesis |
+| `research-analyst.analyze_competition` | Competitor profiles, threat classification, strategic benchmarking |
+
+## Tests
+
+```bash
+pnpm test   # 47 tests (13 mcp-client + 34 agent contract)
+```
 
 ## Docs
 
