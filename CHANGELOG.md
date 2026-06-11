@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **qa-server Tier 1 split** (#411) — Modularized `servers/qa-server/src/index.ts` into 2 focused domain modules.
+  - `validation.ts` — `QAValidationResult`, `deriveDefaultQAResult`, `synthesizeQAValidationWithLLM`
+  - `reporting.ts` — `QAReport`, `deriveQualityReport` (extracted deterministic fallback from handler)
+  - 23 new domain logic tests in `tests/tools.test.ts`; all 2 existing server tests still pass
+
 - **title / title-analyst pair — Steps A + B** (#372) — Full Tier 1 server modularization and Tier 2 agent implementation for oil & gas title analysis.
   - `servers/title/src/tools/` — 4 focused modules (ownership, lease-analysis, burden-check, chain-of-title) with LLM synthesis + deterministic fallbacks; `tests/tools.test.ts` (22 tests)
   - `agents/title-analyst/src/agent/` — manifest (4 tools, port 3010), runtime config, `runTitleAnalystTask()` Layer 2 loop, title MCP HTTP client; `tests/mcp-client.test.ts` (13) + `tests/agent.test.ts` (31)
