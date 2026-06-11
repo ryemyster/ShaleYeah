@@ -1,88 +1,33 @@
 #!/usr/bin/env node
-
 /**
- * Test MCP Server - DRY Refactored
- * Testius Validatus - Master Quality Engineer
+ * QA MCP Server — Testius Validatus, Master Quality Engineer.
+ *
+ * Validates O&G analysis outputs (economic models, geological assessments,
+ * compliance claims) before they reach the investment chair. This is peer
+ * review of deal analysis, not software monitoring.
+ *
+ * Thin facade — all domain logic lives in src/tools/.
  */
 
 import fs from "node:fs/promises";
-import { callLLM, type MCPServer, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { type MCPServer, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 
+import { deriveDefaultQAResult, synthesizeQAValidationWithLLM } from "./tools/validation.js";
+import { deriveQualityReport } from "./tools/reporting.js";
+
 // ---------------------------------------------------------------------------
-// Exported helpers (used by tests)
+// Backward-compat exports — existing tests import these from ../src/index.js
 // ---------------------------------------------------------------------------
 
-export interface QAValidationResult {
-	overallStatus: "PASS" | "FAIL" | "WARNING";
-	issues: string[];
-	recommendation: string;
-}
+export { deriveDefaultQAResult, synthesizeQAValidationWithLLM };
+export type { QAValidationResult } from "./tools/validation.js";
+export { deriveQualityReport };
+export type { QAReport } from "./tools/reporting.js";
 
-/**
- * Rule-based QA validation — fallback when the API is unavailable.
- * Output varies with targets and criteria so tests can verify determinism.
- */
-export function deriveDefaultQAResult(targets: string[], accuracyThreshold: number): QAValidationResult {
-	// Stricter accuracy threshold → higher chance of flagging issues
-	const isTight = accuracyThreshold > 0.97;
-	const hasMultipleTargets = targets.length > 3;
-
-	return {
-		overallStatus: isTight ? "WARNING" : "PASS",
-		issues: isTight ? [`Accuracy threshold of ${accuracyThreshold * 100}% is aggressive — monitor closely`] : [],
-		recommendation: hasMultipleTargets
-			? `Validate all ${targets.length} targets individually before sign-off`
-			: "Standard QA process is sufficient for this scope",
-	};
-}
-
-/**
- * Ask Claude (Testius Validatus) to review the QA targets and flag inconsistencies.
- * Falls back to deriveDefaultQAResult() if the API is unavailable.
- */
-export async function synthesizeQAValidationWithLLM(params: {
-	testSuite: string;
-	targets: string[];
-	accuracyThreshold: number;
-	complianceStandards: string[];
-}): Promise<QAValidationResult> {
-	const { testSuite, targets, accuracyThreshold, complianceStandards } = params;
-
-	const prompt = `You are Testius Validatus, a master quality assurance engineer for oil & gas analysis systems.
-
-Review the following QA test configuration and identify any potential issues or risks. Return a JSON object.
-
-TEST SUITE: ${testSuite}
-TARGETS: ${targets.join(", ")}
-ACCURACY THRESHOLD: ${accuracyThreshold * 100}%
-COMPLIANCE STANDARDS: ${complianceStandards.length > 0 ? complianceStandards.join(", ") : "None specified"}
-
-Return ONLY valid JSON in this exact shape:
-{
-  "overallStatus": "PASS" | "FAIL" | "WARNING",
-  "issues": ["<issue 1 if any>"],
-  "recommendation": "<one sentence QA recommendation>"
-}
-
-Flag WARNING if thresholds seem unrealistic or targets are ambiguous. Flag FAIL only for clear compliance gaps.`;
-
-	try {
-		const raw = await callLLM({ prompt, maxTokens: 300 });
-		const match = raw.match(/\{[\s\S]*\}/);
-		if (!match) throw new Error("No JSON in response");
-		const parsed = JSON.parse(match[0]) as Partial<QAValidationResult>;
-		const validStatuses = ["PASS", "FAIL", "WARNING"];
-		if (!validStatuses.includes(parsed.overallStatus ?? "")) throw new Error("Invalid overallStatus");
-		return {
-			overallStatus: parsed.overallStatus as "PASS" | "FAIL" | "WARNING",
-			issues: parsed.issues ?? [],
-			recommendation: parsed.recommendation ?? "",
-		};
-	} catch (_err) {
-		return deriveDefaultQAResult(targets, accuracyThreshold);
-	}
-}
+// ---------------------------------------------------------------------------
+// Server template
+// ---------------------------------------------------------------------------
 
 const testTemplate: ServerTemplate = {
 	name: "test",
@@ -116,8 +61,6 @@ const testTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				// Ask Claude to validate the QA configuration and flag inconsistencies.
-				// Falls back to rule-based validation if API is unavailable.
 				const validation = await synthesizeQAValidationWithLLM({
 					testSuite: args.testSuite,
 					targets: args.targets,
@@ -196,61 +139,14 @@ const testTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				// Metrics requiring live telemetry (Prometheus, Datadog, etc.) are marked N/A.
-				// This server provides LLM-based QA validation, not runtime monitoring.
-				const requestedMetrics = args.metrics;
-				const analysis = {
-					report: {
-						type: args.reportType,
-						period: args.period,
-						generated: new Date().toISOString(),
-					},
-					dataSource: "llm-validation",
-					metrics: {
-						accuracy: requestedMetrics.includes("accuracy")
-							? {
-									current: "N/A — requires live telemetry",
-									target: "N/A",
-									trend: "N/A",
-								}
-							: undefined,
-						performance: requestedMetrics.includes("performance")
-							? {
-									// p50 latency and uptime require a running service to measure
-									avgResponseTime: "N/A",
-									uptime: "N/A",
-									trend: "N/A",
-								}
-							: undefined,
-						reliability: requestedMetrics.includes("reliability")
-							? {
-									// Error rate and MTBF require failure tracking infrastructure
-									errorRate: "N/A",
-									mtbf: "N/A",
-									trend: "N/A",
-								}
-							: undefined,
-					},
-					compliance: {
-						// Compliance status is assessed by LLM against declared standards, not a live audit
-						status: "LLM-assessed — verify with formal audit",
-						lastAudit: "N/A",
-						nextReview: "N/A",
-						gaps: [],
-					},
-					recommendations: [
-						"Connect to live telemetry (Prometheus/Datadog) for runtime metrics",
-						"Schedule formal compliance audit to replace LLM assessment",
-						"Continue LLM-based QA validation for configuration and threshold review",
-					],
-					confidence: ServerUtils.calculateConfidence(0.94, 0.9),
-				};
+				const report = deriveQualityReport(args.reportType, args.period, args.metrics);
+				const result = { ...report, confidence: ServerUtils.calculateConfidence(0.94, 0.9) };
 
 				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
 				}
 
-				return analysis;
+				return result;
 			},
 		),
 	],

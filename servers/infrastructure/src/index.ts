@@ -1,184 +1,191 @@
 #!/usr/bin/env node
 
 /**
- * Infrastructure MCP Server - DRY Refactored
- * Structura Ingenious - Master Infrastructure Architect
+ * Infrastructure MCP Server
+ * Structura Ingenious — Master Infrastructure Architect
+ *
+ * Four focused tools replacing the original monolithic plan_infrastructure:
+ *   plan_pipeline     — gathering/transmission routing, capacity, takeaway risk
+ *   size_facilities   — batteries, separators, compressors, SWD wells
+ *   estimate_costs    — pipeline + facility + compression + SWD CAPEX
+ *   assess_compliance — permits, approval timeline, environmental risk
  */
 
-import fs from "node:fs/promises";
 import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
+import {
+    type ComplianceAssessment,
+    deriveComplianceAssessment,
+    synthesizeComplianceAssessmentWithLLM,
+} from "./tools/compliance.js";
+import {
+    type FacilitySizing,
+    deriveFacilitySizing,
+    synthesizeFacilitySizingWithLLM,
+} from "./tools/facilities.js";
+import {
+    type InfrastructureCostEstimate,
+    deriveInfrastructureCostEstimate,
+    synthesizeCostEstimateWithLLM,
+} from "./tools/cost-estimation.js";
+import { type PipelinePlan, derivePipelinePlan, synthesizePipelinePlanWithLLM } from "./tools/pipeline.js";
 
-// ---------------------------------------------------------------------------
-// Exported helpers (used by tests)
-// ---------------------------------------------------------------------------
+export type { PipelinePlan, FacilitySizing, InfrastructureCostEstimate, ComplianceAssessment };
+export {
+    derivePipelinePlan,
+    synthesizePipelinePlanWithLLM,
+    deriveFacilitySizing,
+    synthesizeFacilitySizingWithLLM,
+    deriveInfrastructureCostEstimate,
+    synthesizeCostEstimateWithLLM,
+    deriveComplianceAssessment,
+    synthesizeComplianceAssessmentWithLLM,
+};
 
+// Backward-compatibility shim — existing tests import this interface and helper.
 export interface InfrastructureInterpretation {
-	takeawayRisk: string;
-	keyConstraints: string[];
-	recommendation: string;
+    takeawayRisk: string;
+    keyConstraints: string[];
+    recommendation: string;
 }
 
-/**
- * Rule-based infrastructure interpretation — fallback when the API is unavailable.
- * Output varies with well count and production so tests can verify determinism.
- */
 export function deriveDefaultInfrastructureInterpretation(
-	wellCount: number,
-	expectedProduction: number,
-	location: string,
+    wellCount: number,
+    expectedProduction: number,
+    location: string,
 ): InfrastructureInterpretation {
-	const isLargeProject = wellCount > 20 || expectedProduction > 10000;
-	const isRemote = !["texas", "oklahoma", "kansas"].some((s) => location.toLowerCase().includes(s));
-
-	return {
-		takeawayRisk: isRemote ? "High" : isLargeProject ? "Medium" : "Low",
-		keyConstraints: [
-			`${wellCount} wells require ${Math.ceil(wellCount * 1.2)} miles of gathering line`,
-			isLargeProject ? "Large project — phased infrastructure buildout recommended" : "Single-phase buildout feasible",
-			isRemote
-				? "Remote location — midstream access may require new pipeline"
-				: "Existing midstream infrastructure accessible",
-		],
-		recommendation: `${isRemote ? "Secure midstream contract before committing capital." : "Standard gathering buildout."} ${isLargeProject ? "Phase infrastructure to match production ramp." : "Single phase appropriate for project scale."}`,
-	};
+    const plan = derivePipelinePlan(wellCount, expectedProduction, location);
+    return {
+        takeawayRisk: plan.takeawayRisk,
+        keyConstraints: [
+            `${wellCount} wells require ${plan.gatheringMiles} miles of gathering line`,
+            wellCount > 20 || expectedProduction > 10000
+                ? "Large project — phased infrastructure buildout recommended"
+                : "Single-phase buildout feasible",
+            plan.takeawayRisk === "High"
+                ? "Remote location — midstream access may require new pipeline"
+                : "Existing midstream infrastructure accessible",
+        ],
+        recommendation: plan.recommendation,
+    };
 }
 
-/**
- * Ask Claude (Structura Ingenious) to assess takeaway constraints and midstream risk.
- * Falls back to deriveDefaultInfrastructureInterpretation() if the API is unavailable.
- */
 export async function synthesizeInfrastructureAnalysisWithLLM(params: {
-	wellCount: number;
-	expectedProduction: number;
-	location: string;
-	totalCost: number;
+    wellCount: number;
+    expectedProduction: number;
+    location: string;
+    totalCost: number;
 }): Promise<InfrastructureInterpretation> {
-	const { wellCount, expectedProduction, location, totalCost } = params;
-
-	const prompt = `You are Structura Ingenious, a master infrastructure architect for oil & gas projects.
-
-Assess the infrastructure and takeaway constraints for this project. Return a JSON object.
-
-PROJECT:
-Well count: ${wellCount}
-Expected production: ${expectedProduction} bopd
-Location: ${location}
-Estimated infrastructure cost: $${(totalCost / 1_000_000).toFixed(2)}M
-
-Return ONLY valid JSON in this exact shape:
-{
-  "takeawayRisk": "High" | "Medium" | "Low",
-  "keyConstraints": ["<constraint 1>", "<constraint 2>", "<constraint 3>"],
-  "recommendation": "<one sentence infrastructure recommendation>"
-}`;
-
-	try {
-		const raw = await callLLM({ prompt, maxTokens: 350 });
-		const match = raw.match(/\{[\s\S]*\}/);
-		if (!match) throw new Error("No JSON in response");
-		const parsed = JSON.parse(match[0]) as Partial<InfrastructureInterpretation>;
-		const validRisks = ["High", "Medium", "Low"];
-		if (!validRisks.includes(parsed.takeawayRisk ?? "")) throw new Error("Invalid takeawayRisk");
-		return {
-			takeawayRisk: parsed.takeawayRisk as string,
-			keyConstraints: parsed.keyConstraints ?? [],
-			recommendation: parsed.recommendation ?? "",
-		};
-	} catch (_err) {
-		return deriveDefaultInfrastructureInterpretation(wellCount, expectedProduction, location);
-	}
+    const { wellCount, expectedProduction, location } = params;
+    try {
+        const plan = await synthesizePipelinePlanWithLLM({ wellCount, expectedProduction, location });
+        return {
+            takeawayRisk: plan.takeawayRisk,
+            keyConstraints: [plan.recommendation],
+            recommendation: plan.recommendation,
+        };
+    } catch {
+        return deriveDefaultInfrastructureInterpretation(wellCount, expectedProduction, location);
+    }
 }
 
 const infrastructureTemplate: ServerTemplate = {
-	name: "infrastructure",
-	description: "Infrastructure Planning MCP Server",
-	persona: {
-		name: "Structura Ingenious",
-		role: "Master Infrastructure Architect",
-		expertise: [
-			"Pipeline and facility design",
-			"Capacity planning and optimization",
-			"Infrastructure integration",
-			"Cost estimation and budgeting",
-			"Regulatory compliance planning",
-		],
-	},
-	directories: ["plans", "capacity", "costs", "compliance", "reports"],
-	tools: [
-		ServerFactory.createAnalysisTool(
-			"plan_infrastructure",
-			"Plan infrastructure for development project",
-			z.object({
-				projectScope: z.object({
-					expectedProduction: z.number(),
-					wellCount: z.number(),
-					location: z.string(),
-				}),
-				requirements: z.array(z.string()),
-				constraints: z
-					.object({
-						budget: z.number().optional(),
-						timeline: z.string().optional(),
-						environmental: z.array(z.string()).optional(),
-					})
-					.optional(),
-				outputPath: z.string().optional(),
-			}),
-			async (args) => {
-				const totalCost = Math.round(args.projectScope.wellCount * 430000);
-
-				// Ask Claude to assess takeaway constraints and midstream risk.
-				// Falls back to rule-based interpretation if API is unavailable.
-				const interpretation = await synthesizeInfrastructureAnalysisWithLLM({
-					wellCount: args.projectScope.wellCount,
-					expectedProduction: args.projectScope.expectedProduction,
-					location: args.projectScope.location,
-					totalCost,
-				});
-
-				const analysis = {
-					project: args.projectScope,
-					interpretation,
-					infrastructure: {
-						pipelines: {
-							gathering: `${Math.round(args.projectScope.wellCount * 1.2)} miles`,
-							transmission: "12 miles to existing network",
-							capacity: `${Math.round(args.projectScope.expectedProduction * 1.1)} bopd`,
-						},
-						facilities: {
-							batteries: Math.ceil(args.projectScope.wellCount / 8),
-							separators: Math.ceil(args.projectScope.wellCount / 4),
-							compressors: Math.ceil(args.projectScope.expectedProduction / 5000),
-						},
-						costs: {
-							pipelines: Math.round(args.projectScope.wellCount * 250000),
-							facilities: Math.round(args.projectScope.wellCount * 180000),
-							total: totalCost,
-						},
-					},
-					compliance: {
-						permits: ["Pipeline ROW", "Facility Construction", "Environmental"],
-						timeline: "6-8 months for approvals",
-						risks: args.constraints?.environmental || [],
-					},
-					confidence: ServerUtils.calculateConfidence(0.85, 0.9),
-				};
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
-				}
-
-				return analysis;
-			},
-		),
-	],
+    name: "infrastructure",
+    description: "Infrastructure Planning MCP Server — pipeline, facilities, costs, and compliance",
+    persona: {
+        name: "Structura Ingenious",
+        role: "Master Infrastructure Architect",
+        expertise: [
+            "Pipeline and gathering system design",
+            "Surface facility sizing and layout",
+            "Infrastructure capital cost estimation",
+            "Permitting and regulatory compliance",
+            "Midstream takeaway capacity planning",
+        ],
+    },
+    directories: ["plans", "capacity", "costs", "compliance", "reports"],
+    tools: [
+        ServerFactory.createAnalysisTool(
+            "plan_pipeline",
+            "Plan gathering and transmission pipeline infrastructure — routing, capacity, and takeaway risk",
+            z.object({
+                wellCount: z.number().describe("Number of wells to connect"),
+                expectedProduction: z.number().describe("Expected total production in BOPD"),
+                location: z.string().describe("Project location (state, basin, or county)"),
+            }),
+            async (args) => {
+                const result = await synthesizePipelinePlanWithLLM({
+                    wellCount: args.wellCount,
+                    expectedProduction: args.expectedProduction,
+                    location: args.location,
+                });
+                return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+            },
+        ),
+        ServerFactory.createAnalysisTool(
+            "size_facilities",
+            "Size surface facilities — batteries, separators, compressors, and salt water disposal wells",
+            z.object({
+                wellCount: z.number().describe("Number of wells"),
+                expectedProduction: z.number().describe("Expected total production in BOPD"),
+                location: z.string().describe("Project location"),
+            }),
+            async (args) => {
+                const result = await synthesizeFacilitySizingWithLLM({
+                    wellCount: args.wellCount,
+                    expectedProduction: args.expectedProduction,
+                    location: args.location,
+                });
+                return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+            },
+        ),
+        ServerFactory.createAnalysisTool(
+            "estimate_costs",
+            "Estimate infrastructure capital costs (CAPEX) — pipelines, facilities, compression, and SWD",
+            z.object({
+                wellCount: z.number().describe("Number of wells"),
+                compressors: z.number().describe("Number of compressor units required"),
+                swdWells: z.number().describe("Number of salt water disposal wells required"),
+                location: z.string().describe("Project location"),
+            }),
+            async (args) => {
+                const result = await synthesizeCostEstimateWithLLM({
+                    wellCount: args.wellCount,
+                    compressors: args.compressors,
+                    swdWells: args.swdWells,
+                    location: args.location,
+                });
+                return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+            },
+        ),
+        ServerFactory.createAnalysisTool(
+            "assess_compliance",
+            "Assess permitting and regulatory compliance requirements — permits, timeline, and environmental risks",
+            z.object({
+                wellCount: z.number().describe("Number of wells"),
+                location: z.string().describe("Project location (state, basin, or county)"),
+                environmentalConstraints: z
+                    .array(z.string())
+                    .optional()
+                    .default([])
+                    .describe("Known environmental constraints or sensitivities"),
+            }),
+            async (args) => {
+                const result = await synthesizeComplianceAssessmentWithLLM({
+                    wellCount: args.wellCount,
+                    location: args.location,
+                    environmentalConstraints: args.environmentalConstraints ?? [],
+                });
+                return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
+            },
+        ),
+    ],
 };
 
 export const InfrastructureServer = ServerFactory.createServer(infrastructureTemplate);
 export default InfrastructureServer;
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new InfrastructureServer();
-	runMCPServer(server);
+    const server = new InfrastructureServer();
+    runMCPServer(server);
 }

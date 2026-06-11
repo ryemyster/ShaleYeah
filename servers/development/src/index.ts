@@ -1,99 +1,34 @@
 #!/usr/bin/env node
 /**
- * Development MCP Server - DRY Refactored
- * Architectus Developmentus - Master Development Strategist
+ * Development MCP Server — Architectus Developmentus, Master Development Strategist.
+ * Thin facade — all domain logic lives in src/tools/.
  */
 
 import fs from "node:fs/promises";
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 
+import { deriveDefaultDevelopmentOutlook, synthesizeDevelopmentOutlookWithLLM } from "./tools/planning.js";
+import { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM } from "./tools/phases.js";
+import { deriveProgressReport } from "./tools/monitoring.js";
+
 // ---------------------------------------------------------------------------
-// Exported helpers (used by tests)
+// Backward-compat exports — existing tests import these from ../src/index.js
 // ---------------------------------------------------------------------------
 
-export interface DevelopmentOutlook {
-	scheduleRisk: string;
-	budgetRisk: string;
-	criticalPath: string[];
-	recommendation: string;
-}
+export { deriveDefaultDevelopmentOutlook };
+export type { DevelopmentOutlook } from "./tools/planning.js";
+export type { DevelopmentPhase, PhaseSchedule } from "./tools/phases.js";
+export type { DevelopmentProgress } from "./tools/monitoring.js";
 
-/**
- * Rule-based development outlook — fallback when the API is unavailable.
- * Output varies with well count, budget, and constraints so tests confirm determinism.
- */
-export function deriveDefaultDevelopmentOutlook(
-	wellCount: number,
-	budget: number,
-	technicalConstraints: string[],
-): DevelopmentOutlook {
-	const isLarge = wellCount > 20;
-	const isTightBudget = budget < wellCount * 2_000_000; // less than $2M per well
-	const hasConstraints = technicalConstraints.length > 0;
+export { deriveDefaultDevelopmentOutlook as synthesizeDevelopmentAnalysisWithLLM };
+export { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM };
+export { deriveProgressReport };
+export { synthesizeDevelopmentOutlookWithLLM };
 
-	return {
-		scheduleRisk: isLarge ? "Medium" : "Low",
-		budgetRisk: isTightBudget ? "High" : hasConstraints ? "Medium" : "Low",
-		criticalPath: [
-			"Environmental approvals",
-			"Drilling permits",
-			isLarge ? "Phased rig mobilization" : "Equipment procurement",
-		],
-		recommendation: `${isLarge ? "Phased development recommended" : "Single-phase feasible"}. ${isTightBudget ? "Budget is tight — monitor AFE variance closely." : "Budget appears adequate for scope."}`,
-	};
-}
-
-/**
- * Ask Claude (Architectus Developmentus) to assess schedule and budget risks.
- * Falls back to deriveDefaultDevelopmentOutlook() if the API is unavailable.
- */
-export async function synthesizeDevelopmentAnalysisWithLLM(params: {
-	projectName: string;
-	wellCount: number;
-	budget: number;
-	technicalConstraints: string[];
-	totalDuration: string;
-}): Promise<DevelopmentOutlook> {
-	const { projectName, wellCount, budget, technicalConstraints, totalDuration } = params;
-
-	const prompt = `You are Architectus Developmentus, a master oil & gas development strategist.
-
-Assess the schedule and budget risks for this development project. Return a JSON object.
-
-PROJECT:
-Name: ${projectName}
-Well count: ${wellCount}
-Total budget: $${(budget / 1_000_000).toFixed(1)}M
-Total duration: ${totalDuration}
-Technical constraints: ${technicalConstraints.length > 0 ? technicalConstraints.join(", ") : "None specified"}
-
-Return ONLY valid JSON in this exact shape:
-{
-  "scheduleRisk": "High" | "Medium" | "Low",
-  "budgetRisk": "High" | "Medium" | "Low",
-  "criticalPath": ["<milestone 1>", "<milestone 2>", "<milestone 3>"],
-  "recommendation": "<one sentence development strategy recommendation>"
-}`;
-
-	try {
-		const raw = await callLLM({ prompt, maxTokens: 350 });
-		const match = raw.match(/\{[\s\S]*\}/);
-		if (!match) throw new Error("No JSON in response");
-		const parsed = JSON.parse(match[0]) as Partial<DevelopmentOutlook>;
-		const validRisks = ["High", "Medium", "Low"];
-		if (!validRisks.includes(parsed.scheduleRisk ?? "") || !validRisks.includes(parsed.budgetRisk ?? ""))
-			throw new Error("Invalid risk level");
-		return {
-			scheduleRisk: parsed.scheduleRisk as string,
-			budgetRisk: parsed.budgetRisk as string,
-			criticalPath: parsed.criticalPath ?? [],
-			recommendation: parsed.recommendation ?? "",
-		};
-	} catch (_err) {
-		return deriveDefaultDevelopmentOutlook(wellCount, budget, technicalConstraints);
-	}
-}
+// ---------------------------------------------------------------------------
+// Server template
+// ---------------------------------------------------------------------------
 
 const developmentTemplate: ServerTemplate = {
 	name: "development",
@@ -132,42 +67,33 @@ const developmentTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const phaseCount = Math.min(4, Math.ceil(args.project.wellCount / 10));
-				const wellsPerPhase = Math.ceil(args.project.wellCount / phaseCount);
 				const budget = args.constraints?.budget ?? 50_000_000;
 				const technicalConstraints = args.constraints?.technical ?? [];
-				const totalDuration = `${phaseCount * 8} months`;
 
-				// Ask Claude to assess schedule and budget risks for this project.
-				// Falls back to rule-based outlook if API is unavailable.
-				const outlook = await synthesizeDevelopmentAnalysisWithLLM({
-					projectName: args.project.name,
-					wellCount: args.project.wellCount,
-					budget,
-					technicalConstraints,
-					totalDuration,
-				});
+				const [schedule, outlook] = await Promise.all([
+					synthesizeDevelopmentPhasesWithLLM({
+						projectName: args.project.name,
+						wellCount: args.project.wellCount,
+						budget,
+						constraints: technicalConstraints,
+					}),
+					synthesizeDevelopmentOutlookWithLLM({
+						projectName: args.project.name,
+						wellCount: args.project.wellCount,
+						budget,
+						technicalConstraints,
+						totalDuration: `${Math.min(4, Math.ceil(args.project.wellCount / 10)) * 8} months`,
+					}),
+				]);
 
 				const analysis = {
 					project: args.project,
 					outlook,
 					development: {
-						strategy: args.project.wellCount > 20 ? "Phased development" : "Single phase",
-						phases: Array.from({ length: phaseCount }, (_, i) => ({
-							phase: i + 1,
-							wells: Math.min(wellsPerPhase, args.project.wellCount - i * wellsPerPhase),
-							duration: `${6 + i * 2} months`,
-							investment: Math.round(budget / phaseCount),
-							keyMilestones: [
-								"Permitting and approvals",
-								"Site preparation",
-								"Drilling operations",
-								"Completion and testing",
-								"Production startup",
-							],
-						})),
+						strategy: schedule.strategy,
+						phases: schedule.phases,
 						schedule: {
-							totalDuration,
+							totalDuration: schedule.totalDuration,
 							criticalPath: outlook.criticalPath,
 							riskFactors:
 								technicalConstraints.length > 0 ? technicalConstraints : ["Weather delays", "Equipment availability"],
@@ -206,6 +132,27 @@ const developmentTemplate: ServerTemplate = {
 				return analysis;
 			},
 		),
+
+		ServerFactory.createAnalysisTool(
+			"estimate_project_timeline",
+			"Estimate phased development timeline and milestones for a well program",
+			z.object({
+				projectName: z.string(),
+				wellCount: z.number().int().positive(),
+				budget: z.number().positive(),
+				constraints: z.array(z.string()).default([]),
+			}),
+			async (args) => {
+				const schedule = await synthesizeDevelopmentPhasesWithLLM({
+					projectName: args.projectName,
+					wellCount: args.wellCount,
+					budget: args.budget,
+					constraints: args.constraints,
+				});
+				return { ...schedule, confidence: ServerUtils.calculateConfidence(0.87, 0.9) };
+			},
+		),
+
 		ServerFactory.createAnalysisTool(
 			"monitor_development_progress",
 			"Monitor and analyze development project progress",
@@ -216,45 +163,14 @@ const developmentTemplate: ServerTemplate = {
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
-				const analysis = {
-					project: args.projectId,
-					period: args.reportingPeriod,
-					performance: {
-						// Stub: representative healthy project — replace with real project management data
-						schedule: {
-							status: "On track", // stub — replace with project schedule data
-							variance: 3, // stub: 3 days ahead — replace with actual vs planned dates
-							criticalIssues: [], // stub — replace with open issue tracking
-						},
-						budget: {
-							status: "Within budget", // stub — replace with AFE tracking data
-							variance: 2, // stub: 2% under — replace with actual vs AFE
-							majorVariances: [], // stub — replace with variance analysis
-						},
-						safety: {
-							incidents: 0, // stub: zero incidents — replace with safety management system
-							daysWithoutIncident: 45, // stub: 45 days — replace with actual safety log
-							complianceStatus: "Full compliance",
-						},
-						quality: {
-							wellSuccess: 92, // stub: 92% — replace with actual well completion results
-							reworkRequired: 0, // stub — replace with QC tracking data
-							standards: "Meeting all specifications",
-						},
-					},
-					recommendations: [
-						"Continue current operational approach",
-						"Monitor weather conditions closely",
-						"Maintain safety protocols",
-					],
-					confidence: ServerUtils.calculateConfidence(0.9, 0.85),
-				};
+				const progress = deriveProgressReport(args.projectId, args.reportingPeriod);
+				const result = { ...progress, confidence: ServerUtils.calculateConfidence(0.9, 0.85) };
 
 				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
 				}
 
-				return analysis;
+				return result;
 			},
 		),
 	],
