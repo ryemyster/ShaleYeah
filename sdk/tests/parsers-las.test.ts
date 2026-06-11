@@ -3,7 +3,6 @@
  * Tests LASParser error paths and parse output shape — no API key required.
  */
 
-import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -64,7 +63,8 @@ await test("parses minimal valid LAS 2.0 file", async () => {
 		"1000.0 45.0",
 	].join("\n");
 
-	const tmpFile = path.join(os.tmpdir(), `shaleyeah-test-${crypto.randomUUID()}.las`);
+	const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "shaleyeah-test-"));
+	const tmpFile = path.join(tmpDir, "data.las");
 	await fs.writeFile(tmpFile, lasContent, "utf-8");
 
 	try {
@@ -80,7 +80,7 @@ await test("parses minimal valid LAS 2.0 file", async () => {
 		assert(result.curves.length >= 1, "at least one curve parsed");
 		assert(result.metadata.curveCount >= 1, "metadata.curveCount >= 1");
 	} finally {
-		await fs.unlink(tmpFile).catch(() => {});
+		await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
 	}
 });
 

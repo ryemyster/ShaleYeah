@@ -3,7 +3,6 @@
  * Tests ExcelParser error paths and CSV parse output shape — no API key required.
  */
 
-import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -57,7 +56,8 @@ await test("parses minimal CSV file", async () => {
 		"2024-03,72.30,2.65,bbl/mmbtu",
 	].join("\n");
 
-	const tmpFile = path.join(os.tmpdir(), `shaleyeah-test-${crypto.randomUUID()}.csv`);
+	const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "shaleyeah-test-"));
+	const tmpFile = path.join(tmpDir, "data.csv");
 	await fs.writeFile(tmpFile, csvContent, "utf-8");
 
 	try {
@@ -70,7 +70,7 @@ await test("parses minimal CSV file", async () => {
 		assert(result.rowCount > 0, "rowCount > 0");
 		assert(Array.isArray(result.data), "data is an array");
 	} finally {
-		await fs.unlink(tmpFile).catch(() => {});
+		await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
 	}
 });
 

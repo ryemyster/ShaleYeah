@@ -3,7 +3,6 @@
  * Tests GISParser error paths and parse output shape — no API key required.
  */
 
-import crypto from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -75,7 +74,8 @@ await test("parses minimal valid GeoJSON file", async () => {
 		],
 	};
 
-	const tmpFile = path.join(os.tmpdir(), `shaleyeah-test-${crypto.randomUUID()}.geojson`);
+	const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "shaleyeah-test-"));
+	const tmpFile = path.join(tmpDir, "data.geojson");
 	await fs.writeFile(tmpFile, JSON.stringify(geojson), "utf-8");
 
 	try {
@@ -92,7 +92,7 @@ await test("parses minimal valid GeoJSON file", async () => {
 		assert(typeof result.bounds.minX === "number", "bounds.minX is a number");
 		assert(typeof result.bounds.maxY === "number", "bounds.maxY is a number");
 	} finally {
-		await fs.unlink(tmpFile).catch(() => {});
+		await fs.rm(tmpDir, { recursive: true, force: true }).catch(() => {});
 	}
 });
 
