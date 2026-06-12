@@ -61,4 +61,5 @@ outputs/
 leaks.json
 gitleaks-report.json
 .claude/
+.claude.json
 CLAUDE.md
