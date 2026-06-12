@@ -148,7 +148,10 @@ export class LocalAgentRuntime implements AgentRuntime {
 		if (request.grantedScopes) {
 			const missing = tool.requiredScopes.filter((s) => !request.grantedScopes!.includes(s));
 			if (missing.length > 0) {
-				return this.failed(tool.name, `Missing required scopes: ${missing.join(", ")}`, tool.modelRequirement);
+				const scopeError = `Missing required scopes: ${missing.join(", ")}`;
+				const result = this.failed(tool.name, scopeError, tool.modelRequirement);
+				this.audit(tool.name, request.args, result, Date.now() - startMs, scopeError);
+				return result;
 			}
 		}
 

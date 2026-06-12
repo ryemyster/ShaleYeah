@@ -266,6 +266,32 @@ console.log("\n🔒 Testing scope enforcement (issue #403)...");
 	await runtime.shutdown();
 }
 
+{
+	// Scope failures must be audited — the missing-scopes message must appear in the audit log.
+	const auditEntries: unknown[] = [];
+	const { LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	const auditRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: geologistConfig,
+		handlers: Object.fromEntries(geologistManifest.tools.map((t) => [t.name, async () => ({ ok: true })])),
+		auditLogger: (entry) => auditEntries.push(entry),
+	});
+	await auditRuntime.initialize();
+
+	await auditRuntime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+		grantedScopes: [],
+	});
+
+	assert(auditEntries.length === 1, "Scope failure produces an audit entry");
+	const entry = auditEntries[0] as { status: string; error?: string } | undefined;
+	assert(entry?.status === "failed", "Audit entry status is failed");
+	assert(entry?.error?.includes("Missing required scopes") ?? false, "Audit entry error names missing scopes");
+
+	await auditRuntime.shutdown();
+}
+
 console.log("\n🧱 Testing blocking eval halt (issue #404)...");
 {
 	// A handler that returns undefined triggers the schema blocking eval.
