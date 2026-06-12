@@ -322,6 +322,58 @@ console.log("\n🧱 Testing blocking eval halt (issue #404)...");
 	await testRuntime.shutdown();
 }
 
+// redactSecrets blocking: handler returns output containing an sk- key — must halt (#404).
+{
+	const { LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	const secretRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: {
+			...geologistConfig,
+			evals: { ...geologistConfig.evals, checks: { ...geologistConfig.evals.checks, redactSecrets: "blocking" } },
+		},
+		handlers: Object.fromEntries(
+			geologistManifest.tools.map((t) => [t.name, async () => ({ value: "sk-abc123-leaked-key" })]),
+		),
+	});
+	await secretRuntime.initialize();
+	const secretResult = await secretRuntime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+	});
+	assert(secretResult.status === "failed", "redactSecrets blocking halts on sk- output");
+	if (secretResult.status === "failed") {
+		assert(secretResult.error.includes("redactSecrets"), "redactSecrets error names the check");
+		assert(secretResult.retryable === false, "redactSecrets blocking failure is not retryable");
+	}
+	await secretRuntime.shutdown();
+}
+
+// Advisory schema eval: handler returns undefined but schema is advisory — must complete with warn (#404).
+{
+	const { LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	const advisoryRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: {
+			...geologistConfig,
+			evals: { ...geologistConfig.evals, checks: { ...geologistConfig.evals.checks, schema: "advisory" } },
+		},
+		handlers: Object.fromEntries(geologistManifest.tools.map((t) => [t.name, async () => undefined])),
+	});
+	await advisoryRuntime.initialize();
+	const advisoryResult = await advisoryRuntime.execute({
+		toolName: "geologist.assess_quality",
+		args: { filePath: "test.las", dataType: "las" },
+	});
+	assert(advisoryResult.status === "completed", "Advisory schema failure still completes");
+	if (advisoryResult.status === "completed") {
+		const schemaEval = advisoryResult.evals.find((e) => e.check === "schema");
+		assert(schemaEval !== undefined, "Advisory schema eval is present in evals array");
+		assert(schemaEval?.status === "fail", "Advisory schema eval records a fail");
+		assert(schemaEval?.blocking === false, "Advisory schema eval is not blocking");
+	}
+	await advisoryRuntime.shutdown();
+}
+
 console.log("\n🔀 Testing model routing resolution (issue #402)...");
 {
 	// After fixing geologistConfig.modelRouting, the standard-analysis binding must use a real
