@@ -52,20 +52,9 @@ cd servers/geowiz && pnpm test
 
 For each package: verify no new uncovered exports were added. The goal is lines ≥ 90% per package. If coverage drops, identify the uncovered files and tell the user which tests to add.
 
-## Step 4 — Diff summary (skip if context-engine is down)
+## Step 4 — Diff summary (skip if context-engine is unreachable)
 
-```bash
-curl -s http://localhost:8088/healthcheck
-```
-
-If 200, run:
-```bash
-curl -s -X POST http://localhost:8088/diff-summary \
-  -H "Content-Type: application/json" \
-  -d "{\"diff\": \"$(git diff HEAD)\"}"
-```
-
-Then read `~/Library/Application Support/context-store/artifacts/diff-*.md`. Review the `risks` field. Flag any blocking risks to the user.
+Use the `review_diff` MCP tool with the output of `git diff HEAD`. Review the `risks` field from the result. Flag any blocking risks to the user. If the MCP tool is unreachable, skip this step.
 
 ## Output format
 

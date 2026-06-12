@@ -32,13 +32,9 @@ See [`docs/SERVERS.md`](../../docs/SERVERS.md) for the full server and tool refe
 
 ## Steps
 
-1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+1. **Load context via context-engine:**
 
-   ```bash
-   curl -s -X POST http://localhost:8088/find \
-     -H "Content-Type: application/json" \
-     -d '{"concept": "<research topic>", "paths": ["ryemyster/ShaleYeah/servers","ryemyster/ShaleYeah/agents","ryemyster/ShaleYeah/sdk"]}'
-   ```
+   Use the `find_in_code` MCP tool with `query` set to the research topic and `path` set to `ryemyster/ShaleYeah`. Results returned inline — shows where the topic already surfaces in the codebase. Skip if unreachable.
 
    Read the output to understand what currently exists before researching what to build.
 

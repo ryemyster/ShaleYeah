@@ -10,17 +10,9 @@ Invoked automatically as part of `/finish-issue`. Can also be run standalone aft
 
 ## Steps
 
-1. **Scan impacted doc directories via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+1. **Scan impacted doc directories via context-engine:**
 
-   For each package touched by the current branch diff, scan its `docs/` directory:
-
-   ```bash
-   curl -s -X POST http://localhost:8088/scan \
-     -H "Content-Type: application/json" \
-     -d '{"path": "ryemyster/ShaleYeah/<package>/docs"}'
-   ```
-
-   Read the scan output from `~/Library/Application Support/context-store/artifacts/scan-*.md`. Use it to identify stale sections, orphaned files, and outdated status markers before opening any doc file manually.
+   For each package touched by the current branch diff, use the `scan_directory` MCP tool with `path` set to `ryemyster/ShaleYeah/<package>/docs`. Results returned inline — use them to identify stale sections, orphaned files, and outdated status markers before opening any doc file manually. Skip if unreachable.
 
 2. **Identify changed files** since the branch diverged from develop:
 

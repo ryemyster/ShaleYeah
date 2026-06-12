@@ -8,20 +8,18 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
 
 ## Steps
 
-1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+1. **Load context via context-engine:**
 
-   ```bash
-   TITLE=$(gh issue view <issue-number> --json title -q .title)
-   curl -s -X POST http://localhost:8088/context \
-     -H "Content-Type: application/json" \
-     -d "{\"task\": \"Finish issue: $TITLE\", \"paths\": [\"ryemyster/ShaleYeah/sdk/src\",\"ryemyster/ShaleYeah/servers\",\"ryemyster/ShaleYeah/agents\"], \"focus\": [\"<issue-slug>\"]}"
-   ```
+   Use the `load_context` MCP tool:
+   - `task`: `"Finish issue: <issue title>"`
+   - `paths`: `["ryemyster/ShaleYeah/sdk/src", "ryemyster/ShaleYeah/servers", "ryemyster/ShaleYeah/agents"]`
+   - `focus`: the issue slug
 
-   Read `~/Library/Application Support/context-store/artifacts/context-bundle.md` before proceeding. Note the `suggested_files` and `risks` fields.
+   Note `suggested_files` and `risks` from the result before proceeding. Skip if unreachable.
 
-1b. **Draft delegation gate** — After reading the context bundle, check if the task is mechanical:
-   - Single file to change, clear spec from the issue body, no architecture decisions → POST `/draft`
-   - Multi-file mechanical work → POST `/scaffold`
+1b. **Draft delegation gate** — After loading context, check if the task is mechanical:
+   - Single file to change, clear spec from the issue body, no architecture decisions → `POST /draft` via curl
+   - Multi-file mechanical work → `POST /scaffold` via curl
    - Novel architecture, auth/security paths, complex multi-system logic → skip delegation, implement directly
 
    For mechanical single-file work:
@@ -30,7 +28,7 @@ Complete and ship a finished issue: run pre-commit checks, update the changelog,
      -H "Content-Type: application/json" \
      -d '{"path": "ryemyster/ShaleYeah/<file>", "task": "<spec from issue body>"}'
    ```
-   Read `~/Library/Application Support/context-store/artifacts/draft-*.md`, verify against the issue spec, then apply. This avoids re-deriving structure Claude already knows.
+   Read `~/Library/Application Support/context-store/artifacts/draft-*.md`, verify against the issue spec, then apply.
 
 2. **Fetch issue details from GitHub**:
 

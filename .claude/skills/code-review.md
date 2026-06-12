@@ -69,13 +69,7 @@ grep -rn "MyNewExport" servers/<name>/tests/ agents/<name>/tests/ sdk/tests/ 2>/
 
 ### 6. Diff summary via context-engine
 
-```bash
-curl -sf http://localhost:8088/healthcheck >/dev/null 2>&1 && curl -s -X POST http://localhost:8088/diff-summary \
-  -H "Content-Type: application/json" \
-  -d "{\"diff\": \"$(git diff develop 2>/dev/null | head -400)\"}"
-```
-
-Read `~/Library/Application Support/context-store/artifacts/diff-*.md`. Flag any `risks` entries that indicate scope creep, missing tests, or architectural violations. If the engine is down, skip this step.
+Use the `review_diff` MCP tool with the output of `git diff develop`. Flag any `risks` entries that indicate scope creep, missing tests, or architectural violations. Skip if the engine is unreachable.
 
 ### 7. Comment quality spot-check
 

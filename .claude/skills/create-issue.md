@@ -14,15 +14,14 @@ Examples:
 
 ## Steps
 
-1. **Load context via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+1. **Load context via context-engine:**
 
-   ```bash
-   curl -s -X POST http://localhost:8088/context \
-     -H "Content-Type: application/json" \
-     -d '{"task": "Create issue: <title>", "paths": ["ryemyster/ShaleYeah/servers","ryemyster/ShaleYeah/agents","ryemyster/ShaleYeah/sdk"], "focus": ["<relevant terms>"]}'
-   ```
+   Use the `load_context` MCP tool:
+   - `task`: `"Create issue: <title>"`
+   - `paths`: `["ryemyster/ShaleYeah/servers", "ryemyster/ShaleYeah/agents", "ryemyster/ShaleYeah/sdk"]`
+   - `focus`: relevant terms from the title
 
-   Read `~/Library/Application Support/context-store/artifacts/context-bundle.md`. Note `suggested_files` and `risks` — use these to write a more accurate issue body.
+   Note `suggested_files` and `risks` from the result — use these to write a more accurate issue body. Skip if the engine is unreachable.
 
 2. **Check open issues** to avoid duplicates and understand sequencing:
 

@@ -48,13 +48,7 @@ Verify no new uncovered exports. The goal is lines ≥ 90% per package. If cover
 
 ### 4. Diff summary via context-engine (run after all checks pass)
 
-```bash
-curl -s -X POST http://localhost:8088/diff-summary \
-  -H "Content-Type: application/json" \
-  -d "{\"diff\": \"$(git diff HEAD)\"}" | head -60
-```
-
-Then read `~/Library/Application Support/context-store/artifacts/diff-*.md` for the full report. Review the `risks` field — if any risk is flagged, address it before committing. If `http://localhost:8088/healthcheck` returns non-200, skip this step.
+Use the `review_diff` MCP tool with the output of `git diff HEAD`. Review the `risks` field from the result — if any risk is flagged, address it before committing. Skip if the engine is unreachable.
 
 If all checks pass and no blocking risks are flagged, write the gate sentinel and confirm the branch is ready to commit/push.
 

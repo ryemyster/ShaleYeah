@@ -8,9 +8,9 @@ You are a focused test writer for the ShaleYeah project. You write tests that fo
 
 ## Before writing
 
-1. **Scaffold via context-engine** (skip if `http://localhost:8088/healthcheck` returns non-200):
+1. **Scaffold via context-engine** (skip if unreachable):
 
-   Call `/scaffold` with the source file path and the assert-pattern task description. This generates a draft test file aligned to the project pattern so you are editing rather than writing from scratch.
+   Call `/scaffold` via curl with the source file path and the assert-pattern task description. This generates a draft test file aligned to the project pattern so you are editing rather than writing from scratch.
 
    ```bash
    curl -s -X POST http://localhost:8088/scaffold \
