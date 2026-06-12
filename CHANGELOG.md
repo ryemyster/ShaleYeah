@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **`LocalAgentRuntime.execute()` now audits scope failures** (#403) — Scope rejections were already returned as `status: "failed"` but bypassed the audit log. The missing-scopes error is now written to the audit trail before returning, consistent with HITL and eval failures. Adds 3 tests to `agents/geologist/tests/agent.test.ts` verifying audit entry presence, status, and error message on scope rejection.
+
 ### Added
 
 - **research / research-analyst pair — Steps A + B + C** (#369) — Tier 1 server modularization and full Tier 2 agent for O&G market intelligence.
