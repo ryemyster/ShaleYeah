@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM** (#430) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, throw guard for missing `standard-analysis` model route, and model routing on both LLM call sites. Matching the geologist Level 2 reference. 2 new contract tests.
+
 ### Added
 
 - **Step B: Tier 2 agent implementation** (#372) — Full title-analyst agent replacing the stub:
