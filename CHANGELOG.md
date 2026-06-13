@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **`executeLoop` permanent halt guard + injectable `callLLM` in development-planner** (#425) — `else` branch now halts on `!execResult.retryable`; wires injectable `callLLM` option through to `executeLoop`. 2 new contract tests.
+- **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM in drilling-engineer agent** (#426) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), and `callLLM?` injectable option to `runDrillingEngineerTask`. 2 new contract tests.
+- **`executeLoop` halts on permanent failures + injectable callLLM in legal-analyst agent** (#428) — Added permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, and throw guard for missing `standard-analysis` model route. 2 new contract tests.
+- **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM in infrastructure-planner agent** (#427) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), model routing, and `callLLM?` injectable option to `runInfrastructurePlannerTask`. 2 new contract tests.
+- **`executeLoop` halts on permanent failures + injectable callLLM in research-analyst agent** (#429) — Added permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, and throw guard for missing `standard-analysis` model route. 2 new contract tests.
 - **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM in title-analyst agent** (#430) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, and model routing on both LLM call sites. 2 new contract tests.
 
 - **`executeLoop` halts on permanent failures + executeWithRetry in quality-assurance agent** (#424) — Added `executeWithRetry` with 3-attempt exponential backoff and permanent halt guard (`!execResult.retryable`). Matching the geologist Level 2 reference. 2 new contract tests.
