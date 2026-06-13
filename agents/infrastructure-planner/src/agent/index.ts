@@ -1,5 +1,11 @@
 import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import {
+	callLLM,
+	type LLMCallOptions,
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+} from "@shaleyeah/sdk";
 import { callInfrastructureTool } from "./infrastructure-client.js";
 
 export { callInfrastructureTool };
@@ -278,6 +284,8 @@ export async function runInfrastructurePlannerTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
+		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? infrastructurePlannerConfig;
@@ -291,7 +299,7 @@ export async function runInfrastructurePlannerTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, options);
+		return await executeLoop(goal, runtime, { ...options, config, callLLMFn: options.callLLM ?? callLLM });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -324,14 +332,48 @@ function parseJson(text: string): {
 	}
 }
 
+// Retry budgets — Arcade pattern #40: Error Classification.
+const MAX_TOOL_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 500;
+
+async function executeWithRetry(
+	runtime: LocalAgentRuntime,
+	request: Parameters<typeof runtime.execute>[0],
+): Promise<ReturnType<LocalAgentRuntime["execute"]>> {
+	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
+	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
+		if (attempt > 0) {
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+		}
+		const result = await runtime.execute(request);
+		if (result.status !== "failed" || !result.retryable) return result;
+		last = result;
+	}
+	return last!;
+}
+
 async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
 	options: {
+		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
+	const config = options.config ?? infrastructurePlannerConfig;
+	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
+	if (!standardAnalysisBinding) {
+		throw new Error(
+			`[infrastructure-planner] modelRouting is missing a "standard-analysis" entry. ` +
+				'Configure AgentRuntimeConfig.modelRouting["standard-analysis"] before calling runInfrastructurePlannerTask.',
+		);
+	}
+	const reasoningModel = standardAnalysisBinding.model;
+
 	const toolDefs = infrastructurePlannerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
 	const system = `You are ${infrastructurePlannerManifest.persona.name}, ${infrastructurePlannerManifest.persona.role}.
@@ -351,9 +393,10 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const MAX_STEPS = 8;
 
 	for (let step = 0; step < MAX_STEPS; step++) {
-		const response = await callLLM({
+		const response = await callLLMFn({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			model: reasoningModel,
 			apiKey: options.apiKey,
 		});
 
@@ -364,7 +407,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 			return parsed?.answer ?? response;
 		}
 
-		const execResult = await runtime.execute({
+		const execResult = await executeWithRetry(runtime, {
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
@@ -396,17 +439,23 @@ If you cannot complete the task with the available tools, respond with {"action"
 				});
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
+			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
+			// do not continue the loop. The LLM cannot recover from a security or governance halt.
+			if (!execResult.retryable) {
+				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
+			}
+			// Transient failure — push to history so the LLM can reformulate and retry.
 			history.push({
 				role: "tool",
-				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,
+				content: `Error calling ${parsed.tool}: ${execResult.error} (retryable — server may be temporarily unavailable)`,
 			});
 		}
 	}
 
-	const finalResponse = await callLLM({
+	const finalResponse = await callLLMFn({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		model: reasoningModel,
 		apiKey: options.apiKey,
 	});
 
