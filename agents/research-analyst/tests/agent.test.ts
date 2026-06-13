@@ -5,12 +5,13 @@
  * and that the research-analyst manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createResearchAnalystEndpoint,
 	createResearchAnalystRuntime,
 	researchAnalystConfig,
 	researchAnalystManifest,
+	runResearchAnalystTask,
 } from "../src/agent/index.js";
 
 let passed = 0;
@@ -292,6 +293,47 @@ console.log("\n🔀 Testing model routing resolution...");
 		"standard-analysis model is a real model ID, not a placeholder",
 	);
 	assert(standardAnalysis?.provider === "anthropic", "standard-analysis provider is anthropic");
+}
+
+console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #429)...");
+{
+	const blockingConfig: typeof researchAnalystConfig = {
+		...researchAnalystConfig,
+		evals: {
+			...researchAnalystConfig.evals,
+			checks: { ...researchAnalystConfig.evals.checks, schema: "blocking" },
+		},
+	};
+	const blockingRuntime = new LocalAgentRuntime({
+		manifest: researchAnalystManifest,
+		config: blockingConfig,
+		handlers: Object.fromEntries(researchAnalystManifest.tools.map((t) => [t.name, async () => undefined])),
+	});
+	await blockingRuntime.initialize();
+
+	const llmCallCount: number[] = [];
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		llmCallCount.push(1);
+		if (llmCallCount.length === 1) {
+			return JSON.stringify({
+				action: "tool",
+				tool: "research-analyst.conduct_market_research",
+				args: { commodity: "crude oil", region: "Permian Basin", timeframe: "2025" },
+			});
+		}
+		return JSON.stringify({ action: "done", answer: "should not reach here" });
+	};
+
+	const result = await runResearchAnalystTask("Research oil market", {
+		config: blockingConfig,
+		callLLM: mockLLM,
+		runtime: blockingRuntime,
+	});
+
+	assert(llmCallCount.length === 1, "executeLoop halts after permanent failure — LLM not called a second time");
+	assert(typeof result === "string" && result.length > 0, "Permanent failure returns non-empty error string");
+
+	await blockingRuntime.shutdown();
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");
