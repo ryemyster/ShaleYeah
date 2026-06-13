@@ -5,12 +5,13 @@
  * and that the drilling-engineer manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createDrillingEngineerEndpoint,
 	createDrillingEngineerRuntime,
 	drillingEngineerConfig,
 	drillingEngineerManifest,
+	runDrillingEngineerTask,
 } from "../src/agent/index.js";
 
 let passed = 0;
@@ -328,6 +329,47 @@ console.log("\n🔀 Testing model routing resolution...");
 		"standard-analysis model is a real model ID, not a placeholder",
 	);
 	assert(standardAnalysis?.provider === "anthropic", "standard-analysis provider is anthropic");
+}
+
+console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #426)...");
+{
+	const blockingConfig: typeof drillingEngineerConfig = {
+		...drillingEngineerConfig,
+		evals: {
+			...drillingEngineerConfig.evals,
+			checks: { ...drillingEngineerConfig.evals.checks, schema: "blocking" },
+		},
+	};
+	const blockingRuntime = new LocalAgentRuntime({
+		manifest: drillingEngineerManifest,
+		config: blockingConfig,
+		handlers: Object.fromEntries(drillingEngineerManifest.tools.map((t) => [t.name, async () => undefined])),
+	});
+	await blockingRuntime.initialize();
+
+	const llmCallCount: number[] = [];
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		llmCallCount.push(1);
+		if (llmCallCount.length === 1) {
+			return JSON.stringify({
+				action: "tool",
+				tool: "drilling-engineer.design_drilling_program",
+				args: { wellName: "Test-1", targetDepth: 10000, wellType: "vertical" },
+			});
+		}
+		return JSON.stringify({ action: "done", answer: "should not reach here" });
+	};
+
+	const result = await runDrillingEngineerTask("design a drilling program", {
+		config: blockingConfig,
+		callLLM: mockLLM,
+		runtime: blockingRuntime,
+	});
+
+	assert(llmCallCount.length === 1, "executeLoop halts after permanent failure — LLM not called a second time");
+	assert(typeof result === "string" && result.length > 0, "Permanent failure returns non-empty error string");
+
+	await blockingRuntime.shutdown();
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");
