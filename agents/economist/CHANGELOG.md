@@ -12,3 +12,6 @@
 ### Changed
 - `modelRouting` dev defaults wired to real Anthropic model IDs (`claude-sonnet-4-6` for standard-analysis, `claude-opus-4-8` for deep-reasoning, `claude-haiku-4-5-20251001` for small-fast / local-private) — replaces `configured-by-operator` placeholders (#364)
 - `executeLoop` resolves `reasoningModel` from `config.modelRouting["standard-analysis"]` and passes it to all `callLLM()` calls so BYOE overrides flow through (#364)
+
+### Fixed
+- **`executeLoop` halts on permanent failures** (#423) — The `else` branch previously appended a hint string and continued the loop when `execResult.retryable === false` (blocking evals, scope rejections, security gates). Now returns immediately with the error string, matching the geologist Level 2 reference. Adds 2 tests to `tests/agent.test.ts` covering blocking schema eval halt + error string assertion.
