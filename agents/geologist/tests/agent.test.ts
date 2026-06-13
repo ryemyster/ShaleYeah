@@ -5,12 +5,13 @@
  * and that the geologist manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createGeologistEndpoint,
 	createGeologistRuntime,
 	geologistConfig,
 	geologistManifest,
+	runGeologistTask,
 } from "../src/agent/index.js";
 
 let passed = 0;
@@ -398,6 +399,58 @@ console.log("\n🔀 Testing model routing resolution (issue #402)...");
 	assert(saveFinding?.type === "command", "save_finding is a command type (has side effects)");
 	assert(saveFinding?.requiredScopes.includes("write:geology"), "save_finding requires write:geology");
 	assert(saveFinding?.requiresHumanApproval === true, "save_finding requires human approval (memory promotion)");
+}
+
+console.log("\n🔀 Testing model routing wired into callLLM (issue #402)...");
+{
+	// runGeologistTask must throw before entering the loop when standard-analysis is absent.
+	// Without the guard, executeLoop silently passes undefined to callLLM — violates BYOE contract.
+	let threw = false;
+	let errorMentionsStandardAnalysis = false;
+	const configWithoutStandardAnalysis = {
+		...geologistConfig,
+		modelRouting: Object.fromEntries(
+			Object.entries(geologistConfig.modelRouting).filter(([k]) => k !== "standard-analysis"),
+		) as typeof geologistConfig.modelRouting,
+	};
+	try {
+		await runGeologistTask("test goal", { config: configWithoutStandardAnalysis });
+	} catch (err) {
+		threw = true;
+		errorMentionsStandardAnalysis = err instanceof Error && err.message.includes("standard-analysis");
+	}
+	assert(threw && errorMentionsStandardAnalysis, "runGeologistTask throws when standard-analysis route is absent");
+}
+{
+	// The injectable callLLM option threads the resolved model binding into every LLM call.
+	// Provides testability without real API calls; callers that omit it get the SDK default.
+	const capturedModels: string[] = [];
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedModels.push(opts.model ?? "no-model");
+		return JSON.stringify({ action: "done", answer: "synthesized" });
+	};
+
+	const stubHandlers = Object.fromEntries(geologistManifest.tools.map((t) => [t.name, async () => ({ stub: true })]));
+	const stubRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: geologistConfig,
+		handlers: stubHandlers,
+	});
+	await stubRuntime.initialize();
+
+	try {
+		// @ts-expect-error — callLLM option does not exist yet (issue #402); this test is the red bar
+		await runGeologistTask("test goal", { callLLM: mockLLM, runtime: stubRuntime, config: geologistConfig });
+	} catch {
+		// Real callLLM was invoked instead of the mock — option not wired yet
+	}
+	await stubRuntime.shutdown();
+
+	const expectedModel = geologistConfig.modelRouting["standard-analysis"]?.model;
+	assert(
+		capturedModels[0] === expectedModel,
+		`executeLoop passes standard-analysis model (${expectedModel}) to callLLM via injectable option`,
+	);
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");

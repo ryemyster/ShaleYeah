@@ -1,4 +1,10 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	HumanApproval,
+	HumanApprovalChallenge,
+	LLMCallOptions,
+} from "@shaleyeah/sdk";
 import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 import { callQAServerTool } from "./qa-server-client.js";
 
@@ -139,27 +145,15 @@ export const qaAssuranceManifest: AgentManifest = {
 
 export const qaAssuranceConfig: AgentRuntimeConfig = {
 	autonomy: "reviewed",
+	// Dev defaults — operators override via env-driven config at deploy time.
+	// provider: "anthropic" = standard Anthropic API path through callLLM().
+	// provider: "rule-based" = deterministic; callLLM() is not invoked.
 	modelRouting: {
-		"small-fast": {
-			provider: "organization-small-model",
-			model: "configured-by-operator",
-		},
-		"standard-analysis": {
-			provider: "organization-standard-model",
-			model: "configured-by-operator",
-		},
-		"deep-reasoning": {
-			provider: "organization-deep-model",
-			model: "configured-by-operator",
-		},
-		"local-private": {
-			provider: "organization-local-model",
-			model: "configured-by-operator",
-		},
-		deterministic: {
-			provider: "rule-based",
-			model: "no-model",
-		},
+		"small-fast": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
+		"deep-reasoning": { provider: "anthropic", model: "claude-opus-4-8" },
+		"local-private": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
+		deterministic: { provider: "rule-based", model: "no-model" },
 	},
 	hitl: {
 		approvalMode: "when-sensitive",
@@ -248,6 +242,8 @@ export async function runQAAssuranceTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
+		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? qaAssuranceConfig;
@@ -261,7 +257,7 @@ export async function runQAAssuranceTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, options);
+		return await executeLoop(goal, runtime, { ...options, config, callLLMFn: options.callLLM ?? callLLM });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -295,12 +291,29 @@ async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
 	options: {
+		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — before building the system prompt, read from
 	// memory.namespace = "quality-assurance" to surface relevant prior task context.
+
+	const config = options.config ?? qaAssuranceConfig;
+	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	// Resolve the model that drives the reasoning loop from the operator's routing table.
+	// The loop itself is always standard-analysis class — tool-level model requirements are
+	// for the tool handlers (e.g. deterministic tools skip the LLM entirely).
+	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
+	if (!standardAnalysisBinding) {
+		throw new Error(
+			`[quality-assurance] modelRouting is missing a "standard-analysis" entry. ` +
+				'Configure AgentRuntimeConfig.modelRouting["standard-analysis"] before calling runQAAssuranceTask.',
+		);
+	}
+	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = qaAssuranceManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -321,9 +334,10 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const MAX_STEPS = 8;
 
 	for (let step = 0; step < MAX_STEPS; step++) {
-		const response = await callLLM({
+		const response = await callLLMFn({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			model: reasoningModel,
 			apiKey: options.apiKey,
 		});
 
@@ -373,9 +387,10 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
 
-	const finalResponse = await callLLM({
+	const finalResponse = await callLLMFn({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		model: reasoningModel,
 		apiKey: options.apiKey,
 	});
 

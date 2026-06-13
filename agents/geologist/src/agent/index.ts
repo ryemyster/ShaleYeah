@@ -1,4 +1,10 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	HumanApproval,
+	HumanApprovalChallenge,
+	LLMCallOptions,
+} from "@shaleyeah/sdk";
 import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
 import { callGeowizTool } from "./geowiz-client.js";
 
@@ -426,6 +432,8 @@ export async function runGeologistTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
+		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? geologistConfig;
@@ -440,7 +448,7 @@ export async function runGeologistTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, { ...options, config });
+		return await executeLoop(goal, runtime, { ...options, config, callLLMFn: options.callLLM ?? callLLM });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -500,6 +508,7 @@ async function executeLoop(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — before building the system prompt, read from
@@ -507,11 +516,19 @@ async function executeLoop(
 	// Requires Supabase pgvector. Inject as an additional system prompt section.
 
 	const config = options.config ?? geologistConfig;
+	const callLLMFn = options.callLLMFn ?? callLLM;
 
 	// Resolve the model that drives the reasoning loop from the operator's routing table.
 	// The loop itself is always standard-analysis class — tool-level model requirements are
 	// for the tool handlers (e.g. deterministic tools skip the LLM entirely).
-	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
+	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
+	if (!standardAnalysisBinding) {
+		throw new Error(
+			`[geologist] modelRouting is missing a "standard-analysis" entry. ` +
+				'Configure AgentRuntimeConfig.modelRouting["standard-analysis"] before calling runGeologistTask.',
+		);
+	}
+	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = geologistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -532,7 +549,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const MAX_STEPS = 8;
 
 	for (let step = 0; step < MAX_STEPS; step++) {
-		const response = await callLLM({
+		const response = await callLLMFn({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
 			model: reasoningModel,
@@ -598,7 +615,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
 
 	// Max steps reached — force a synthesis pass.
-	const finalResponse = await callLLM({
+	const finalResponse = await callLLMFn({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
 		model: reasoningModel,

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Model routing wired into `callLLM` across all agents** (#402) — `executeLoop` in geologist, economist, and quality-assurance agents now resolves `config.modelRouting["standard-analysis"].model` and passes it to every `callLLM()` invocation. Previously the loop omitted the `model` parameter, falling back to the SDK's hardcoded default. Adds a throw guard when `standard-analysis` is absent and an injectable `callLLM` option to `runTask` for model-capture tests without real API calls. Agent template updated to propagate the pattern to all 12 remaining stubs.
+
 ### Fixed
 
 - **`executeLoop` now halts on permanent failures** (#404) — `runGeologistTask`'s `executeLoop` previously pushed non-retryable errors (blocking evals, scope rejections) into the conversation history and continued the task loop. Now returns immediately when `execResult.retryable === false`, so safety gates actually stop execution. Adds 7 tests to `agents/geologist/tests/agent.test.ts` covering `redactSecrets` blocking on `sk-` output and advisory schema completing with a warn.
