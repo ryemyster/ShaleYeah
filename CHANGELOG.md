@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`executeLoop` halts on permanent failures in economist agent** (#423) — `else` branch in `runEconomistTask`'s `executeLoop` previously logged a hint string and continued when `execResult.retryable === false`. Now returns immediately, matching the geologist Level 2 reference. Adds 2 contract tests verifying blocking eval halts the loop.
+
 - **`executeLoop` now halts on permanent failures** (#404) — `runGeologistTask`'s `executeLoop` previously pushed non-retryable errors (blocking evals, scope rejections) into the conversation history and continued the task loop. Now returns immediately when `execResult.retryable === false`, so safety gates actually stop execution. Adds 7 tests to `agents/geologist/tests/agent.test.ts` covering `redactSecrets` blocking on `sk-` output and advisory schema completing with a warn.
 
 - **`LocalAgentRuntime.execute()` now audits scope failures** (#403) — Scope rejections were already returned as `status: "failed"` but bypassed the audit log. The missing-scopes error is now written to the audit trail before returning, consistent with HITL and eval failures. Adds 3 tests to `agents/geologist/tests/agent.test.ts` verifying audit entry presence, status, and error message on scope rejection.
