@@ -248,6 +248,51 @@ console.log("\n🔀 Testing model routing wired into callLLM (issue #402)...");
 	assert(capturedModels[0] === "claude-sonnet-4-6", "QA executeLoop passes standard-analysis model to callLLM");
 }
 
+console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #424)...");
+{
+	// A blocking schema eval sets retryable: false on execute(). executeLoop must
+	// immediately return the error — do not continue to the next LLM step.
+	// Without the fix, the else branch logs the hint and calls the LLM a second time.
+	const blockingConfig: typeof qaAssuranceConfig = {
+		...qaAssuranceConfig,
+		evals: {
+			...qaAssuranceConfig.evals,
+			checks: { ...qaAssuranceConfig.evals.checks, schema: "blocking" },
+		},
+	};
+	const blockingRuntime = new LocalAgentRuntime({
+		manifest: qaAssuranceManifest,
+		config: blockingConfig,
+		// Handler returns undefined — triggers blocking schema eval failure on execute()
+		handlers: Object.fromEntries(qaAssuranceManifest.tools.map((t) => [t.name, async () => undefined])),
+	});
+	await blockingRuntime.initialize();
+
+	const llmCallCount: number[] = [];
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		llmCallCount.push(1);
+		if (llmCallCount.length === 1) {
+			return JSON.stringify({
+				action: "tool",
+				tool: "quality-assurance.run_quality_tests",
+				args: { testSuite: "unit", targetPath: "./src" },
+			});
+		}
+		return JSON.stringify({ action: "done", answer: "should not reach here" });
+	};
+
+	const result = await runQAAssuranceTask("run unit tests", {
+		config: blockingConfig,
+		callLLM: mockLLM,
+		runtime: blockingRuntime,
+	});
+
+	assert(llmCallCount.length === 1, "executeLoop halts after permanent failure — LLM not called a second time");
+	assert(typeof result === "string" && result.length > 0, "Permanent failure returns non-empty error string");
+
+	await blockingRuntime.shutdown();
+}
+
 console.log("\n🛑 Testing invalid manifest fails early...");
 {
 	try {

@@ -287,6 +287,28 @@ function parseJson(
 	}
 }
 
+// Retry budgets — Arcade pattern #40: Error Classification.
+// Retryable errors (network transients, server restarts) get up to MAX_TOOL_RETRIES attempts
+// with exponential backoff before the error is surfaced to the LLM as a recoverable hint.
+const MAX_TOOL_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 500;
+
+async function executeWithRetry(
+	runtime: LocalAgentRuntime,
+	request: Parameters<typeof runtime.execute>[0],
+): Promise<ReturnType<LocalAgentRuntime["execute"]>> {
+	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
+	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
+		if (attempt > 0) {
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+		}
+		const result = await runtime.execute(request);
+		if (result.status !== "failed" || !result.retryable) return result;
+		last = result;
+	}
+	return last!;
+}
+
 async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
@@ -351,7 +373,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 		// TODO (#396): Async Job — detect long-running test suites and poll for completion.
 
 		// Permission Gate: route through runtime.execute() so HITL + scope checks fire.
-		const execResult = await runtime.execute({
+		// executeWithRetry transparently retries transient (retryable) failures before
+		// surfacing the error to the LLM as a recoverable hint.
+		const execResult = await executeWithRetry(runtime, {
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
@@ -380,8 +404,16 @@ If you cannot complete the task with the available tools, respond with {"action"
 				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
-			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
+			// do not continue the loop. The LLM cannot recover from a security or governance halt.
+			if (!execResult.retryable) {
+				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
+			}
+			// Transient failure — push to history so the LLM can reformulate and retry.
+			history.push({
+				role: "tool",
+				content: `Error calling ${parsed.tool}: ${execResult.error} (retryable — server may be temporarily unavailable)`,
+			});
 		}
 	}
 

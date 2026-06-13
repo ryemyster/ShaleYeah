@@ -7,6 +7,10 @@
 
 - **Layer 2 execution loop** (#376) — `runQAAssuranceTask(goal, options)` drives a multi-step QA task via the LLM. Accepts a natural-language goal, reasons about which qa-server tools to call, routes every tool call through `LocalAgentRuntime.execute()` (Permission Gate — HITL + scope checks fire on every step), and returns a synthesized answer. Accepts `runtime?: LocalAgentRuntime` (caller-managed lifecycle) and `onApprovalRequired?: (challenge) => Promise<HumanApproval>` (HITL callback). Throws with a clear message when `approval_required` and no callback provided. Deferred: Context Injection (#395), Async Job (#396).
 
+### Fixed
+
+- **`executeLoop` halts on permanent failures + executeWithRetry added** (#424) — Two Level 2 gaps addressed: (1) `runtime.execute()` now wrapped by `executeWithRetry` with 3-attempt exponential backoff (500ms/1s/2s) for transient failures; (2) `else` branch now halts immediately when `execResult.retryable === false` (blocking evals, scope rejections) instead of logging a hint and continuing. Adds 2 contract tests: blocking schema eval halts the loop and returns a non-empty error string.
+
 ### Changed
 
 - **Model routing wired into `callLLM`** (#402) — `executeLoop` now resolves `config.modelRouting["standard-analysis"].model` and passes it to every `callLLM()` call. Previously the loop omitted the `model` parameter. Adds a throw guard when `standard-analysis` is absent. `qaAssuranceConfig` dev defaults replaced `"configured-by-operator"` placeholder strings with real Anthropic model IDs.
