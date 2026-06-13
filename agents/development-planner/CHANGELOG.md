@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **`executeLoop` permanent halt guard + injectable `callLLM`** (#425) — `else` branch now returns immediately when `execResult.retryable === false` (blocking evals, scope rejections), matching geologist Level 2 reference. Also wires `options.callLLM` injectable through to `executeLoop` so tests can drive the model without a real API key. Adds 2 contract tests verifying loop halt on permanent failure.
+
 ## [0.1.0] — 2026-06-10
 
 ### Added
