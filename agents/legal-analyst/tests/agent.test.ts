@@ -5,12 +5,13 @@
  * and that the legal-analyst manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createLegalAnalystEndpoint,
 	createLegalAnalystRuntime,
 	legalAnalystConfig,
 	legalAnalystManifest,
+	runLegalAnalystTask,
 } from "../src/agent/index.js";
 
 let passed = 0;
@@ -185,6 +186,47 @@ console.log("\n🏥 Testing health endpoint and standalone boot...");
 
 	const toolSchema = await endpoint.discoveryToolSchema("legal-analyst.analyze_legal_framework");
 	assert(toolSchema !== null, "Endpoint exposes tool schemas by name");
+}
+
+console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #428)...");
+{
+	const blockingConfig: typeof legalAnalystConfig = {
+		...legalAnalystConfig,
+		evals: {
+			...legalAnalystConfig.evals,
+			checks: { ...legalAnalystConfig.evals.checks, schema: "blocking" },
+		},
+	};
+	const blockingRuntime = new LocalAgentRuntime({
+		manifest: legalAnalystManifest,
+		config: blockingConfig,
+		handlers: Object.fromEntries(legalAnalystManifest.tools.map((t) => [t.name, async () => undefined])),
+	});
+	await blockingRuntime.initialize();
+
+	const llmCallCount: number[] = [];
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		llmCallCount.push(1);
+		if (llmCallCount.length === 1) {
+			return JSON.stringify({
+				action: "tool",
+				tool: "legal-analyst.analyze_legal_framework",
+				args: { jurisdiction: "Texas", operationType: "drilling", permitTypes: ["drilling"] },
+			});
+		}
+		return JSON.stringify({ action: "done", answer: "should not reach here" });
+	};
+
+	const result = await runLegalAnalystTask("Analyze legal framework", {
+		config: blockingConfig,
+		callLLM: mockLLM,
+		runtime: blockingRuntime,
+	});
+
+	assert(llmCallCount.length === 1, "executeLoop halts after permanent failure — LLM not called a second time");
+	assert(typeof result === "string" && result.length > 0, "Permanent failure returns non-empty error string");
+
+	await blockingRuntime.shutdown();
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");

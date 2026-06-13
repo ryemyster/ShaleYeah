@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **`executeLoop` halts on permanent failures + injectable callLLM in legal-analyst agent** (#428) — Added permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, and throw guard for missing `standard-analysis` model route. 2 new contract tests.
+
 - **`executeLoop` halts on permanent failures + executeWithRetry in quality-assurance agent** (#424) — Added `executeWithRetry` with 3-attempt exponential backoff and permanent halt guard (`!execResult.retryable`). Matching the geologist Level 2 reference. 2 new contract tests.
 
 - **`executeLoop` halts on permanent failures in economist agent** (#423) — `else` branch in `runEconomistTask`'s `executeLoop` previously logged a hint string and continued when `execResult.retryable === false`. Now returns immediately, matching the geologist Level 2 reference. Adds 2 contract tests verifying blocking eval halts the loop.
