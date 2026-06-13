@@ -1,5 +1,11 @@
 import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import {
+	callLLM,
+	type LLMCallOptions,
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+} from "@shaleyeah/sdk";
 import { callResearchTool } from "./research-client.js";
 
 export { callResearchTool };
@@ -219,6 +225,8 @@ export async function runResearchAnalystTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
+		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? researchAnalystConfig;
@@ -232,7 +240,7 @@ export async function runResearchAnalystTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, { ...options, config });
+		return await executeLoop(goal, runtime, { ...options, config, callLLMFn: options.callLLM ?? callLLM });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -289,13 +297,23 @@ async function executeLoop(
 		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — before building the system prompt, read from
 	// memory.namespace = "research-analyst" to surface relevant prior task context.
 
 	const config = options.config ?? researchAnalystConfig;
-	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
+	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
+	if (!standardAnalysisBinding) {
+		throw new Error(
+			`[research-analyst] modelRouting is missing a "standard-analysis" entry. ` +
+				'Configure AgentRuntimeConfig.modelRouting["standard-analysis"] before calling runResearchAnalystTask.',
+		);
+	}
+	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = researchAnalystManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -316,7 +334,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const MAX_STEPS = 8;
 
 	for (let step = 0; step < MAX_STEPS; step++) {
-		const response = await callLLM({
+		const response = await callLLMFn({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
 			model: reasoningModel,
@@ -362,14 +380,22 @@ If you cannot complete the task with the available tools, respond with {"action"
 				history.push({ role: "tool", content: `Error after approval for ${parsed.tool}: ${err}` });
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
-			history.push({ role: "tool", content: `Error calling ${parsed.tool}: ${execResult.error}${hint}` });
+			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
+			// do not continue the loop. The LLM cannot recover from a security or governance halt.
+			if (!execResult.retryable) {
+				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
+			}
+			// Transient failure — push to history so the LLM can reformulate and retry.
+			history.push({
+				role: "tool",
+				content: `Error calling ${parsed.tool}: ${execResult.error} (retryable — server may be temporarily unavailable)`,
+			});
 		}
 	}
 
 	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
 
-	const finalResponse = await callLLM({
+	const finalResponse = await callLLMFn({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
 		model: reasoningModel,
