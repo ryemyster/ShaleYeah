@@ -1,5 +1,11 @@
 import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import {
+	callLLM,
+	type LLMCallOptions,
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+} from "@shaleyeah/sdk";
 import { callTitleTool } from "./title-client.js";
 
 export { callTitleTool };
@@ -271,6 +277,8 @@ export async function runTitleAnalystTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
+		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? titleAnalystConfig;
@@ -284,7 +292,7 @@ export async function runTitleAnalystTask(
 	}
 
 	try {
-		return await executeLoop(goal, runtime, options);
+		return await executeLoop(goal, runtime, { ...options, config, callLLMFn: options.callLLM ?? callLLM });
 	} finally {
 		if (ownedRuntime) await runtime.shutdown();
 	}
@@ -317,15 +325,49 @@ function parseJson(text: string): {
 	}
 }
 
+// Retry budgets — Arcade pattern #40: Error Classification.
+const MAX_TOOL_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 500;
+
+async function executeWithRetry(
+	runtime: LocalAgentRuntime,
+	request: Parameters<typeof runtime.execute>[0],
+): Promise<ReturnType<LocalAgentRuntime["execute"]>> {
+	let last: Awaited<ReturnType<LocalAgentRuntime["execute"]>> | null = null;
+	for (let attempt = 0; attempt <= MAX_TOOL_RETRIES; attempt++) {
+		if (attempt > 0) {
+			await new Promise((r) => setTimeout(r, RETRY_BASE_DELAY_MS * 2 ** (attempt - 1)));
+		}
+		const result = await runtime.execute(request);
+		if (result.status !== "failed" || !result.retryable) return result;
+		last = result;
+	}
+	return last!;
+}
+
 async function executeLoop(
 	goal: string,
 	runtime: LocalAgentRuntime,
 	options: {
+		config?: AgentRuntimeConfig;
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
 	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
+
+	const config = options.config ?? titleAnalystConfig;
+	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
+	if (!standardAnalysisBinding) {
+		throw new Error(
+			`[title-analyst] modelRouting is missing a "standard-analysis" entry. ` +
+				'Configure AgentRuntimeConfig.modelRouting["standard-analysis"] before calling runTitleAnalystTask.',
+		);
+	}
+	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = titleAnalystManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 
@@ -346,9 +388,10 @@ If you cannot complete the task with the available tools, respond with {"action"
 	const MAX_STEPS = 8;
 
 	for (let step = 0; step < MAX_STEPS; step++) {
-		const response = await callLLM({
+		const response = await callLLMFn({
 			system,
 			prompt: `${buildTranscript(history)}\n\nAssistant:`,
+			model: reasoningModel,
 			apiKey: options.apiKey,
 		});
 
@@ -361,9 +404,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 		// TODO (#396): Async Job — detect asyncJob tools and poll instead of blocking.
 
-		// Permission Gate: all tool calls go through runtime.execute() — never call
+		// Permission Gate: all tool calls go through executeWithRetry → runtime.execute() — never call
 		// callTitleTool directly from the loop.
-		const execResult = await runtime.execute({
+		const execResult = await executeWithRetry(runtime, {
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
@@ -395,19 +438,25 @@ If you cannot complete the task with the available tools, respond with {"action"
 				});
 			}
 		} else {
-			const hint = execResult.retryable ? " (retryable — server may be temporarily unavailable)" : " (permanent)";
+			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
+			// do not continue the loop. The LLM cannot recover from a security or governance halt.
+			if (!execResult.retryable) {
+				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
+			}
+			// Transient failure — push to history so the LLM can reformulate and retry.
 			history.push({
 				role: "tool",
-				content: `Error calling ${parsed.tool}: ${execResult.error}${hint}`,
+				content: `Error calling ${parsed.tool}: ${execResult.error} (retryable — server may be temporarily unavailable)`,
 			});
 		}
 	}
 
 	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
 
-	const finalResponse = await callLLM({
+	const finalResponse = await callLLMFn({
 		system,
 		prompt: `${buildTranscript(history)}\n\nUser: Maximum steps reached. Synthesize findings now.\n\nAssistant:`,
+		model: reasoningModel,
 		apiKey: options.apiKey,
 	});
 
