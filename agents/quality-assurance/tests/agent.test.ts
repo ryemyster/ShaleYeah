@@ -5,12 +5,13 @@
  * and that the quality-assurance manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, LocalAgentRuntime } from "@shaleyeah/sdk";
+import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
 import {
 	createQAAssuranceEndpoint,
 	createQAAssuranceRuntime,
 	qaAssuranceConfig,
 	qaAssuranceManifest,
+	runQAAssuranceTask,
 } from "../src/agent/index.js";
 
 let passed = 0;
@@ -180,6 +181,71 @@ console.log("\n🏥 Testing health endpoint and standalone boot...");
 
 	const toolSchema = await endpoint.discoveryToolSchema("quality-assurance.run_quality_tests");
 	assert(toolSchema !== null, "Endpoint exposes tool schemas by name");
+}
+
+console.log("\n🔀 Testing model routing wired into callLLM (issue #402)...");
+{
+	// qaAssuranceConfig must use real model IDs — "configured-by-operator" is a placeholder that
+	// would cause callLLM to silently call the wrong model in dev.
+	const standardAnalysis = qaAssuranceConfig.modelRouting["standard-analysis"];
+	assert(standardAnalysis !== undefined, "standard-analysis binding is present in qaAssuranceConfig");
+	assert(
+		standardAnalysis?.model !== "configured-by-operator",
+		"standard-analysis model is a real model ID, not a placeholder",
+	);
+	assert(standardAnalysis?.provider === "anthropic", "standard-analysis provider is anthropic");
+}
+{
+	// runQAAssuranceTask must throw before the loop when standard-analysis route is absent.
+	let threw = false;
+	let errorMentionsStandardAnalysis = false;
+	const configWithoutStandardAnalysis = {
+		...qaAssuranceConfig,
+		modelRouting: Object.fromEntries(
+			Object.entries(qaAssuranceConfig.modelRouting).filter(([k]) => k !== "standard-analysis"),
+		) as typeof qaAssuranceConfig.modelRouting,
+	};
+	try {
+		await runQAAssuranceTask("test goal", { config: configWithoutStandardAnalysis });
+	} catch (err) {
+		threw = true;
+		errorMentionsStandardAnalysis = err instanceof Error && err.message.includes("standard-analysis");
+	}
+	assert(threw && errorMentionsStandardAnalysis, "runQAAssuranceTask throws when standard-analysis route is absent");
+}
+{
+	// Injectable callLLM must capture the resolved standard-analysis model.
+	const capturedModels: string[] = [];
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedModels.push(opts.model ?? "no-model");
+		return JSON.stringify({ action: "done", answer: "synthesized" });
+	};
+
+	// Use a real (non-placeholder) config for this test
+	const testConfig = {
+		...qaAssuranceConfig,
+		modelRouting: {
+			...qaAssuranceConfig.modelRouting,
+			"standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
+		},
+	};
+	const stubHandlers = Object.fromEntries(qaAssuranceManifest.tools.map((t) => [t.name, async () => ({ stub: true })]));
+	const stubRuntime = new LocalAgentRuntime({
+		manifest: qaAssuranceManifest,
+		config: testConfig,
+		handlers: stubHandlers,
+	});
+	await stubRuntime.initialize();
+
+	try {
+		// @ts-expect-error — callLLM option does not exist yet (issue #402); this test is the red bar
+		await runQAAssuranceTask("test goal", { callLLM: mockLLM, runtime: stubRuntime, config: testConfig });
+	} catch {
+		// Real callLLM was invoked instead of the mock — option not wired yet
+	}
+	await stubRuntime.shutdown();
+
+	assert(capturedModels[0] === "claude-sonnet-4-6", "QA executeLoop passes standard-analysis model to callLLM");
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");
