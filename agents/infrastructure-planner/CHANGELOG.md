@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM** (#427) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), model routing via `reasoningModel`, and `callLLM?` injectable option. Matching the geologist Level 2 reference. 2 new contract tests.
+
 ### Added
 
 - **Step B: Tier 2 agent implementation** (#375) — Full infrastructure-planner agent replacing the stub:
