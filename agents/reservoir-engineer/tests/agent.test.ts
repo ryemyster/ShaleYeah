@@ -5,7 +5,13 @@
  * and that the reservoir-engineer manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createReservoirEngineerEndpoint,
 	createReservoirEngineerRuntime,
@@ -228,6 +234,51 @@ console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #442)
 	await blockingRuntime.shutdown();
 }
 
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = reservoirEngineerManifest.memory?.namespace ?? "reservoir-engineer";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: test context seeded for Reservoir Engineer.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createReservoirEngineerRuntime();
+	await rt.initialize();
+	await runReservoirEngineerTask("Analyze test data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: test context seeded for Reservoir Engineer."),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = reservoirEngineerManifest.memory?.namespace ?? "reservoir-engineer";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({ action: "done", answer: "Reservoir Engineer analysis: test finding written to store." });
+	};
+
+	const rt = createReservoirEngineerRuntime();
+	await rt.initialize();
+	await runReservoirEngineerTask("Summarize the analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Reservoir Engineer analysis: test finding written to store."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
+}
 console.log("\n🛑 Testing invalid manifest fails early...");
 {
 	try {

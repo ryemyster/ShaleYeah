@@ -6,7 +6,13 @@
  * acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createInfrastructurePlannerEndpoint,
 	createInfrastructurePlannerRuntime,
@@ -313,6 +319,54 @@ console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #427)
 	await blockingRuntime.shutdown();
 }
 
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = infrastructurePlannerManifest.memory?.namespace ?? "infrastructure-planner";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: test context seeded for Infrastructure Planner.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createInfrastructurePlannerRuntime();
+	await rt.initialize();
+	await runInfrastructurePlannerTask("Analyze test data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: test context seeded for Infrastructure Planner."),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = infrastructurePlannerManifest.memory?.namespace ?? "infrastructure-planner";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({
+			action: "done",
+			answer: "Infrastructure Planner analysis: test finding written to store.",
+		});
+	};
+
+	const rt = createInfrastructurePlannerRuntime();
+	await rt.initialize();
+	await runInfrastructurePlannerTask("Summarize the analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Infrastructure Planner analysis: test finding written to store."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
+}
 console.log("\n🛑 Testing invalid manifest fails early...");
 {
 	try {

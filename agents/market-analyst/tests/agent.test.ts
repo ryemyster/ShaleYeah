@@ -5,7 +5,13 @@
  * and that the market-analyst manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createMarketAnalystEndpoint,
 	createMarketAnalystRuntime,
@@ -218,6 +224,51 @@ console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #440)
 	await blockingRuntime.shutdown();
 }
 
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = marketAnalystManifest.memory?.namespace ?? "market-analyst";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: test context seeded for Market Analyst.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createMarketAnalystRuntime();
+	await rt.initialize();
+	await runMarketAnalystTask("Analyze test data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: test context seeded for Market Analyst."),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = marketAnalystManifest.memory?.namespace ?? "market-analyst";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({ action: "done", answer: "Market Analyst analysis: test finding written to store." });
+	};
+
+	const rt = createMarketAnalystRuntime();
+	await rt.initialize();
+	await runMarketAnalystTask("Summarize the analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Market Analyst analysis: test finding written to store."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
+}
 console.log("\n🛑 Testing invalid manifest fails early...");
 {
 	try {

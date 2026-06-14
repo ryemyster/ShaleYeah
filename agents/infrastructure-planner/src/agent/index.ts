@@ -1,5 +1,6 @@
 import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
 import {
+	ContextStore,
 	callLLM,
 	type LLMCallOptions,
 	LocalAgentEndpoint,
@@ -365,6 +366,10 @@ async function executeLoop(
 	const config = options.config ?? infrastructurePlannerConfig;
 	const callLLMFn = options.callLLMFn ?? callLLM;
 
+	// Context Injection (#395): surface prior findings from this agent's namespace.
+	const namespace = config.memory?.namespace ?? "infrastructure-planner";
+	const priorContext = ContextStore.read(namespace);
+
 	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
 	if (!standardAnalysisBinding) {
 		throw new Error(
@@ -375,8 +380,10 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = infrastructurePlannerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${infrastructurePlannerManifest.persona.name}, ${infrastructurePlannerManifest.persona.role}.
+${priorContextSection}
 
 Available tools:
 ${toolDefs}
@@ -404,7 +411,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 		const parsed = parseJson(response);
 		if (!parsed || parsed.action === "done" || !parsed.tool) {
-			return parsed?.answer ?? response;
+			const result = parsed?.answer ?? response;
+			ContextStore.write(namespace, result);
+			return result;
 		}
 
 		const execResult = await executeWithRetry(runtime, {
@@ -459,5 +468,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		apiKey: options.apiKey,
 	});
 
-	return parseJson(finalResponse)?.answer ?? finalResponse;
+	const finalResult = parseJson(finalResponse)?.answer ?? finalResponse;
+	ContextStore.write(namespace, finalResult);
+	return finalResult;
 }
