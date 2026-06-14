@@ -70,8 +70,7 @@ export const reporterAgentManifest: AgentManifest = {
 		},
 		{
 			name: "reporter-agent.create_executive_report",
-			description:
-				"Create a concise executive summary report from multi-domain O&G analysis results.",
+			description: "Create a concise executive summary report from multi-domain O&G analysis results.",
 			type: "query",
 			capabilities: ["executive-reporting", "analysis-synthesis"],
 			inputSchema: {
@@ -136,8 +135,7 @@ export const reporterAgentManifest: AgentManifest = {
 		{
 			type: "llm",
 			required: true,
-			description:
-				"Organization-selected LLM for report synthesis — all report generation calls the model.",
+			description: "Organization-selected LLM for report synthesis — all report generation calls the model.",
 		},
 	],
 	compatibility: {

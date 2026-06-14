@@ -168,12 +168,16 @@ async function runTests(): Promise<void> {
 
 	if (live && process.env.ANTHROPIC_API_KEY) {
 		await test("[integration] runReporterAgentTask completes a multi-step reporting task", async () => {
-			const answer = await runReporterAgentTask("Generate an investment decision report for a Permian Basin acquisition.");
+			const answer = await runReporterAgentTask(
+				"Generate an investment decision report for a Permian Basin acquisition.",
+			);
 			assert.strictEqual(typeof answer, "string", "runReporterAgentTask must return a string");
 			assert.ok(answer.length > 0, "Answer must be non-empty");
 		});
 	} else {
-		console.log("  ⚠️  [integration] ANTHROPIC_API_KEY not set or reporter server not running — skipping runTask live test.");
+		console.log(
+			"  ⚠️  [integration] ANTHROPIC_API_KEY not set or reporter server not running — skipping runTask live test.",
+		);
 	}
 
 	console.log(`\nReporter Agent MCP Client + runTask Tests: ${passed} passed, ${failed} failed`);

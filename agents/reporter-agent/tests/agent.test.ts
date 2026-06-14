@@ -39,7 +39,10 @@ console.log("📋 Testing manifest and config validation...");
 	assert(config.success, "Reporter Agent runtime config validates");
 
 	assert(reporterAgentManifest.id === "reporter-agent", "Agent id is reporter-agent");
-	assert(reporterAgentManifest.persona.name === "Scriptor Reporticus Maximus", "Persona is Scriptor Reporticus Maximus");
+	assert(
+		reporterAgentManifest.persona.name === "Scriptor Reporticus Maximus",
+		"Persona is Scriptor Reporticus Maximus",
+	);
 	assert(reporterAgentManifest.tools.length === 3, "Reporter Agent exposes 3 reporting tools");
 	assert(
 		reporterAgentManifest.tools.every((t) => t.name.startsWith("reporter-agent.")),

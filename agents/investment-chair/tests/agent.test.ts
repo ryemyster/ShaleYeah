@@ -98,7 +98,9 @@ console.log("\n🧭 Testing organization-owned model routing...");
 		},
 	};
 
-	const decisionTool = investmentChairManifest.tools.find((t) => t.name === "investment-chair.make_investment_decision");
+	const decisionTool = investmentChairManifest.tools.find(
+		(t) => t.name === "investment-chair.make_investment_decision",
+	);
 	assert(decisionTool !== undefined, "make_investment_decision tool is declared in manifest");
 
 	const deepReasoningRoute = investmentChairConfig.modelRouting["deep-reasoning"];

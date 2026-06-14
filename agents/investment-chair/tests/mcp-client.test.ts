@@ -161,19 +161,27 @@ async function runTests(): Promise<void> {
 
 	if (live) {
 		await test("[integration] callDecisionTool routes make_investment_decision through decision MCP", async () => {
-			const result = await callDecisionTool(investmentChairConfig.mcpServers!.decision.url, "make_investment_decision", {});
+			const result = await callDecisionTool(
+				investmentChairConfig.mcpServers!.decision.url,
+				"make_investment_decision",
+				{},
+			);
 			assert.ok(result !== undefined, "MCP tool call must return a value");
 		});
 	}
 
 	if (live && process.env.ANTHROPIC_API_KEY) {
 		await test("[integration] runInvestmentChairTask completes a multi-step decision task", async () => {
-			const answer = await runInvestmentChairTask("Analyze portfolio fit for a Permian Basin acquisition and make a recommendation.");
+			const answer = await runInvestmentChairTask(
+				"Analyze portfolio fit for a Permian Basin acquisition and make a recommendation.",
+			);
 			assert.strictEqual(typeof answer, "string", "runInvestmentChairTask must return a string");
 			assert.ok(answer.length > 0, "Answer must be non-empty");
 		});
 	} else {
-		console.log("  ⚠️  [integration] ANTHROPIC_API_KEY not set or decision server not running — skipping runTask live test.");
+		console.log(
+			"  ⚠️  [integration] ANTHROPIC_API_KEY not set or decision server not running — skipping runTask live test.",
+		);
 	}
 
 	console.log(`\nInvestment Chair MCP Client + runTask Tests: ${passed} passed, ${failed} failed`);

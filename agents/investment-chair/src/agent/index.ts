@@ -38,8 +38,7 @@ export const investmentChairManifest: AgentManifest = {
 	tools: [
 		{
 			name: "investment-chair.make_investment_decision",
-			description:
-				"Make final investment decision based on consolidated analysis inputs from all domain agents.",
+			description: "Make final investment decision based on consolidated analysis inputs from all domain agents.",
 			type: "query",
 			capabilities: ["investment-decision", "risk-adjusted-return"],
 			inputSchema: {
