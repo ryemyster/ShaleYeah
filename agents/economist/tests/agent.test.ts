@@ -5,7 +5,13 @@
  * and that the economist manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createEconomistEndpoint,
 	createEconomistRuntime,
@@ -228,6 +234,51 @@ console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #423)
 	await blockingRuntime.shutdown();
 }
 
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = economistManifest.memory?.namespace ?? "economist";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: test context seeded for Economist.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createEconomistRuntime();
+	await rt.initialize();
+	await runEconomistTask("Analyze test data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: test context seeded for Economist."),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = economistManifest.memory?.namespace ?? "economist";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({ action: "done", answer: "Economist analysis: test finding written to store." });
+	};
+
+	const rt = createEconomistRuntime();
+	await rt.initialize();
+	await runEconomistTask("Summarize the analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Economist analysis: test finding written to store."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
+}
 console.log("\n🛑 Testing invalid manifest fails early...");
 {
 	try {

@@ -5,7 +5,13 @@ import type {
 	HumanApprovalChallenge,
 	LLMCallOptions,
 } from "@shaleyeah/sdk";
-import { callLLM, LocalAgentEndpoint, LocalAgentRuntime, type StandaloneToolHandler } from "@shaleyeah/sdk";
+import {
+	ContextStore,
+	callLLM,
+	LocalAgentEndpoint,
+	LocalAgentRuntime,
+	type StandaloneToolHandler,
+} from "@shaleyeah/sdk";
 import { callGeowizTool } from "./geowiz-client.js";
 
 export { callGeowizTool };
@@ -511,12 +517,12 @@ async function executeLoop(
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
-	// TODO (#395): Context Injection — before building the system prompt, read from
-	// memory.namespace = "geologist" to surface relevant prior task context.
-	// Requires Supabase pgvector. Inject as an additional system prompt section.
-
 	const config = options.config ?? geologistConfig;
 	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	// Context Injection (#395): surface prior findings from this agent's namespace.
+	const namespace = config.memory?.namespace ?? "geologist";
+	const priorContext = ContextStore.read(namespace);
 
 	// Resolve the model that drives the reasoning loop from the operator's routing table.
 	// The loop itself is always standard-analysis class — tool-level model requirements are
@@ -531,9 +537,10 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = geologistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${geologistManifest.persona.name}, ${geologistManifest.persona.role}.
-
+${priorContextSection}
 Available tools:
 ${toolDefs}
 
@@ -560,7 +567,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 		const parsed = parseJson(response);
 		if (!parsed || parsed.action === "done" || !parsed.tool) {
-			return parsed?.answer ?? response;
+			const result = parsed?.answer ?? response;
+			ContextStore.write(namespace, result);
+			return result;
 		}
 
 		// TODO (#396): Async Job — if the tool manifest declares timeoutMs > threshold,
@@ -612,7 +621,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		}
 	}
 
-	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
+	// Context Injection (#395): write synthesized findings so subsequent runs can surface them.
 
 	// Max steps reached — force a synthesis pass.
 	const finalResponse = await callLLMFn({
@@ -622,7 +631,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 		apiKey: options.apiKey,
 	});
 
-	return parseJson(finalResponse)?.answer ?? finalResponse;
+	const finalResult = parseJson(finalResponse)?.answer ?? finalResponse;
+	ContextStore.write(namespace, finalResult);
+	return finalResult;
 }
 
 // ── CLI entrypoint ────────────────────────────────────────────────────────────

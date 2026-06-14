@@ -5,7 +5,13 @@
  * and that the drilling-engineer manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createDrillingEngineerEndpoint,
 	createDrillingEngineerRuntime,
@@ -372,6 +378,51 @@ console.log("\n🔴 Testing permanent halt on non-retryable failure (issue #426)
 	await blockingRuntime.shutdown();
 }
 
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = drillingEngineerManifest.memory?.namespace ?? "drilling-engineer";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: test context seeded for Drilling Engineer.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createDrillingEngineerRuntime();
+	await rt.initialize();
+	await runDrillingEngineerTask("Analyze test data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: test context seeded for Drilling Engineer."),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = drillingEngineerManifest.memory?.namespace ?? "drilling-engineer";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({ action: "done", answer: "Drilling Engineer analysis: test finding written to store." });
+	};
+
+	const rt = createDrillingEngineerRuntime();
+	await rt.initialize();
+	await runDrillingEngineerTask("Summarize the analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Drilling Engineer analysis: test finding written to store."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
+}
 console.log("\n🛑 Testing invalid manifest fails early...");
 try {
 	new LocalAgentRuntime({

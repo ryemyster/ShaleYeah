@@ -23,6 +23,7 @@ Develop-only — not yet released to main.
 - **economist Tier 2 agent** (#364) — `runEconomistTask()` Layer 2 loop, MCP HTTP client; 34 tests.
 - **geologist foundation fixes** (#402–#407) — model routing wired, scope enforcement, blocking eval halt, `executeWithRetry`, `geologist.save_finding` write tool, `/health` endpoint on all 14 MCP servers.
 - **Level 2 batch — investment-chair, market-analyst, reporter-agent, reservoir-engineer, risk-analyst** (#439–#443) — all 5 remaining stub agents fully implemented: `runXxxTask` Layer 2 loop with `executeWithRetry` (3-attempt exponential backoff) + permanent halt guard (`!retryable` → return immediately); MCP HTTP clients wired to ports 3013/3007/3009/3004/3005; Arcade-compliant manifests + runtime configs; 265 tests total across all 5 agents (contract + MCP client suites).
+- **Context injection — `ContextStore` Phase 1** (#395) — new `sdk/src/context-store.ts` process-level singleton; all 14 agent `executeLoop` functions now read prior findings from their memory namespace before building the system prompt and write synthesized results on successful completion. Permanent failures (blocking evals, scope rejections) do not write. 28 new tests across all agents verify read-inject and write-after-run behavior.
 
 ### Changed
 

@@ -1,5 +1,6 @@
 import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
 import {
+	ContextStore,
 	callLLM,
 	type LLMCallOptions,
 	LocalAgentEndpoint,
@@ -342,15 +343,19 @@ async function executeLoop(
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 	},
 ): Promise<string> {
-	// TODO (#395): Context Injection — read from memory.namespace before building system prompt.
-
 	const config = options.config ?? developmentPlannerConfig;
 	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	// Context Injection (#395): surface prior findings from this agent's namespace.
+	const namespace = config.memory?.namespace ?? "development-planner";
+	const priorContext = ContextStore.read(namespace);
 	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
 	const toolDefs = developmentPlannerManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${developmentPlannerManifest.persona.name}, ${developmentPlannerManifest.persona.role}.
+${priorContextSection}
 
 Available tools:
 ${toolDefs}
@@ -378,7 +383,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 
 		const parsed = parseJson(response);
 		if (!parsed || parsed.action === "done" || !parsed.tool) {
-			return parsed?.answer ?? response;
+			const result = parsed?.answer ?? response;
+			ContextStore.write(namespace, result);
+			return result;
 		}
 
 		// TODO (#396): Async Job — detect long-running development analyses and poll for completion.
@@ -428,7 +435,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 		}
 	}
 
-	// TODO (#395): Context Injection — write key findings to memory.namespace before returning.
+	// Context Injection (#395): write synthesized findings so subsequent runs can surface them.
 
 	const finalResponse = await callLLMFn({
 		system,
@@ -437,7 +444,9 @@ If you cannot complete the task with the available tools, respond with {"action"
 		apiKey: options.apiKey,
 	});
 
-	return parseJson(finalResponse)?.answer ?? finalResponse;
+	const finalResult = parseJson(finalResponse)?.answer ?? finalResponse;
+	ContextStore.write(namespace, finalResult);
+	return finalResult;
 }
 
 // ── CLI entrypoint ────────────────────────────────────────────────────────────

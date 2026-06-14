@@ -1,4 +1,5 @@
 export * from "./canonical-model.js";
+export * from "./context-store.js";
 export * from "./contracts.js";
 export * from "./errors.js";
 export * from "./file-detector.js";

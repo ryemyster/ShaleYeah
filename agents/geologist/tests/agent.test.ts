@@ -5,7 +5,13 @@
  * and that the geologist manifest satisfies all Arcade acceptance criteria.
  */
 
-import { AgentManifestSchema, AgentRuntimeConfigSchema, type LLMCallOptions, LocalAgentRuntime } from "@shaleyeah/sdk";
+import {
+	AgentManifestSchema,
+	AgentRuntimeConfigSchema,
+	ContextStore,
+	type LLMCallOptions,
+	LocalAgentRuntime,
+} from "@shaleyeah/sdk";
 import {
 	createGeologistEndpoint,
 	createGeologistRuntime,
@@ -451,6 +457,52 @@ console.log("\n🔀 Testing model routing wired into callLLM (issue #402)...");
 		capturedModels[0] === expectedModel,
 		`executeLoop passes standard-analysis model (${expectedModel}) to callLLM via injectable option`,
 	);
+}
+
+console.log("\n🗂️  Testing context injection — prior context in prompt...");
+{
+	const ns = geologistManifest.memory?.namespace ?? "geologist";
+	ContextStore.clear(ns);
+	ContextStore.write(ns, "Prior finding: Wolfcamp A shows excellent porosity at 8,500 ft TVD.");
+
+	let capturedSystem = "";
+	const mockLLM = async (opts: LLMCallOptions): Promise<string> => {
+		capturedSystem = opts.system ?? "";
+		return JSON.stringify({ action: "done", answer: "Analysis complete." });
+	};
+
+	const rt = createGeologistRuntime();
+	await rt.initialize();
+	await runGeologistTask("Analyze formation data.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("Prior finding: Wolfcamp A"),
+		"Prior context from namespace is injected into system prompt",
+	);
+	ContextStore.clear(ns);
+}
+
+console.log("\n🗂️  Testing context injection — findings written after run...");
+{
+	const ns = geologistManifest.memory?.namespace ?? "geologist";
+	ContextStore.clear(ns);
+
+	const mockLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		return JSON.stringify({ action: "done", answer: "Formation analysis: strong Wolfcamp B signal." });
+	};
+
+	const rt = createGeologistRuntime();
+	await rt.initialize();
+	await runGeologistTask("Summarize the geological analysis.", { runtime: rt, callLLM: mockLLM });
+	await rt.shutdown();
+
+	const stored = ContextStore.read(ns);
+	assert(
+		stored.includes("Formation analysis: strong Wolfcamp B signal."),
+		"Answer is written to context store after task completes",
+	);
+	ContextStore.clear(ns);
 }
 
 console.log("\n🛑 Testing invalid manifest fails early...");
