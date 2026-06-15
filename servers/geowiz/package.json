@@ -20,7 +20,7 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.11",
+		"@biomejs/biome": "^2.5.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/node": "^25.9.3",
 		"@types/xml2js": "^0.4.14",
