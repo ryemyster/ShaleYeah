@@ -170,6 +170,9 @@ export const geologistManifest: AgentManifest = {
 			requiredScopes: ["read:geology"],
 			modelRequirement: "deterministic",
 			mcpServer: "geowiz",
+			// Arcade #44: if Access DB processing fails permanently, fall back to a quality
+			// metadata-only check so the geologist can still report data quality findings.
+			fallbackTo: "geologist.assess_quality",
 		},
 		{
 			name: "geologist.process_document",
@@ -217,6 +220,9 @@ export const geologistManifest: AgentManifest = {
 			// Seismic inversion can take minutes — server may return { jobId, status: "pending" }
 			// and the agent layer polls get_job_status until complete (Arcade #24: Async Job).
 			timeoutMs: 120_000,
+			// Arcade #44: if seismic processing permanently fails, fall back to simpler formation
+			// analysis so the geologist can still deliver structural findings.
+			fallbackTo: "geologist.analyze_formation",
 		},
 		{
 			name: "geologist.process_aries_database",
@@ -657,6 +663,27 @@ If you cannot complete the task with the available tools, respond with {"action"
 			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
 			// do not continue the loop. The LLM cannot recover from a security or governance halt.
 			if (!execResult.retryable) {
+				// Arcade #44: Fallback Tool — if the manifest declares fallbackTo, attempt it once
+				// before surfacing the error. The fallback receives the same args.
+				const toolManifest = manifest.tools.find((t) => t.name === parsed.tool);
+				if (toolManifest?.fallbackTo) {
+					const fallbackResult = await executeWithRetry(runtime, {
+						toolName: toolManifest.fallbackTo,
+						args: parsed.args ?? {},
+						runId: `task:step:${step}:fallback`,
+					});
+					if (fallbackResult.status === "completed") {
+						history.push({
+							role: "tool",
+							content: JSON.stringify({
+								...((fallbackResult.data as Record<string, unknown> | null) ?? {}),
+								usedFallback: true,
+								primaryTool: parsed.tool,
+							}),
+						});
+						continue;
+					}
+				}
 				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
 			}
 			// Transient failure — push to history so the LLM can reformulate and retry.

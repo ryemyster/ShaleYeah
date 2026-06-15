@@ -109,6 +109,9 @@ export const economistManifest: AgentManifest = {
 			modelRequirement: "deterministic",
 			evalProfile: "economist-dcf",
 			mcpServer: "econobot",
+			// Arcade #44: if DCF calculation permanently fails, fall back to a simpler
+			// economics analysis so the economist can still surface an economic outlook.
+			fallbackTo: "economist.analyze_economics",
 		},
 		{
 			name: "economist.sensitivity_analysis",
@@ -500,6 +503,27 @@ If you cannot complete the task with the available tools, respond with {"action"
 			// Permanent failure (blocking eval, scope rejection, unretryable error) — safety gate,
 			// do not continue the loop. The LLM cannot recover from a security or governance halt.
 			if (!execResult.retryable) {
+				// Arcade #44: Fallback Tool — if the manifest declares fallbackTo, attempt it once
+				// before surfacing the error. The fallback receives the same args.
+				const toolManifest = manifest.tools.find((t) => t.name === parsed.tool);
+				if (toolManifest?.fallbackTo) {
+					const fallbackResult = await executeWithRetry(runtime, {
+						toolName: toolManifest.fallbackTo,
+						args: parsed.args ?? {},
+						runId: `task:step:${step}:fallback`,
+					});
+					if (fallbackResult.status === "completed") {
+						history.push({
+							role: "tool",
+							content: JSON.stringify({
+								...((fallbackResult.data as Record<string, unknown> | null) ?? {}),
+								usedFallback: true,
+								primaryTool: parsed.tool,
+							}),
+						});
+						continue;
+					}
+				}
 				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
 			}
 			// Transient failure — push to history so the LLM can reformulate and retry.
