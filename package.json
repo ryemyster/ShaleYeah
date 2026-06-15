@@ -13,7 +13,7 @@
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.11",
+    "@biomejs/biome": "^2.5.0",
     "turbo": "^2.5.4",
     "typescript": "^6.0.2"
   },
