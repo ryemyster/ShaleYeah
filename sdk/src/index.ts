@@ -8,6 +8,7 @@ export * from "./file-integration.js";
 export * from "./file-utils.js";
 export * from "./llm-client.js";
 export * from "./mcp-server.js";
+export * from "./mutual-exclusivity.js";
 export * from "./runtime.js";
 export * from "./server-factory.js";
 export * from "./service.js";

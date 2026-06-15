@@ -622,6 +622,113 @@ console.log("\n⏳ Testing async job polling (issue #396)...");
 	ContextStore.clear("geologist");
 }
 
+// ─── Arcade #44: Fallback Tool ───────────────────────────────────────────────
+{
+	console.log("\n── Arcade #44: Fallback Tool ──");
+
+	// Build a manifest that declares a fallback on process_seismic_data.
+	const manifestWithFallback = {
+		...geologistManifest,
+		tools: geologistManifest.tools.map((t) =>
+			t.name === "geologist.process_seismic_data" ? { ...t, fallbackTo: "geologist.analyze_formation" } : t,
+		),
+	};
+
+	// Handler: seismic throws permanently; analyze_formation succeeds.
+	let fallbackCalled = false;
+	const fallbackHandlers = Object.fromEntries(
+		manifestWithFallback.tools.map((t) => [
+			t.name,
+			async () => {
+				if (t.name === "geologist.process_seismic_data") {
+					throw new Error("seismic unavailable — permanent");
+				}
+				if (t.name === "geologist.analyze_formation") {
+					fallbackCalled = true;
+					return { formation: "Wolfcamp", porosity: 0.12 };
+				}
+				return { ok: true };
+			},
+		]),
+	);
+
+	let fallbackLLMCalls = 0;
+	const fallbackGoalLLM = async (_opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		fallbackLLMCalls++;
+		if (fallbackLLMCalls === 1) {
+			// First LLM turn: ask the agent to call seismic data
+			return JSON.stringify({ tool: "geologist.process_seismic_data", args: { filePath: "seismic.segy" } });
+		}
+		// After fallback fires, LLM produces final answer
+		return JSON.stringify({ answer: "Formation analysis completed via fallback." });
+	};
+
+	const fallbackRuntime = new LocalAgentRuntime({
+		manifest: manifestWithFallback,
+		config: geologistConfig,
+		handlers: fallbackHandlers,
+	});
+	await fallbackRuntime.initialize();
+	ContextStore.clear("geologist");
+
+	const fallbackResult = await runGeologistTask("Process seismic data.", {
+		runtime: fallbackRuntime,
+		callLLM: fallbackGoalLLM,
+	});
+	await fallbackRuntime.shutdown();
+
+	assert(fallbackCalled, "Fallback tool (analyze_formation) was invoked when seismic permanently failed");
+	assert(
+		typeof fallbackResult === "string" && fallbackResult.includes("fallback"),
+		`Fallback result mentions fallback (got: "${String(fallbackResult).slice(0, 120)}")`,
+	);
+	ContextStore.clear("geologist");
+}
+
+{
+	// No fallback declared — permanent failure returns error immediately (existing behavior).
+	// Strip fallbackTo from seismic so we can test the no-fallback path.
+	console.log("\n── Arcade #44: No fallback declared ──");
+
+	const manifestNoFallback = {
+		...geologistManifest,
+		tools: geologistManifest.tools.map(({ fallbackTo: _fb, ...rest }) => rest),
+	};
+
+	const noFbHandlers = Object.fromEntries(
+		manifestNoFallback.tools.map((t) => [
+			t.name,
+			async () => {
+				if (t.name === "geologist.process_seismic_data") throw new Error("seismic unavailable — permanent");
+				return { ok: true };
+			},
+		]),
+	);
+	let noFbLLMCalls = 0;
+	const noFbLLM = async (_opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		noFbLLMCalls++;
+		return JSON.stringify({ tool: "geologist.process_seismic_data", args: { filePath: "seismic.segy" } });
+	};
+
+	const noFbRuntime = new LocalAgentRuntime({
+		manifest: manifestNoFallback,
+		config: geologistConfig,
+		handlers: noFbHandlers,
+	});
+	await noFbRuntime.initialize();
+	ContextStore.clear("geologist");
+
+	const noFbResult = await runGeologistTask("Process seismic data.", { runtime: noFbRuntime, callLLM: noFbLLM });
+	await noFbRuntime.shutdown();
+
+	assert(
+		typeof noFbResult === "string",
+		`Permanent failure without fallback returns error string (got: ${typeof noFbResult})`,
+	);
+	assert(noFbLLMCalls === 1, `LLM called only once — loop halts immediately (called ${noFbLLMCalls})`);
+	ContextStore.clear("geologist");
+}
+
 console.log("\n══════════════════════════════════════════════");
 console.log(`Geologist Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
