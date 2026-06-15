@@ -1,13 +1,17 @@
 import type {
 	AgentManifest,
 	AgentRuntimeConfig,
+	AsyncJobPoller,
 	HumanApproval,
 	HumanApprovalChallenge,
 	LLMCallOptions,
 } from "@shaleyeah/sdk";
 import {
+	ASYNC_POLL_INTERVAL_MS,
+	ASYNC_THRESHOLD_MS,
 	ContextStore,
 	callLLM,
+	defaultAsyncJobPoller,
 	LocalAgentEndpoint,
 	LocalAgentRuntime,
 	type StandaloneToolHandler,
@@ -210,6 +214,9 @@ export const geologistManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "geologist-seismic",
 			mcpServer: "geowiz",
+			// Seismic inversion can take minutes — server may return { jobId, status: "pending" }
+			// and the agent layer polls get_job_status until complete (Arcade #24: Async Job).
+			timeoutMs: 120_000,
 		},
 		{
 			name: "geologist.process_aries_database",
@@ -429,7 +436,6 @@ export function createGeologistEndpoint(config: AgentRuntimeConfig = geologistCo
  *                      silently bypassing the HITL gate.
  *
  * Deferred (#395): Context Injection — read/write agent memory namespace around the loop.
- * Deferred (#396): Async Job — polling pattern for long-running tools (seismic, ARIES).
  */
 export async function runGeologistTask(
 	goal: string,
@@ -440,6 +446,10 @@ export async function runGeologistTask(
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
 		callLLM?: (opts: LLMCallOptions) => Promise<string>;
+		/** Override the async-job poller — used in tests to avoid real HTTP polling. */
+		asyncJobPoller?: AsyncJobPoller;
+		/** Override poll interval in ms — set to 0 in tests for instant polling. */
+		pollIntervalMs?: number;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? geologistConfig;
@@ -515,10 +525,16 @@ async function executeLoop(
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
+		asyncJobPoller?: AsyncJobPoller;
+		pollIntervalMs?: number;
 	},
 ): Promise<string> {
 	const config = options.config ?? geologistConfig;
 	const callLLMFn = options.callLLMFn ?? callLLM;
+
+	// Read the manifest from the runtime — allows tests to inject a custom manifest
+	// (e.g. with tiny timeoutMs) without touching the module-level constant.
+	const manifest = runtime.getManifest();
 
 	// Context Injection (#395): surface prior findings from this agent's namespace.
 	const namespace = config.memory?.namespace ?? "geologist";
@@ -536,10 +552,10 @@ async function executeLoop(
 	}
 	const reasoningModel = standardAnalysisBinding.model;
 
-	const toolDefs = geologistManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
-	const system = `You are ${geologistManifest.persona.name}, ${geologistManifest.persona.role}.
+	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 Available tools:
 ${toolDefs}
@@ -572,9 +588,6 @@ If you cannot complete the task with the available tools, respond with {"action"
 			return result;
 		}
 
-		// TODO (#396): Async Job — if the tool manifest declares timeoutMs > threshold,
-		// treat the result as a job ID and poll until completion before continuing the loop.
-
 		// Permission Gate: route through runtime.execute() so HITL + scope checks fire.
 		// executeWithRetry transparently retries transient (retryable) failures before
 		// surfacing the error to the LLM as a recoverable hint.
@@ -585,7 +598,40 @@ If you cannot complete the task with the available tools, respond with {"action"
 		});
 
 		if (execResult.status === "completed") {
-			history.push({ role: "tool", content: JSON.stringify(execResult.data) });
+			// Async Job (Arcade #24): if the tool declares a long timeoutMs and the server
+			// returned a pending job ID, poll get_job_status until complete or timeout.
+			const toolManifest = manifest.tools.find((t) => t.name === parsed.tool);
+			const data = execResult.data as Record<string, unknown> | null;
+			if (
+				toolManifest?.timeoutMs &&
+				toolManifest.timeoutMs > ASYNC_THRESHOLD_MS &&
+				data !== null &&
+				typeof data === "object" &&
+				typeof data.jobId === "string" &&
+				data.status === "pending"
+			) {
+				const serverKey = toolManifest.mcpServer;
+				const serverUrl = serverKey ? (config.mcpServers?.[serverKey]?.url ?? "") : "";
+				const poller = options.asyncJobPoller ?? defaultAsyncJobPoller;
+				const pollMs = options.pollIntervalMs ?? ASYNC_POLL_INTERVAL_MS;
+				const deadline = Date.now() + toolManifest.timeoutMs;
+				let pollResult = await poller(data.jobId, serverUrl);
+				while (pollResult.status === "pending" && Date.now() < deadline) {
+					if (pollMs > 0) await new Promise((r) => setTimeout(r, pollMs));
+					pollResult = await poller(data.jobId, serverUrl);
+				}
+				if (pollResult.status === "complete") {
+					history.push({ role: "tool", content: JSON.stringify(pollResult.result) });
+				} else {
+					const msg =
+						pollResult.status === "pending"
+							? `Async job ${data.jobId} timed out after ${toolManifest.timeoutMs}ms`
+							: `Async job ${data.jobId} failed: ${pollResult.error}`;
+					return msg;
+				}
+			} else {
+				history.push({ role: "tool", content: JSON.stringify(execResult.data) });
+			}
 		} else if (execResult.status === "approval_required") {
 			if (!options.onApprovalRequired) {
 				throw new Error(

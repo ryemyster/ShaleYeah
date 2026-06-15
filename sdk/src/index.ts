@@ -1,3 +1,4 @@
+export * from "./async-job.js";
 export * from "./canonical-model.js";
 export * from "./context-store.js";
 export * from "./contracts.js";

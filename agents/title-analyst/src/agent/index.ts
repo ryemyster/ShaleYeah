@@ -1,7 +1,16 @@
-import type { AgentManifest, AgentRuntimeConfig, HumanApproval, HumanApprovalChallenge } from "@shaleyeah/sdk";
+import type {
+	AgentManifest,
+	AgentRuntimeConfig,
+	AsyncJobPoller,
+	HumanApproval,
+	HumanApprovalChallenge,
+} from "@shaleyeah/sdk";
 import {
+	ASYNC_POLL_INTERVAL_MS,
+	ASYNC_THRESHOLD_MS,
 	ContextStore,
 	callLLM,
+	defaultAsyncJobPoller,
 	type LLMCallOptions,
 	LocalAgentEndpoint,
 	LocalAgentRuntime,
@@ -278,6 +287,8 @@ export async function runTitleAnalystTask(
 		apiKey?: string;
 		runtime?: LocalAgentRuntime;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
+		asyncJobPoller?: AsyncJobPoller;
+		pollIntervalMs?: number;
 		/** Inject a custom LLM function — used in tests to capture model routing without real API calls. */
 		callLLM?: (opts: LLMCallOptions) => Promise<string>;
 	} = {},
@@ -354,9 +365,12 @@ async function executeLoop(
 		apiKey?: string;
 		onApprovalRequired?: (challenge: HumanApprovalChallenge) => Promise<HumanApproval>;
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
+		asyncJobPoller?: AsyncJobPoller;
+		pollIntervalMs?: number;
 	},
 ): Promise<string> {
 	const config = options.config ?? titleAnalystConfig;
+	const manifest = runtime.getManifest();
 	const callLLMFn = options.callLLMFn ?? callLLM;
 
 	// Context Injection (#395): surface prior findings from this agent's namespace.
@@ -372,10 +386,10 @@ async function executeLoop(
 	}
 	const reasoningModel = standardAnalysisBinding.model;
 
-	const toolDefs = titleAnalystManifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
-	const system = `You are ${titleAnalystManifest.persona.name}, ${titleAnalystManifest.persona.role}.
+	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
@@ -409,7 +423,8 @@ If you cannot complete the task with the available tools, respond with {"action"
 			return result;
 		}
 
-		// TODO (#396): Async Job — detect asyncJob tools and poll instead of blocking.
+		// Async Job (Arcade #24): if the tool declares a long timeoutMs and the server
+		// returned a pending job ID, poll get_job_status until complete or timeout.
 
 		// Permission Gate: all tool calls go through executeWithRetry → runtime.execute() — never call
 		// callTitleTool directly from the loop.
@@ -420,7 +435,38 @@ If you cannot complete the task with the available tools, respond with {"action"
 		});
 
 		if (execResult.status === "completed") {
-			history.push({ role: "tool", content: JSON.stringify(execResult.data) });
+			const toolManifest = manifest.tools.find((t) => t.name === parsed.tool);
+			const data = execResult.data as Record<string, unknown> | null;
+			if (
+				toolManifest?.timeoutMs &&
+				toolManifest.timeoutMs > ASYNC_THRESHOLD_MS &&
+				data !== null &&
+				typeof data === "object" &&
+				typeof data.jobId === "string" &&
+				data.status === "pending"
+			) {
+				const serverKey = toolManifest.mcpServer;
+				const serverUrl = serverKey ? (config.mcpServers?.[serverKey]?.url ?? "") : "";
+				const poller = options.asyncJobPoller ?? defaultAsyncJobPoller;
+				const pollMs = options.pollIntervalMs ?? ASYNC_POLL_INTERVAL_MS;
+				const deadline = Date.now() + toolManifest.timeoutMs;
+				let pollResult = await poller(data.jobId, serverUrl);
+				while (pollResult.status === "pending" && Date.now() < deadline) {
+					if (pollMs > 0) await new Promise((r) => setTimeout(r, pollMs));
+					pollResult = await poller(data.jobId, serverUrl);
+				}
+				if (pollResult.status === "complete") {
+					history.push({ role: "tool", content: JSON.stringify(pollResult.result) });
+				} else {
+					const msg =
+						pollResult.status === "pending"
+							? `Async job ${data.jobId} timed out after ${toolManifest.timeoutMs}ms`
+							: `Async job ${data.jobId} failed: ${pollResult.error}`;
+					return msg;
+				}
+			} else {
+				history.push({ role: "tool", content: JSON.stringify(execResult.data) });
+			}
 		} else if (execResult.status === "approval_required") {
 			if (!options.onApprovalRequired) {
 				throw new Error(
