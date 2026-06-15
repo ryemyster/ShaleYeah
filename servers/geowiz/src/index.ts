@@ -8,7 +8,9 @@
 import fs from "node:fs/promises";
 import type { LASCurve } from "@shaleyeah/sdk";
 import {
+	buildMutualExclusivityError,
 	callLLM,
+	checkMutualExclusivity,
 	FormationSchema,
 	runMCPServer,
 	ServerFactory,
@@ -56,8 +58,19 @@ const geowizTemplate: ServerTemplate = {
 				formations: z.array(z.string()).optional().describe("Target formations"),
 				analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
+				// Arcade #9: Mutual Exclusivity — identify a single formation by name OR id, not both.
+				formationName: z.string().optional().describe("Target formation by name (XOR with formationId)"),
+				formationId: z.string().optional().describe("Target formation by database id (XOR with formationName)"),
 			}),
 			async (args) => {
+				const xorViolation = checkMutualExclusivity(args, [["formationName", "formationId"]]);
+				if (xorViolation) {
+					return buildMutualExclusivityError(
+						["formationName", "formationId"],
+						["formationName", "formationId"].filter((k) => args[k] != null),
+					);
+				}
+
 				const analysis = await performFormationAnalysis(args);
 
 				if (args.outputPath) {
@@ -101,8 +114,19 @@ const geowizTemplate: ServerTemplate = {
 					.describe("Force specific format or auto-detect"),
 				qualityAssessment: z.boolean().default(true),
 				outputPath: z.string().optional(),
+				// Arcade #9: Mutual Exclusivity — identify the well by name OR id, not both.
+				wellName: z.string().optional().describe("Filter by well name (XOR with wellId)"),
+				wellId: z.string().optional().describe("Filter by well identifier (XOR with wellName)"),
 			}),
 			async (args) => {
+				const xorViolation = checkMutualExclusivity(args, [["wellName", "wellId"]]);
+				if (xorViolation) {
+					return buildMutualExclusivityError(
+						["wellName", "wellId"],
+						["wellName", "wellId"].filter((k) => args[k] != null),
+					);
+				}
+
 				const result = await processMultiFormatWellLog(args);
 
 				if (args.outputPath) {

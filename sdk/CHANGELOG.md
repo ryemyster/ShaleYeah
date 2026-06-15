@@ -9,6 +9,7 @@ All notable changes to this package.
 - **`LocalAgentRuntime.execute()` audits scope failures** (#403) — Scope rejections now call `this.audit()` before returning the `failed` result, so missing-scope events appear in the audit trail alongside HITL and eval failures.
 
 ### Added
+- **Mutual Exclusivity — Arcade #9** (#453) — new `sdk/src/mutual-exclusivity.ts` exports `checkMutualExclusivity(args, groups)` (returns error string or null) and `buildMutualExclusivityError(group, provided)` (returns `{error_type: "permanent", error, hint}`). `AgentToolManifestSchema` gains optional `mutuallyExclusive: string[][]` field for declaring XOR param groups in tool manifests. 10 unit tests in `sdk/tests/mutual-exclusivity.test.ts`.
 - **HTTP transport mode for `MCPServer`** (#363) — `MCPServer` now selects `StreamableHTTPServerTransport` when the `PORT` env var is set at construction time, and falls back to `StdioServerTransport` otherwise. All 14 inheriting servers gain HTTP capability without any per-server code change. New public helpers: `isHttpMode()` and `httpPort()`. `initialize()` starts the Node.js HTTP server and binds on the configured port; `stop()` closes it cleanly.
 
 ## [0.1.0] — 2026-06-04

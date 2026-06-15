@@ -8,7 +8,9 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import {
+	buildMutualExclusivityError,
 	callLLM,
+	checkMutualExclusivity,
 	EconomicsSchema,
 	type MCPServer,
 	runMCPServer,
@@ -58,8 +60,23 @@ const econobotTemplate: ServerTemplate = {
 				discountRate: z.number().min(0).max(1).default(0.1),
 				analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
+				// Arcade #9: Mutual Exclusivity — choose a named scenario preset OR provide inline
+				// config, not both. Omitting both means the analysis runs with default parameters.
+				scenarioName: z.string().optional().describe("Named scenario preset to load (XOR with scenarioConfig)"),
+				scenarioConfig: z
+					.record(z.string(), z.unknown())
+					.optional()
+					.describe("Inline scenario parameters (XOR with scenarioName)"),
 			}),
 			async (args) => {
+				const xorViolation = checkMutualExclusivity(args, [["scenarioName", "scenarioConfig"]]);
+				if (xorViolation) {
+					return buildMutualExclusivityError(
+						["scenarioName", "scenarioConfig"],
+						["scenarioName", "scenarioConfig"].filter((k) => args[k] != null),
+					);
+				}
+
 				const analysis = await performEconomicAnalysis(args);
 
 				if (args.outputPath) {

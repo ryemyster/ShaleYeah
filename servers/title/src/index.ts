@@ -14,7 +14,14 @@
  */
 
 import type { MCPServer } from "@shaleyeah/sdk";
-import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import {
+	buildMutualExclusivityError,
+	checkMutualExclusivity,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 import { synthesizeBurdenCheckWithLLM } from "./tools/burden-check.js";
 import { synthesizeChainOfTitleWithLLM } from "./tools/chain-of-title.js";
@@ -93,14 +100,34 @@ const titleServerTemplate: ServerTemplate = {
 			"examine_ownership",
 			"Analyze working interest (WI) and net revenue interest (NRI) for an O&G property",
 			z.object({
-				propertyDescription: z.string().describe("Legal description of the property"),
+				// Arcade #9: Mutual Exclusivity — identify the property by legal description OR
+				// tract id, not both. propertyDescription (legal desc) and tractId are XOR.
+				propertyDescription: z.string().optional().describe("Legal description of the property (XOR with tractId)"),
+				tractId: z.string().optional().describe("Database tract identifier (XOR with propertyDescription)"),
 				county: z.string(),
 				state: z.string(),
 				outputPath: z.string().optional(),
 			}),
 			async (args) => {
+				const xorViolation = checkMutualExclusivity(args, [["propertyDescription", "tractId"]]);
+				if (xorViolation) {
+					return buildMutualExclusivityError(
+						["propertyDescription", "tractId"],
+						["propertyDescription", "tractId"].filter((k) => args[k] != null),
+					);
+				}
+
+				if (!args.propertyDescription && !args.tractId) {
+					return {
+						error_type: "permanent",
+						error: "Either propertyDescription or tractId must be provided.",
+						hint: "Provide a legal description (e.g. 'Section 12, T2N, R4E, Reeves County') or a tractId.",
+					};
+				}
+
+				const legalDescription = args.propertyDescription ?? `tract:${args.tractId}`;
 				const result = await synthesizeOwnershipWithLLM({
-					propertyDescription: args.propertyDescription,
+					propertyDescription: legalDescription,
 					county: args.county,
 					state: args.state,
 				});

@@ -51,6 +51,10 @@ export const AgentToolManifestSchema = z.object({
 	// Maximum milliseconds to wait for the tool call to complete.
 	// Implements Arcade pattern #28: Timeout Boundary.
 	timeoutMs: z.number().int().positive().optional(),
+	// Groups of parameter names where exactly one must be provided (XOR constraint).
+	// Example: [["formationName", "formationId"]] means these two cannot coexist.
+	// Implements Arcade pattern #9: Mutual Exclusivity.
+	mutuallyExclusive: z.array(z.array(z.string().min(1))).optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
