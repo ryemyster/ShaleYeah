@@ -519,6 +519,109 @@ console.log("\n🛑 Testing invalid manifest fails early...");
 	}
 }
 
+console.log("\n⏳ Testing async job polling (issue #396)...");
+{
+	// process_seismic_data is declared as a long-running tool.
+	const seismicTool = geologistManifest.tools.find((t) => t.name === "geologist.process_seismic_data");
+	assert(seismicTool?.timeoutMs === 120_000, "process_seismic_data declares timeoutMs: 120_000");
+}
+
+{
+	// When a tool returns { jobId, status: "pending" } and has timeoutMs > ASYNC_THRESHOLD_MS,
+	// executeLoop must poll the asyncJobPoller until the job is complete.
+	let pollCallCount = 0;
+	const mockPoller = async (_jobId: string, _serverUrl: string) => {
+		pollCallCount++;
+		if (pollCallCount === 1) return { status: "pending" as const };
+		return { status: "complete" as const, result: { seismicSummary: "Strong reflector at 8,000 ft" } };
+	};
+
+	let step = 0;
+	const seismicLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		if (step === 0) {
+			step++;
+			return JSON.stringify({ action: "tool", tool: "geologist.process_seismic_data", args: { filePath: "test.sgy" } });
+		}
+		return JSON.stringify({ action: "done", answer: "Seismic analysis complete." });
+	};
+
+	const asyncHandlers = Object.fromEntries(
+		geologistManifest.tools.map((t) => [
+			t.name,
+			async () =>
+				t.name === "geologist.process_seismic_data" ? { jobId: "job-seismic-001", status: "pending" } : { ok: true },
+		]),
+	);
+	const asyncRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: geologistConfig,
+		handlers: asyncHandlers,
+	});
+	await asyncRuntime.initialize();
+
+	ContextStore.clear("geologist");
+	await runGeologistTask("Process the seismic data.", {
+		runtime: asyncRuntime,
+		callLLM: seismicLLM,
+		asyncJobPoller: mockPoller,
+		pollIntervalMs: 0,
+	});
+	await asyncRuntime.shutdown();
+
+	assert(pollCallCount >= 2, `Async job polled until complete (${pollCallCount} polls fired)`);
+	ContextStore.clear("geologist");
+}
+
+{
+	// When the server reports a permanent job failure (status: "failed"), the loop
+	// must exit immediately and return an error message — not push the raw pending
+	// object to the LLM history.
+	let failPollCount = 0;
+	const failingPoller = async (_jobId: string, _serverUrl: string) => {
+		failPollCount++;
+		return { status: "failed" as const, error: "seismic inversion diverged" };
+	};
+
+	let failStep = 0;
+	const failLLM = async (_opts: LLMCallOptions): Promise<string> => {
+		if (failStep === 0) {
+			failStep++;
+			return JSON.stringify({ action: "tool", tool: "geologist.process_seismic_data", args: { filePath: "test.sgy" } });
+		}
+		return JSON.stringify({ action: "done", answer: "done" });
+	};
+
+	const failHandlers = Object.fromEntries(
+		geologistManifest.tools.map((t) => [
+			t.name,
+			async () =>
+				t.name === "geologist.process_seismic_data" ? { jobId: "job-fail-001", status: "pending" } : { ok: true },
+		]),
+	);
+	const failRuntime = new LocalAgentRuntime({
+		manifest: geologistManifest,
+		config: geologistConfig,
+		handlers: failHandlers,
+	});
+	await failRuntime.initialize();
+
+	ContextStore.clear("geologist");
+	const failResult = await runGeologistTask("Process seismic data.", {
+		runtime: failRuntime,
+		callLLM: failLLM,
+		asyncJobPoller: failingPoller,
+		pollIntervalMs: 0,
+	});
+	await failRuntime.shutdown();
+
+	assert(
+		typeof failResult === "string" && failResult.includes("failed"),
+		`Async job permanent failure returns error message (got: "${failResult.slice(0, 80)}")`,
+	);
+	assert(failPollCount === 1, `Poller called exactly once before failure exit (called ${failPollCount})`);
+	ContextStore.clear("geologist");
+}
+
 console.log("\n══════════════════════════════════════════════");
 console.log(`Geologist Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
