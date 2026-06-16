@@ -76,6 +76,8 @@ export const drillingEngineerManifest: AgentManifest = {
 					},
 				},
 				required: ["wellParameters"],
+				dependsOn: ["geologist.analyze_formation"],
+				provides: ["drilling-program"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -108,6 +110,8 @@ export const drillingEngineerManifest: AgentManifest = {
 					location: { type: "string" },
 				},
 				required: ["wellParameters"],
+				dependsOn: ["drilling-engineer.design_drilling_program"],
+				provides: ["well-costs"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -143,6 +147,8 @@ export const drillingEngineerManifest: AgentManifest = {
 					},
 				},
 				required: ["wellParameters"],
+				dependsOn: ["drilling-engineer.design_drilling_program"],
+				provides: ["drilling-risks"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -380,6 +386,15 @@ async function executeLoop(
 	const priorContext = ContextStore.read(namespace);
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -390,7 +405,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

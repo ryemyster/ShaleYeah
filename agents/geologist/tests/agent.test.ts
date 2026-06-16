@@ -809,6 +809,107 @@ console.log("\n🔗 Arcade #21: Tool Chain — system prompt injection...");
 	ContextStore.clear("geologist");
 }
 
+// ─── Arcade #14: Dependency Hints ───────────────────────────────────────────
+console.log("\n🔗 Testing Arcade #14 — Dependency Hints...");
+
+// Schema-level: AgentToolManifest accepts dependsOn and provides
+{
+	const { AgentToolManifestSchema } = await import("@shaleyeah/sdk");
+	const validTool = {
+		name: "geologist.analyze_formation",
+		description: "Analyze formation.",
+		type: "query",
+		capabilities: ["formation-analysis"],
+		inputSchema: { type: "object", properties: { filePath: { type: "string" } }, required: ["filePath"] },
+		readOnly: true,
+		destructive: false,
+		requiresHumanApproval: false,
+		requiredScopes: ["read:geology"],
+		modelRequirement: "deterministic",
+		dependsOn: ["title-analyst.examine_ownership"],
+		provides: ["geological-analysis"],
+	};
+	const result = AgentToolManifestSchema.safeParse(validTool);
+	assert(result.success, "AgentToolManifest validates with dependsOn and provides fields");
+
+	const noDepsResult = AgentToolManifestSchema.safeParse({ ...validTool, dependsOn: undefined, provides: undefined });
+	assert(noDepsResult.success, "AgentToolManifest validates without dependsOn and provides (fields are optional)");
+}
+
+// System prompt: ordering hints appear when tools declare dependsOn/provides
+await (async () => {
+	const { AgentManifestSchema, LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	const manifestWithDeps = structuredClone(geologistManifest) as typeof geologistManifest;
+	// Inject dependsOn/provides on two tools to test injection
+	(manifestWithDeps.tools[0] as Record<string, unknown>).provides = ["geological-analysis"];
+	(manifestWithDeps.tools[7] as Record<string, unknown>).dependsOn = ["geological-analysis"];
+
+	const parsed = AgentManifestSchema.safeParse(manifestWithDeps);
+	if (!parsed.success) {
+		assert(false, `Manifest with dependsOn/provides validates: ${JSON.stringify(parsed.error.format())}`);
+		return;
+	}
+
+	let capturedSystem = "";
+	const captureLLM = async (opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		capturedSystem = opts.system;
+		return JSON.stringify({ answer: "done" });
+	};
+
+	const handlers = Object.fromEntries(manifestWithDeps.tools.map((t) => [t.name, async () => ({ ok: true })]));
+	const rt = new LocalAgentRuntime({ manifest: parsed.data, config: geologistConfig, handlers });
+	await rt.initialize();
+	ContextStore.clear("geologist");
+	await runGeologistTask("Analyze formation geology.", { runtime: rt, callLLM: captureLLM });
+	await rt.shutdown();
+
+	assert(
+		capturedSystem.includes("provides:"),
+		`System prompt includes "provides:" annotation (got: "${capturedSystem.slice(0, 200)}")`,
+	);
+	assert(
+		capturedSystem.includes("depends on:"),
+		`System prompt includes "depends on:" annotation (got: "${capturedSystem.slice(0, 200)}")`,
+	);
+	assert(
+		capturedSystem.includes("geological-analysis"),
+		`System prompt references the capability slug "geological-analysis"`,
+	);
+	ContextStore.clear("geologist");
+})();
+
+// System prompt: no ordering section when no tools declare dependsOn/provides
+await (async () => {
+	const { AgentManifestSchema, LocalAgentRuntime } = await import("@shaleyeah/sdk");
+	// Build a manifest where no tool has dependsOn or provides to test the empty-section path.
+	const cleanManifest = structuredClone(geologistManifest) as typeof geologistManifest;
+	for (const t of cleanManifest.tools) {
+		delete (t as Record<string, unknown>).dependsOn;
+		delete (t as Record<string, unknown>).provides;
+	}
+	const parsed = AgentManifestSchema.safeParse(cleanManifest);
+	if (!parsed.success) return;
+
+	let capturedSystem = "";
+	const captureLLM = async (opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		capturedSystem = opts.system;
+		return JSON.stringify({ answer: "done" });
+	};
+
+	const handlers = Object.fromEntries(cleanManifest.tools.map((t) => [t.name, async () => ({ ok: true })]));
+	const rt = new LocalAgentRuntime({ manifest: parsed.data, config: geologistConfig, handlers });
+	await rt.initialize();
+	ContextStore.clear("geologist");
+	await runGeologistTask("Analyze formation geology.", { runtime: rt, callLLM: captureLLM });
+	await rt.shutdown();
+
+	assert(
+		!capturedSystem.includes("depends on:") && !capturedSystem.includes("provides:"),
+		"System prompt omits ordering section when no tools declare dependsOn or provides",
+	);
+	ContextStore.clear("geologist");
+})();
+
 console.log("\n══════════════════════════════════════════════");
 console.log(`Geologist Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");

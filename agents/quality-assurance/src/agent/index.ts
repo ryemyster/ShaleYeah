@@ -77,6 +77,8 @@ export const qaAssuranceManifest: AgentManifest = {
 					outputPath: { type: "string", description: "Optional path to write JSON output" },
 				},
 				required: ["targets"],
+				dependsOn: ["geologist.analyze_formation"],
+				provides: ["qa-results"],
 			},
 			readOnly: false,
 			destructive: false,
@@ -111,6 +113,8 @@ export const qaAssuranceManifest: AgentManifest = {
 					outputPath: { type: "string", description: "Optional path to write JSON output" },
 				},
 				required: [],
+				dependsOn: ["quality-assurance.run_quality_tests"],
+				provides: ["qa-report"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -354,6 +358,15 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -364,7 +377,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}
