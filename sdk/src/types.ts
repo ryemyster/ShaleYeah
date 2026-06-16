@@ -5,6 +5,60 @@
  */
 
 // ==========================================
+// Pagination — Arcade #31: Paginated Result
+// ==========================================
+
+/**
+ * Standard cursor-based pagination envelope for data-heavy MCP tool responses.
+ * Callers pass the returned `cursor` back as an input param to fetch the next page.
+ * `totalCount` is optional because some data sources cannot cheaply compute it.
+ */
+export interface PaginatedResult<T> {
+	data: T[];
+	/** Opaque offset cursor — pass back to retrieve the next page. Absent on the last page. */
+	cursor?: string;
+	hasMore: boolean;
+	/** Total items across all pages (may be omitted when the source cannot compute it cheaply). */
+	totalCount?: number;
+}
+
+/** Encode a numeric offset as an opaque base64url cursor string. */
+export function encodeCursor(offset: number): string {
+	return Buffer.from(String(offset)).toString("base64url");
+}
+
+/**
+ * Decode a cursor back to a numeric offset.
+ * Returns 0 (first page) on any malformed input so callers never need to guard.
+ */
+export function decodeCursor(cursor: string): number {
+	try {
+		const n = parseInt(Buffer.from(cursor, "base64url").toString(), 10);
+		return Number.isFinite(n) && n >= 0 ? n : 0;
+	} catch {
+		return 0;
+	}
+}
+
+/**
+ * Slice `items` into a page and return a `PaginatedResult`.
+ * `pageSize` is clamped to [1, 100]; defaults to 25 when not provided.
+ * `cursor` absent or undefined means start from the beginning.
+ */
+export function paginateArray<T>(items: T[], options: { cursor?: string; pageSize?: number }): PaginatedResult<T> {
+	const pageSize = Math.min(Math.max(options.pageSize ?? 25, 1), 100);
+	const offset = options.cursor !== undefined ? decodeCursor(options.cursor) : 0;
+	const page = items.slice(offset, offset + pageSize);
+	const hasMore = offset + pageSize < items.length;
+	return {
+		data: page,
+		hasMore,
+		totalCount: items.length,
+		...(hasMore ? { cursor: encodeCursor(offset + pageSize) } : {}),
+	};
+}
+
+// ==========================================
 // Geological Data Types
 // ==========================================
 

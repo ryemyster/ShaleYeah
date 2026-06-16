@@ -12,6 +12,7 @@ import {
 	callLLM,
 	checkMutualExclusivity,
 	FormationSchema,
+	paginateArray,
 	runMCPServer,
 	ServerFactory,
 	type ServerTemplate,
@@ -117,6 +118,9 @@ const geowizTemplate: ServerTemplate = {
 				// Arcade #9: Mutual Exclusivity — identify the well by name OR id, not both.
 				wellName: z.string().optional().describe("Filter by well name (XOR with wellId)"),
 				wellId: z.string().optional().describe("Filter by well identifier (XOR with wellName)"),
+				// Arcade #31: Paginated Result — cursor and pageSize for large curve datasets.
+				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+				pageSize: z.number().int().min(1).max(100).optional().describe("Curves per page (1–100, default 25)"),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["wellName", "wellId"]]);
@@ -133,7 +137,16 @@ const geowizTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
 				}
 
-				return result;
+				// Arcade #31: return curves as a PaginatedResult so large well logs don't
+				// flood the LLM context. The rest of the analysis (wellData, qualityMetrics,
+				// etc.) is always returned in full — only the potentially huge curves list is paged.
+				const { curves, ...analysisRest } = result as Record<string, unknown> & {
+					curves: unknown[];
+				};
+				return {
+					...analysisRest,
+					curves: paginateArray(curves ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
+				};
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -161,6 +174,9 @@ const geowizTemplate: ServerTemplate = {
 				extractTables: z.array(z.string()).optional().describe("Specific tables to extract (default: all)"),
 				outputFormat: z.enum(["json", "csv", "summary"]).default("summary"),
 				outputPath: z.string().optional(),
+				// Arcade #31: Paginated Result — cursor and pageSize for large table sets.
+				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+				pageSize: z.number().int().min(1).max(100).optional().describe("Tables per page (1–100, default 25)"),
 			}),
 			async (args) => {
 				const result = await processAccessDatabaseData(args);
@@ -169,7 +185,15 @@ const geowizTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
 				}
 
-				return result;
+				// Arcade #31: paginate the tables list so databases with many tables
+				// don't overwhelm the LLM context window in a single response.
+				const { tables, ...dbRest } = result as Record<string, unknown> & {
+					tables: unknown[];
+				};
+				return {
+					...dbRest,
+					tables: paginateArray(tables ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
+				};
 			},
 		),
 		ServerFactory.createAnalysisTool(

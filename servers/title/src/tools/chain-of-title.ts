@@ -23,7 +23,7 @@ export interface ChainOfTitleResult {
 }
 
 /** Map gap count and exam period to risk level. */
-export function assessChainRisk(examPeriodYears: number, gapsFound: number): ChainOfTitleResult["riskLevel"] {
+export function assessChainRisk(_examPeriodYears: number, gapsFound: number): ChainOfTitleResult["riskLevel"] {
 	if (gapsFound > 2) return "high";
 	if (gapsFound > 0) return "medium";
 	// A very long exam period with no gaps is low risk even for complex properties

@@ -19,9 +19,7 @@ export function checkMutualExclusivity(args: Record<string, unknown>, groups: st
 	for (const group of groups) {
 		const provided = group.filter((k) => args[k] !== undefined && args[k] !== null);
 		if (provided.length > 1) {
-			return (
-				`Mutual exclusivity violation: ${provided.join(" and ")} cannot both be provided. ` + `Use one or the other.`
-			);
+			return `Mutual exclusivity violation: ${provided.join(" and ")} cannot both be provided. Use one or the other.`;
 		}
 	}
 	return null;
@@ -42,10 +40,7 @@ export function buildMutualExclusivityError(group: string[], provided: string[])
 	const [first, second] = provided;
 	return {
 		error_type: "permanent",
-		error:
-			`Mutual exclusivity violation: ${provided.join(" and ")} cannot both be provided. ` + `Use one or the other.`,
-		hint:
-			`Remove ${first} and use ${second} for precise lookup, or ` +
-			`remove ${second} and use ${first} for ${group.length > provided.length ? "the other option" : "name-based lookup"}.`,
+		error: `Mutual exclusivity violation: ${provided.join(" and ")} cannot both be provided. Use one or the other.`,
+		hint: `Remove ${first} and use ${second} for precise lookup, or remove ${second} and use ${first} for ${group.length > provided.length ? "the other option" : "name-based lookup"}.`,
 	};
 }
