@@ -17,6 +17,7 @@ import type { MCPServer } from "@shaleyeah/sdk";
 import {
 	buildMutualExclusivityError,
 	checkMutualExclusivity,
+	paginateArray,
 	runMCPServer,
 	ServerFactory,
 	type ServerTemplate,
@@ -107,6 +108,9 @@ const titleServerTemplate: ServerTemplate = {
 				county: z.string(),
 				state: z.string(),
 				outputPath: z.string().optional(),
+				// Arcade #31: Paginated Result — cursor and pageSize for multi-interest responses.
+				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+				pageSize: z.number().int().min(1).max(100).optional().describe("Interests per page (1–100, default 25)"),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["propertyDescription", "tractId"]]);
@@ -131,7 +135,10 @@ const titleServerTemplate: ServerTemplate = {
 					county: args.county,
 					state: args.state,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
+				const interest = { ...result, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
+				// Arcade #31: wrap the ownership interests in a PaginatedResult envelope.
+				// Currently one interest per property; future multi-tract responses will page naturally.
+				return paginateArray([interest], { cursor: args.cursor, pageSize: args.pageSize });
 			},
 		),
 
@@ -184,6 +191,15 @@ const titleServerTemplate: ServerTemplate = {
 				state: z.string(),
 				examPeriod: z.string().default("20 years"),
 				outputPath: z.string().optional(),
+				// Arcade #31: Paginated Result — cursor and pageSize for multi-decade conveyance chains.
+				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+				pageSize: z
+					.number()
+					.int()
+					.min(1)
+					.max(100)
+					.optional()
+					.describe("Conveyance events per page (1–100, default 25)"),
 			}),
 			async (args) => {
 				const result = await synthesizeChainOfTitleWithLLM({
@@ -192,7 +208,10 @@ const titleServerTemplate: ServerTemplate = {
 					state: args.state,
 					examPeriod: args.examPeriod,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
+				const chainResult = { ...result, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
+				// Arcade #31: wrap in PaginatedResult. The curative items within the chain result
+				// are the paginatable set; for now the full ChainOfTitleResult is one logical record.
+				return paginateArray([chainResult], { cursor: args.cursor, pageSize: args.pageSize });
 			},
 		),
 	],

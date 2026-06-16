@@ -13,6 +13,7 @@ import {
 	checkMutualExclusivity,
 	EconomicsSchema,
 	type MCPServer,
+	paginateArray,
 	runMCPServer,
 	ServerFactory,
 	type ServerTemplate,
@@ -67,6 +68,9 @@ const econobotTemplate: ServerTemplate = {
 					.record(z.string(), z.unknown())
 					.optional()
 					.describe("Inline scenario parameters (XOR with scenarioName)"),
+				// Arcade #31: Paginated Result — cursor and pageSize for multi-scenario outputs.
+				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+				pageSize: z.number().int().min(1).max(100).optional().describe("Scenarios per page (1–100, default 25)"),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["scenarioName", "scenarioConfig"]]);
@@ -83,7 +87,9 @@ const econobotTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				// Arcade #31: wrap in PaginatedResult. Single scenario today; future multi-scenario
+				// runs (e.g. comprehensive DCF sweeps) will page naturally without API changes.
+				return paginateArray([analysis], { cursor: args.cursor, pageSize: args.pageSize });
 			},
 		),
 		ServerFactory.createAnalysisTool(
