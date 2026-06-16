@@ -11,6 +11,7 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Tool Chain — Arcade #21** (#455) — `ToolChainSchema` added to `@shaleyeah/sdk` contracts; optional `toolChains` field on `AgentManifestSchema`. All 14 agent `executeLoop` implementations inject declared chains into the LLM system prompt as a "Recommended workflows" section (advisory, not enforced). Five chains wired: `geological-due-diligence` (geologist), `economics-deep-dive` (economist), `risk-assessment` (risk-analyst), `investment-decision` (investment-chair), `report-generation` (reporter-agent). 5 new geologist tests (68 total, all passing). Fixes CI by syncing `turbo` specifier in root `package.json` with lockfile (`^2.5.4 → ^2.9.18`).
 - **`@anthropic-ai/sdk` 0.88.0 → 0.104.1** (#400) — dependency bump via Dependabot; adds `standardwebhooks` transitive dep.
 - **research / research-analyst pair** (#369) — Tier 1 split (market-research, competitive-analysis modules; 47 tests) + Tier 2 agent (2 tools, port 3008; 53 tests).
 - **legal / legal-analyst pair** (#370) — Tier 1 split (regulatory, contract, compliance; 32 tests) + Tier 2 agent (3 tools, port 3006; 53 tests).

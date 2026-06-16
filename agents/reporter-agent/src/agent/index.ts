@@ -140,6 +140,19 @@ export const reporterAgentManifest: AgentManifest = {
 			mcpServer: "reporter",
 		},
 	],
+	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
+	toolChains: [
+		{
+			id: "report-generation",
+			description: "Full report pipeline: data synthesis → executive report → investment decision",
+			steps: [
+				"reporter-agent.synthesize_analysis",
+				"reporter-agent.create_executive_report",
+				"reporter-agent.generate_investment_decision",
+			],
+			trigger: "generating the final investment report or executive summary",
+		},
+	],
 	requiredScopes: ["read:reporting"],
 	providerRequirements: [
 		{
@@ -367,13 +380,17 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const toolChainsSection = manifest.toolChains?.length
+		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
+		: "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}
+${toolDefs}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

@@ -62,6 +62,18 @@ export const AgentToolManifestSchema = z.object({
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
+// Ordered sequence of tool calls for a known workflow.
+// Implements Arcade pattern #21: Tool Chain.
+export const ToolChainSchema = z.object({
+	id: z.string().min(1),
+	description: z.string().min(1),
+	// Ordered list of full tool names (e.g. "geologist.analyze_formation").
+	steps: z.array(z.string().min(1)).min(2),
+	// Natural language hint for when the LLM should use this chain.
+	trigger: z.string().min(1).optional(),
+});
+export type ToolChain = z.infer<typeof ToolChainSchema>;
+
 export const AgentManifestSchema = z
 	.object({
 		id: z.string().min(1),
@@ -71,6 +83,9 @@ export const AgentManifestSchema = z
 		persona: AgentPersonaSchema,
 		capabilities: z.array(z.string().min(1)).default([]),
 		tools: z.array(AgentToolManifestSchema).default([]),
+		// Pre-defined step sequences injected into the system prompt as advisory workflows.
+		// Implements Arcade pattern #21: Tool Chain.
+		toolChains: z.array(ToolChainSchema).optional(),
 		requiredScopes: z.array(z.string().min(1)).default([]),
 		providerRequirements: z.array(AgentProviderRequirementSchema).default([]),
 		compatibility: z.object({
