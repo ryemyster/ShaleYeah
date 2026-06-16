@@ -729,6 +729,86 @@ console.log("\n⏳ Testing async job polling (issue #396)...");
 	ContextStore.clear("geologist");
 }
 
+// ─── Arcade #21: Tool Chain ──────────────────────────────────────────────────
+console.log("\n🔗 Arcade #21: Tool Chain — system prompt injection...");
+{
+	// Manifest with a declared tool chain — the LLM system prompt must include it.
+	const manifestWithChain = {
+		...geologistManifest,
+		toolChains: [
+			{
+				id: "geological-due-diligence",
+				description: "Full formation evaluation workflow",
+				steps: [
+					"geologist.analyze_formation",
+					"geologist.process_well_logs",
+					"geologist.assess_quality",
+					"geologist.save_finding",
+				],
+				trigger: "evaluating a new formation prospect",
+			},
+		],
+	};
+
+	let capturedSystem = "";
+	const chainLLM = async (opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		capturedSystem = opts.system;
+		return JSON.stringify({ action: "done", answer: "chain test complete" });
+	};
+
+	const chainHandlers = Object.fromEntries(manifestWithChain.tools.map((t) => [t.name, async () => ({ ok: true })]));
+	const chainRuntime = new LocalAgentRuntime({
+		manifest: manifestWithChain,
+		config: geologistConfig,
+		handlers: chainHandlers,
+	});
+	await chainRuntime.initialize();
+	ContextStore.clear("geologist");
+
+	await runGeologistTask("Evaluate the Wolfcamp formation.", { runtime: chainRuntime, callLLM: chainLLM });
+	await chainRuntime.shutdown();
+
+	assert(capturedSystem.includes("Recommended workflows"), "System prompt includes 'Recommended workflows' section");
+	assert(
+		capturedSystem.includes("geological-due-diligence"),
+		"System prompt includes the chain ID (geological-due-diligence)",
+	);
+	assert(
+		capturedSystem.includes("analyze_formation") && capturedSystem.includes("save_finding"),
+		"System prompt includes first and last chain steps",
+	);
+	assert(capturedSystem.includes("evaluating a new formation prospect"), "System prompt includes the chain trigger");
+	ContextStore.clear("geologist");
+}
+{
+	// Manifest with no toolChains — system prompt must NOT include the section.
+	const manifestNoChains = { ...geologistManifest, toolChains: undefined };
+
+	let capturedSystem = "";
+	const noChainLLM = async (opts: { system: string; prompt: string; model: string; apiKey: string }) => {
+		capturedSystem = opts.system;
+		return JSON.stringify({ action: "done", answer: "no chain test complete" });
+	};
+
+	const noChainHandlers = Object.fromEntries(manifestNoChains.tools.map((t) => [t.name, async () => ({ ok: true })]));
+	const noChainRuntime = new LocalAgentRuntime({
+		manifest: manifestNoChains,
+		config: geologistConfig,
+		handlers: noChainHandlers,
+	});
+	await noChainRuntime.initialize();
+	ContextStore.clear("geologist");
+
+	await runGeologistTask("Quick check.", { runtime: noChainRuntime, callLLM: noChainLLM });
+	await noChainRuntime.shutdown();
+
+	assert(
+		!capturedSystem.includes("Recommended workflows"),
+		"System prompt omits 'Recommended workflows' when no chains declared",
+	);
+	ContextStore.clear("geologist");
+}
+
 console.log("\n══════════════════════════════════════════════");
 console.log(`Geologist Agent Contract Tests: ${passed} passed, ${failed} failed`);
 console.log("══════════════════════════════════════════════");
