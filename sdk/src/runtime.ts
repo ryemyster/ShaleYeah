@@ -16,6 +16,7 @@ import {
 	type EvalResult,
 	type HumanApprovalChallenge,
 	type ModelBinding,
+	type SessionIdentity,
 } from "./contracts.js";
 import { RetryableToolError } from "./errors.js";
 
@@ -27,6 +28,8 @@ export interface StandaloneToolHandlerContext {
 	model: ModelBinding;
 	config: AgentRuntimeConfig;
 	args: Record<string, unknown>;
+	/** Identity of the caller — present when the request carried SessionIdentity. */
+	identity?: SessionIdentity;
 }
 
 export type StandaloneToolHandler = (context: StandaloneToolHandlerContext) => Promise<unknown>;
@@ -150,7 +153,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 			if (missing.length > 0) {
 				const scopeError = `Missing required scopes: ${missing.join(", ")}`;
 				const result = this.failed(tool.name, scopeError, tool.modelRequirement);
-				this.audit(tool.name, request.args, result, Date.now() - startMs, scopeError);
+				this.audit(tool.name, request.args, result, Date.now() - startMs, scopeError, request.identity?.userId);
 				return result;
 			}
 		}
@@ -162,7 +165,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 				challenge: approvalChallenge,
 				metadata: this.metadataWithoutBinding(tool),
 			};
-			this.audit(tool.name, request.args, result, Date.now() - startMs);
+			this.audit(tool.name, request.args, result, Date.now() - startMs, undefined, request.identity?.userId);
 			return result;
 		}
 
@@ -181,6 +184,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 		}
 
 		const safeArgs = redactSensitive(request.args) as Record<string, unknown>;
+		const userId = request.identity?.userId;
 
 		try {
 			const data = await handler({
@@ -189,6 +193,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 				model: modelBinding,
 				config: this.config,
 				args: safeArgs,
+				identity: request.identity,
 			});
 			const evals = this.evaluate(tool, data);
 
@@ -204,7 +209,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 					evals,
 					metadata: this.metadata(tool, modelBinding),
 				};
-				this.audit(tool.name, safeArgs, failed, Date.now() - startMs, evalError);
+				this.audit(tool.name, safeArgs, failed, Date.now() - startMs, evalError, userId);
 				return failed;
 			}
 
@@ -214,7 +219,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 				evals,
 				metadata: this.metadata(tool, modelBinding),
 			};
-			this.audit(tool.name, safeArgs, result, Date.now() - startMs);
+			this.audit(tool.name, safeArgs, result, Date.now() - startMs, undefined, userId);
 			return result;
 		} catch (error) {
 			const result: AgentExecutionResult = {
@@ -230,6 +235,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 				result,
 				Date.now() - startMs,
 				error instanceof Error ? error.message : String(error),
+				userId,
 			);
 			return result;
 		}
@@ -338,6 +344,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 		result: AgentExecutionResult,
 		durationMs: number,
 		error?: string,
+		userId?: string,
 	): void {
 		const entry: AuditLogEntry = {
 			timestamp: new Date().toISOString(),
@@ -348,6 +355,7 @@ export class LocalAgentRuntime implements AgentRuntime {
 			durationMs,
 			...(error !== undefined && { error }),
 			...(result.status === "failed" && result.retryable !== undefined && { retryable: result.retryable }),
+			...(userId !== undefined && { userId }),
 		};
 		try {
 			this.auditLogger(entry);

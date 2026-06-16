@@ -4,6 +4,8 @@ import type {
 	AsyncJobPoller,
 	HumanApproval,
 	HumanApprovalChallenge,
+	LLMCallOptions,
+	SessionIdentity,
 } from "@shaleyeah/sdk";
 import {
 	ASYNC_POLL_INTERVAL_MS,
@@ -11,7 +13,6 @@ import {
 	ContextStore,
 	callLLM,
 	defaultAsyncJobPoller,
-	type LLMCallOptions,
 	LocalAgentEndpoint,
 	LocalAgentRuntime,
 	type StandaloneToolHandler,
@@ -315,6 +316,7 @@ async function executeLoop(
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 		asyncJobPoller?: AsyncJobPoller;
 		pollIntervalMs?: number;
+		identity?: SessionIdentity;
 	},
 ): Promise<string> {
 	const config = options.config ?? researchAnalystConfig;
@@ -322,7 +324,8 @@ async function executeLoop(
 	const callLLMFn = options.callLLMFn ?? callLLM;
 
 	// Context Injection (#395): surface prior findings from this agent's namespace.
-	const namespace = config.memory?.namespace ?? "research-analyst";
+	const baseNamespace = config.memory?.namespace ?? "research-analyst";
+	const namespace = options.identity?.userId ? `${options.identity.userId}:${baseNamespace}` : baseNamespace;
 	const priorContext = ContextStore.read(namespace);
 
 	const standardAnalysisBinding = config.modelRouting["standard-analysis"];
@@ -392,6 +395,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
+			identity: options.identity,
 		});
 
 		if (execResult.status === "completed") {
@@ -440,6 +444,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 				args: parsed.args ?? {},
 				approval,
 				runId: `task:step:${step}:approved`,
+				identity: options.identity,
 			});
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
@@ -459,6 +464,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 						toolName: toolManifest.fallbackTo,
 						args: parsed.args ?? {},
 						runId: `task:step:${step}:fallback`,
+						identity: options.identity,
 					});
 					if (fallbackResult.status === "completed") {
 						history.push({

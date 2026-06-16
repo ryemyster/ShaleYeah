@@ -3,6 +3,7 @@
  * Standards-compliant MCP server implementation for SHALE YEAH domain experts.
  */
 
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
@@ -80,7 +81,7 @@ export abstract class MCPServer {
 		const portEnv = process.env.PORT;
 		if (portEnv) {
 			this._port = parseInt(portEnv, 10);
-			const httpTransport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+			const httpTransport = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID() });
 			this.transport = httpTransport;
 			this._httpServer = http.createServer((req, res) => {
 				// Health probe — responds before MCP transport to avoid blocking the caller
