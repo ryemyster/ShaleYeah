@@ -77,6 +77,8 @@ export const developmentPlannerManifest: AgentManifest = {
 					outputPath: { type: "string" },
 				},
 				required: ["project"],
+				dependsOn: ["reservoir-engineer.calculate_eur", "geologist.analyze_formation"],
+				provides: ["development-plan"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -106,6 +108,8 @@ export const developmentPlannerManifest: AgentManifest = {
 					constraints: { type: "array", items: { type: "string" } },
 				},
 				required: ["projectName", "wellCount", "budget"],
+				dependsOn: ["development-planner.create_development_plan"],
+				provides: ["project-timeline"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -133,6 +137,8 @@ export const developmentPlannerManifest: AgentManifest = {
 					outputPath: { type: "string" },
 				},
 				required: ["projectId"],
+				dependsOn: ["development-planner.create_development_plan"],
+				provides: ["progress-report"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -366,6 +372,15 @@ async function executeLoop(
 	const reasoningModel = config.modelRouting["standard-analysis"]?.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -376,7 +391,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

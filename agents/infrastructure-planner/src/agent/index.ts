@@ -63,6 +63,8 @@ export const infrastructurePlannerManifest: AgentManifest = {
 					},
 				},
 				required: ["wellCount", "expectedProduction", "location"],
+				dependsOn: ["development-planner.create_development_plan"],
+				provides: ["pipeline-plan"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -88,6 +90,8 @@ export const infrastructurePlannerManifest: AgentManifest = {
 					location: { type: "string", description: "Project location" },
 				},
 				required: ["wellCount", "expectedProduction", "location"],
+				dependsOn: ["infrastructure-planner.plan_pipeline"],
+				provides: ["facility-sizing"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -117,6 +121,8 @@ export const infrastructurePlannerManifest: AgentManifest = {
 					location: { type: "string", description: "Project location" },
 				},
 				required: ["wellCount", "compressors", "swdWells", "location"],
+				dependsOn: ["infrastructure-planner.plan_pipeline"],
+				provides: ["infra-costs"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -147,6 +153,8 @@ export const infrastructurePlannerManifest: AgentManifest = {
 					},
 				},
 				required: ["wellCount", "location"],
+				dependsOn: ["infrastructure-planner.plan_pipeline"],
+				provides: ["infra-compliance"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -394,6 +402,15 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -404,7 +421,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

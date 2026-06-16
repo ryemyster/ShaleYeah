@@ -59,6 +59,12 @@ export const AgentToolManifestSchema = z.object({
 	// The fallback receives the same args and its result is tagged usedFallback: true.
 	// Implements Arcade pattern #44: Fallback Tool.
 	fallbackTo: z.string().min(1).optional(),
+	// Tool names whose output this tool consumes — used to guide LLM call ordering.
+	// Implements Arcade pattern #14: Dependency Hint.
+	dependsOn: z.array(z.string().min(1)).optional(),
+	// Capability slugs that this tool's output enables downstream.
+	// Implements Arcade pattern #14: Dependency Hint.
+	provides: z.array(z.string().min(1)).optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 

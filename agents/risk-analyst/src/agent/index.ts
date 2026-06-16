@@ -85,6 +85,8 @@ export const riskAnalystManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "risk-analyst-assessment",
 			mcpServer: "risk-analysis",
+			dependsOn: ["geologist.analyze_formation", "economist.analyze_economics"],
+			provides: ["risk-assessment"],
 		},
 		{
 			name: "risk-analyst.monte_carlo_simulation",
@@ -143,6 +145,8 @@ export const riskAnalystManifest: AgentManifest = {
 			// Arcade #44: if Monte Carlo permanently fails, fall back to deterministic risk
 			// assessment so the analyst can still deliver a risk profile to the committee.
 			fallbackTo: "risk-analyst.assess_investment_risk",
+			dependsOn: ["risk-analyst.assess_investment_risk"],
+			provides: ["risk-simulation"],
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -379,6 +383,15 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -389,7 +402,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

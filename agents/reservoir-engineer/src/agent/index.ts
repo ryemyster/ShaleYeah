@@ -71,6 +71,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 					outputPath: { type: "string", description: "Optional path to write JSON output" },
 				},
 				required: ["productionData"],
+				dependsOn: ["geologist.analyze_formation"],
+				provides: ["decline-curve"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -100,6 +102,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 					},
 				},
 				required: ["basin", "formation"],
+				dependsOn: ["reservoir-engineer.analyze_decline_curve"],
+				provides: ["type-curve"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -130,6 +134,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 					forecastMonths: { type: "number", default: 360, description: "Maximum forecast horizon (months)" },
 				},
 				required: ["declineParams"],
+				dependsOn: ["reservoir-engineer.analyze_decline_curve"],
+				provides: ["eur"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -160,6 +166,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 					wellIdentifier: { type: "string", description: "Well API or name for reference" },
 				},
 				required: ["productionData", "fittedCurve"],
+				dependsOn: ["reservoir-engineer.analyze_decline_curve"],
+				provides: ["curve-quality"],
 			},
 			readOnly: true,
 			destructive: false,
@@ -406,6 +414,15 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -416,7 +433,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

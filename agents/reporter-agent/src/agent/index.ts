@@ -77,6 +77,8 @@ export const reporterAgentManifest: AgentManifest = {
 			modelRequirement: "deep-reasoning",
 			evalProfile: "reporter-agent-decision",
 			mcpServer: "reporter",
+			dependsOn: ["investment-chair.make_investment_decision"],
+			provides: ["report"],
 		},
 		{
 			name: "reporter-agent.create_executive_report",
@@ -108,6 +110,8 @@ export const reporterAgentManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "reporter-agent-executive",
 			mcpServer: "reporter",
+			dependsOn: ["reporter-agent.synthesize_analysis"],
+			provides: ["executive-report"],
 		},
 		{
 			name: "reporter-agent.synthesize_analysis",
@@ -138,6 +142,8 @@ export const reporterAgentManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "reporter-agent-synthesis",
 			mcpServer: "reporter",
+			dependsOn: ["geologist.analyze_formation", "economist.analyze_economics"],
+			provides: ["synthesis"],
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -380,6 +386,15 @@ async function executeLoop(
 	const reasoningModel = standardAnalysisBinding.model;
 
 	const toolDefs = manifest.tools.map((t) => `  ${t.name}: ${t.description}`).join("\n");
+	const depHints = manifest.tools
+		.filter((t) => t.dependsOn?.length || t.provides?.length)
+		.map((t) => {
+			const depPart = t.dependsOn?.length ? ` → depends on: [${t.dependsOn.join(", ")}]` : "";
+			const provPart = t.provides?.length ? ` → provides: [${t.provides.join(", ")}]` : "";
+			return `  ${t.name}${depPart}${provPart}`;
+		})
+		.join("\n");
+	const depSection = depHints ? `\nTool ordering constraints (call dependencies first):\n${depHints}` : "";
 	const toolChainsSection = manifest.toolChains?.length
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
@@ -390,7 +405,7 @@ async function executeLoop(
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}
