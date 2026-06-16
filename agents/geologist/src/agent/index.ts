@@ -5,6 +5,7 @@ import type {
 	HumanApproval,
 	HumanApprovalChallenge,
 	LLMCallOptions,
+	SessionIdentity,
 } from "@shaleyeah/sdk";
 import {
 	ASYNC_POLL_INTERVAL_MS,
@@ -481,6 +482,8 @@ export async function runGeologistTask(
 		asyncJobPoller?: AsyncJobPoller;
 		/** Override poll interval in ms — set to 0 in tests for instant polling. */
 		pollIntervalMs?: number;
+		/** Caller identity — propagated to audit log and ContextStore namespace (Arcade #35). */
+		identity?: SessionIdentity;
 	} = {},
 ): Promise<string> {
 	const config = options.config ?? geologistConfig;
@@ -558,6 +561,7 @@ async function executeLoop(
 		callLLMFn?: (opts: LLMCallOptions) => Promise<string>;
 		asyncJobPoller?: AsyncJobPoller;
 		pollIntervalMs?: number;
+		identity?: SessionIdentity;
 	},
 ): Promise<string> {
 	const config = options.config ?? geologistConfig;
@@ -568,7 +572,8 @@ async function executeLoop(
 	const manifest = runtime.getManifest();
 
 	// Context Injection (#395): surface prior findings from this agent's namespace.
-	const namespace = config.memory?.namespace ?? "geologist";
+	const baseNamespace = config.memory?.namespace ?? "geologist";
+	const namespace = options.identity?.userId ? `${options.identity.userId}:${baseNamespace}` : baseNamespace;
 	const priorContext = ContextStore.read(namespace);
 
 	// Resolve the model that drives the reasoning loop from the operator's routing table.
@@ -639,6 +644,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 			toolName: parsed.tool,
 			args: parsed.args ?? {},
 			runId: `task:step:${step}`,
+			identity: options.identity,
 		});
 
 		if (execResult.status === "completed") {
@@ -690,6 +696,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 				args: parsed.args ?? {},
 				approval,
 				runId: `task:step:${step}:approved`,
+				identity: options.identity,
 			});
 			if (approved.status === "completed") {
 				history.push({ role: "tool", content: JSON.stringify(approved.data) });
@@ -709,6 +716,7 @@ If you cannot complete the task with the available tools, respond with {"action"
 						toolName: toolManifest.fallbackTo,
 						args: parsed.args ?? {},
 						runId: `task:step:${step}:fallback`,
+						identity: options.identity,
 					});
 					if (fallbackResult.status === "completed") {
 						history.push({
