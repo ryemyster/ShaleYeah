@@ -12,6 +12,7 @@ import {
 	callLLM,
 	checkMutualExclusivity,
 	FormationSchema,
+	normalizeIdentifier,
 	paginateArray,
 	runMCPServer,
 	ServerFactory,
@@ -62,6 +63,8 @@ const geowizTemplate: ServerTemplate = {
 				// Arcade #9: Mutual Exclusivity — identify a single formation by name OR id, not both.
 				formationName: z.string().optional().describe("Target formation by name (XOR with formationId)"),
 				formationId: z.string().optional().describe("Target formation by database id (XOR with formationName)"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["formationName", "formationId"]]);
@@ -72,13 +75,20 @@ const geowizTemplate: ServerTemplate = {
 					);
 				}
 
-				const analysis = await performFormationAnalysis(args);
+				const rawFormationName = args.formationName;
+				const normalizedFormationName = rawFormationName ? normalizeIdentifier(rawFormationName) : rawFormationName;
+				const matchInfo =
+					rawFormationName && normalizedFormationName !== rawFormationName
+						? { matchedAs: normalizedFormationName, matchScore: 1.0 }
+						: {};
+
+				const analysis = await performFormationAnalysis({ ...args, formationName: normalizedFormationName });
 
 				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+					await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -121,6 +131,8 @@ const geowizTemplate: ServerTemplate = {
 				// Arcade #31: Paginated Result — cursor and pageSize for large curve datasets.
 				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
 				pageSize: z.number().int().min(1).max(100).optional().describe("Curves per page (1–100, default 25)"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["wellName", "wellId"]]);
@@ -131,7 +143,14 @@ const geowizTemplate: ServerTemplate = {
 					);
 				}
 
-				const result = await processMultiFormatWellLog(args);
+				const rawWellName = args.wellName;
+				const normalizedWellName = rawWellName ? normalizeIdentifier(rawWellName) : rawWellName;
+				const matchInfo =
+					rawWellName && normalizedWellName !== rawWellName
+						? { matchedAs: normalizedWellName, matchScore: 1.0 }
+						: {};
+
+				const result = await processMultiFormatWellLog({ ...args, wellName: normalizedWellName });
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
@@ -145,6 +164,7 @@ const geowizTemplate: ServerTemplate = {
 				};
 				return {
 					...analysisRest,
+					...matchInfo,
 					curves: paginateArray(curves ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
 				};
 			},

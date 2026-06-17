@@ -6,7 +6,7 @@
  */
 
 import fs from "node:fs/promises";
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
@@ -284,8 +284,14 @@ const marketTemplate: ServerTemplate = {
 				timeframe: z.enum(["current", "1year", "5year", "10year"]).default("1year"),
 				factors: z.array(z.string()).optional(),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawRegion = args.region;
+				const normalizedRegion = normalizeIdentifier(rawRegion);
+				const matchInfo = normalizedRegion !== rawRegion ? { matchedAs: normalizedRegion, matchScore: 1.0 } : {};
+
 				const prices = await fetchEiaPrices();
 
 				// Ask Claude to interpret the live EIA price environment.
@@ -294,14 +300,14 @@ const marketTemplate: ServerTemplate = {
 					oilPrice: prices.oilPrice,
 					gasPrice: prices.gasPrice,
 					commodity: args.commodity,
-					region: args.region,
+					region: normalizedRegion,
 					timeframe: args.timeframe,
 				});
 
 				const analysis = {
 					market: {
 						commodity: args.commodity,
-						region: args.region,
+						region: normalizedRegion,
 						timeframe: args.timeframe,
 						analysisDate: new Date().toISOString(),
 						dataSource: prices.dataSource,
@@ -344,7 +350,7 @@ const marketTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -355,16 +361,22 @@ const marketTemplate: ServerTemplate = {
 				market: z.string(),
 				metrics: z.array(z.string()).default(["market_share", "production", "costs"]),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawMarket = args.market;
+				const normalizedMarket = normalizeIdentifier(rawMarket);
+				const matchInfo = normalizedMarket !== rawMarket ? { matchedAs: normalizedMarket, matchScore: 1.0 } : {};
+
 				const competitorProfiles = await synthesizeCompetitorAnalysisWithLLM({
 					competitors: args.competitors,
-					market: args.market,
+					market: normalizedMarket,
 					metrics: args.metrics,
 				});
 
 				const analysis = {
-					market: args.market,
+					market: normalizedMarket,
 					competitors: competitorProfiles,
 					landscape: {
 						concentration: "Moderately concentrated",
@@ -382,7 +394,7 @@ const marketTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 	],

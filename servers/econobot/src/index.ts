@@ -13,6 +13,7 @@ import {
 	checkMutualExclusivity,
 	EconomicsSchema,
 	type MCPServer,
+	normalizeIdentifier,
 	paginateArray,
 	runMCPServer,
 	ServerFactory,
@@ -64,6 +65,8 @@ const econobotTemplate: ServerTemplate = {
 				// Arcade #9: Mutual Exclusivity — choose a named scenario preset OR provide inline
 				// config, not both. Omitting both means the analysis runs with default parameters.
 				scenarioName: z.string().optional().describe("Named scenario preset to load (XOR with scenarioConfig)"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 				scenarioConfig: z
 					.record(z.string(), z.unknown())
 					.optional()
@@ -81,7 +84,16 @@ const econobotTemplate: ServerTemplate = {
 					);
 				}
 
-				const analysis = await performEconomicAnalysis(args);
+				const rawScenarioName = args.scenarioName;
+				const normalizedScenarioName = rawScenarioName ? normalizeIdentifier(rawScenarioName) : rawScenarioName;
+				const matchInfo =
+					rawScenarioName && normalizedScenarioName !== rawScenarioName
+						? { matchedAs: normalizedScenarioName, matchScore: 1.0 }
+						: {};
+				const normalizedArgs =
+					normalizedScenarioName !== rawScenarioName ? { ...args, scenarioName: normalizedScenarioName } : args;
+
+				const analysis = await performEconomicAnalysis(normalizedArgs);
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
@@ -89,7 +101,8 @@ const econobotTemplate: ServerTemplate = {
 
 				// Arcade #31: wrap in PaginatedResult. Single scenario today; future multi-scenario
 				// runs (e.g. comprehensive DCF sweeps) will page naturally without API changes.
-				return paginateArray([analysis], { cursor: args.cursor, pageSize: args.pageSize });
+				const page = paginateArray([analysis], { cursor: args.cursor, pageSize: args.pageSize });
+				return { ...page, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(

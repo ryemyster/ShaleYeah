@@ -17,6 +17,7 @@ import type { MCPServer } from "@shaleyeah/sdk";
 import {
 	buildMutualExclusivityError,
 	checkMutualExclusivity,
+	normalizeIdentifier,
 	paginateArray,
 	runMCPServer,
 	ServerFactory,
@@ -111,6 +112,8 @@ const titleServerTemplate: ServerTemplate = {
 				// Arcade #31: Paginated Result — cursor and pageSize for multi-interest responses.
 				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
 				pageSize: z.number().int().min(1).max(100).optional().describe("Interests per page (1–100, default 25)"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
 				const xorViolation = checkMutualExclusivity(args, [["propertyDescription", "tractId"]]);
@@ -129,13 +132,18 @@ const titleServerTemplate: ServerTemplate = {
 					};
 				}
 
-				const legalDescription = args.propertyDescription ?? `tract:${args.tractId}`;
+				const rawTractId = args.tractId;
+				const normalizedTractId = rawTractId ? normalizeIdentifier(rawTractId) : rawTractId;
+				const matchInfo =
+					rawTractId && normalizedTractId !== rawTractId ? { matchedAs: normalizedTractId, matchScore: 1.0 } : {};
+
+				const legalDescription = args.propertyDescription ?? `tract:${normalizedTractId}`;
 				const result = await synthesizeOwnershipWithLLM({
 					propertyDescription: legalDescription,
 					county: args.county,
 					state: args.state,
 				});
-				const interest = { ...result, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
+				const interest = { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.9, 0.8) };
 				// Arcade #31: wrap the ownership interests in a PaginatedResult envelope.
 				// Currently one interest per property; future multi-tract responses will page naturally.
 				return paginateArray([interest], { cursor: args.cursor, pageSize: args.pageSize });

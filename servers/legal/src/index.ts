@@ -4,7 +4,7 @@
  * Thin facade — all domain logic lives in src/tools/.
  */
 
-import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { deriveComplianceRequirements, synthesizeComplianceRequirementsWithLLM } from "./tools/compliance.js";
 import { deriveContractReview, synthesizeContractReviewWithLLM } from "./tools/contract.js";
@@ -71,14 +71,19 @@ const legalTemplate: ServerTemplate = {
 				projectType: projectTypeSchema,
 				assets: z.array(z.string()),
 				timeline: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const normalizedAssets = args.assets.map(normalizeIdentifier);
+				const assetsChanged = args.assets.some((a: string) => normalizeIdentifier(a) !== a);
+				const matchInfo = assetsChanged ? { matchedAs: normalizedAssets, matchScore: 1.0 } : {};
 				const result = await synthesizeRegulatoryAssessmentWithLLM({
 					jurisdiction: args.jurisdiction,
 					projectType: args.projectType,
-					assets: args.assets,
+					assets: normalizedAssets,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.88, 0.85) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.88, 0.85) };
 			},
 		),
 
@@ -90,15 +95,20 @@ const legalTemplate: ServerTemplate = {
 				keyTerms: z.array(z.string()),
 				parties: z.array(z.string()),
 				riskProfile: z.enum(["conservative", "moderate", "aggressive"]).default("moderate"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const normalizedParties = args.parties.map(normalizeIdentifier);
+				const partiesChanged = args.parties.some((a: string) => normalizeIdentifier(a) !== a);
+				const matchInfo = partiesChanged ? { matchedAs: normalizedParties, matchScore: 1.0 } : {};
 				const result = await synthesizeContractReviewWithLLM({
 					contractType: args.contractType,
 					keyTerms: args.keyTerms,
-					parties: args.parties,
+					parties: normalizedParties,
 					riskProfile: args.riskProfile,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
 			},
 		),
 

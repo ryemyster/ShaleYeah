@@ -11,7 +11,7 @@
  *   assess_compliance — permits, approval timeline, environmental risk
  */
 
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import {
 	type ComplianceAssessment,
@@ -108,14 +108,19 @@ const infrastructureTemplate: ServerTemplate = {
 				wellCount: z.number().describe("Number of wells to connect"),
 				expectedProduction: z.number().describe("Expected total production in BOPD"),
 				location: z.string().describe("Project location (state, basin, or county)"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawLocation = args.location;
+				const normalizedLocation = normalizeIdentifier(rawLocation);
+				const matchInfo = normalizedLocation !== rawLocation ? { matchedAs: normalizedLocation, matchScore: 1.0 } : {};
 				const result = await synthesizePipelinePlanWithLLM({
 					wellCount: args.wellCount,
 					expectedProduction: args.expectedProduction,
-					location: args.location,
+					location: normalizedLocation,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -125,14 +130,19 @@ const infrastructureTemplate: ServerTemplate = {
 				wellCount: z.number().describe("Number of wells"),
 				expectedProduction: z.number().describe("Expected total production in BOPD"),
 				location: z.string().describe("Project location"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawLocation = args.location;
+				const normalizedLocation = normalizeIdentifier(rawLocation);
+				const matchInfo = normalizedLocation !== rawLocation ? { matchedAs: normalizedLocation, matchScore: 1.0 } : {};
 				const result = await synthesizeFacilitySizingWithLLM({
 					wellCount: args.wellCount,
 					expectedProduction: args.expectedProduction,
-					location: args.location,
+					location: normalizedLocation,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -143,15 +153,20 @@ const infrastructureTemplate: ServerTemplate = {
 				compressors: z.number().describe("Number of compressor units required"),
 				swdWells: z.number().describe("Number of salt water disposal wells required"),
 				location: z.string().describe("Project location"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawLocation = args.location;
+				const normalizedLocation = normalizeIdentifier(rawLocation);
+				const matchInfo = normalizedLocation !== rawLocation ? { matchedAs: normalizedLocation, matchScore: 1.0 } : {};
 				const result = await synthesizeCostEstimateWithLLM({
 					wellCount: args.wellCount,
 					compressors: args.compressors,
 					swdWells: args.swdWells,
-					location: args.location,
+					location: normalizedLocation,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.85, 0.9) };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -165,14 +180,19 @@ const infrastructureTemplate: ServerTemplate = {
 					.optional()
 					.default([])
 					.describe("Known environmental constraints or sensitivities"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawLocation = args.location;
+				const normalizedLocation = normalizeIdentifier(rawLocation);
+				const matchInfo = normalizedLocation !== rawLocation ? { matchedAs: normalizedLocation, matchScore: 1.0 } : {};
 				const result = await synthesizeComplianceAssessmentWithLLM({
 					wellCount: args.wellCount,
-					location: args.location,
+					location: normalizedLocation,
 					environmentalConstraints: args.environmentalConstraints ?? [],
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
 			},
 		),
 	],

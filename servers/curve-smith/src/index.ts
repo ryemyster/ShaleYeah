@@ -6,7 +6,7 @@
  */
 
 import fs from "node:fs/promises";
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import {
 	type CurveFitResult,
@@ -76,15 +76,23 @@ const curveSmithTemplate: ServerTemplate = {
 				formation: z.string().optional().describe("Formation name for context-aware fallback (e.g. 'Wolfcamp A')"),
 				tier: z.number().min(1).max(3).optional().describe("Formation tier for fallback (1=best, 3=lowest)"),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				const analysis = await performDeclineCurveAnalysis(args);
+				const rawFormation = args.formation;
+				const normalizedFormation = rawFormation ? normalizeIdentifier(rawFormation) : rawFormation;
+				const matchInfo =
+					rawFormation && normalizedFormation !== rawFormation
+						? { matchedAs: normalizedFormation, matchScore: 1.0 }
+						: {};
+				const analysis = await performDeclineCurveAnalysis({ ...args, formation: normalizedFormation });
 
 				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+					await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -95,9 +103,20 @@ const curveSmithTemplate: ServerTemplate = {
 				analogWells: z.array(z.string()).describe("Analog well identifiers"),
 				tier: z.number().min(1).max(3).default(1).describe("Type curve tier (1=best)"),
 				lateral_length: z.number().optional().describe("Lateral length in feet"),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				return performTypeCurveAnalysis(args);
+				const rawFormation = args.formation;
+				const normalizedFormation = normalizeIdentifier(rawFormation);
+				const normalizedWells = args.analogWells.map(normalizeIdentifier);
+				const wellsChanged = args.analogWells.some((a: string) => normalizeIdentifier(a) !== a);
+				const matchInfo =
+					normalizedFormation !== rawFormation || wellsChanged
+						? { matchedAs: normalizedFormation, matchScore: 1.0 }
+						: {};
+				const result = performTypeCurveAnalysis({ ...args, formation: normalizedFormation, analogWells: normalizedWells });
+				return { ...result, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(

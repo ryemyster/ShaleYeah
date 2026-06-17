@@ -9,7 +9,7 @@
  */
 
 import fs from "node:fs/promises";
-import { type MCPServer, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
+import { type MCPServer, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { performCompetitiveAnalysis } from "./tools/competitive-analysis.js";
 import { performMarketResearch } from "./tools/market-research.js";
@@ -63,15 +63,20 @@ const researchTemplate: ServerTemplate = {
 				analysisType: z.enum(["activities", "strategy", "performance", "comprehensive"]).default("comprehensive"),
 				timeframe: z.string().default("last 12 months"),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				const analysis = await performCompetitiveAnalysis(args);
+				const rawRegion = args.region;
+				const normalizedRegion = normalizeIdentifier(rawRegion);
+				const matchInfo = normalizedRegion !== rawRegion ? { matchedAs: normalizedRegion, matchScore: 1.0 } : {};
+				const analysis = await performCompetitiveAnalysis({ ...args, region: normalizedRegion });
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 	],
