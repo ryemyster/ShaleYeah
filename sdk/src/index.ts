@@ -4,6 +4,7 @@ export * from "./context-store.js";
 export * from "./contracts.js";
 export * from "./errors.js";
 export * from "./file-detector.js";
+export * from "./identifier.js";
 export * from "./file-integration.js";
 export * from "./file-utils.js";
 export * from "./llm-client.js";

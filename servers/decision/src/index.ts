@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import type { AnalysisInputs, InvestmentCriteria, PortfolioAsset } from "@shaleyeah/sdk";
-import { callLLM, DecisionSchema, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
+import { callLLM, DecisionSchema, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
 import { z } from "zod";
 
 // The shape Claude returns when it synthesizes all upstream data into a decision
@@ -177,9 +177,23 @@ const decisionTemplate: ServerTemplate = {
 							.optional(),
 					})
 					.optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				return assessPortfolioFit(args);
+				const rawFormation = args.opportunity.formation;
+				const normalizedFormation = normalizeIdentifier(rawFormation);
+				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
+				const normalizedArgs = {
+					...args,
+					opportunity: { ...args.opportunity, formation: normalizedFormation },
+					currentPortfolio: args.currentPortfolio?.map((p: { name: string; location: string; formation: string; status: string }) => ({
+						...p,
+						formation: normalizeIdentifier(p.formation),
+					})),
+				};
+				const result = await assessPortfolioFit(normalizedArgs);
+				return { ...result, ...matchInfo };
 			},
 		),
 	],

@@ -4,7 +4,7 @@
  * Thin facade — all domain logic lives in src/tools/.
  */
 
-import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
 import { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
@@ -87,16 +87,21 @@ const drillingTemplate: ServerTemplate = {
 						timeline: z.string().optional(),
 					})
 					.optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawFormation = args.wellParameters.formation;
+				const normalizedFormation = normalizeIdentifier(rawFormation);
+				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeDrillingProgramWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
-					formation: args.wellParameters.formation,
+					formation: normalizedFormation,
 					budget: args.constraints?.budget,
 					timeline: args.constraints?.timeline,
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.82, 0.88) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.82, 0.88) };
 			},
 		),
 
@@ -106,15 +111,20 @@ const drillingTemplate: ServerTemplate = {
 			z.object({
 				wellParameters: wellParamsSchema,
 				location: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawFormation = args.wellParameters.formation;
+				const normalizedFormation = normalizeIdentifier(rawFormation);
+				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeWellCostsWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
-					formation: args.wellParameters.formation,
+					formation: normalizedFormation,
 					location: args.location ?? "unspecified",
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.8, 0.85) };
 			},
 		),
 
@@ -124,15 +134,20 @@ const drillingTemplate: ServerTemplate = {
 			z.object({
 				wellParameters: wellParamsSchema,
 				environmentalConstraints: z.array(z.string()).optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawFormation = args.wellParameters.formation;
+				const normalizedFormation = normalizeIdentifier(rawFormation);
+				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeDrillingRisksWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
-					formation: args.wellParameters.formation,
+					formation: normalizedFormation,
 					environmentalConstraints: args.environmentalConstraints ?? [],
 				});
-				return { ...result, confidence: ServerUtils.calculateConfidence(0.8, 0.88) };
+				return { ...result, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.8, 0.88) };
 			},
 		),
 	],

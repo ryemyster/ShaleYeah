@@ -10,7 +10,7 @@
  */
 
 import fs from "node:fs/promises";
-import { type MCPServer, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { type MCPServer, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { deriveQualityReport } from "./tools/reporting.js";
 import { deriveDefaultQAResult, synthesizeQAValidationWithLLM } from "./tools/validation.js";
@@ -57,11 +57,17 @@ const testTemplate: ServerTemplate = {
 					})
 					.optional(),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const normalizedTargets = args.targets.map(normalizeIdentifier);
+				const targetsChanged = args.targets.some((t: string) => normalizeIdentifier(t) !== t);
+				const matchInfo = targetsChanged ? { matchedAs: normalizedTargets, matchScore: 1.0 } : {};
+
 				const validation = await synthesizeQAValidationWithLLM({
 					testSuite: args.testSuite,
-					targets: args.targets,
+					targets: normalizedTargets,
 					accuracyThreshold: args.criteria?.accuracy ?? 0.95,
 					complianceStandards: args.criteria?.compliance ?? [],
 				});
@@ -74,7 +80,7 @@ const testTemplate: ServerTemplate = {
 
 				const analysis = {
 					testSuite: args.testSuite,
-					targets: args.targets,
+					targets: normalizedTargets,
 					dataSource: "llm-validation",
 					execution: {
 						timestamp: new Date().toISOString(),
@@ -124,7 +130,7 @@ const testTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(

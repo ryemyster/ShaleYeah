@@ -5,7 +5,7 @@
  */
 
 import fs from "node:fs/promises";
-import { runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import { normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { deriveProgressReport } from "./tools/monitoring.js";
 import { deriveDevelopmentPhases, synthesizeDevelopmentPhasesWithLLM } from "./tools/phases.js";
@@ -66,29 +66,40 @@ const developmentTemplate: ServerTemplate = {
 					})
 					.optional(),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawName = args.project.name;
+				const rawLocation = args.project.location;
+				const normalizedName = normalizeIdentifier(rawName);
+				const normalizedLocation = normalizeIdentifier(rawLocation);
+				const identifiersChanged = normalizedName !== rawName || normalizedLocation !== rawLocation;
+				const matchInfo = identifiersChanged
+					? { matchedAs: { name: normalizedName, location: normalizedLocation }, matchScore: 1.0 }
+					: {};
+				const normalizedProject = { ...args.project, name: normalizedName, location: normalizedLocation };
 				const budget = args.constraints?.budget ?? 50_000_000;
 				const technicalConstraints = args.constraints?.technical ?? [];
 
 				const [schedule, outlook] = await Promise.all([
 					synthesizeDevelopmentPhasesWithLLM({
-						projectName: args.project.name,
-						wellCount: args.project.wellCount,
+						projectName: normalizedProject.name,
+						wellCount: normalizedProject.wellCount,
 						budget,
 						constraints: technicalConstraints,
 					}),
 					synthesizeDevelopmentOutlookWithLLM({
-						projectName: args.project.name,
-						wellCount: args.project.wellCount,
+						projectName: normalizedProject.name,
+						wellCount: normalizedProject.wellCount,
 						budget,
 						technicalConstraints,
-						totalDuration: `${Math.min(4, Math.ceil(args.project.wellCount / 10)) * 8} months`,
+						totalDuration: `${Math.min(4, Math.ceil(normalizedProject.wellCount / 10)) * 8} months`,
 					}),
 				]);
 
 				const analysis = {
-					project: args.project,
+					project: normalizedProject,
 					outlook,
 					development: {
 						strategy: schedule.strategy,
@@ -102,13 +113,13 @@ const developmentTemplate: ServerTemplate = {
 					},
 					resources: {
 						personnel: {
-							management: Math.ceil(args.project.wellCount / 20),
-							engineering: Math.ceil(args.project.wellCount / 10),
-							operations: Math.ceil(args.project.wellCount / 5),
+							management: Math.ceil(normalizedProject.wellCount / 20),
+							engineering: Math.ceil(normalizedProject.wellCount / 10),
+							operations: Math.ceil(normalizedProject.wellCount / 5),
 						},
 						equipment: {
-							rigs: Math.min(3, Math.ceil(args.project.wellCount / 15)),
-							completionUnits: Math.ceil(args.project.wellCount / 25),
+							rigs: Math.min(3, Math.ceil(normalizedProject.wellCount / 15)),
+							completionUnits: Math.ceil(normalizedProject.wellCount / 25),
 							supportEquipment: "Standard oilfield equipment package",
 						},
 						infrastructure: {
@@ -120,7 +131,7 @@ const developmentTemplate: ServerTemplate = {
 					economics: {
 						capex: Math.round(budget * 1.1),
 						timeToPayback: "18-24 months",
-						peakProduction: Math.round(args.project.reserves * 0.15),
+						peakProduction: Math.round(normalizedProject.reserves * 0.15),
 						plantLife: "25-30 years",
 					},
 					confidence: ServerUtils.calculateConfidence(0.85, 0.88),
@@ -130,7 +141,7 @@ const developmentTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
 				}
 
-				return analysis;
+				return { ...analysis, ...matchInfo };
 			},
 		),
 
@@ -142,15 +153,22 @@ const developmentTemplate: ServerTemplate = {
 				wellCount: z.number().int().positive(),
 				budget: z.number().positive(),
 				constraints: z.array(z.string()).default([]),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
+				const rawProjectName = args.projectName;
+				const normalizedProjectName = normalizeIdentifier(rawProjectName);
+				const matchInfo = normalizedProjectName !== rawProjectName
+					? { matchedAs: normalizedProjectName, matchScore: 1.0 }
+					: {};
 				const schedule = await synthesizeDevelopmentPhasesWithLLM({
-					projectName: args.projectName,
+					projectName: normalizedProjectName,
 					wellCount: args.wellCount,
 					budget: args.budget,
 					constraints: args.constraints,
 				});
-				return { ...schedule, confidence: ServerUtils.calculateConfidence(0.87, 0.9) };
+				return { ...schedule, ...matchInfo, confidence: ServerUtils.calculateConfidence(0.87, 0.9) };
 			},
 		),
 

@@ -7,7 +7,7 @@
 
 import fs from "node:fs/promises";
 import type { AnalysisInputs, InvestmentCriteria } from "@shaleyeah/sdk";
-import { callLLM, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
+import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
@@ -189,15 +189,20 @@ const reporterTemplate: ServerTemplate = {
 					})
 					.optional(),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				const decision = generateInvestmentDecision(args);
+				const rawTractName = args.tractName;
+				const normalizedTractName = normalizeIdentifier(rawTractName);
+				const matchInfo = normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
+				const decision = generateInvestmentDecision({ ...args, tractName: normalizedTractName });
 
 				if (args.outputPath) {
 					await fs.writeFile(args.outputPath, JSON.stringify(decision, null, 2));
 				}
 
-				return decision;
+				return { ...decision, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(
@@ -210,16 +215,21 @@ const reporterTemplate: ServerTemplate = {
 				includeCharts: z.boolean().default(true),
 				includeAppendices: z.boolean().default(true),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				const report = createExecutiveReport(args);
+				const rawTractName = args.tractName;
+				const normalizedTractName = normalizeIdentifier(rawTractName);
+				const matchInfo = normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
+				const report = createExecutiveReport({ ...args, tractName: normalizedTractName });
 
 				// Replace the template-generated executive summary with an LLM-authored
 				// analyst narrative that includes real numbers and domain vocabulary.
 				// Falls back to the rule-based summary if the API is unavailable.
 				const d = report.recommendation;
 				report.executiveSummary = await synthesizeReportWithLLM({
-					tractName: args.tractName,
+					tractName: normalizedTractName,
 					recommendation: d.recommendation,
 					npv: d.keyMetrics.npv,
 					irr: d.keyMetrics.irr,
@@ -235,7 +245,7 @@ const reporterTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, markdown);
 				}
 
-				return report;
+				return { ...report, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(

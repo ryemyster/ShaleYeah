@@ -11,6 +11,7 @@ import {
 	EconomicsSchema,
 	FormationSchema,
 	type MCPServer,
+	normalizeIdentifier,
 	RiskProfileSchema,
 	runMCPServer,
 	ServerFactory,
@@ -109,15 +110,28 @@ const riskAnalysisTemplate: ServerTemplate = {
 				riskProfile: z.enum(["conservative", "moderate", "aggressive"]).default("moderate"),
 				analysisDepth: z.enum(["screening", "standard", "comprehensive"]).default("standard"),
 				outputPath: z.string().optional(),
+				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
 			}),
 			async (args) => {
-				const assessment = await performRiskAssessment(args);
+				const rawFormation = args.projectData.technical?.formation;
+				const normalizedFormation = rawFormation ? normalizeIdentifier(rawFormation) : rawFormation;
+				const matchInfo =
+					rawFormation && normalizedFormation !== rawFormation
+						? { matchedAs: normalizedFormation, matchScore: 1.0 }
+						: {};
+
+				const normalizedArgs = normalizedFormation
+					? { ...args, projectData: { ...args.projectData, technical: { ...args.projectData.technical, formation: normalizedFormation } } }
+					: args;
+
+				const assessment = await performRiskAssessment(normalizedArgs);
 
 				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(assessment, null, 2));
+					await fs.writeFile(args.outputPath, JSON.stringify({ ...assessment, ...matchInfo }, null, 2));
 				}
 
-				return assessment;
+				return { ...assessment, ...matchInfo };
 			},
 		),
 		ServerFactory.createAnalysisTool(
