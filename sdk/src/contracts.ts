@@ -65,6 +65,19 @@ export const AgentToolManifestSchema = z.object({
 	// Capability slugs that this tool's output enables downstream.
 	// Implements Arcade pattern #14: Dependency Hint.
 	provides: z.array(z.string().min(1)).optional(),
+	// Expected wall-clock latency percentiles for this tool call.
+	// p50 = typical case, p95 = near-worst-case. Units: milliseconds.
+	// Implements Arcade pattern #10: Performance Hint.
+	estimatedLatencyMs: z
+		.object({
+			p50: z.number().int().positive(),
+			p95: z.number().int().positive(),
+		})
+		.optional(),
+	// Rough complexity bucket — guides the reasoning loop to prefer cheap tools when possible.
+	// fast <1s | moderate 1-10s | slow >10s
+	// Implements Arcade pattern #10: Performance Hint.
+	complexity: z.enum(["fast", "moderate", "slow"]).optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 

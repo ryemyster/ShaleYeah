@@ -88,6 +88,8 @@ export const riskAnalystManifest: AgentManifest = {
 			mcpServer: "risk-analysis",
 			dependsOn: ["geologist.analyze_formation", "economist.analyze_economics"],
 			provides: ["risk-assessment"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "risk-analyst.monte_carlo_simulation",
@@ -148,6 +150,8 @@ export const riskAnalystManifest: AgentManifest = {
 			fallbackTo: "risk-analyst.assess_investment_risk",
 			dependsOn: ["risk-analyst.assess_investment_risk"],
 			provides: ["risk-simulation"],
+			estimatedLatencyMs: { p50: 8000, p95: 30000 },
+			complexity: "slow",
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -399,13 +403,24 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

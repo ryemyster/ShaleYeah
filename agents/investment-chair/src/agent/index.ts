@@ -81,6 +81,8 @@ export const investmentChairManifest: AgentManifest = {
 			mcpServer: "decision",
 			dependsOn: ["geologist.analyze_formation", "economist.analyze_economics", "title-analyst.examine_ownership"],
 			provides: ["investment-decision"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "investment-chair.calculate_bid_strategy",
@@ -115,6 +117,8 @@ export const investmentChairManifest: AgentManifest = {
 			mcpServer: "decision",
 			dependsOn: ["investment-chair.make_investment_decision"],
 			provides: ["bid-strategy"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "investment-chair.analyze_portfolio_fit",
@@ -155,6 +159,8 @@ export const investmentChairManifest: AgentManifest = {
 			mcpServer: "decision",
 			dependsOn: ["investment-chair.make_investment_decision"],
 			provides: ["portfolio-fit"],
+			estimatedLatencyMs: { p50: 200, p95: 800 },
+			complexity: "fast",
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -416,13 +422,24 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}
