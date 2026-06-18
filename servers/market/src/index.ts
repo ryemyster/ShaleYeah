@@ -6,7 +6,14 @@
  */
 
 import fs from "node:fs/promises";
-import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import {
+	callLLM,
+	normalizeIdentifier,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------

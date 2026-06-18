@@ -159,9 +159,8 @@ const developmentTemplate: ServerTemplate = {
 			async (args) => {
 				const rawProjectName = args.projectName;
 				const normalizedProjectName = normalizeIdentifier(rawProjectName);
-				const matchInfo = normalizedProjectName !== rawProjectName
-					? { matchedAs: normalizedProjectName, matchScore: 1.0 }
-					: {};
+				const matchInfo =
+					normalizedProjectName !== rawProjectName ? { matchedAs: normalizedProjectName, matchScore: 1.0 } : {};
 				const schedule = await synthesizeDevelopmentPhasesWithLLM({
 					projectName: normalizedProjectName,
 					wellCount: args.wellCount,
