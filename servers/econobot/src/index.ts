@@ -19,6 +19,7 @@ import {
 	ServerFactory,
 	type ServerTemplate,
 	ServerUtils,
+	wrapWithGuiUrl,
 } from "@shaleyeah/sdk";
 import * as ExcelJS from "exceljs";
 import { z } from "zod";
@@ -102,7 +103,7 @@ const econobotTemplate: ServerTemplate = {
 				// Arcade #31: wrap in PaginatedResult. Single scenario today; future multi-scenario
 				// runs (e.g. comprehensive DCF sweeps) will page naturally without API changes.
 				const page = paginateArray([analysis], { cursor: args.cursor, pageSize: args.pageSize });
-				return { ...page, ...matchInfo };
+				return wrapWithGuiUrl({ ...page, ...matchInfo }, "economics");
 			},
 		),
 		ServerFactory.createAnalysisTool(

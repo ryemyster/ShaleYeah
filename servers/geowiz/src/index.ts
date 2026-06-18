@@ -18,6 +18,7 @@ import {
 	ServerFactory,
 	type ServerTemplate,
 	ServerUtils,
+	wrapWithGuiUrl,
 } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { analyzeLASCurve, type CurveAnalysis } from "./tools/curve-qc.js";
@@ -88,7 +89,7 @@ const geowizTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
 				}
 
-				return { ...analysis, ...matchInfo };
+				return wrapWithGuiUrl({ ...analysis, ...matchInfo }, "formations");
 			},
 		),
 		ServerFactory.createAnalysisTool(

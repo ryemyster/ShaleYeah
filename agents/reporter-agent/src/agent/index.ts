@@ -435,7 +435,8 @@ Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 2. Final answer: {"action":"done","answer":"<synthesized answer>"}
 
 Always use the full tool name (e.g. "reporter-agent.synthesize_analysis").
-If you cannot complete the task with the available tools, respond with {"action":"done","answer":"<explanation>"}.`;
+If you cannot complete the task with the available tools, respond with {"action":"done","answer":"<explanation>"}.
+If a tool result includes a viewUrl field, include it in your answer as a clickable link (e.g. "View in Dashboard: <viewUrl>") for the user.`;
 
 	type Turn = { role: "user" | "assistant" | "tool"; content: string };
 	const history: Turn[] = [{ role: "user", content: goal }];

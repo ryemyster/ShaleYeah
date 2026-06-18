@@ -123,6 +123,7 @@ The reasoning loop (`executeLoop`) always uses `standard-analysis`. Tool-level `
 | Audit Trail | 48 | `runtime.ts` — `auditLogger` hook, default stderr JSON |
 | **Transactional Boundary** | 26 | `executeLoop` — permanent write failure pushes "rolled back — do not retry" to history instead of exiting loop; `save_finding` marked `transactional: true` |
 | **Compensation Handler** | 27 | `sdk/src/compensation.ts` `CompensationRegistry` — `executeLoop` calls registered undo fn before rollback message; `save_finding` has a stub handler (active undo deferred to #405) |
+| **GUI URL** | 33 | `sdk/src/types.ts` `wrapWithGuiUrl()` — `analyze_formation` wraps its response in `ToolResponseEnvelope<T>` when `DASHBOARD_BASE_URL` is set; `executeLoop` system prompt instructs the agent to surface `viewUrl` as a clickable link |
 
 ## Adding a command (write) tool
 

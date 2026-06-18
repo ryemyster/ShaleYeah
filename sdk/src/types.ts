@@ -59,6 +59,34 @@ export function paginateArray<T>(items: T[], options: { cursor?: string; pageSiz
 }
 
 // ==========================================
+// GUI URL Envelope — Arcade #33
+// ==========================================
+
+/**
+ * Wraps a tool response with optional dashboard link metadata.
+ * When DASHBOARD_BASE_URL is set, agents surface the viewUrl as a clickable link for users.
+ */
+export interface ToolResponseEnvelope<T> {
+	data: T;
+	/** Absolute URL to the relevant dashboard view. Only present when DASHBOARD_BASE_URL is configured. */
+	viewUrl?: string;
+	/** Human-readable link label (e.g. "View in Dashboard"). */
+	viewLabel?: string;
+}
+
+/**
+ * Conditionally wrap a tool response in a ToolResponseEnvelope.
+ * Returns `data` unchanged when DASHBOARD_BASE_URL is not set (no schema change for callers
+ * that don't have the dashboard configured). Returns an envelope when the env var is present.
+ */
+export function wrapWithGuiUrl<T>(data: T, urlPath: string, label = "View in Dashboard"): T | ToolResponseEnvelope<T> {
+	const base = process.env.DASHBOARD_BASE_URL;
+	if (!base) return data;
+	const viewUrl = `${base.replace(/\/$/, "")}/${urlPath.replace(/^\//, "")}`;
+	return { data, viewUrl, viewLabel: label };
+}
+
+// ==========================================
 // Geological Data Types
 // ==========================================
 
