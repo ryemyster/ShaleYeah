@@ -82,6 +82,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "reservoir-engineer-decline",
 			mcpServer: "curve-smith",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "reservoir-engineer.generate_type_curve",
@@ -113,6 +115,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "reservoir-engineer-type-curve",
 			mcpServer: "curve-smith",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "reservoir-engineer.calculate_eur",
@@ -145,6 +149,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 			modelRequirement: "deterministic",
 			evalProfile: "reservoir-engineer-eur",
 			mcpServer: "curve-smith",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "reservoir-engineer.assess_curve_quality",
@@ -177,6 +183,8 @@ export const reservoirEngineerManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "reservoir-engineer-quality",
 			mcpServer: "curve-smith",
+			estimatedLatencyMs: { p50: 200, p95: 800 },
+			complexity: "fast",
 		},
 	],
 	requiredScopes: ["read:reservoir"],
@@ -430,13 +438,24 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

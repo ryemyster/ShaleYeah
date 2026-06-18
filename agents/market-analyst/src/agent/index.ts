@@ -80,6 +80,8 @@ export const marketAnalystManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "market-analyst-conditions",
 			mcpServer: "market",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "market-analyst.competitive_analysis",
@@ -113,6 +115,8 @@ export const marketAnalystManifest: AgentManifest = {
 			// Arcade #44: if competitive analysis permanently fails, fall back to market
 			// conditions analysis so the analyst can still deliver basin-level market context.
 			fallbackTo: "market-analyst.analyze_market_conditions",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 	],
 	requiredScopes: ["read:market"],
@@ -355,13 +359,24 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

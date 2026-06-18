@@ -73,6 +73,8 @@ export const geologistManifest: AgentManifest = {
 			evalProfile: "geologist-formation",
 			mcpServer: "geowiz",
 			provides: ["geological-analysis"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "geologist.process_gis",
@@ -101,6 +103,8 @@ export const geologistManifest: AgentManifest = {
 			modelRequirement: "deterministic",
 			mcpServer: "geowiz",
 			provides: ["gis-data"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "geologist.process_well_logs",
@@ -125,6 +129,8 @@ export const geologistManifest: AgentManifest = {
 			evalProfile: "geologist-well-log",
 			mcpServer: "geowiz",
 			provides: ["well-log-data"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "geologist.assess_quality",
@@ -154,6 +160,8 @@ export const geologistManifest: AgentManifest = {
 			mcpServer: "geowiz",
 			dependsOn: ["geologist.analyze_formation"],
 			provides: ["quality-assessment"],
+			estimatedLatencyMs: { p50: 200, p95: 800 },
+			complexity: "fast",
 		},
 		{
 			name: "geologist.process_access_database",
@@ -180,6 +188,8 @@ export const geologistManifest: AgentManifest = {
 			// Arcade #44: if Access DB processing fails permanently, fall back to a quality
 			// metadata-only check so the geologist can still report data quality findings.
 			fallbackTo: "geologist.assess_quality",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "geologist.process_document",
@@ -203,6 +213,8 @@ export const geologistManifest: AgentManifest = {
 			evalProfile: "geologist-document",
 			mcpServer: "geowiz",
 			provides: ["document-data"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "geologist.process_seismic_data",
@@ -233,6 +245,8 @@ export const geologistManifest: AgentManifest = {
 			// Arcade #44: if seismic processing permanently fails, fall back to simpler formation
 			// analysis so the geologist can still deliver structural findings.
 			fallbackTo: "geologist.analyze_formation",
+			estimatedLatencyMs: { p50: 8000, p95: 30000 },
+			complexity: "slow",
 		},
 		{
 			name: "geologist.process_aries_database",
@@ -256,6 +270,8 @@ export const geologistManifest: AgentManifest = {
 			evalProfile: "geologist-aries",
 			mcpServer: "geowiz",
 			provides: ["reserves-data"],
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			// Closes the Observe→Think→Act→Learn loop. Persists a key geological finding to
@@ -292,6 +308,8 @@ export const geologistManifest: AgentManifest = {
 			modelRequirement: "deterministic",
 			mcpServer: "geowiz",
 			dependsOn: ["geologist.analyze_formation"],
+			estimatedLatencyMs: { p50: 200, p95: 800 },
+			complexity: "fast",
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -602,12 +620,23 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}

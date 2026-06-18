@@ -76,6 +76,8 @@ export const researchAnalystManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "research-analyst-market",
 			mcpServer: "research",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 		{
 			name: "research-analyst.analyze_competition",
@@ -110,6 +112,8 @@ export const researchAnalystManifest: AgentManifest = {
 			modelRequirement: "standard-analysis",
 			evalProfile: "research-analyst-competition",
 			mcpServer: "research",
+			estimatedLatencyMs: { p50: 2000, p95: 8000 },
+			complexity: "moderate",
 		},
 	],
 	requiredScopes: ["read:research"],
@@ -351,13 +355,24 @@ async function executeLoop(
 		? `\nRecommended workflows (use these step sequences when they match the goal):\n${manifest.toolChains.map((c) => `  ${c.id}: ${c.steps.join(" → ")}${c.trigger ? `\n  Use when: ${c.trigger}` : ""}`).join("\n")}`
 		: "";
 
+	const perfHints = manifest.tools
+		.filter((t) => t.complexity || t.estimatedLatencyMs)
+		.map((t) => {
+			const parts: string[] = [];
+			if (t.complexity) parts.push(t.complexity);
+			if (t.estimatedLatencyMs) parts.push(`~${t.estimatedLatencyMs.p50}ms`);
+			return `  ${t.name}: [${parts.join(", ")}]`;
+		})
+		.join("\n");
+	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 
 	const system = `You are ${manifest.persona.name}, ${manifest.persona.role}.
 ${priorContextSection}
 
 Available tools:
-${toolDefs}${depSection}${toolChainsSection}
+${toolDefs}${depSection}${toolChainsSection}${perfSection}
 
 Respond ONLY with valid JSON — no prose, no markdown. Two formats allowed:
 1. Call a tool:  {"action":"tool","tool":"<full tool name>","args":{...}}
