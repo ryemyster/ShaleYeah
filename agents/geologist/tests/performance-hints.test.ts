@@ -31,20 +31,12 @@ console.log("🧪 Arcade #10: Performance Hints — System Prompt Tests\n");
 console.log("📋 Manifest declares performance hints on all tools...");
 await test("every geologist tool has a complexity field", () => {
 	const missing = geologistManifest.tools.filter((t) => !t.complexity);
-	assert.strictEqual(
-		missing.length,
-		0,
-		`Tools missing complexity: ${missing.map((t) => t.name).join(", ")}`,
-	);
+	assert.strictEqual(missing.length, 0, `Tools missing complexity: ${missing.map((t) => t.name).join(", ")}`);
 });
 
 await test("every geologist tool has estimatedLatencyMs", () => {
 	const missing = geologistManifest.tools.filter((t) => !t.estimatedLatencyMs);
-	assert.strictEqual(
-		missing.length,
-		0,
-		`Tools missing estimatedLatencyMs: ${missing.map((t) => t.name).join(", ")}`,
-	);
+	assert.strictEqual(missing.length, 0, `Tools missing estimatedLatencyMs: ${missing.map((t) => t.name).join(", ")}`);
 });
 
 await test("complexity values are only fast/moderate/slow", () => {

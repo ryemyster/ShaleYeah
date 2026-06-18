@@ -10,7 +10,14 @@
  */
 
 import fs from "node:fs/promises";
-import { type MCPServer, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import {
+	type MCPServer,
+	normalizeIdentifier,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 import { deriveQualityReport } from "./tools/reporting.js";
 import { deriveDefaultQAResult, synthesizeQAValidationWithLLM } from "./tools/validation.js";

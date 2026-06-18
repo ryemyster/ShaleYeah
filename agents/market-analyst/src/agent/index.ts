@@ -368,7 +368,9 @@ async function executeLoop(
 			return `  ${t.name}: [${parts.join(", ")}]`;
 		})
 		.join("\n");
-	const perfSection = perfHints ? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}` : "";
+	const perfSection = perfHints
+		? `\nPerformance hints (prefer fast tools first; slow tools may block):\n${perfHints}`
+		: "";
 
 	const priorContextSection = priorContext ? `\nPrior context from previous runs:\n${priorContext}\n` : "";
 

@@ -146,9 +146,7 @@ const geowizTemplate: ServerTemplate = {
 				const rawWellName = args.wellName;
 				const normalizedWellName = rawWellName ? normalizeIdentifier(rawWellName) : rawWellName;
 				const matchInfo =
-					rawWellName && normalizedWellName !== rawWellName
-						? { matchedAs: normalizedWellName, matchScore: 1.0 }
-						: {};
+					rawWellName && normalizedWellName !== rawWellName ? { matchedAs: normalizedWellName, matchScore: 1.0 } : {};
 
 				const result = await processMultiFormatWellLog({ ...args, wellName: normalizedWellName });
 
