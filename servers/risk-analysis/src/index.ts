@@ -17,6 +17,7 @@ import {
 	ServerFactory,
 	type ServerTemplate,
 	ServerUtils,
+	wrapWithGuiUrl,
 } from "@shaleyeah/sdk";
 import { z } from "zod";
 
@@ -137,7 +138,7 @@ const riskAnalysisTemplate: ServerTemplate = {
 					await fs.writeFile(args.outputPath, JSON.stringify({ ...assessment, ...matchInfo }, null, 2));
 				}
 
-				return { ...assessment, ...matchInfo };
+				return wrapWithGuiUrl({ ...assessment, ...matchInfo }, "risk");
 			},
 		),
 		ServerFactory.createAnalysisTool(
