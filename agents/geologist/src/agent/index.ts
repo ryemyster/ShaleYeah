@@ -10,6 +10,7 @@ import type {
 import {
 	ASYNC_POLL_INTERVAL_MS,
 	ASYNC_THRESHOLD_MS,
+	CompensationRegistry,
 	ContextStore,
 	callLLM,
 	defaultAsyncJobPoller,
@@ -463,6 +464,16 @@ const handlers: Record<string, StandaloneToolHandler> = {
 		callGeowizTool(geowizUrl(config), "save_finding", args as Record<string, unknown>),
 };
 
+// Arcade #27 — register compensation handler for the only write tool in this agent.
+// If save_finding fails partway (e.g. record written but indexing failed), geowiz exposes
+// a delete_finding endpoint so the orphaned record can be removed before the LLM is told
+// to ask the user what to do. The handler is a best-effort no-op until #405 (pgvector)
+// ships a real delete_finding tool — this wires the pattern so adding that tool is trivial.
+CompensationRegistry.register("geologist.save_finding", async (_args) => {
+	// TODO (#405): call delete_finding with the partially-written record ID once geowiz
+	// exposes that endpoint. For now the compensation path fires (tested) but is inert.
+});
+
 export function createGeologistRuntime(config: AgentRuntimeConfig = geologistConfig): LocalAgentRuntime {
 	return new LocalAgentRuntime({
 		manifest: geologistManifest,
@@ -764,10 +775,22 @@ If you cannot complete the task with the available tools, respond with {"action"
 						continue;
 					}
 				}
-				// Arcade #26: Transactional Boundary — write tool failures get a structured rollback
-				// message pushed to history instead of an immediate loop exit. This lets the LLM
-				// surface the partial state to the user and ask whether to retry or discard.
+				// Arcade #26/#27: Transactional Boundary + Compensation Handler — write tool failures
+				// run any registered undo fn (Arcade #27) then push a structured rollback message
+				// (Arcade #26) to history instead of exiting the loop, letting the LLM surface
+				// partial state and ask the user whether to retry or discard.
 				if (toolManifest?.transactional) {
+					const compensate = CompensationRegistry.get(parsed.tool);
+					if (compensate) {
+						try {
+							await compensate(parsed.args ?? {});
+						} catch (e) {
+							history.push({
+								role: "tool",
+								content: `Compensation for ${parsed.tool} failed: ${e instanceof Error ? e.message : String(e)}. Manual cleanup may be required.`,
+							});
+						}
+					}
 					history.push({
 						role: "tool",
 						content: `Transactional write failed for ${parsed.tool}. All changes rolled back. Do not retry — ask the user whether to re-attempt or discard.`,

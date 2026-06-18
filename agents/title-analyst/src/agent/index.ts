@@ -10,6 +10,7 @@ import type {
 import {
 	ASYNC_POLL_INTERVAL_MS,
 	ASYNC_THRESHOLD_MS,
+	CompensationRegistry,
 	ContextStore,
 	callLLM,
 	defaultAsyncJobPoller,
@@ -562,10 +563,22 @@ If you cannot complete the task with the available tools, respond with {"action"
 						continue;
 					}
 				}
-				// Arcade #26: Transactional Boundary — write tool failures get a structured rollback
-				// message pushed to history instead of an immediate loop exit. This lets the LLM
-				// surface the partial state to the user and ask whether to retry or discard.
+				// Arcade #26/#27: Transactional Boundary + Compensation Handler — write tool failures
+				// run any registered undo fn (Arcade #27) then push a structured rollback message
+				// (Arcade #26) to history instead of exiting the loop, letting the LLM surface
+				// partial state and ask the user whether to retry or discard.
 				if (toolManifest?.transactional) {
+					const compensate = CompensationRegistry.get(parsed.tool);
+					if (compensate) {
+						try {
+							await compensate(parsed.args ?? {});
+						} catch (e) {
+							history.push({
+								role: "tool",
+								content: `Compensation for ${parsed.tool} failed: ${e instanceof Error ? e.message : String(e)}. Manual cleanup may be required.`,
+							});
+						}
+					}
 					history.push({
 						role: "tool",
 						content: `Transactional write failed for ${parsed.tool}. All changes rolled back. Do not retry — ask the user whether to re-attempt or discard.`,
