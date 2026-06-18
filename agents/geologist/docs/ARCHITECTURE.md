@@ -122,15 +122,17 @@ The reasoning loop (`executeLoop`) always uses `standard-analysis`. Tool-level `
 | Permission Gate | 46 | `runtime.execute()` — scope check + HITL + blocking eval halt |
 | Audit Trail | 48 | `runtime.ts` — `auditLogger` hook, default stderr JSON |
 | **Transactional Boundary** | 26 | `executeLoop` — permanent write failure pushes "rolled back — do not retry" to history instead of exiting loop; `save_finding` marked `transactional: true` |
+| **Compensation Handler** | 27 | `sdk/src/compensation.ts` `CompensationRegistry` — `executeLoop` calls registered undo fn before rollback message; `save_finding` has a stub handler (active undo deferred to #405) |
 
 ## Adding a command (write) tool
 
 When adding any tool with `readOnly: false` to this agent:
 
 1. Mark `transactional: true` in the tool manifest (Arcade #26). This routes permanent failures through the rollback path in `executeLoop`, surfacing partial state to the LLM instead of a silent exit.
-2. Add `requiresHumanApproval: true` for tools that write to persistent storage — users should confirm saves.
-3. Add `requiredScopes: ["write:<domain>"]` and ensure the manifest `requiredScopes` superset is updated.
-4. Add a test in `tests/transactional-boundary.test.ts` (or equivalent) covering: permanent failure → rolled-back message pushed; non-transactional failure path unchanged.
+2. Register a `CompensationRegistry` handler (Arcade #27) so `executeLoop` can attempt to undo any partially-written state before informing the LLM. Import `CompensationRegistry` from `@shaleyeah/sdk` and call `CompensationRegistry.register("agent.tool_name", async (args) => { ... })` near the handler map.
+3. Add `requiresHumanApproval: true` for tools that write to persistent storage — users should confirm saves.
+4. Add `requiredScopes: ["write:<domain>"]` and ensure the manifest `requiredScopes` superset is updated.
+5. Add tests covering: compensation fn called on failure; compensation throws → error in history, loop continues; no handler → rollback message unchanged.
 
 `save_finding` is the reference implementation — see `src/agent/index.ts` and `tests/transactional-boundary.test.ts`.
 
