@@ -6,9 +6,9 @@
 
 import { normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
 import { z } from "zod";
-import { deriveWellCostBreakdown, synthesizeWellCostsWithLLM } from "./tools/costs.js";
+import { synthesizeWellCostsWithLLM } from "./tools/costs.js";
 import { deriveDrillingProgram, synthesizeDrillingProgramWithLLM } from "./tools/program.js";
-import { deriveDrillingRiskProfile, synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
+import { synthesizeDrillingRisksWithLLM } from "./tools/risks.js";
 
 // ---------------------------------------------------------------------------
 // Backward-compat exports — existing tests import these from ../src/index.js
@@ -93,7 +93,8 @@ const drillingTemplate: ServerTemplate = {
 			async (args) => {
 				const rawFormation = args.wellParameters.formation;
 				const normalizedFormation = normalizeIdentifier(rawFormation);
-				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
+				const matchInfo =
+					normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeDrillingProgramWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
@@ -117,7 +118,8 @@ const drillingTemplate: ServerTemplate = {
 			async (args) => {
 				const rawFormation = args.wellParameters.formation;
 				const normalizedFormation = normalizeIdentifier(rawFormation);
-				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
+				const matchInfo =
+					normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeWellCostsWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,
@@ -140,7 +142,8 @@ const drillingTemplate: ServerTemplate = {
 			async (args) => {
 				const rawFormation = args.wellParameters.formation;
 				const normalizedFormation = normalizeIdentifier(rawFormation);
-				const matchInfo = normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
+				const matchInfo =
+					normalizedFormation !== rawFormation ? { matchedAs: normalizedFormation, matchScore: 1.0 } : {};
 				const result = await synthesizeDrillingRisksWithLLM({
 					wellType: args.wellParameters.wellType,
 					targetDepth: args.wellParameters.targetDepth,

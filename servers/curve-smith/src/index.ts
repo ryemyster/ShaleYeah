@@ -6,7 +6,14 @@
  */
 
 import fs from "node:fs/promises";
-import { callLLM, normalizeIdentifier, runMCPServer, ServerFactory, type ServerTemplate, ServerUtils } from "@shaleyeah/sdk";
+import {
+	callLLM,
+	normalizeIdentifier,
+	runMCPServer,
+	ServerFactory,
+	type ServerTemplate,
+	ServerUtils,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 import {
 	type CurveFitResult,
@@ -115,7 +122,11 @@ const curveSmithTemplate: ServerTemplate = {
 					normalizedFormation !== rawFormation || wellsChanged
 						? { matchedAs: normalizedFormation, matchScore: 1.0 }
 						: {};
-				const result = performTypeCurveAnalysis({ ...args, formation: normalizedFormation, analogWells: normalizedWells });
+				const result = performTypeCurveAnalysis({
+					...args,
+					formation: normalizedFormation,
+					analogWells: normalizedWells,
+				});
 				return { ...result, ...matchInfo };
 			},
 		),

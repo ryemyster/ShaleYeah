@@ -195,7 +195,8 @@ const reporterTemplate: ServerTemplate = {
 			async (args) => {
 				const rawTractName = args.tractName;
 				const normalizedTractName = normalizeIdentifier(rawTractName);
-				const matchInfo = normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
+				const matchInfo =
+					normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
 				const decision = generateInvestmentDecision({ ...args, tractName: normalizedTractName });
 
 				if (args.outputPath) {
@@ -221,7 +222,8 @@ const reporterTemplate: ServerTemplate = {
 			async (args) => {
 				const rawTractName = args.tractName;
 				const normalizedTractName = normalizeIdentifier(rawTractName);
-				const matchInfo = normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
+				const matchInfo =
+					normalizedTractName !== rawTractName ? { matchedAs: normalizedTractName, matchScore: 1.0 } : {};
 				const report = createExecutiveReport({ ...args, tractName: normalizedTractName });
 
 				// Replace the template-generated executive summary with an LLM-authored
