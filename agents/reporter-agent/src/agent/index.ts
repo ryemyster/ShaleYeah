@@ -550,6 +550,16 @@ If you cannot complete the task with the available tools, respond with {"action"
 						continue;
 					}
 				}
+				// Arcade #26: Transactional Boundary — write tool failures get a structured rollback
+				// message pushed to history instead of an immediate loop exit. This lets the LLM
+				// surface the partial state to the user and ask whether to retry or discard.
+				if (toolManifest?.transactional) {
+					history.push({
+						role: "tool",
+						content: `Transactional write failed for ${parsed.tool}. All changes rolled back. Do not retry — ask the user whether to re-attempt or discard.`,
+					});
+					continue;
+				}
 				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
 			}
 			// Transient failure — push to history so the LLM can reformulate and retry.

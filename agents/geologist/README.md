@@ -90,7 +90,7 @@ For the full Tier 2 agent (HITL, scopes, audit trail), use the `LocalAgentEndpoi
 | `geologist.process_document` | Geological document parsing and extraction | query | No |
 | `geologist.process_seismic_data` | SEG-Y seismic interpretation | query | No |
 | `geologist.process_aries_database` | ARIES reserves database processing | query | No |
-| `geologist.save_finding` | Persist a key finding to the agent memory store | **command** | **Yes** |
+| `geologist.save_finding` | Persist a key finding to the agent memory store | **command** (transactional) | **Yes** |
 
 ---
 

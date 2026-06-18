@@ -310,6 +310,9 @@ export const geologistManifest: AgentManifest = {
 			dependsOn: ["geologist.analyze_formation"],
 			estimatedLatencyMs: { p50: 200, p95: 800 },
 			complexity: "fast",
+			// Permanent write failure should surface rollback state to the user, not silently exit.
+			// Implements Arcade pattern #26: Transactional Boundary.
+			transactional: true,
 		},
 	],
 	// Arcade #21: Tool Chain — recommended step sequences for known workflows.
@@ -760,6 +763,16 @@ If you cannot complete the task with the available tools, respond with {"action"
 						});
 						continue;
 					}
+				}
+				// Arcade #26: Transactional Boundary — write tool failures get a structured rollback
+				// message pushed to history instead of an immediate loop exit. This lets the LLM
+				// surface the partial state to the user and ask whether to retry or discard.
+				if (toolManifest?.transactional) {
+					history.push({
+						role: "tool",
+						content: `Transactional write failed for ${parsed.tool}. All changes rolled back. Do not retry — ask the user whether to re-attempt or discard.`,
+					});
+					continue;
 				}
 				return execResult.error ?? `Permanent failure calling ${parsed.tool}`;
 			}

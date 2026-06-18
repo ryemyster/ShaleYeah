@@ -78,6 +78,11 @@ export const AgentToolManifestSchema = z.object({
 	// fast <1s | moderate 1-10s | slow >10s
 	// Implements Arcade pattern #10: Performance Hint.
 	complexity: z.enum(["fast", "moderate", "slow"]).optional(),
+	// When true, a permanent failure on this tool returns a structured rollback message to the LLM
+	// instead of exiting the loop, so the LLM can surface partial state to the user.
+	// Applies to write (command) tools where a failed save should not silently drop the result.
+	// Implements Arcade pattern #26: Transactional Boundary.
+	transactional: z.boolean().optional(),
 });
 export type AgentToolManifest = z.infer<typeof AgentToolManifestSchema>;
 
