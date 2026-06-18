@@ -122,7 +122,13 @@ const riskAnalysisTemplate: ServerTemplate = {
 						: {};
 
 				const normalizedArgs = normalizedFormation
-					? { ...args, projectData: { ...args.projectData, technical: { ...args.projectData.technical, formation: normalizedFormation } } }
+					? {
+							...args,
+							projectData: {
+								...args.projectData,
+								technical: { ...args.projectData.technical, formation: normalizedFormation },
+							},
+						}
 					: args;
 
 				const assessment = await performRiskAssessment(normalizedArgs);

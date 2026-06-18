@@ -121,6 +121,18 @@ The reasoning loop (`executeLoop`) always uses `standard-analysis`. Tool-level `
 | Context Injection (stub) | 37 | `index.ts` TODO #395 |
 | Permission Gate | 46 | `runtime.execute()` — scope check + HITL + blocking eval halt |
 | Audit Trail | 48 | `runtime.ts` — `auditLogger` hook, default stderr JSON |
+| **Transactional Boundary** | 26 | `executeLoop` — permanent write failure pushes "rolled back — do not retry" to history instead of exiting loop; `save_finding` marked `transactional: true` |
+
+## Adding a command (write) tool
+
+When adding any tool with `readOnly: false` to this agent:
+
+1. Mark `transactional: true` in the tool manifest (Arcade #26). This routes permanent failures through the rollback path in `executeLoop`, surfacing partial state to the LLM instead of a silent exit.
+2. Add `requiresHumanApproval: true` for tools that write to persistent storage — users should confirm saves.
+3. Add `requiredScopes: ["write:<domain>"]` and ensure the manifest `requiredScopes` superset is updated.
+4. Add a test in `tests/transactional-boundary.test.ts` (or equivalent) covering: permanent failure → rolled-back message pushed; non-transactional failure path unchanged.
+
+`save_finding` is the reference implementation — see `src/agent/index.ts` and `tests/transactional-boundary.test.ts`.
 
 ## Package dependencies
 
