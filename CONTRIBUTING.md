@@ -35,13 +35,11 @@ Issue classes:
 - Isolated work: branch from `develop`, build, verify, PR back to `develop`.
 - Cross-issue work: treat as asynchronous and block on the upstream issue or contract.
 
-## Repo-Local Agent Contract
+## Local Agent Tooling
 
-The repo-local `.agents/` directory is tracked in git and is part of the source of truth for workflow, guardrails, hooks, and SDLC conventions.
+`.agents/` and `AGENTS.md` are maintainer-local dev environment files — gitignored, not part of this repository's tracked contract. They hold one contributor's working notes for driving Codex/Antigravity sessions against this repo and are not required to build, test, or contribute.
 
-- Do not add `.agents/` to `.gitignore`.
-- Treat `.agents/` as project policy, not tool-specific metadata.
-- Keep Codex- or Anti-Gravity-specific shims separate if they are ever needed.
+The tracked source of truth for architecture and target state is [`docs/topology.md`](docs/topology.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Security and Verification
 
