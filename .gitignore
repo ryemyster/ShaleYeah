@@ -63,3 +63,4 @@ gitleaks-report.json
 .claude/
 .claude.json
 CLAUDE.md
+.agents
