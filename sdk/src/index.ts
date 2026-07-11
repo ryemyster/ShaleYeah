@@ -1,3 +1,4 @@
+export * from "./agent-loop.js";
 export * from "./async-job.js";
 export * from "./canonical-model.js";
 export * from "./compensation.js";
