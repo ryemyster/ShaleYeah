@@ -61,7 +61,7 @@ Connect any server to Claude Desktop:
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) — two-tier system, package layout, sdk contracts.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — two-tier system, package layout, sdk contracts.
 
 ---
 

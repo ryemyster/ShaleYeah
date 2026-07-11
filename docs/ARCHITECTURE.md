@@ -217,22 +217,3 @@ import {
   dataConnectors: { "las-repo": { type: "ftp" }, "well-api": { type: "rest-api" } },
 }
 ```
-
-Model routing uses capability labels (`"standard-analysis"`), never provider names. The operator maps labels to actual models at deploy time — the agent code never changes.
-
-Credentials are injected at runtime via execution context — never stored in config, manifests, prompts, responses, logs, or memory.
-
----
-
-## Infrastructure stack
-
-| Layer | Decision | Notes |
-|---|---|---|
-| API gateway | Kong | Public edge: TLS, rate limiting, per-tenant policies. Wire before orchestrator. |
-| Workflow engine | Temporal | Orchestrator only — not inside agents. Durable 14-agent deal pipelines. |
-| Transport | HTTP | Agent↔server, orchestrator↔agent. Enterprise O&G orgs can consume it. |
-| Vector store | Supabase pgvector (default) | Swappable via `vectorStore.provider`. Never call pgvector directly. |
-| Data integrations | REST first | Enverus, IHS, EIA, state regulatories all REST. FTP for legacy bulk. Snowflake for enterprise. |
-| Build | pnpm + Turborepo | `pnpm turbo build` runs sdk → servers → agents in dependency order. |
-
-**No-go:** LangChain/LangGraph, Temporal inside individual agents, Kong between internal services.
