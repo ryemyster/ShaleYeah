@@ -19,6 +19,40 @@ git checkout develop
 git checkout -b issue-<number>-<slug>
 ```
 
+## Work Model
+
+Use a spec-driven, issue-first workflow.
+
+1. Write the issue as a small, independently executable block.
+2. Record the operating mode, boundaries, inputs, outputs, and exit criteria.
+3. Build on a branch cut from `develop`.
+4. Run the full local lifecycle for the affected package(s).
+5. Keep displaced code deleted unless an adapter is explicitly required.
+6. Open a PR back into `develop` when the unit is clean.
+
+Issue classes:
+
+- Isolated work: branch from `develop`, build, verify, PR back to `develop`.
+- Cross-issue work: treat as asynchronous and block on the upstream issue or contract.
+
+## Repo-Local Agent Contract
+
+The repo-local `.agents/` directory is tracked in git and is part of the source of truth for workflow, guardrails, hooks, and SDLC conventions.
+
+- Do not add `.agents/` to `.gitignore`.
+- Treat `.agents/` as project policy, not tool-specific metadata.
+- Keep Codex- or Anti-Gravity-specific shims separate if they are ever needed.
+
+## Security and Verification
+
+This project expects TDD and security coverage to travel together.
+
+- Add or update tests before or during implementation.
+- Use package-local verification first.
+- Keep secrets out of prompts, logs, and memory.
+- Add explicit audit, redaction, and approval behavior for sensitive flows.
+- Prefer small changes that can be verified independently.
+
 ## Pre-commit gate
 
 All five must pass before opening a PR:

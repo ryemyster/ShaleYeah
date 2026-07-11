@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+# Enforced pre-commit gate for non-Claude agent runtimes (Codex, Antigravity, manual).
+# Enable with: git config core.hooksPath .agents/hooks
+set -euo pipefail
+
+RED='\033[0;31m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+fail=0
+
+staged() {
+	git diff --cached --name-only --diff-filter=ACM
+}
+
+echo "-- .agents/hooks/pre-commit --"
+
+# 1. Secrets and credential leakage
+if command -v gitleaks >/dev/null 2>&1; then
+	if ! gitleaks protect --staged --redact --no-banner; then
+		echo -e "${RED}✗ gitleaks found a potential secret in staged changes.${NC}"
+		fail=1
+	fi
+else
+	echo -e "${YELLOW}! gitleaks not installed — skipping secret scan. Install: brew install gitleaks${NC}"
+fi
+
+# 2. Missing docs for a new package boundary
+new_pkg_dirs=$(staged | grep -E '^(agents|servers)/[^/]+/' | sed -E 's#^(agents|servers)/([^/]+)/.*#\1/\2#' | sort -u || true)
+for pkg in $new_pkg_dirs; do
+	if [ -d "$pkg" ] && [ ! -f "$pkg/README.md" ]; then
+		echo -e "${RED}✗ $pkg has no README.md — every package needs one (per .agents/guardrails.md).${NC}"
+		fail=1
+	fi
+done
+
+# 3. Missing tests for new source files (warning only — TDD is a discipline, not a mechanical gate)
+src_only=$(staged | grep -E '^(agents|servers|sdk)/.*/src/.*\.ts$' | grep -v '\.test\.ts$' || true)
+if [ -n "$src_only" ]; then
+	test_files=$(staged | grep '\.test\.ts$' || true)
+	if [ -z "$test_files" ]; then
+		echo -e "${YELLOW}! Source files changed with no staged *.test.ts — confirm tests already cover this (TDD per .agents/sdlc.md).${NC}"
+	fi
+fi
+
+# 4. .agents/ itself must never be ignored or removed by accident
+if ! git check-ignore -q .agents/README.md 2>/dev/null; then
+	:
+else
+	echo -e "${RED}✗ .agents/ is gitignored — it must stay tracked (see AGENTS.md).${NC}"
+	fail=1
+fi
+
+if [ "$fail" -ne 0 ]; then
+	echo -e "${RED}Pre-commit checks failed.${NC}"
+	exit 1
+fi
+
+echo "-- pre-commit checks passed --"
