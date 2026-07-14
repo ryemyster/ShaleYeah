@@ -12,6 +12,24 @@ pnpm test
 
 `agents-cli info` should detect this package as the project. It should not require or create any ADK files at repo root.
 
+## 0.5. Run the first ADK MCP-backed tool
+
+```bash
+# Terminal 1
+cd servers/geowiz
+PORT=3001 pnpm start
+```
+
+```bash
+# Terminal 2
+cd agents/geologist
+agents-cli install
+GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
+  "Use assess_geowiz_quality to assess sample.las as LAS data"
+```
+
+This exercises `app/agent.py` and `app/geowiz_mcp.py`. Remaining Geowiz tools still run through the temporary TypeScript adapter until follow-up slices move them to ADK.
+
 ## 1. Start the geowiz server
 
 ```bash

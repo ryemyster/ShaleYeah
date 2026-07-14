@@ -12,17 +12,30 @@ Package-local ADK files:
 | `.agents-cli-spec.md` | reference-pair spec and package boundary |
 | `pyproject.toml` | Python ADK project dependencies |
 | `app/agent.py` | ADK `root_agent` and Geowiz backend-selection tools |
+| `app/geowiz_mcp.py` | Python MCP client and first ADK-side Geowiz execution path |
 
 Migration classification:
 
 | Path | Classification | Rationale |
 |------|----------------|-----------|
 | `app/agent.py` | keep | Target ADK authoring surface for Geologist reasoning and tool selection |
-| `src/agent/index.ts` | adapter | Existing custom runtime remains only until ADK owns direct MCP execution and eval flow |
-| `src/agent/geowiz-client.ts` | adapter | Existing MCP HTTP client is the live execution path until replaced by ADK MCP client code |
+| `app/geowiz_mcp.py` | keep | First ADK-owned Geowiz MCP execution path for `assess_quality` |
+| `src/agent/index.ts` | adapter | Existing custom runtime remains for remaining tool/caller coverage until ADK owns parity |
+| `src/agent/geowiz-client.ts` | adapter | Existing MCP HTTP client remains for TypeScript callers until each tool has an ADK replacement |
 | `servers/geowiz` | keep | Independent MCP backend; must not depend on this agent |
 
 New agent runtime behavior should be added to the ADK path first. The TypeScript adapter should shrink as ADK feature parity lands.
+
+## First ADK MCP execution slice
+
+`assess_geowiz_quality` in `app/geowiz_mcp.py` calls the Geowiz `assess_quality` MCP tool over Streamable HTTP using `GEOWIZ_MCP_URL`.
+
+This deliberately does not migrate every Geowiz tool. The current boundary is:
+
+| Tool | ADK Python path | TypeScript adapter |
+|------|-----------------|--------------------|
+| `assess_quality` | `assess_geowiz_quality` | retained until callers move |
+| Remaining Geowiz tools | planned/future slices | retained adapter |
 
 ## Topology
 

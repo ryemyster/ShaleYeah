@@ -6,7 +6,7 @@ from typing import Any
 from google.adk.agents import Agent
 from google.adk.apps import App
 
-GEOWIZ_DEFAULT_URL = "http://localhost:3001"
+from app.geowiz_mcp import assess_geowiz_quality, geowiz_backend_url
 
 
 def geowiz_backend_status() -> dict[str, Any]:
@@ -14,7 +14,7 @@ def geowiz_backend_status() -> dict[str, Any]:
 
     return {
         "backend": "geowiz",
-        "url": os.getenv("GEOWIZ_MCP_URL", GEOWIZ_DEFAULT_URL),
+        "url": geowiz_backend_url(),
         "transport": "mcp-http",
         "independentBackend": True,
         "notes": [
@@ -27,8 +27,8 @@ def geowiz_backend_status() -> dict[str, Any]:
 def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> dict[str, Any]:
     """Plan the Geowiz MCP tool call for a geological diligence artifact.
 
-    This is the first ADK adapter slice: it makes backend selection explicit without
-    preserving the old TypeScript ReAct loop as the long-term agent runtime.
+    Use this before calling a Geowiz execution tool when the agent needs to explain
+    its intended deterministic backend call.
     """
 
     tool_by_data_type = {
@@ -42,7 +42,7 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
     }
     tool_name = tool_by_data_type.get(data_type, "assess_quality")
     return {
-        "backendUrl": os.getenv("GEOWIZ_MCP_URL", GEOWIZ_DEFAULT_URL),
+        "backendUrl": geowiz_backend_url(),
         "mcpServer": "geowiz",
         "toolName": tool_name,
         "arguments": {
@@ -50,8 +50,8 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
             "dataType": data_type,
         },
         "goal": goal,
-        "executionBoundary": "planned-only",
-        "adapterStatus": "MCP execution remains in src/agent/geowiz-client.ts until replaced by the ADK MCP client path.",
+        "executionBoundary": "adk-mcp",
+        "executionTool": "assess_geowiz_quality",
     }
 
 
@@ -64,7 +64,7 @@ root_agent = Agent(
         "keep reasoning, tool selection, safety policy, and eval behavior in ADK. "
         "Never assume Geowiz is colocated; use the configured backend URL."
     ),
-    tools=[geowiz_backend_status, plan_geowiz_tool_call],
+    tools=[geowiz_backend_status, plan_geowiz_tool_call, assess_geowiz_quality],
 )
 
 app = App(root_agent=root_agent, name="geologist")
