@@ -11,13 +11,27 @@ This package is the Geologist ADK project inside the monorepo. ADK files live he
 Current migration state:
 
 - ADK owns the target agent shape, instructions, eval path, and backend-selection contract.
+- ADK now executes the first real Geowiz MCP tool: `assess_quality` through `assess_geowiz_quality`.
 - `servers/geowiz` remains the independently runnable MCP backend.
-- `src/agent/` is retained as a temporary TypeScript adapter until ADK directly owns MCP tool execution.
+- `src/agent/` is retained as a temporary TypeScript adapter for the remaining Geowiz tool set until each caller has an ADK replacement.
 - New Geologist reasoning/runtime work should target `app/agent.py`, not expand the custom TypeScript ReAct loop.
 
 ---
 
 ## I want to run a geological task right now
+
+**ADK path — first MCP-backed tool**
+
+```bash
+cd agents/geologist
+agents-cli install
+GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
+  "Use assess_geowiz_quality to assess sample.las as LAS data"
+```
+
+This path uses `app/agent.py` and the Python MCP client in `app/geowiz_mcp.py`.
+
+**TypeScript adapter path — remaining tools**
 
 **Step 1 — start the geowiz MCP server (Terminal 1)**
 
@@ -134,11 +148,13 @@ pnpm adk:run -- "Assess the data quality of sample.las"
 | [`src/agent/index.ts`](src/agent/index.ts) | Manifest, config, handlers, `runGeologistTask()`, CLI entrypoint |
 | [`src/agent/geowiz-client.ts`](src/agent/geowiz-client.ts) | MCP/HTTP client with timeout + error classification |
 | [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Geowiz backend-selection tools |
+| [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Python MCP client and first ADK-side `assess_quality` execution tool |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
 | [`tests/agent.test.ts`](tests/agent.test.ts) | Contract tests (no live server required) |
 | [`tests/mcp-client.test.ts`](tests/mcp-client.test.ts) | HTTP client + task loop tests |
 | [`tests/adk-project-shape.test.ts`](tests/adk-project-shape.test.ts) | Regression tests for package-local ADK shape |
+| [`tests/adk-mcp-execution-shape.test.ts`](tests/adk-mcp-execution-shape.test.ts) | Regression tests for ADK-owned Geowiz MCP execution |
 
 ---
 
