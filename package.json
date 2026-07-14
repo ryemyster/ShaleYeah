@@ -10,6 +10,7 @@
     "test": "pnpm turbo test",
     "lint": "pnpm turbo lint",
     "type-check": "pnpm turbo type-check",
+    "check:issue-template": "node scripts/check-issue-spec-template.mjs",
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {
