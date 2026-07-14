@@ -15,6 +15,19 @@ pnpm install
 pnpm turbo build --filter @shaleyeah/geologist
 ```
 
+## ADK package-local workflow
+
+This directory is an ADK project. The repo root is not.
+
+```bash
+cd agents/geologist
+agents-cli info
+agents-cli install      # installs Python ADK dependencies when needed
+agents-cli run "Assess the data quality of sample.las"
+```
+
+`app/agent.py` is the target authoring surface for Geologist reasoning, instructions, and ADK tools. `src/agent/` is a temporary adapter retained for the existing TypeScript tests and live MCP execution path.
+
 ## TDD workflow
 
 This package follows strict TDD: tests are written before implementation. All tests use Node's built-in `assert` — no jest, no vitest.
@@ -32,6 +45,7 @@ pnpm turbo test --filter @shaleyeah/geologist
 
 | File | What it tests | Live server needed? |
 |------|--------------|-------------------|
+| `tests/adk-project-shape.test.ts` | Package-local ADK markers and root-boundary regression | No |
 | `tests/agent.test.ts` | Manifest validation, runtime contract, HITL, model routing, evals, standalone boot | No (3 execute tests skip if geowiz is down) |
 | `tests/mcp-client.test.ts` | MCP HTTP client, SDK error exports, HITL gate, `runGeologistTask` | No (integration tests skip if unreachable) |
 | `sdk/tests/errors.test.ts` | `RetryableToolError` / `PermanentToolError` | No |

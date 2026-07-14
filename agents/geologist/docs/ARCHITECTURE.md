@@ -1,5 +1,29 @@
 # Architecture — @shaleyeah/geologist
 
+## ADK target shape
+
+`agents/geologist` is now the package-local ADK project for the Geologist role. The monorepo root remains workspace coordination only.
+
+Package-local ADK files:
+
+| File | Purpose |
+|------|---------|
+| `agents-cli-manifest.yaml` | agents-cli project marker for this package |
+| `.agents-cli-spec.md` | reference-pair spec and package boundary |
+| `pyproject.toml` | Python ADK project dependencies |
+| `app/agent.py` | ADK `root_agent` and Geowiz backend-selection tools |
+
+Migration classification:
+
+| Path | Classification | Rationale |
+|------|----------------|-----------|
+| `app/agent.py` | keep | Target ADK authoring surface for Geologist reasoning and tool selection |
+| `src/agent/index.ts` | adapter | Existing custom runtime remains only until ADK owns direct MCP execution and eval flow |
+| `src/agent/geowiz-client.ts` | adapter | Existing MCP HTTP client is the live execution path until replaced by ADK MCP client code |
+| `servers/geowiz` | keep | Independent MCP backend; must not depend on this agent |
+
+New agent runtime behavior should be added to the ADK path first. The TypeScript adapter should shrink as ADK feature parity lands.
+
 ## Topology
 
 ```

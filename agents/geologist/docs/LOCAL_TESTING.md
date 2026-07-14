@@ -2,6 +2,16 @@
 
 The geologist agent and geowiz server form a **pair**: the agent (Tier 2) calls the server (Tier 1) over MCP/HTTP. Local testing runs both processes simultaneously.
 
+## 0. Verify the ADK package shape
+
+```bash
+cd agents/geologist
+agents-cli info
+pnpm test
+```
+
+`agents-cli info` should detect this package as the project. It should not require or create any ADK files at repo root.
+
 ## 1. Start the geowiz server
 
 ```bash

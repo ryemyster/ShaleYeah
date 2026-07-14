@@ -1,9 +1,14 @@
 # Dependencies
 node_modules/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
 
 # Build output
 dist/
 *.tsbuildinfo
+*.egg-info/
 
 # Environment
 .env
