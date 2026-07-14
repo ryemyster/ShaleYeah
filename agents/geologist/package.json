@@ -8,6 +8,8 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/agent/index.ts",
+		"adk:info": "agents-cli info",
+		"adk:run": "agents-cli run",
 		"test": "bash ../../scripts/run-tests.sh",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
