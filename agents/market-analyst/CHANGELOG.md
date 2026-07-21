@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.
 - **Market Analyst ADK migration** (#530) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/market_mcp.py`.
 - **Market MCP tool parity** (#530) — added ADK Python wrappers for `analyze_market_conditions` and `competitive_analysis`.
 - **ADK eval coverage** (#530) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.

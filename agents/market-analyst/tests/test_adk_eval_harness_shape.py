@@ -26,6 +26,7 @@ def test_adk_eval_config_separates_deterministic_checks_from_llm_judge() -> None
 
     assert "metrics_to_run:" in config
     assert "market_analyst_tool_boundary" in config
+    assert "market_analyst_architecture_boundary" in config
     assert "market_analyst_no_unreviewed_final_bid" in config
     assert "custom_function:" in config
     assert "market_analyst_final_response_quality" in config

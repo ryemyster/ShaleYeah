@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.
 - **Geologist ADK tool parity** (#597) — added package-local Python MCP execution for every current Geowiz tool: `analyze_formation`, `assess_quality`, `process_well_logs`, `process_gis`, `process_access_database`, `process_document`, `process_seismic_data`, `process_aries_database`, and `save_finding`.
 - **ADK eval coverage** (#596/#597) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.
 - **ADK project shape** (#587/#589) — added `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/geowiz_mcp.py` under `agents/geologist`.

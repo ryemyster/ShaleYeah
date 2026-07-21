@@ -16,6 +16,14 @@
 
 The Geologist agent intentionally has no `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent tests. TypeScript/pnpm remains valid for the Geowiz MCP server and shared workspace packages.
 
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Geologist is a stand-alone specialist that equips package-local instructions, eval criteria, and Geowiz MCP tools when geological diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #597.
+
+Graph-based workflow is reserved for a later issue if geology review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+
 ## Execution Path
 
 ```

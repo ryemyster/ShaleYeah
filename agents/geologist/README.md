@@ -11,6 +11,7 @@ This package is the Geologist ADK project inside the monorepo. ADK files live he
 Current migration state:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
+- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
 - ADK now executes every current Geowiz MCP tool through package-local Python wrappers. `save_finding` is exposed through ADK confirmation before persistence.
 - `servers/geowiz` remains the independently runnable MCP backend.
 - There is no Geologist npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/geologist`, it is migration debt unless the issue is explicitly deleting it.

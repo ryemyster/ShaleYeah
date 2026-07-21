@@ -11,6 +11,7 @@ This package is the Risk Analyst ADK project inside the monorepo. ADK files live
 Current migration state:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
+- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
 - ADK executes both current Risk Analysis MCP tools through package-local Python wrappers.
 - `servers/risk-analysis` remains the independently runnable TypeScript MCP backend.
 - There is no Risk Analyst npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/risk-analyst`, it is migration debt unless the issue is explicitly deleting it.

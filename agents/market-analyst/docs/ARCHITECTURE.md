@@ -18,6 +18,14 @@ agents/market-analyst/
 
 No `package.json`, `tsconfig.json`, `biome.json`, `src/`, or TypeScript-only agent tests should exist in this package. If one appears under `agents/market-analyst`, it is dangling migration debt unless an issue explicitly scopes its deletion.
 
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Market Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Market MCP tools when market diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #530.
+
+Graph-based workflow is reserved for a later issue if market review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+
 ## Execution Flow
 
 1. ADK receives a market analysis task through `app/agent.py`.

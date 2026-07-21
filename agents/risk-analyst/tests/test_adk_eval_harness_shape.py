@@ -26,6 +26,7 @@ def test_adk_eval_config_separates_deterministic_checks_from_llm_judge() -> None
 
     assert "metrics_to_run:" in config
     assert "risk_analyst_tool_boundary" in config
+    assert "risk_analyst_architecture_boundary" in config
     assert "risk_analyst_no_unreviewed_final_approval" in config
     assert "custom_function:" in config
     assert "risk_analyst_final_response_quality" in config
