@@ -1,16 +1,24 @@
-# How It Works — @shaleyeah/title-analyst
+# How It Works — Title Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#372](https://github.com/ryemyster/ShaleYeah/issues/372).
+The Title Analyst agent is the reasoning layer for title diligence. It decides whether to examine ownership, analyze lease terms, check burdens, or trace chain of title, calls the Title MCP backend, and explains the result.
 
-## The simple version (for a 12-year-old)
+## Plain Language Flow
 
-Before an oil company can drill, they need to make sure they actually have permission from the right people. Underground minerals can be owned by completely different people than the surface land. The original owner might have sold the land but kept the oil rights 100 years ago, and now nobody knows exactly who owns what.
+1. You ask a title question or request title diligence.
+2. The ADK agent chooses a matching Title tool.
+3. `app/title_mcp.py` sends the request to the configured Title MCP server.
+4. The agent receives the tool result and responds.
+5. If the user asks for final legal approval or clean-title signoff, the agent defers to human review.
 
-The **title analyst** is like a historical detective. It goes through old records and county filings to trace who owned the oil rights at every step, figure out what fees and royalties have to be paid, and flag anything that looks wrong or unclear before the company spends millions drilling.
+## The Two Pieces
 
-## The technical version
+| Piece | What it does |
+|-------|--------------|
+| Title Analyst agent | ADK/Python reasoning, tool choice, instructions, and eval behavior |
+| Title server | TypeScript MCP backend that performs ownership, lease, burden, and chain-of-title analysis |
 
-1. **title server (Tier 1):** Searches county records, state databases, and deed repositories. Parses ownership chains and burden structures.
-2. **title-analyst agent (Tier 2):** ReAct loop — traces ownership from current holder back to source, identifies encumbrances and defects, assembles a title summary.
+This split is intentional. Agents are ADK/Python. Servers may remain TypeScript/pnpm.
 
-`title_opinion` requires human approval — it produces a legal deliverable that a licensed attorney must review before it is relied upon.
+## Safety Boundary
+
+Title output supports diligence. It is not a final legal opinion. Missing documents, legal descriptions, tract IDs, jurisdiction, or curative gaps must be surfaced instead of hidden behind false clean-title confidence.
