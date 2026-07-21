@@ -1,38 +1,74 @@
-# @shaleyeah/legal-analyst
+# Legal Analyst ADK Agent
 
-> **Status: Stub** — implementation tracked in [#370](https://github.com/ryemyster/ShaleYeah/issues/370). Reference implementation: `agents/geologist/`.
+**Legatus Juridicus** — the ShaleYeah fleet's legal diligence analyst.
 
-The legal analyst agent reviews contracts, checks regulatory compliance, summarizes lease terms, flags surface and mineral rights issues, and identifies material legal risks. It pairs with the **legal** Tier 1 MCP server (port 3006).
+Tier 2 ADK/Python intelligence layer over the [`servers/legal`](../../servers/legal) Tier 1 MCP server. It analyzes regulatory exposure, contract risk, and compliance requirements while deferring binding legal actions to human/legal review.
 
-## Pair
+## ADK Project Boundary
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-legal` | 3006 |
-| Tier 2 (agent) | `@shaleyeah/legal-analyst` | 4006 |
+This package is the Legal Analyst ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
 
-## Quick start (once implemented)
+Current migration state:
+
+- ADK owns the agent shape, instructions, eval path, architecture classification, HITL boundary, and backend-selection contract.
+- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
+- ADK executes every current Legal MCP tool through package-local Python wrappers.
+- `servers/legal` remains the independently runnable TypeScript MCP backend.
+- There is no Legal Analyst npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/legal-analyst`, it is migration debt unless the issue is explicitly deleting it.
+
+## Run A Legal Task
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/legal && PORT=3006 pnpm start
-
-# Terminal 2 — Tier 2 agent
 cd agents/legal-analyst
-ANTHROPIC_API_KEY=sk-ant-... LEGAL_MCP_URL=http://localhost:3006 pnpm test
+agents-cli install
+LEGAL_MCP_URL=http://localhost:3006 agents-cli run \
+  "Analyze regulatory exposure for a Texas development project covering three Permian leases"
 ```
 
-## Implementing this agent
+Start the Legal MCP server separately when you want live backend execution:
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `legalAnalyst` and `geowiz` → `legal`.
+```bash
+cd servers/legal
+PORT=3006 pnpm start
+```
 
-> **Note:** Legal tools that modify documents (contract redlines) should set `requiresHumanApproval: true` and `destructive: true` in the tool manifest.
+## Tools
 
-## Docs
+| Tool | What it does | Type | Final approval? |
+|------|--------------|------|-----------------|
+| `analyze_legal_framework` | Calls `analyze_legal_framework` for jurisdiction/project legal exposure | query | No |
+| `review_contract` | Calls `review_contract` for contract-risk diligence | query | No |
+| `assess_compliance` | Calls `assess_compliance` for environmental, safety, and tax requirements | query | No |
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [How It Works](docs/HOW_IT_WORKS.md)
-- [Development](docs/DEVELOPMENT.md)
-- [Integration Guide](docs/INTEGRATION.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Local Testing](docs/LOCAL_TESTING.md)
+## HITL Boundary
+
+The agent may support diligence. It must defer to human/legal review for legal opinions, contract redlines, contract approval, signatures, filings, regulatory submissions, waivers, settlement positions, enforcement decisions, or any binding approval/authorization.
+
+## Environment Variables
+
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `LEGAL_MCP_URL` | No | `http://localhost:3006` | Legal Tier 1 server URL |
+| `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
+
+## Commands
+
+```bash
+uv run pytest
+uv run python -m py_compile app/agent.py app/legal_mcp.py
+agents-cli info
+agents-cli run "Analyze legal exposure for a Texas development project"
+agents-cli eval run
+```
+
+## Key Files
+
+| Path | Purpose |
+|------|---------|
+| [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Legal backend-selection tools |
+| [`app/legal_mcp.py`](app/legal_mcp.py) | Python MCP client and ADK-side execution tools |
+| [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
+| [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec, architecture mode, HITL boundary, and migration notes |
+| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape, architecture classification, and absence of npm surface |
+| [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Legal MCP execution |
+| [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |

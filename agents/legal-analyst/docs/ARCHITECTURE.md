@@ -1,35 +1,54 @@
-# Architecture — @shaleyeah/legal-analyst
+# Architecture - Legal Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#370](https://github.com/ryemyster/ShaleYeah/issues/370).
+Legal Analyst is a Tier 2 ADK/Python package. It owns agent reasoning, tool-selection policy, architecture classification, eval coverage, and human/legal-review boundaries for legal diligence.
 
-## Planned topology
+The Tier 1 execution backend remains [`servers/legal`](../../../servers/legal), which is still a TypeScript MCP server. That split is intentional: agents migrate to ADK/Python, servers stay small MCP services.
 
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Legal Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Legal MCP tools when legal diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #531.
+
+Graph-based workflow is reserved for a later issue if legal review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+
+## Package Boundary
+
+```text
+agents/legal-analyst/
+  agents-cli-manifest.yaml   ADK project marker
+  .agents-cli-spec.md        reference-pair spec, architecture mode, and migration notes
+  pyproject.toml             Python package and test dependencies
+  app/agent.py               ADK root agent
+  app/legal_mcp.py           Python MCP client wrappers
+  tests/                     pytest shape tests and eval references
 ```
-Orchestrator / Caller
-        │
-        ▼
-┌──────────────────────────┐
-│ @shaleyeah/legal-analyst │  Tier 2 — ReAct loop + governance
-│ (port 4006)              │  LocalAgentRuntime: HITL · scope · audit
-└────────────┬─────────────┘
-             │ MCP/HTTP
-             ▼
-┌────────────────────────┐
-│ @shaleyeah/server-     │  Tier 1 — stateless tool server
-│ legal (port 3006)      │
-└────────────────────────┘
-```
 
-## Planned tools
+No `package.json`, `tsconfig.json`, `biome.json`, `src/`, or TypeScript-only agent tests should exist in this package. If one appears under `agents/legal-analyst`, it is dangling migration debt unless an issue explicitly scopes its deletion.
 
-| Tool | Type | Model | requiresHumanApproval | Description |
-|------|------|-------|-----------------------|-------------|
-| `legal-analyst.lease_summary` | query | standard-analysis | No | Extract key lease terms |
-| `legal-analyst.compliance_check` | query | standard-analysis | No | Flag regulatory requirements |
-| `legal-analyst.contract_review` | query | deep-reasoning | No | Material risk identification |
-| `legal-analyst.title_issues` | query | standard-analysis | No | Surface/mineral rights flags |
-| `legal-analyst.redline_contract` | command | deep-reasoning | **Yes** | Propose contract edits |
+## Execution Flow
 
-## Arcade patterns
+1. ADK receives a legal diligence task through `app/agent.py`.
+2. The agent classifies the task as legal framework, contract review, or compliance assessment.
+3. `app/legal_mcp.py` calls the Legal MCP server through streamable HTTP.
+4. `servers/legal` performs the domain operation and returns MCP content.
+5. The ADK agent summarizes the result without making binding legal decisions.
 
-Legal analysis tools that modify documents require human approval before any redline is accepted. See `agents/geologist/docs/ARCHITECTURE.md` for the complete governance reference.
+## Current Tool Parity
+
+| ADK tool | Backend MCP tool | Purpose |
+|----------|------------------|---------|
+| `analyze_legal_framework` | `analyze_legal_framework` | Jurisdiction/project regulatory and legal exposure |
+| `review_contract` | `review_contract` | Oil and gas contract-risk diligence |
+| `assess_compliance` | `assess_compliance` | Environmental, safety, and tax compliance requirements |
+
+## Runtime Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `LEGAL_MCP_URL` | `http://localhost:3006` | Legal MCP backend URL |
+| `LEGAL_ANALYST_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
+
+## HITL Boundary
+
+Legal Analyst may analyze legal exposure, contract risk, compliance requirements, and missing diligence inputs. It must defer legal opinions, contract redlines, signatures, filings, regulatory submissions, waivers, settlement positions, enforcement decisions, and binding approvals to human/legal review.

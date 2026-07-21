@@ -1,18 +1,23 @@
-# How It Works — @shaleyeah/legal-analyst
+# How It Works - Legal Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#370](https://github.com/ryemyster/ShaleYeah/issues/370).
+Legal Analyst translates legal diligence questions into calls against the Legal MCP server.
 
-## The simple version (for a 12-year-old)
+## Components
 
-When you borrow your friend's bike, you agree to the rules: bring it back by 5pm, don't ride it in the mud. Oil and gas has the same thing, but with hundreds of pages of rules written by lawyers.
+`app/agent.py` defines the ADK root agent, instructions, architecture mode, planning helper, backend status helper, and callable tool surface.
 
-The **legal analyst** reads all those pages so you don't have to. You give it a lease or a contract and it tells you: "Here's what you're allowed to do. Here's what you have to pay. Here's the stuff that could get you in trouble."
+`app/legal_mcp.py` owns the MCP client boundary. It maps Python tool arguments to the current `servers/legal` MCP tool schemas and serializes returned MCP content for the ADK response path.
 
-If there's something risky in the contract, it flags it for a human to decide. It never makes legal decisions on its own — it finds the issues, you decide what to do.
+`servers/legal` remains the tool backend. It performs regulatory, contract, and compliance operations and can keep its own TypeScript package because it is not an agent.
 
-## The technical version
+## Request Flow
 
-1. **legal server (Tier 1):** Parses legal documents, extracts clauses, runs compliance checks, identifies standard vs. non-standard terms.
-2. **legal-analyst agent (Tier 2):** ReAct loop — reads the legal question, sequences document extraction and risk identification calls, synthesizes a risk summary.
+1. A user asks for legal diligence.
+2. The ADK agent decides whether the task is legal framework, contract review, or compliance assessment.
+3. The Python wrapper calls `LEGAL_MCP_URL`.
+4. The backend returns structured MCP content.
+5. The agent explains the result and calls out uncertainty, missing facts, or review requirements.
 
-`redline_contract` is the only command-type tool and requires human approval (`requiresHumanApproval: true`) — the agent surfaces proposed changes, a human approves before they're applied.
+## Review Boundary
+
+The agent can support diligence. It cannot issue final legal opinions, approve redlines, authorize signatures, make filings, submit regulatory materials, waive rights, approve settlements, or make binding approvals without human/legal review.
