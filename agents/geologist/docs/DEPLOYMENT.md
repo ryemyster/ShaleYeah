@@ -1,171 +1,45 @@
-# Deployment — @shaleyeah/geologist
+# Deployment — Geologist ADK Agent
 
-The geologist agent is a Tier 2 service that wraps the geowiz Tier 1 MCP server. Both must be deployed for the agent to function.
+The Geologist agent deploys as an ADK/Python unit. The Geowiz MCP server deploys separately and may remain TypeScript/pnpm.
 
-## Prerequisites
+## Required Pairing
 
-- Node.js 20+
-- `ANTHROPIC_API_KEY` (Anthropic Claude API access)
-- geowiz server accessible from the agent (same host or network)
+| Unit | Path | Runtime |
+|------|------|---------|
+| Geologist agent | `agents/geologist` | ADK/Python |
+| Geowiz MCP backend | `servers/geowiz` | TypeScript/pnpm MCP server |
 
-## Environment variables
+Set `GEOWIZ_MCP_URL` in the Geologist runtime to the reachable Geowiz MCP endpoint.
+
+## Environment
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | Anthropic Claude API key; used by `callLLM` for the reasoning loop |
-| `GEOWIZ_MCP_URL` | No | `http://localhost:3001` | geowiz Tier 1 server URL |
-| `PORT` | No | `4001` | Port for the LocalAgentEndpoint HTTP server |
-| `LOG_LEVEL` | No | `info` | Audit log verbosity |
+| `GEOWIZ_MCP_URL` | No | `http://localhost:3001` | Geowiz-compatible MCP backend URL |
+| `GEOLOGIST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
-## Scopes in production
+Provider credentials depend on the selected ADK model and deployment target.
 
-The geologist declares two scope levels:
-
-| Scope | Tools | Required from caller |
-|-------|-------|---------------------|
-| `read:geology` | All 8 analysis tools | Yes — pass in `grantedScopes: ["read:geology"]` per call |
-| `write:geology` | `geologist.save_finding` | Yes — plus a human approval challenge response |
-
-When `grantedScopes` is omitted from `execute()`, scope enforcement is skipped (backward-compatible). For production, always provide `grantedScopes` so the Permission Gate enforces least-privilege.
-
-## Findings storage
-
-`geologist.save_finding` writes to `./data/geowiz/findings/<finding-id>.json` relative to geowiz's working directory. In production:
-- Mount a persistent volume at `./data/geowiz/` on the geowiz container
-- Findings accumulate as append-only JSON files
-- pgvector promotion (semantic recall) is deferred to issue #405
-
-## Build
+## Local Production Smoke
 
 ```bash
-# From repo root — builds sdk first (required), then all packages
-pnpm turbo build
-
-# Or build only the pair
-pnpm --filter @shaleyeah/server-geowiz build
-pnpm --filter @shaleyeah/geologist build
-```
-
-## Run locally (development)
-
-```bash
-# Terminal 1: Tier 1 — geowiz
-cd servers/geowiz
-PORT=3001 pnpm start
-
-# Terminal 2: Tier 2 — geologist
 cd agents/geologist
-ANTHROPIC_API_KEY=sk-ant-... GEOWIZ_MCP_URL=http://localhost:3001 pnpm start
+uv run pytest
+uv run python -m py_compile app/agent.py app/geowiz_mcp.py
+agents-cli info
 ```
 
-## Run as Docker containers
-
-```dockerfile
-# Example docker-compose.yml for the geowiz+geologist pair
-services:
-  geowiz:
-    build: ./servers/geowiz
-    ports: ["3001:3001"]
-    volumes:
-      - geowiz-data:/app/data
-    environment:
-      PORT: "3001"
-
-  geologist:
-    build: ./agents/geologist
-    ports: ["4001:4001"]
-    depends_on: [geowiz]
-    environment:
-      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}"
-      GEOWIZ_MCP_URL: "http://geowiz:3001"
-      PORT: "4001"
-
-volumes:
-  geowiz-data:
-```
-
-## BYOE model routing override
-
-Operators can override the default model routing without touching code — inject `AgentRuntimeConfig.modelRouting` at startup:
-
-```typescript
-import { createGeologistRuntime, geologistConfig } from "@shaleyeah/geologist";
-
-const runtime = createGeologistRuntime({
-    ...geologistConfig,
-    modelRouting: {
-        ...geologistConfig.modelRouting,
-        "standard-analysis": {
-            provider: "azure-openai",
-            model: "gpt-4o",
-        },
-    },
-});
-```
-
-The reasoning loop reads `config.modelRouting["standard-analysis"].model` at each LLM call, so there is no restart needed if config is injected dynamically.
-
-## Health check
+With Geowiz running:
 
 ```bash
-# geowiz health (Tier 1 — available immediately, no MCP session required)
-curl http://localhost:3001/health
-# → { "status": "ok", "server": "geowiz", "version": "0.1.0" }
-
-# geologist agent endpoint health
-curl http://localhost:4001/health
+GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
+  "Use process_geowiz_well_logs to inspect sample.las"
 ```
 
-## Kong gateway (production)
+## Scaling Boundary
 
-Register the geologist agent endpoint with Kong after deployment:
+Geowiz is stateless tool infrastructure and can scale horizontally behind a load balancer. The Geologist agent should be scaled as an ADK runtime unit and configured with the same Geowiz backend URL.
 
-```bash
-# Register the upstream service
-curl -X POST http://kong:8001/services \
-  -d name=geologist \
-  -d url=http://geologist:4001
+## Cleanup Rule
 
-# Register the route
-curl -X POST http://kong:8001/services/geologist/routes \
-  -d paths[]=/agents/geologist
-```
-
-Requests to the fleet then go through: `Kong → geologist:4001 → geowiz:3001`.
-
-## Scaling
-
-**geowiz (Tier 1):** Stateless — scale horizontally behind a load balancer. Each geologist instance can point to any geowiz replica.
-
-**geologist (Tier 2):** Stateful during an active `runGeologistTask` loop (in-memory history). Run one replica per concurrent task, or implement external task state storage (see #396 Async Job pattern for long-running tasks).
-
-## Observability
-
-- **Audit log:** Every `runtime.execute()` call emits a JSON line to stderr. Route stderr to your log aggregator (Datadog, Loki, etc.).
-- **Retry events:** `executeWithRetry()` logs each retry attempt with attempt number and delay before emitting. Watch for consecutive retries as a signal of geowiz instability.
-- **Span tracing:** Not yet implemented — deferred post-MVP.
-- **Metrics:** Not yet implemented — deferred post-MVP.
-
-## Production config checklist
-
-- [ ] `ANTHROPIC_API_KEY` in secret manager (not env file)
-- [ ] `GEOWIZ_MCP_URL` points to production geowiz service
-- [ ] Persistent volume mounted at `./data/geowiz/` on geowiz container (findings storage)
-- [ ] `hitl.approvalMode` is `"when-sensitive"` or `"always"` — `save_finding` always requires human approval regardless of this setting
-- [ ] `grantedScopes` provided on every `execute()` call in production — enables Permission Gate enforcement
-- [ ] Audit log stderr piped to persistent log sink
-- [ ] Health check endpoints registered with load balancer
-- [ ] Kong route registered
-- [ ] Resource limits set (memory: 512Mi, CPU: 0.5 per container is a reasonable starting point)
-- [ ] Model routing overridden if using non-Anthropic LLM provider
-
----
-
-## See also
-
-- [README](../README.md) — quick start, tool table, commands
-- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
-- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
-- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
-- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running both processes locally, HITL testing
-- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes
+Do not add deployment scripts that require npm/pnpm inside `agents/geologist`. If deployment needs TypeScript, it belongs in `servers/geowiz`, `sdk`, `orchestrator`, or shared workspace automation.

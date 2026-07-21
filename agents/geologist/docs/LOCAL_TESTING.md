@@ -1,169 +1,58 @@
-# Local Testing — @shaleyeah/geologist + geowiz
+# Local Testing — Geologist ADK Agent + Geowiz
 
-The geologist agent and geowiz server form a **pair**: the agent (Tier 2) calls the server (Tier 1) over MCP/HTTP. Local testing runs both processes simultaneously.
+The Geologist agent is ADK/Python. The Geowiz server is the TypeScript MCP backend it calls over HTTP.
 
-## 0. Verify the ADK package shape
+## Verify The Agent Package
 
 ```bash
 cd agents/geologist
+uv run pytest
+uv run python -m py_compile app/agent.py app/geowiz_mcp.py
 agents-cli info
-pnpm test
 ```
 
-`agents-cli info` should detect this package as the project. It should not require or create any ADK files at repo root.
+`agents-cli info` should detect `agents/geologist` as the project. It should not require or create ADK files at repo root.
 
-## 0.5. Run the first ADK MCP-backed tool
+## Run With A Live Geowiz Backend
+
+Start the MCP server in one terminal:
 
 ```bash
-# Terminal 1
 cd servers/geowiz
 PORT=3001 pnpm start
 ```
 
+Run the ADK agent in another terminal:
+
 ```bash
-# Terminal 2
 cd agents/geologist
 agents-cli install
 GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
   "Use assess_geowiz_quality to assess sample.las as LAS data"
 ```
 
-This exercises `app/agent.py` and `app/geowiz_mcp.py`. Remaining Geowiz tools still run through the temporary TypeScript adapter until follow-up slices move them to ADK.
+This exercises `app/agent.py` and `app/geowiz_mcp.py`.
 
-## 0.6. Run package-local ADK evals
-
-From `agents/geologist`:
+## Run ADK Evals
 
 ```bash
-pnpm adk:eval
-```
-
-The eval harness covers:
-
-- control case: unambiguous LAS quality assessment should use the ADK Geowiz quality tool
-- edge case: sparse history and missing context should not produce fabricated findings
-- capability-boundary case: saving or promoting findings without approval should defer/escalate
-
-The shape test `tests/adk-eval-harness-shape.test.ts` verifies this harness exists without requiring live model credentials.
-
-## 1. Start the geowiz server
-
-```bash
-# Terminal 1 — Tier 1 server
-cd servers/geowiz
-PORT=3001 pnpm start
-# ✅ geowiz v0.1.0 initialized
-# 🚀 Marcus Aurelius Geologicus ready
-```
-
-## 2. Run the unit tests (no API key needed)
-
-```bash
-# Terminal 2
 cd agents/geologist
-npx tsx tests/agent.test.ts         # 27 contract tests
-npx tsx tests/mcp-client.test.ts    # 12 tests (integration tests now run)
+agents-cli eval run
 ```
 
-When geowiz is running, the previously-skipped integration test fires:
+The eval harness covers control cases, sparse-context edge behavior, and the boundary that the agent must not persist findings without approval.
 
-```
-✓ [integration] callGeowizTool routes assess_quality through geowiz MCP
-```
-
-## 3. Run a live task
-
-```bash
-# Terminal 2 (geowiz still running in terminal 1)
-ANTHROPIC_API_KEY=sk-ant-... node --input-type=module << 'TASKEOF'
-import { runGeologistTask } from "./dist/agent/index.js";
-const answer = await runGeologistTask(
-    "Assess the quality of a sample LAS file and summarize what you find.",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
-console.log(answer);
-TASKEOF
-```
-
-## 4. Watch the audit log
-
-Every `execute()` call writes a JSON line to stderr. Pipe stderr to pretty-print:
-
-```bash
-ANTHROPIC_API_KEY=sk-ant-... node --input-type=module ... 2>&1 \
-  | grep '^{' | jq .
-```
-
-Example audit entry:
-
-```json
-{
-  "timestamp": "2026-06-05T03:15:26.968Z",
-  "agentId": "geologist",
-  "toolName": "geologist.analyze_formation",
-  "args": { "filePath": "sample.las" },
-  "status": "completed",
-  "durationMs": 312
-}
-```
-
-## 5. Test HITL behavior
-
-```typescript
-import { createGeologistRuntime, geologistConfig } from "./dist/agent/index.js";
-
-const runtime = createGeologistRuntime({
-    ...geologistConfig,
-    hitl: { ...geologistConfig.hitl, approvalMode: "always" },
-});
-await runtime.initialize();
-
-// Should return approval_required
-const result = await runtime.execute({
-    toolName: "geologist.analyze_formation",
-    args: { filePath: "sample.las" },
-});
-console.log(result.status); // "approval_required"
-
-// Re-execute with approval token
-const approved = await runtime.execute({
-    toolName: "geologist.analyze_formation",
-    args: { filePath: "sample.las" },
-    approval: { approved: true, reviewerId: "test-user" },
-});
-console.log(approved.status); // "completed"
-```
-
-## 6. Test error classification
-
-```typescript
-import { callGeowizTool } from "./dist/agent/geowiz-client.js";
-import { RetryableToolError } from "@shaleyeah/sdk";
-
-// Stop geowiz first, then:
-try {
-    await callGeowizTool("http://localhost:3001", "analyze_formation", { filePath: "x.las" });
-} catch (err) {
-    console.log(err instanceof RetryableToolError); // true — ECONNREFUSED is retryable
-}
-```
-
-## Common issues
+## Common Issues
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `ECONNREFUSED localhost:3001` | geowiz not running | `cd servers/geowiz && PORT=3001 pnpm start` |
-| `Error: ANTHROPIC_API_KEY is required` | Missing env var | Set `ANTHROPIC_API_KEY` |
-| `Missing model route for standard-analysis` | Config missing routing | Check `geologistConfig.modelRouting` |
-| Tests show ⚠️ skip warnings | Live geowiz not running | Normal — unit tests pass without the server |
+| `ECONNREFUSED localhost:3001` | Geowiz is not running | `cd servers/geowiz && PORT=3001 pnpm start` |
+| `agents-cli info` cannot find the project | Command was run from the wrong directory | `cd agents/geologist` |
+| Python import error for `mcp` or `google.adk` | Dependencies are not installed | `uv sync --extra eval` or `agents-cli install` |
+| Live eval needs credentials | Provider credentials are absent | Run shape tests with `uv run pytest`; live eval can run when credentials are configured |
 
----
+## See Also
 
-## See also
-
-- [README](../README.md) — quick start, tool table, commands
-- [ARCHITECTURE.md](ARCHITECTURE.md) — topology, execution paths, Arcade patterns
-- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — five-component framework, plain-language explanation
-- [INTEGRATION.md](INTEGRATION.md) — calling this agent from your code
-- [DEPLOYMENT.md](DEPLOYMENT.md) — production deployment, Docker, Kong, BYOE model routing
-- [DEVELOPMENT.md](DEVELOPMENT.md) — TDD workflow, adding tools, implementation notes
+- [README](../README.md)
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [DEVELOPMENT.md](DEVELOPMENT.md)

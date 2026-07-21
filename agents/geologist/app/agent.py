@@ -5,8 +5,20 @@ from typing import Any
 
 from google.adk.agents import Agent
 from google.adk.apps import App
+from google.adk.tools import FunctionTool
 
-from app.geowiz_mcp import assess_geowiz_quality, geowiz_backend_url
+from app.geowiz_mcp import (
+    analyze_geowiz_formation,
+    assess_geowiz_quality,
+    geowiz_backend_url,
+    process_geowiz_access_database,
+    process_geowiz_aries_database,
+    process_geowiz_document,
+    process_geowiz_gis,
+    process_geowiz_seismic_data,
+    process_geowiz_well_logs,
+    save_geowiz_finding,
+)
 
 
 def geowiz_backend_status() -> dict[str, Any]:
@@ -41,6 +53,16 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
         "access": "process_access_database",
     }
     tool_name = tool_by_data_type.get(data_type, "assess_quality")
+    execution_tool_by_tool_name = {
+        "assess_quality": "assess_geowiz_quality",
+        "analyze_formation": "analyze_geowiz_formation",
+        "process_access_database": "process_geowiz_access_database",
+        "process_aries_database": "process_geowiz_aries_database",
+        "process_document": "process_geowiz_document",
+        "process_gis": "process_geowiz_gis",
+        "process_seismic_data": "process_geowiz_seismic_data",
+        "process_well_logs": "process_geowiz_well_logs",
+    }
     return {
         "backendUrl": geowiz_backend_url(),
         "mcpServer": "geowiz",
@@ -51,7 +73,7 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
         },
         "goal": goal,
         "executionBoundary": "adk-mcp",
-        "executionTool": "assess_geowiz_quality",
+        "executionTool": execution_tool_by_tool_name.get(tool_name),
     }
 
 
@@ -64,7 +86,19 @@ root_agent = Agent(
         "keep reasoning, tool selection, safety policy, and eval behavior in ADK. "
         "Never assume Geowiz is colocated; use the configured backend URL."
     ),
-    tools=[geowiz_backend_status, plan_geowiz_tool_call, assess_geowiz_quality],
+    tools=[
+        geowiz_backend_status,
+        plan_geowiz_tool_call,
+        analyze_geowiz_formation,
+        assess_geowiz_quality,
+        process_geowiz_well_logs,
+        process_geowiz_gis,
+        process_geowiz_access_database,
+        process_geowiz_document,
+        process_geowiz_seismic_data,
+        process_geowiz_aries_database,
+        FunctionTool(save_geowiz_finding, require_confirmation=True),
+    ],
 )
 
 app = App(root_agent=root_agent, name="app")

@@ -46,7 +46,7 @@ body:
     attributes:
       label: Boundaries
       description: State what belongs in the agent, MCP server, orchestrator, shared package, or docs. Call out anything that must stay independent.
-      placeholder: "ADK shape belongs under agents/<name>; MCP backend remains under servers/<name>; no repo-root runtime scaffolding."
+      placeholder: "Agents are ADK/Python under agents/<name>; MCP backend may remain TypeScript under servers/<name>; no repo-root runtime scaffolding."
     validations:
       required: true
 
@@ -117,7 +117,7 @@ body:
     attributes:
       label: Tests / Evals / Verification
       description: Tests, evals, smoke checks, CI gates, and blocking failure conditions required for completion.
-      placeholder: "Package-local tests, py_compile, agents-cli info, live MCP smoke, eval generate/grade, docs checks."
+      placeholder: "Agent: uv/py_compile, agents-cli info, eval generate/grade. Server/SDK: package-local pnpm checks. Root checks only for shared workspace changes."
     validations:
       required: true
 
@@ -143,8 +143,8 @@ body:
     id: deletion_migration
     attributes:
       label: Deletion / Migration Notes
-      description: What displaced code, stale docs, adapter, or temporary path should be removed? If nothing is removed now, name the follow-up.
-      placeholder: "Delete displaced TypeScript adapter; keep temporary adapter because ...; follow-up issue required for ..."
+      description: What displaced code, stale docs, adapter, npm package surface, or temporary path should be removed? If nothing is removed now, name the follow-up.
+      placeholder: "For agents, delete dangling npm/package.json/tsconfig/src/agent surfaces when ADK owns the path. Servers may remain TypeScript. Temporary adapter retained because ...; follow-up issue required for ..."
     validations:
       required: true
 
@@ -153,7 +153,7 @@ body:
     attributes:
       label: Non-Goals
       description: What is explicitly out of scope for this issue?
-      placeholder: "No root ADK scaffold; no production deploy; no unrelated package migration."
+      placeholder: "No root ADK scaffold; no production deploy; no unrelated package migration; no TypeScript agent surface unless deleting it."
     validations:
       required: true
 

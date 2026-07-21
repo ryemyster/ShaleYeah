@@ -30,7 +30,8 @@ Use a spec-driven, issue-first workflow.
 5. Build on a branch cut from `develop`.
 6. Run the full local lifecycle for the affected package(s).
 7. Keep displaced code deleted unless an adapter is explicitly required.
-8. Open a PR back into `develop` when the unit is clean.
+8. For agent migrations, ADK/Python is the target surface. A lingering `agents/<name>/package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent test suite is migration debt unless the issue is explicitly deleting or temporarily adapter-gating it.
+9. Open a PR back into `develop` when the unit is clean.
 
 Issue classes:
 
@@ -61,7 +62,7 @@ This project expects TDD and security coverage to travel together.
 
 ## Pre-commit gate
 
-All five must pass before opening a PR:
+Run the checks that match the touched package boundary before opening a PR. Root workspace checks are for shared workspace files, SDK/server-wide contracts, and CI drift.
 
 ```bash
 pnpm turbo build
@@ -74,7 +75,7 @@ Run per-package during development:
 
 ```bash
 cd servers/geowiz && pnpm build && pnpm test
-cd agents/geologist && pnpm build && pnpm test
+cd agents/geologist && uv run python -m py_compile app/agent.py app/geowiz_mcp.py && agents-cli info
 cd sdk && pnpm build && pnpm test
 ```
 
@@ -121,12 +122,13 @@ assert.ok(threw);
 
 ## Adding a new agent
 
-1. Copy `agents/agent-zero/` as the starting point — it is the reference contract implementation
-2. Implement `AgentManifest` with tools, scopes, model requirements, and eval profiles
-3. Implement `AgentRuntimeConfig` with HITL policy, evals, memory, and `mcpServers` wiring
-4. Write handlers that call the corresponding Tier 1 server's exported functions
-5. Write tests (`agents/<name>/tests/agent.test.ts`) covering manifest validation, runtime boot, and HITL
-6. Add `agents/<name>/docs/ARCHITECTURE.md` — see `agents/geologist/docs/ARCHITECTURE.md` for the pattern
+1. Start with a package-local ADK/Python project shape under `agents/<name>/`.
+2. Choose the agent id (`market-analyst`, `title-analyst`, ...).
+3. Add `agents-cli-manifest.yaml`, `pyproject.toml`, `uv.lock`, `app/agent.py`, and package-local evals.
+4. Keep MCP/tool backend logic in the matching `servers/<name>/` package. Servers may remain TypeScript and use pnpm.
+5. Do not add a new agent `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or npm script surface.
+6. Add package docs (`README.md`, `docs/`) and eval coverage with control, edge, and capability-boundary cases.
+7. Add `agents/<name>/docs/ARCHITECTURE.md` — see `agents/geologist/docs/ARCHITECTURE.md` for the ADK boundary pattern.
 
 ## Test pattern
 
