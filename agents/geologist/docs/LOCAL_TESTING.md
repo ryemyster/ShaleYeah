@@ -30,6 +30,22 @@ GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
 
 This exercises `app/agent.py` and `app/geowiz_mcp.py`. Remaining Geowiz tools still run through the temporary TypeScript adapter until follow-up slices move them to ADK.
 
+## 0.6. Run package-local ADK evals
+
+From `agents/geologist`:
+
+```bash
+pnpm adk:eval
+```
+
+The eval harness covers:
+
+- control case: unambiguous LAS quality assessment should use the ADK Geowiz quality tool
+- edge case: sparse history and missing context should not produce fabricated findings
+- capability-boundary case: saving or promoting findings without approval should defer/escalate
+
+The shape test `tests/adk-eval-harness-shape.test.ts` verifies this harness exists without requiring live model credentials.
+
 ## 1. Start the geowiz server
 
 ```bash

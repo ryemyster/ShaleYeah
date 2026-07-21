@@ -26,6 +26,17 @@ Migration classification:
 
 New agent runtime behavior should be added to the ADK path first. The TypeScript adapter should shrink as ADK feature parity lands.
 
+Retained adapter deletion path (#597):
+
+| Slice | Deletion gate |
+|-------|---------------|
+| Remaining read tools | Each Geowiz read tool has an ADK-owned Python MCP execution path and package-local eval coverage. |
+| Reasoning loop | ADK-native reasoning/eval flow replaces the TypeScript `executeLoop` for active callers. |
+| Write/memory path | `save_finding`, HITL approval, and compensation behavior have ADK-compatible coverage. |
+| Adapter deletion | `src/agent/index.ts`, `src/agent/geowiz-client.ts`, and old-path-only tests are removed or rewritten. |
+
+If any temporary adapter remains after a migration slice, the PR must name the direct caller and the follow-up deletion issue. The current follow-up for the Geologist TypeScript adapter is #597.
+
 ## First ADK MCP execution slice
 
 `assess_geowiz_quality` in `app/geowiz_mcp.py` calls the Geowiz `assess_quality` MCP tool over Streamable HTTP using `GEOWIZ_MCP_URL`.
@@ -36,6 +47,23 @@ This deliberately does not migrate every Geowiz tool. The current boundary is:
 |------|-----------------|--------------------|
 | `assess_quality` | `assess_geowiz_quality` | retained until callers move |
 | Remaining Geowiz tools | planned/future slices | retained adapter |
+
+## ADK eval harness
+
+Behavior evals for the ADK migration slice live under `tests/eval/`.
+
+| File | Purpose |
+|------|---------|
+| `tests/eval/datasets/geologist-adk-reference.json` | Control, edge, and capability-boundary cases for the first ADK prompt/tool path |
+| `tests/eval/eval_config.yaml` | Deterministic hard-boundary checks plus LLM-judged response quality |
+
+Run from `agents/geologist`:
+
+```bash
+pnpm adk:eval
+```
+
+Use deterministic grading for hard rules such as "do not save without approval" and tool-call expectations. Use an LLM judge only for subjective final-response quality.
 
 ## Topology
 
