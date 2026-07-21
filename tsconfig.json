@@ -18,7 +18,6 @@
     { "path": "./servers/infrastructure" },
     { "path": "./servers/qa-server" },
     { "path": "./agents/geologist" },
-    { "path": "./agents/agent-zero" },
     { "path": "./orchestrator" }
   ]
 }
