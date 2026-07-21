@@ -2,7 +2,7 @@
 
 Legal Analyst is a Tier 2 ADK/Python package. It owns agent reasoning, tool-selection policy, architecture classification, eval coverage, and human/legal-review boundaries for legal diligence.
 
-The Tier 1 execution backend remains [`servers/legal`](../../../servers/legal), which is still a TypeScript MCP server. That split is intentional: agents migrate to ADK/Python, servers stay small MCP services.
+The Tier 1 execution backend is [`servers/legal`](../../../servers/legal), an independently runnable MCP service for legal diligence tools.
 
 ## Architecture Mode
 
@@ -17,14 +17,12 @@ Graph-based workflow is reserved for a later issue if legal review needs determi
 ```text
 agents/legal-analyst/
   agents-cli-manifest.yaml   ADK project marker
-  .agents-cli-spec.md        reference-pair spec, architecture mode, and migration notes
+  .agents-cli-spec.md        reference-pair spec, architecture mode, and package constraints
   pyproject.toml             Python package and test dependencies
   app/agent.py               ADK root agent
   app/legal_mcp.py           Python MCP client wrappers
   tests/                     pytest shape tests and eval references
 ```
-
-No `package.json`, `tsconfig.json`, `biome.json`, `src/`, or TypeScript-only agent tests should exist in this package. If one appears under `agents/legal-analyst`, it is dangling migration debt unless an issue explicitly scopes its deletion.
 
 ## Execution Flow
 

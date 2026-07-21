@@ -4,17 +4,22 @@
 
 Tier 2 ADK/Python intelligence layer over the [`servers/risk-analysis`](../../servers/risk-analysis) Tier 1 MCP server. It assesses investment risk, runs Monte Carlo uncertainty analysis, and explains missing context that should block overconfident decisions.
 
-## ADK Project Boundary
+## What It Does
+
+Risk Analyst turns risk diligence questions into the right Risk Analysis MCP tool call, sends structured project and uncertainty inputs to the backend, and explains risk scores, Monte Carlo outputs, and missing context.
+
+It exists so investment workflows can compare uncertainty and downside exposure without letting the agent approve final investment decisions.
+
+## Project Boundary
 
 This package is the Risk Analyst ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
 
-Current migration state:
+At runtime:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
 - Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- ADK executes both current Risk Analysis MCP tools through package-local Python wrappers.
-- `servers/risk-analysis` remains the independently runnable TypeScript MCP backend.
-- There is no Risk Analyst npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/risk-analyst`, it is migration debt unless the issue is explicitly deleting it.
+- The agent calls the Risk Analysis MCP backend through package-local Python wrappers.
+- `servers/risk-analysis` is the independently runnable MCP backend.
 
 ## Run A Risk Task
 
@@ -39,6 +44,8 @@ PORT=3005 pnpm start
 | `assess_investment_risk` | Scores geological, technical, economic, regulatory, environmental, and operational risk | query | No |
 | `monte_carlo_simulation` | Runs uncertainty simulation over price, production, decline, and capex variables | query | No |
 
+## HITL Boundary
+
 The agent must not present final investment approval without human review.
 
 ## Environment Variables
@@ -48,15 +55,18 @@ The agent must not present final investment approval without human review.
 | `RISK_ANALYSIS_MCP_URL` | No | `http://localhost:3005` | Risk Analysis Tier 1 server URL |
 | `RISK_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
-## Commands
+## Build, Test, And Use
 
-```bash
-uv run pytest
-uv run python -m py_compile app/agent.py app/risk_analysis_mcp.py
-agents-cli info
-agents-cli run "Assess investment risk for a project"
-agents-cli eval run
-```
+Run these from `agents/risk-analyst`.
+
+| Task | Command |
+|------|---------|
+| Install dependencies | `uv sync --extra eval` |
+| Test package behavior | `uv run pytest` |
+| Build/syntax check | `uv run python -m py_compile app/agent.py app/risk_analysis_mcp.py` |
+| Inspect ADK project | `agents-cli info` |
+| Run a local task | `RISK_ANALYSIS_MCP_URL=http://localhost:3005 agents-cli run "Assess investment risk for a project"` |
+| Run evals | `agents-cli eval run` |
 
 ## Key Files
 
@@ -66,7 +76,7 @@ agents-cli eval run
 | [`app/risk_analysis_mcp.py`](app/risk_analysis_mcp.py) | Python MCP client and ADK-side execution tools |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
-| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape and absence of npm surface |
+| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
 | [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Risk Analysis MCP execution |
 | [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
 

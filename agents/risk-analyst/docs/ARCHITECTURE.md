@@ -14,8 +14,6 @@
 | `tests/` | pytest shape tests plus ADK eval dataset/config |
 | `servers/risk-analysis` | independent TypeScript MCP backend |
 
-The Risk Analyst agent intentionally has no `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent tests. TypeScript/pnpm remains valid for the Risk Analysis MCP server and shared workspace packages.
-
 ## Architecture Mode
 
 Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.

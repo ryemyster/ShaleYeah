@@ -153,10 +153,9 @@ shaleyeah/
 │   ├── econobot/       @shaleyeah/server-econobot
 │   └── ... (12 more)
 │
-├── agents/             Tier 2 — 14 agent packages
+├── agents/             Tier 2 — specialist agent packages
 │   ├── geologist/      @shaleyeah/geologist  (implemented)
-│   ├── agent-zero/     @shaleyeah/agent-zero (reference contract)
-│   └── ... (12 stubs, #364-376)
+│   └── ... (additional specialist agents)
 │
 ├── orchestrator/       @shaleyeah/orchestrator (stub — #362)
 │

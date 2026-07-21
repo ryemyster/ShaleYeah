@@ -47,6 +47,8 @@ Develop-only — not yet released to main.
 
 ### Changed
 
+- **Agent Zero reference package removal** (#608) — removed the obsolete TypeScript `agents/agent-zero` reference-contract package now that real ADK reference pairs exist, and cleaned up root TypeScript, lockfile, and architecture references.
+- **Converted ADK agent docs clarity** (#608) — rewrote the converted Geologist, Market Analyst, Legal Analyst, Risk Analyst, Title Analyst, and Drilling Engineer README/docs language so beginner-facing pages explain what each agent does, why it exists, how it works, how to run/test/build/use it, and where human review is required. Migration/deletion evidence stays in specs, changelogs, tests, issue comments, and PR bodies.
 - **Monorepo conversion** (#385) — restructured from single npm package to pnpm workspace + Turborepo. `sdk/`, `servers/*/` (14), `agents/*/` (14), `orchestrator/`. Kernel deleted. CI updated to pnpm + Turborepo.
 - **HTTP transport** (#363) — `MCPServer` gains `StreamableHTTPServerTransport` when `PORT` is set; geologist wired to geowiz over HTTP via `callGeowizTool()`.
 - **Model routing into `callLLM`** (#402) — all agents resolve `config.modelRouting["standard-analysis"].model` on every LLM call; injectable `callLLM` option added to all `runTask` functions for test capture without real API calls.

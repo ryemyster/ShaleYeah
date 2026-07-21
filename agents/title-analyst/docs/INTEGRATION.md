@@ -1,6 +1,6 @@
 # Integration — Title Analyst ADK Agent
 
-Integrate with Title Analyst through the ADK project in `agents/title-analyst`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
+Integrate with Title Analyst through the ADK project in `agents/title-analyst`.
 
 ## Local ADK Invocation
 

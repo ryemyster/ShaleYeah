@@ -1,6 +1,6 @@
 # Integration Guide - Legal Analyst ADK Agent
 
-Integrate Legal Analyst through its ADK package, not through a TypeScript agent adapter.
+Integrate Legal Analyst through its ADK package.
 
 ## Local ADK Invocation
 
@@ -24,7 +24,7 @@ The MCP backend URL comes from `LEGAL_MCP_URL`. The default is `http://localhost
 
 ## Orchestration Boundary
 
-An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs or recreate a TypeScript agent adapter. Shared contracts belong in `sdk/`; Legal execution stays behind `servers/legal`.
+An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs. Shared contracts belong in `sdk/`; Legal execution stays behind `servers/legal`.
 
 ## Human/Legal Review
 
