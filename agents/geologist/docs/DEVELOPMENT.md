@@ -28,8 +28,6 @@ agents-cli eval run     # runs the package-local ADK eval harness
 
 `app/agent.py` is the target authoring surface for Geologist reasoning, instructions, and ADK tools. `app/geowiz_mcp.py` owns the ADK-side Geowiz MCP execution paths for every current Geowiz tool.
 
-This package intentionally has no npm/package.json/TypeScript agent surface. `servers/geowiz` may remain TypeScript/pnpm; the Geologist agent itself is ADK/Python.
-
 ## TDD workflow
 
 This package follows strict TDD: tests are written before implementation. Geologist agent tests use pytest and must not require a live Geowiz server unless they skip gracefully when it is absent.
@@ -45,7 +43,7 @@ agents-cli info
 
 | File | What it tests | Live server needed? |
 |------|--------------|-------------------|
-| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, and no dangling npm surface | No |
+| `tests/test_adk_project_shape.py` | Package-local ADK markers and root-boundary regression | No |
 | `tests/test_adk_mcp_execution_shape.py` | ADK-owned Geowiz MCP execution boundaries | No |
 | `tests/test_adk_eval_harness_shape.py` | ADK eval dataset/config shape and minimum case coverage | No |
 
@@ -79,7 +77,7 @@ cd agents/geologist && uv run python -m py_compile app/agent.py app/geowiz_mcp.p
 
 ## Adding a custom audit logger (e.g. Supabase)
 
-Add durable audit logging at the ADK tool/orchestration boundary when a production runtime issue requires it. Do not reintroduce a TypeScript agent package to add logging.
+Add durable audit logging at the ADK tool/orchestration boundary when a production runtime issue requires it.
 
 ---
 

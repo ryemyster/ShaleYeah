@@ -14,8 +14,6 @@
 | `tests/` | pytest shape tests plus ADK eval dataset/config |
 | `servers/drilling` | independent TypeScript MCP backend |
 
-The Drilling Engineer agent intentionally has no `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, `dist/agent/`, or TypeScript agent tests. TypeScript/pnpm remains valid for the Drilling MCP server and shared workspace packages.
-
 ## Architecture Mode
 
 Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.

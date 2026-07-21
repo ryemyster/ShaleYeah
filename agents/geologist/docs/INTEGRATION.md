@@ -1,6 +1,6 @@
 # Integration — Geologist ADK Agent
 
-Integrate with Geologist through the ADK project in `agents/geologist`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
+Integrate with Geologist through the ADK project in `agents/geologist`.
 
 ## Local ADK Invocation
 

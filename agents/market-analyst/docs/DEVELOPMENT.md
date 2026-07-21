@@ -38,8 +38,8 @@ agents-cli eval run
 4. Add or update eval cases under `tests/eval/`.
 5. Extend pytest coverage for project shape, wrapper parity, and eval shape.
 6. Update README, package changelog, and root `CHANGELOG.md`.
-7. Delete any displaced TypeScript agent code.
+7. Update documentation and eval coverage for the behavior change.
 
 ## Cleanup Rule
 
-Agents are ADK/Python. Servers may remain TypeScript MCP services. A Market Analyst `package.json`, `src/agent`, `*.test.ts`, or npm-only test command under this package means the migration is incomplete.
+Agent behavior belongs in the ADK package. Server tool behavior belongs in the matching MCP server package.

@@ -26,8 +26,6 @@ agents-cli eval run
 
 `app/agent.py` is the target authoring surface for Drilling Engineer reasoning, instructions, and ADK tools. `app/drilling_mcp.py` owns the ADK-side Drilling MCP execution paths.
 
-This package intentionally has no npm/package.json/TypeScript agent surface. `servers/drilling` may remain TypeScript/pnpm; the Drilling Engineer agent itself is ADK/Python.
-
 ## TDD Workflow
 
 ```bash
@@ -41,7 +39,7 @@ agents-cli info
 
 | File | What it tests | Live server needed? |
 |------|--------------|-------------------|
-| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, architecture mode, and no dangling npm surface | No |
+| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, and architecture mode | No |
 | `tests/test_adk_mcp_execution_shape.py` | ADK-owned Drilling MCP execution boundaries | No |
 | `tests/test_adk_eval_harness_shape.py` | ADK eval dataset/config shape and minimum case coverage | No |
 

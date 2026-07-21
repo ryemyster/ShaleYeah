@@ -4,17 +4,22 @@
 
 Tier 2 ADK/Python intelligence layer over the [`servers/drilling`](../../servers/drilling) Tier 1 MCP server. It designs drilling programs, estimates well costs, and assesses drilling risks while deferring final AFE, spud, field-execution, and safety approval to human engineering review.
 
-## ADK Project Boundary
+## What It Does
+
+Drilling Engineer turns a drilling diligence request into the right MCP tool call, sends structured well parameters to the Drilling backend, and explains the returned program, cost, or risk result in engineering language.
+
+It exists so investment and development workflows can ask one specialist for drilling feasibility, expected cost, schedule risk, and missing-input analysis without giving the agent authority to approve field execution.
+
+## Project Boundary
 
 This package is the Drilling Engineer ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
 
-Current migration state:
+At runtime:
 
-- ADK owns the agent shape, instructions, eval path, architecture classification, HITL boundary, and backend-selection contract.
+- ADK owns the agent shape, instructions, eval path, architecture classification, HITL boundary, and backend selection.
 - Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- ADK executes every current Drilling MCP tool through package-local Python wrappers.
-- `servers/drilling` remains the independently runnable TypeScript MCP backend.
-- There is no Drilling Engineer npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/drilling-engineer`, it is migration debt unless the issue is explicitly deleting it.
+- The agent calls the Drilling MCP backend through package-local Python wrappers.
+- `servers/drilling` is the independently runnable MCP backend.
 
 ## Run A Drilling Task
 
@@ -51,22 +56,25 @@ The agent may provide drilling diligence, provisional program design, cost range
 | `DRILLING_MCP_URL` | `http://localhost:3003` | Drilling-compatible MCP backend URL |
 | `DRILLING_ENGINEER_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
 
-## Commands
+## Build, Test, And Use
 
-```bash
-cd agents/drilling-engineer
-uv run pytest
-uv run python -m py_compile app/agent.py app/drilling_mcp.py
-agents-cli info
-agents-cli eval run
-```
+Run these from `agents/drilling-engineer`.
+
+| Task | Command |
+|------|---------|
+| Install dependencies | `uv sync --extra eval` |
+| Test package behavior | `uv run pytest` |
+| Build/syntax check | `uv run python -m py_compile app/agent.py app/drilling_mcp.py` |
+| Inspect ADK project | `agents-cli info` |
+| Run a local task | `DRILLING_MCP_URL=http://localhost:3003 agents-cli run "Assess drilling risks for a horizontal Wolfcamp well"` |
+| Run evals | `agents-cli eval run` |
 
 ## Key Files
 
 | File | Purpose |
 |------|---------|
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker |
-| [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec, architecture mode, HITL boundary, and migration notes |
+| [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec, architecture mode, HITL boundary, and package constraints |
 | [`app/agent.py`](app/agent.py) | ADK `root_agent`, instructions, backend status, planning tool, and tool registration |
 | [`app/drilling_mcp.py`](app/drilling_mcp.py) | Python MCP client wrappers for the Drilling backend |
 | [`tests/eval/`](tests/eval) | ADK eval dataset and grading config |

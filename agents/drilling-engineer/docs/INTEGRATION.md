@@ -1,6 +1,6 @@
 # Integration — Drilling Engineer ADK Agent
 
-Integrate with Drilling Engineer through the ADK project in `agents/drilling-engineer`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
+Integrate with Drilling Engineer through the ADK project in `agents/drilling-engineer`.
 
 ## Local ADK Invocation
 

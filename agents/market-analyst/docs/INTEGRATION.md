@@ -1,6 +1,6 @@
 # Integration Guide - Market Analyst ADK Agent
 
-Integrate Market Analyst through its ADK package, not through a TypeScript agent adapter.
+Integrate Market Analyst through its ADK package.
 
 ## Local ADK Invocation
 

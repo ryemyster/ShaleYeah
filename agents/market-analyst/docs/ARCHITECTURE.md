@@ -2,21 +2,19 @@
 
 Market Analyst is a Tier 2 ADK/Python package. It owns agent reasoning, tool-selection policy, eval coverage, and human-review boundaries for market diligence.
 
-The Tier 1 execution backend remains [`servers/market`](../../../servers/market), which is still a TypeScript MCP server. That split is intentional: agents migrate to ADK/Python, servers stay small MCP services.
+The Tier 1 execution backend is [`servers/market`](../../../servers/market), an independently runnable MCP service for market data and analysis tools.
 
 ## Package Boundary
 
 ```text
 agents/market-analyst/
   agents-cli-manifest.yaml   ADK project marker
-  .agents-cli-spec.md        reference-pair spec and migration notes
+  .agents-cli-spec.md        reference-pair spec and package constraints
   pyproject.toml             Python package and test dependencies
   app/agent.py               ADK root agent
   app/market_mcp.py          Python MCP client wrappers
   tests/                     pytest shape tests and eval references
 ```
-
-No `package.json`, `tsconfig.json`, `biome.json`, `src/`, or TypeScript-only agent tests should exist in this package. If one appears under `agents/market-analyst`, it is dangling migration debt unless an issue explicitly scopes its deletion.
 
 ## Architecture Mode
 

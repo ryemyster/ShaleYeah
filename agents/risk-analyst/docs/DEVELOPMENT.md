@@ -26,8 +26,6 @@ agents-cli eval run
 
 `app/agent.py` is the target authoring surface for Risk Analyst reasoning, instructions, and ADK tools. `app/risk_analysis_mcp.py` owns the ADK-side Risk Analysis MCP execution paths.
 
-This package intentionally has no npm/package.json/TypeScript agent surface. `servers/risk-analysis` may remain TypeScript/pnpm; the Risk Analyst agent itself is ADK/Python.
-
 ## TDD Workflow
 
 ```bash
@@ -41,7 +39,7 @@ agents-cli info
 
 | File | What it tests | Live server needed? |
 |------|--------------|-------------------|
-| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, and no dangling npm surface | No |
+| `tests/test_adk_project_shape.py` | Package-local ADK markers and root-boundary regression | No |
 | `tests/test_adk_mcp_execution_shape.py` | ADK-owned Risk Analysis MCP execution boundaries | No |
 | `tests/test_adk_eval_harness_shape.py` | ADK eval dataset/config shape and minimum case coverage | No |
 

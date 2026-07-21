@@ -4,17 +4,22 @@
 
 Tier 2 ADK/Python intelligence layer over the [`servers/geowiz`](../../servers/geowiz) Tier 1 MCP server. Accepts natural-language geological goals, reasons over 9 domain tools via MCP/HTTP, and returns synthesized answers.
 
-## ADK project boundary
+## What It Does
+
+Geologist turns geological diligence requests into the right Geowiz MCP tool call, sends structured data-processing inputs to the backend, and explains the returned formation, GIS, seismic, document, or data-quality result.
+
+It exists so the fleet has one specialist for subsurface evidence and geological context while keeping persistence actions, such as saving a finding, behind explicit confirmation.
+
+## Project Boundary
 
 This package is the Geologist ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
 
-Current migration state:
+At runtime:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
 - Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- ADK now executes every current Geowiz MCP tool through package-local Python wrappers. `save_finding` is exposed through ADK confirmation before persistence.
-- `servers/geowiz` remains the independently runnable MCP backend.
-- There is no Geologist npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/geologist`, it is migration debt unless the issue is explicitly deleting it.
+- The agent executes current Geowiz MCP tools through package-local Python wrappers. `save_finding` is exposed through ADK confirmation before persistence.
+- `servers/geowiz` is the independently runnable MCP backend.
 - New Geologist reasoning/runtime work should target `app/agent.py` and `app/geowiz_mcp.py`.
 
 ---
@@ -74,6 +79,10 @@ Add the server (Tier 1) to your MCP config. The Geologist ADK agent consumes tha
 | `geologist.process_aries_database` | ARIES reserves database processing | query | No |
 | `geologist.save_finding` | Persist a key finding to the agent memory store | **command** (transactional) | **Yes** |
 
+## HITL Boundary
+
+The agent may analyze geological data, assess data quality, process files, and summarize findings. It must ask for explicit confirmation before saving a finding or performing any persistence-like action.
+
 ---
 
 ## Environment variables
@@ -85,15 +94,18 @@ Add the server (Tier 1) to your MCP config. The Geologist ADK agent consumes tha
 
 ---
 
-## Commands
+## Build, Test, And Use
 
-```bash
-uv run pytest
-uv run python -m py_compile app/agent.py app/geowiz_mcp.py
-agents-cli info
-agents-cli run "Assess the data quality of sample.las"
-agents-cli eval run
-```
+Run these from `agents/geologist`.
+
+| Task | Command |
+|------|---------|
+| Install dependencies | `uv sync --extra eval` |
+| Test package behavior | `uv run pytest` |
+| Build/syntax check | `uv run python -m py_compile app/agent.py app/geowiz_mcp.py` |
+| Inspect ADK project | `agents-cli info` |
+| Run a local task | `GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run "Assess the data quality of sample.las"` |
+| Run evals | `agents-cli eval run` |
 
 ---
 
@@ -105,7 +117,7 @@ agents-cli eval run
 | [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Python MCP client and ADK-side execution tools for every current Geowiz tool |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
-| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape and absence of npm surface |
+| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
 | [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Geowiz MCP execution |
 | [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
 

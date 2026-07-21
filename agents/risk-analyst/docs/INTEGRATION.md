@@ -1,6 +1,6 @@
 # Integration — Risk Analyst ADK Agent
 
-Integrate with Risk Analyst through the ADK project in `agents/risk-analyst`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
+Integrate with Risk Analyst through the ADK project in `agents/risk-analyst`.
 
 ## Local ADK Invocation
 
