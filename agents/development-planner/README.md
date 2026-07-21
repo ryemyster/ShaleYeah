@@ -1,30 +1,55 @@
-# @shaleyeah/development-planner
+# Development Planner
 
-> **Status: Stub** — implementation tracked in [#373](https://github.com/ryemyster/ShaleYeah/issues/373). Reference implementation: `agents/geologist/`.
+The Development Planner is the ADK agent for field-development planning. It helps turn reserves, well count, location, capital limits, schedule goals, and operating constraints into draft development plans, phase timelines, and progress summaries.
 
-The development planner agent designs field development plans — well locations, spacing, pad layouts, infill opportunities, and phased development schedules. It pairs with the **development** Tier 1 MCP server (port 3011).
+It does not approve final field development plans, FID, AFE/capital authorization, drilling sequence authorization, facility execution, regulatory submissions, or external commitments. Those decisions need qualified human review.
 
-## Pair
+## What This Package Contains
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-development` | 3011 |
-| Tier 2 (agent) | `@shaleyeah/development-planner` | 4011 |
+| Path | Purpose |
+|------|---------|
+| `app/agent.py` | ADK root agent, instructions, architecture marker, and tool list |
+| `app/development_mcp.py` | Python MCP client wrappers for `servers/development` |
+| `tests/` | pytest coverage for package shape, MCP wrapper parity, and eval harness shape |
+| `tests/eval/` | ADK eval dataset and metric config for control, edge, and boundary cases |
+| `agents-cli-manifest.yaml` | package-local Agents CLI manifest |
 
-## Quick start (once implemented)
+`servers/development` remains the TypeScript MCP backend. This agent package is Python/ADK; TypeScript implementation work belongs in the backend package.
+
+## How It Works
+
+The agent runs as a stand-alone specialist with progressive disclosure of its Development MCP tools. It decides whether the user needs:
+
+- `create_development_plan` for draft field-development plan options.
+- `estimate_project_timeline` for schedule, phase, milestone, or critical-path work.
+- `monitor_development_progress` for schedule, budget, safety, and quality status.
+
+The default MCP backend URL is `http://localhost:3011`. Set `DEVELOPMENT_MCP_URL` to point at another compatible Development MCP server.
+
+## Run Locally
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/development && PORT=3011 pnpm start
-
-# Terminal 2 — Tier 2 agent
 cd agents/development-planner
-ANTHROPIC_API_KEY=sk-ant-... DEVELOPMENT_MCP_URL=http://localhost:3011 pnpm test
+uv run pytest
 ```
 
-## Implementing this agent
+To exercise the MCP path, start the backend separately:
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `developmentPlanner` and `geowiz` → `development`.
+```bash
+cd servers/development
+PORT=3011 pnpm start
+```
+
+Then run ADK or pytest commands from `agents/development-planner`.
+
+## Environment
+
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011` | Development MCP backend URL |
+| `DEVELOPMENT_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
+
+Provider credentials are supplied by the ADK runtime or deployment environment. Do not check secrets into this package.
 
 ## Docs
 

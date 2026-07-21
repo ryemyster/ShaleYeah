@@ -1,54 +1,29 @@
-# Integration — @shaleyeah/server-development
+# Integration — Development MCP Server
 
-## Who calls development?
+The Development Planner ADK agent connects to this server over Streamable HTTP. Other MCP clients may call the same tools directly.
 
-The `development-planner` agent (`agents/development-planner/`) connects over HTTP.
+## Start HTTP Mode
 
-## Example call (agent side)
-
-```typescript
-import { callDevelopmentTool } from "./development-client.js";
-
-const result = await callDevelopmentTool(
-    "http://localhost:3011",
-    "create_development_plan",
-    {
-        wellCount: 8,
-        acreage: 2400,
-        targetFormation: "Wolfcamp A",
-        budget: 48000000,
-    },
-);
+```bash
+cd servers/development
+PORT=3011 pnpm start
 ```
 
-## Tool call reference
+## Agent Configuration
 
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `create_development_plan` | `wellCount`, `acreage`, `targetFormation`, `budget` | Development plan with schedule and risks |
-| `monitor_development_progress` | `planId`, `currentStatus` | Progress metrics vs. plan |
-
-## Upstream dependencies
-
-Development is self-contained — no external data calls.
-
-```
-development (port 3011)
-  ↓ callLLM()
-Anthropic API
+```bash
+cd agents/development-planner
+DEVELOPMENT_MCP_URL=http://localhost:3011 uv run pytest
 ```
 
-## Downstream consumers
+The Python wrapper functions in `agents/development-planner/app/development_mcp.py` map Python-friendly arguments to the MCP JSON contract.
 
-```
-development (port 3011)
-  ↑ MCP over HTTP
-development-planner agent (port 4011)
-```
+## Tool Contract Summary
 
-## Error types
+| Tool | Key args |
+|------|----------|
+| `create_development_plan` | `project`, optional `timeline`, `constraints`, `outputPath`, `matchThreshold` |
+| `estimate_project_timeline` | `projectName`, `wellCount`, `budget`, optional `constraints`, `matchThreshold` |
+| `monitor_development_progress` | `projectId`, optional `metrics`, `reportingPeriod`, `outputPath` |
 
-```json
-{ "error_type": "retryable", "message": "LLM timeout — retry" }
-{ "error_type": "permanent", "message": "wellCount must be a positive integer" }
-```
+See `src/index.ts` for the source-of-truth schemas.

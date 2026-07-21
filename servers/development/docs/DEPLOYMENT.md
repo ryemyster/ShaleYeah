@@ -1,60 +1,30 @@
-# Deployment — @shaleyeah/server-development
+# Deployment — Development MCP Server
 
-## Transport modes
+Deploy this package as the Development MCP backend. Deploy the ADK agent from `agents/development-planner` separately.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3011` | Agent fleet, Docker, Kong |
+## Commands
 
 ```bash
-# stdio mode
-pnpm build && pnpm start
-
-# HTTP mode
+cd servers/development
+pnpm build
 PORT=3011 pnpm start
 ```
 
-## Environment variables
+Without `PORT`, the server runs in stdio mode for local MCP clients. With `PORT=3011`, it runs over Streamable HTTP for the ADK agent or other MCP callers.
+
+## Environment Variables
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Architectus Developmentus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3011`) |
-| `DATA_PATH` | No | `./data` | Path to development plan data |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+| `ANTHROPIC_API_KEY` | No | unset | Enables optional LLM synthesis through shared `callLLM`; deterministic fallback is used when unavailable |
+| `PORT` | No | stdio | Set to `3011` for HTTP transport |
 
-## Docker Compose (agent pair)
+## Pairing With The Agent
 
-```yaml
-services:
-  development:
-    image: shaleyeah/development:latest
-    environment:
-      PORT: "3011"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3011:3011"
-  development-planner:
-    image: shaleyeah/development-planner:latest
-    environment:
-      DEVELOPMENT_MCP_URL: http://development:3011
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [development]
-```
-
-## Kong gateway
+When the server is deployed somewhere other than `http://localhost:3011`, configure the agent with:
 
 ```bash
-curl -X POST http://kong:8001/upstreams -d name=development
-curl -X POST http://kong:8001/upstreams/development/targets -d target=development:3011
-curl -X POST http://kong:8001/services -d name=development -d host=development
-curl -X POST http://kong:8001/services/development/routes -d paths[]=/mcp/development
+DEVELOPMENT_MCP_URL=https://your-development-mcp.example.com
 ```
 
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3011` set
-- [ ] Registered with Kong at `/mcp/development`
-- [ ] Paired with `development-planner` agent at port 4011
+The agent and server should remain independently deployable.

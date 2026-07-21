@@ -1,41 +1,39 @@
-# Architecture — @shaleyeah/server-development
+# Architecture — Development MCP Server
 
-## Role
+`servers/development` is the TypeScript MCP backend for field-development planning. It is independent from the ADK agent in `agents/development-planner`.
 
-Tier 1 MCP tool server. Creates development plans and monitors project execution for O&G properties. Paired with the `development-planner` agent (port 4011).
+## Responsibilities
 
-## Tool inventory
+This server owns executable tool contracts, argument validation, deterministic fallbacks, and optional LLM synthesis for:
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `create_development_plan` | LLM | ✅ `callLLM` | Well count, spacing, budget, schedule, risk assessment |
-| `monitor_development_progress` | LLM | ✅ `callLLM` | Schedule / budget / safety metrics against plan |
+| Tool | Purpose |
+|------|---------|
+| `create_development_plan` | Draft a structured development plan from project reserves, location, well count, timeline, and constraints |
+| `estimate_project_timeline` | Estimate phase sequence, duration, strategy, and critical-path risk |
+| `monitor_development_progress` | Summarize project status from schedule, budget, safety, quality, or requested metrics |
 
-## LLM + fallback pattern
+The agent owns natural-language reasoning, tool choice, evals, and HITL deferral. The server does not approve final FDPs, FID, AFE/capital decisions, or execution commitments.
 
-Both tools call `callLLM()` for synthesis. Falls back to `deriveDefaultDevelopmentOutlook()` if the API is unavailable — tight budgets with many wells produce "High" budget risk; funded small projects produce "Low".
+## Runtime Flow
 
-## Key exports
-
-`deriveDefaultDevelopmentOutlook(wellCount, budget, risks)` — deterministic fallback, exported for anti-stub testing.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3011`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: create_development_plan { wellCount, acreage, targetFormation, budget }
-  → callLLM(development plan prompt)
-  ↘ fallback: deriveDefaultDevelopmentOutlook(wellCount, budget, risks)
-  → Return: { wells, spacing, budget, schedule, riskLevel }
+```text
+agents/development-planner
+Python ADK agent
+        |
+        | Streamable HTTP MCP
+        v
+servers/development
+TypeScript MCP server on PORT=3011
 ```
 
-## Dependencies
+## Transport Modes
 
-```
-@shaleyeah/server-development
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
-```
+- stdio when `PORT` is not set.
+- HTTP with `StreamableHTTPServerTransport` when `PORT=3011`.
+
+## Key Modules
+
+- `src/index.ts` registers MCP tools.
+- `src/tools/planning.ts` derives development outlook and plan synthesis.
+- `src/tools/phases.ts` derives phase timelines.
+- `src/tools/monitoring.ts` derives progress reports.
