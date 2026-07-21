@@ -1,18 +1,17 @@
-# Development Guide — @shaleyeah/geologist
+# Development Guide — Geologist ADK Agent
 
 ## Prerequisites
 
 ```bash
-node >= 22
-pnpm >= 9
+uv
+agents-cli
 ```
 
 ## Setup
 
 ```bash
-# From repo root
-pnpm install
-pnpm turbo build --filter @shaleyeah/geologist
+cd agents/geologist
+uv sync --extra eval
 ```
 
 ## ADK package-local workflow
@@ -24,95 +23,63 @@ cd agents/geologist
 agents-cli info
 agents-cli install      # installs Python ADK dependencies when needed
 agents-cli run "Assess the data quality of sample.las"
-pnpm adk:eval           # runs the package-local ADK eval harness
+agents-cli eval run     # runs the package-local ADK eval harness
 ```
 
-`app/agent.py` is the target authoring surface for Geologist reasoning, instructions, and ADK tools. `app/geowiz_mcp.py` owns the first ADK-side Geowiz MCP execution path for `assess_quality`.
+`app/agent.py` is the target authoring surface for Geologist reasoning, instructions, and ADK tools. `app/geowiz_mcp.py` owns the ADK-side Geowiz MCP execution paths for every current Geowiz tool.
 
-`src/agent/` is a temporary adapter retained for existing TypeScript callers and remaining Geowiz tools until each path has an ADK replacement.
+This package intentionally has no npm/package.json/TypeScript agent surface. `servers/geowiz` may remain TypeScript/pnpm; the Geologist agent itself is ADK/Python.
 
 ## TDD workflow
 
-This package follows strict TDD: tests are written before implementation. All tests use Node's built-in `assert` — no jest, no vitest.
+This package follows strict TDD: tests are written before implementation. Geologist agent tests use pytest and must not require a live Geowiz server unless they skip gracefully when it is absent.
 
 ```bash
-# Run all tests (no live server required)
-cd agents/geologist && npx tsx tests/mcp-client.test.ts
-cd agents/geologist && npx tsx tests/agent.test.ts
-
-# Or via turbo
-pnpm turbo test --filter @shaleyeah/geologist
+cd agents/geologist
+uv run pytest
+uv run python -m py_compile app/agent.py app/geowiz_mcp.py
+agents-cli info
 ```
 
 ## Test suites
 
 | File | What it tests | Live server needed? |
 |------|--------------|-------------------|
-| `tests/adk-project-shape.test.ts` | Package-local ADK markers and root-boundary regression | No |
-| `tests/adk-mcp-execution-shape.test.ts` | First ADK-owned Geowiz MCP execution boundary | No |
-| `tests/adk-eval-harness-shape.test.ts` | ADK eval dataset/config shape and minimum case coverage | No |
-| `tests/agent.test.ts` | Manifest validation, runtime contract, HITL, model routing, evals, standalone boot | No (3 execute tests skip if geowiz is down) |
-| `tests/mcp-client.test.ts` | MCP HTTP client, SDK error exports, HITL gate, `runGeologistTask` | No (integration tests skip if unreachable) |
-| `sdk/tests/errors.test.ts` | `RetryableToolError` / `PermanentToolError` | No |
+| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, and no dangling npm surface | No |
+| `tests/test_adk_mcp_execution_shape.py` | ADK-owned Geowiz MCP execution boundaries | No |
+| `tests/test_adk_eval_harness_shape.py` | ADK eval dataset/config shape and minimum case coverage | No |
 
 ## Adding a new tool
 
-1. Add the tool declaration to `geologistManifest.tools[]` in `src/agent/index.ts`
-   — include `name`, `description`, `type`, `modelRequirement`, `requiredScopes`, `mcpServer: "geowiz"`, `inputSchema`
-2. Add a handler to the `handlers` map: `"geologist.new_tool": ({ args, config }) => callGeowizTool(geowizUrl(config), "new_tool", args)`
-3. Make sure the corresponding tool exists in `servers/geowiz/src/index.ts` (or open an issue against geowiz)
-4. Add a test in `tests/mcp-client.test.ts` asserting the tool has `mcpServer: "geowiz"`
-5. Run `pnpm turbo build` — the manifest Zod schema validates all required fields at construction time
+1. Add or update the wrapper in `app/geowiz_mcp.py`.
+2. Register the wrapper in `app/agent.py`.
+3. Make sure the corresponding tool exists in `servers/geowiz/src/index.ts` or open an issue against geowiz.
+4. Add or update pytest coverage under `tests/`.
+5. Run `uv run pytest`, `uv run python -m py_compile app/agent.py app/geowiz_mcp.py`, and `agents-cli info`.
 
 ## Changing HITL policy
 
-The HITL gate is configured in `geologistConfig.hitl` in `src/agent/index.ts`:
-
-```typescript
-hitl: {
-    approvalMode: "when-sensitive", // "never" | "when-sensitive" | "always"
-    requireForDestructive: true,
-    requireForMemoryPromotion: true,
-}
-```
-
-To require approval for a specific tool regardless of global mode, set `requiresHumanApproval: true` on the tool manifest entry. This cannot be overridden by `approvalMode: "never"` — it's a hard gate.
+`save_geowiz_finding` is registered as `FunctionTool(save_geowiz_finding, require_confirmation=True)` in `app/agent.py`. Keep persistence and other write-like operations behind ADK confirmation.
 
 ## Changing model routing
 
-`geologistConfig.modelRouting` maps capability labels to concrete models. No tool hardcodes a model name — they declare a capability requirement and the operator supplies the binding:
-
-```typescript
-modelRouting: {
-    "standard-analysis": { provider: "anthropic", model: "claude-sonnet-4-6" },
-    "deterministic":     { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
-    // ...
-}
-```
+`GEOLOGIST_ADK_MODEL` controls the ADK model for local runs. The default is `gemini-flash-latest`.
 
 ## Lint
 
 ```bash
-cd agents/geologist && pnpm exec biome check --write .
+cd agents/geologist && uv run ruff check .
 ```
 
 ## Type checking
 
 ```bash
-cd agents/geologist && pnpm type-check
+cd agents/geologist && uv run python -m py_compile app/agent.py app/geowiz_mcp.py
 ```
 
 ## Adding a custom audit logger (e.g. Supabase)
 
-```typescript
-import { createGeologistRuntime } from "@shaleyeah/geologist";
-
-const runtime = createGeologistRuntime(config, {
-    auditLogger: (entry) => supabase.from("audit_log").insert(entry),
-});
-```
-
-The default logger writes JSON lines to stderr. Pass `() => {}` to disable.
+Add durable audit logging at the ADK tool/orchestration boundary when a production runtime issue requires it. Do not reintroduce a TypeScript agent package to add logging.
 
 ---
 

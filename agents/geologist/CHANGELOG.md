@@ -1,41 +1,26 @@
-# Changelog — @shaleyeah/geologist
+# Changelog — Geologist ADK Agent
 
 ## [Unreleased]
 
 ### Added
-- **ADK migration retrospective audit** (#596, revisits #580/#587/#589) — added package-local ADK eval harness files for Geologist with control, edge, and capability-boundary cases, a deterministic/LLM-judge eval config, and a shape test to keep the harness present in CI. Clarified the TypeScript adapter deletion path and fixed the ADK `App` name to match the `app` package directory for eval/session compatibility.
-- **First ADK-side Geowiz MCP execution tool** (#589) — added package-local Python MCP support for `assess_quality` via `GEOWIZ_MCP_URL` and exposed `assess_geowiz_quality` on the ADK `root_agent`. Broader TypeScript runtime code remains classified as adapter until each caller has a direct ADK replacement.
-- **ADK MCP execution boundary tests** (#589) — added `tests/adk-mcp-execution-shape.test.ts` to assert the Python ADK path owns the first real Geowiz execution boundary and repo-local dependency declaration.
-- **Package-local ADK project shape** (#587) — added `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, and `app/agent.py` under `agents/geologist` only. The ADK slice makes Geowiz backend selection explicit while preserving `servers/geowiz` as the independently runnable MCP backend and keeping repo root free of ADK scaffolding.
-- **ADK boundary regression test** (#587) — added `tests/adk-project-shape.test.ts` to verify the Geologist package contains ADK markers and the monorepo root does not become an ADK project.
-- **`geologist.save_finding` write tool** (#407) — closes the Learn loop. Persists key findings to `./data/geowiz/findings/<id>.json` via the geowiz server. Declared as `type: "command"`, `requiresHumanApproval: true`, scope `write:geology`. Wired through `executeWithRetry` + `LocalAgentRuntime.execute()` — HITL gate fires on every persist call. This completes the fifth agent component (Memory) in the Goal/Perception/Reasoning/Action/Memory framework.
-- **`executeWithRetry()` exponential backoff** (#406) — wraps every tool call in the `executeLoop`. Retries up to `MAX_TOOL_RETRIES=3` times on `RetryableToolError` with delays of 500ms, 1000ms, 2000ms. `PermanentToolError` and non-retryable failures surface immediately. All tool calls in the loop now go through this wrapper instead of calling `runtime.execute()` directly.
+
+- **Geologist ADK tool parity** (#597) — added package-local Python MCP execution for every current Geowiz tool: `analyze_formation`, `assess_quality`, `process_well_logs`, `process_gis`, `process_access_database`, `process_document`, `process_seismic_data`, `process_aries_database`, and `save_finding`.
+- **ADK eval coverage** (#596/#597) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.
+- **ADK project shape** (#587/#589) — added `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/geowiz_mcp.py` under `agents/geologist`.
+- **Python regression tests** (#597) — added pytest coverage for ADK project shape, Geowiz MCP wrapper parity, eval harness shape, and the absence of dangling npm/TypeScript agent surfaces.
 
 ### Changed
-- **Runtime classification for ADK migration** (#587) — the existing TypeScript `src/agent` runtime is now documented as a temporary adapter for the reference path, not the long-term agent authoring surface. New agent reasoning work should target the package-local ADK project.
-- **Scope enforcement activated** (#403) — `runGeologistTask` passes `grantedScopes` from the caller down to `runtime.execute()`. `LocalAgentRuntime.execute()` (SDK) now checks `tool.requiredScopes ⊆ grantedScopes` when `grantedScopes` is provided; returns `status: "failed"` with a clear error naming the missing scopes. Backward-compatible: omitting `grantedScopes` skips enforcement.
-- **Blocking eval halt** (#404) — `LocalAgentRuntime.execute()` (SDK) now checks for `blocking: true && status: "fail"` after `evaluate()`. When found, returns `status: "failed", retryable: false` with the blocking eval name and message — previously the call returned `status: "completed"` even if a blocking eval failed. `executeLoop` now returns immediately on any permanent (non-retryable) failure instead of pushing the error to history and continuing — safety gates (blocking evals, scope rejections) now actually halt the task. Adds tests for `redactSecrets` blocking on `sk-` output and advisory schema completing with warn.
-- **Model routing wired to `callLLM`** (#402) — `executeLoop` now resolves `config.modelRouting["standard-analysis"].model` and passes it to every `callLLM()` invocation. Previously the loop called `callLLM` without a model parameter, falling back to the SDK's hardcoded default. BYOE operators can now fully override the reasoning model without touching agent code.
-- **`geologistConfig.modelRouting` ships with real dev defaults** (#402) — replaced `"configured-by-operator"` placeholder strings with actual Anthropic model IDs (`claude-haiku-4-5-20251001`, `claude-sonnet-4-6`, `claude-opus-4-8`). `deterministic` uses `provider: "rule-based"` as before. Operators override at deploy time via config injection.
-- **Manifest `requiredScopes` updated** — added `write:geology` to satisfy the Zod schema refine (manifest scopes must be a superset of all tool scopes).
-- **Docs fully updated** — `ARCHITECTURE.md`, `HOW_IT_WORKS.md`, `DEPLOYMENT.md`, `INTEGRATION.md` all updated to reflect the five-component agent framework, new tool inventory (9 tools), model routing table, retry behavior, scope requirements, and findings storage path.
 
-### Changed
-- **Layer 1 (MCP wiring):** Removed direct `@shaleyeah/server-geowiz` TypeScript imports; all 8 handlers now delegate to the geowiz Tier 1 server over HTTP via `@modelcontextprotocol/sdk` (`callGeowizTool`). Validates production deployment topology where server and agent run on separate hosts (#363).
-- **Layer 2 (execution loop):** `runGeologistTask(goal, options)` now routes all tool calls through `LocalAgentRuntime.execute()` — the HITL gate, scope checks, and audit logging fire on every step (Arcade pattern #46: Permission Gate). Previously called `callGeowizTool` directly, bypassing governance (#363).
-- `runGeologistTask` accepts `runtime?: LocalAgentRuntime` (caller-managed lifecycle) and `onApprovalRequired?: (challenge) => Promise<HumanApproval>` (HITL callback). Throws with a clear message when `approval_required` and no callback is provided.
-- `geowiz-client.ts` (`callGeowizTool`) now classifies errors: network failures → `RetryableToolError`; all others → `PermanentToolError`. The `retryable` flag propagates to `AgentExecutionResult` so the loop can give the LLM a correct retryability hint.
-- Replaced `"@shaleyeah/server-geowiz": "workspace:*"` dep with `"@modelcontextprotocol/sdk": "^1.29.0"` in `package.json`.
-- Updated `agent.test.ts` to guard `execute()`-based tests with a live-server reachability check.
+- **Agent runtime surface** (#597) — Geologist is now an ADK/Python agent package. New Geologist reasoning/runtime work belongs in `app/agent.py` and `app/geowiz_mcp.py`.
+- **Documentation** (#597) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/geowiz` MCP backend.
 
-### Added
-- `src/agent/geowiz-client.ts` — thin one-shot MCP client with `Promise.race()` timeout (Arcade #28: Timeout Boundary) and error classification (Arcade #40).
-- `tests/mcp-client.test.ts` — TDD tests for `callGeowizTool` (Layer 1), `runGeologistTask` (Layer 2), SDK error exports, and HITL gate behavior (12 tests).
-- Deferred stubs with GitHub issue references: `#395` (Context Injection / pgvector memory) and `#396` (Async Job / seismic polling).
+### Removed
+
+- **TypeScript agent adapter** (#597) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, and TypeScript-only agent tests from `agents/geologist`.
 
 ## [0.1.0] — 2026-06-04
 
 ### Added
-- Initial package extraction from monorepo conversion (#385)
-- Migrated from `src/agents/geologist.ts`
-- Standalone AgentRuntime with isolated config, context, and MCP tools (#363)
+
+- Initial package extraction from monorepo conversion (#385).
+- Standalone Geologist agent package boundary before the ADK migration.

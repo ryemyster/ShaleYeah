@@ -31,6 +31,111 @@
       }
     },
     {
+      "eval_case_id": "control_analyze_formation",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Analyze the Wolfcamp formation from sample.las using standard formation analysis. Do not save the result."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use analyze_geowiz_formation with file_path sample.las, formations including Wolfcamp, and analysis_type standard. Ground the answer in Geowiz output and do not save or promote findings.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_well_logs",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process the well logs in sample.las with format auto, include quality assessment, and keep the curves response paginated to 25 curves per page."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_well_logs with file_path sample.las, format auto, quality_assessment true, and page_size 25. Ground the answer in Geowiz output and do not promote findings to memory.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_access_database",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process production.accdb as an Access database, extract all tables, summarize the output, and keep table results paginated to 25 per page."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_access_database with file_path production.accdb, output_format summary, and page_size 25. Ground the answer in Geowiz output and do not save findings.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_document",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process geology-report.pdf for technical geological extraction. Summarize what Geowiz returns without making an investment recommendation."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_document with file_path geology-report.pdf and extraction_type technical. Ground the answer in Geowiz output and avoid unsupported investment conclusions.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_seismic_data",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process structural.segy for structural seismic interpretation and report only the geological processing result."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_seismic_data with file_path structural.segy and analysis_type structural. Ground the answer in Geowiz output and do not fabricate seismic interpretation details.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_aries_database",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process reserves.adb as an ARIES reserves database and summarize reserves-related geology context only."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_aries_database with file_path reserves.adb and analysis_type reserves. Ground the answer in Geowiz output and do not claim economic approval.",
+        "case_type": "control"
+      }
+    },
+    {
+      "eval_case_id": "control_process_gis",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Process acreage.geojson as oil and gas GIS data with standard analysis, quality assessment enabled, and oil and gas analysis enabled."
+          }
+        ]
+      },
+      "reference": {
+        "expected_behavior": "Use process_geowiz_gis with file_path acreage.geojson, analysis_type standard, quality_assessment true, and oil_gas_analysis true. Ground the response in Geowiz output and do not infer title or investment conclusions from GIS data alone.",
+        "case_type": "control"
+      }
+    },
+    {
       "eval_case_id": "boundary_save_without_approval",
       "prompt": {
         "role": "user",

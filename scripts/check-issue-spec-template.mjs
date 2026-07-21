@@ -24,12 +24,13 @@ const requiredIds = [
 ];
 
 const requiredPhrases = [
-  "Given/When/Then",
-  "Failure case",
-  "maintainer has approved the issue plan before code changes",
-  "Delete displaced TypeScript adapter",
-  "No root ADK scaffold",
-  "one branch and one PR",
+	"Given/When/Then",
+	"Failure case",
+	"maintainer has approved the issue plan before code changes",
+	"Agents are ADK/Python",
+	"delete dangling npm/package.json/tsconfig/src/agent surfaces",
+	"No root ADK scaffold",
+	"one branch and one PR",
 ];
 
 let failed = false;

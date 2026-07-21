@@ -1,8 +1,8 @@
-# @shaleyeah/geologist
+# Geologist ADK Agent
 
 **Marcus Aurelius Geologicus** — the ShaleYeah fleet's geological analyst.
 
-Tier 2 intelligence layer over the [`@shaleyeah/server-geowiz`](../../servers/geowiz) Tier 1 MCP server. Accepts natural-language geological goals, reasons over 9 domain tools via MCP/HTTP, and returns synthesized answers — with full audit trail, HITL support, and exponential-backoff retry.
+Tier 2 ADK/Python intelligence layer over the [`servers/geowiz`](../../servers/geowiz) Tier 1 MCP server. Accepts natural-language geological goals, reasons over 9 domain tools via MCP/HTTP, and returns synthesized answers.
 
 ## ADK project boundary
 
@@ -10,81 +10,39 @@ This package is the Geologist ADK project inside the monorepo. ADK files live he
 
 Current migration state:
 
-- ADK owns the target agent shape, instructions, eval path, and backend-selection contract.
-- ADK now executes the first real Geowiz MCP tool: `assess_quality` through `assess_geowiz_quality`.
+- ADK owns the agent shape, instructions, eval path, and backend-selection contract.
+- ADK now executes every current Geowiz MCP tool through package-local Python wrappers. `save_finding` is exposed through ADK confirmation before persistence.
 - `servers/geowiz` remains the independently runnable MCP backend.
-- `src/agent/` is retained as a temporary TypeScript adapter for the remaining Geowiz tool set until each caller has an ADK replacement.
-- New Geologist reasoning/runtime work should target `app/agent.py`, not expand the custom TypeScript ReAct loop.
+- There is no Geologist npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/geologist`, it is migration debt unless the issue is explicitly deleting it.
+- New Geologist reasoning/runtime work should target `app/agent.py` and `app/geowiz_mcp.py`.
 
 ---
 
-## I want to run a geological task right now
+## Run A Geological Task
 
-**ADK path — first MCP-backed tool**
+**ADK path — MCP-backed tools**
 
 ```bash
 cd agents/geologist
 agents-cli install
 GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
-  "Use assess_geowiz_quality to assess sample.las as LAS data"
+  "Use process_geowiz_well_logs to process sample.las with format auto and page size 25"
 ```
 
 This path uses `app/agent.py` and the Python MCP client in `app/geowiz_mcp.py`.
 
-**TypeScript adapter path — remaining tools**
-
-**Step 1 — start the geowiz MCP server (Terminal 1)**
+Start the Geowiz MCP server separately when you want live backend execution:
 
 ```bash
 cd servers/geowiz
 PORT=3001 pnpm start
-# Marcus Aurelius Geologicus ready on :3001
 ```
-
-**Step 2 — run a task (Terminal 2)**
-
-```bash
-cd agents/geologist
-ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts \
-  "Analyze the Permian Basin formation in data/test.las and summarize porosity and net pay"
-```
-
-You'll see the agent reason through tool calls and return a synthesized answer.
-
-**No LAS file handy?** Try a quality check — geowiz handles missing files gracefully:
-
-```bash
-ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts \
-  "Assess the data quality of sample.las"
-```
-
----
-
-## I want to call this from my own code
-
-```typescript
-import { runGeologistTask } from "@shaleyeah/geologist";
-
-const answer = await runGeologistTask(
-    "Analyze the Eagle Ford well logs in /data/ef-2024/ and summarize maturity.",
-    {
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        onApprovalRequired: async (challenge) => {
-            // fires when agent calls save_finding or any HITL-gated tool
-            return { approved: true, reviewerId: "ops-team", reason: "approved" };
-        },
-    },
-);
-console.log(answer);
-```
-
-→ See [docs/INTEGRATION.md](docs/INTEGRATION.md) for the full API including single-tool calls, scope enforcement, and BYOE model routing.
 
 ---
 
 ## I want to connect this to Claude Desktop
 
-Add both the server (Tier 1) and the agent endpoint (Tier 2) to your MCP config:
+Add the server (Tier 1) to your MCP config. The Geologist ADK agent consumes that MCP backend through `GEOWIZ_MCP_URL`.
 
 ```json
 {
@@ -98,8 +56,6 @@ Add both the server (Tier 1) and the agent endpoint (Tier 2) to your MCP config:
   }
 }
 ```
-
-For the full Tier 2 agent (HITL, scopes, audit trail), use the `LocalAgentEndpoint` HTTP service — see [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ---
 
@@ -123,7 +79,7 @@ For the full Tier 2 agent (HITL, scopes, audit trail), use the `LocalAgentEndpoi
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM reasoning calls via `callLLM` |
+| `GEOLOGIST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 | `GEOWIZ_MCP_URL` | No | `http://localhost:3001` | geowiz Tier 1 server URL |
 
 ---
@@ -131,12 +87,11 @@ For the full Tier 2 agent (HITL, scopes, audit trail), use the `LocalAgentEndpoi
 ## Commands
 
 ```bash
-pnpm build        # TypeScript compile
-pnpm test         # unit + contract tests (no live server required)
-pnpm type-check   # tsc --noEmit
-pnpm lint         # Biome
-pnpm adk:info     # verify this package is recognized by agents-cli
-pnpm adk:run -- "Assess the data quality of sample.las"
+uv run pytest
+uv run python -m py_compile app/agent.py app/geowiz_mcp.py
+agents-cli info
+agents-cli run "Assess the data quality of sample.las"
+agents-cli eval run
 ```
 
 ---
@@ -145,16 +100,13 @@ pnpm adk:run -- "Assess the data quality of sample.las"
 
 | Path | Purpose |
 |------|---------|
-| [`src/agent/index.ts`](src/agent/index.ts) | Manifest, config, handlers, `runGeologistTask()`, CLI entrypoint |
-| [`src/agent/geowiz-client.ts`](src/agent/geowiz-client.ts) | MCP/HTTP client with timeout + error classification |
 | [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Geowiz backend-selection tools |
-| [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Python MCP client and first ADK-side `assess_quality` execution tool |
+| [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Python MCP client and ADK-side execution tools for every current Geowiz tool |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
-| [`tests/agent.test.ts`](tests/agent.test.ts) | Contract tests (no live server required) |
-| [`tests/mcp-client.test.ts`](tests/mcp-client.test.ts) | HTTP client + task loop tests |
-| [`tests/adk-project-shape.test.ts`](tests/adk-project-shape.test.ts) | Regression tests for package-local ADK shape |
-| [`tests/adk-mcp-execution-shape.test.ts`](tests/adk-mcp-execution-shape.test.ts) | Regression tests for ADK-owned Geowiz MCP execution |
+| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape and absence of npm surface |
+| [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Geowiz MCP execution |
+| [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
 
 ---
 
