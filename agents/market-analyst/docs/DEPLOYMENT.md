@@ -1,18 +1,43 @@
-# Deployment — @shaleyeah/market-analyst
+# Deployment - Market Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#371](https://github.com/ryemyster/ShaleYeah/issues/371).
+Market Analyst deploys as an ADK/Python agent package paired with the Market MCP backend.
 
-## Environment variables (planned)
+## Required Runtime Inputs
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `MARKET_MCP_URL` | No | `http://localhost:3007` | market server URL |
-| `PORT` | No | `4007` | Agent endpoint port |
+| Variable | Required | Default |
+|----------|----------|---------|
+| `MARKET_MCP_URL` | No | `http://localhost:3007` |
+| `MARKET_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
 
-## Pair ports
+Set `MARKET_MCP_URL` to the deployed `servers/market` endpoint for non-local deployments.
 
-| Service | Port |
-|---------|------|
-| market (Tier 1) | 3007 |
-| market-analyst (Tier 2) | 4007 |
+## Pre-Deployment Checks
+
+```bash
+cd agents/market-analyst
+uv run pytest
+uv run python -m py_compile app/agent.py app/market_mcp.py
+agents-cli info
+```
+
+Run ADK evals when credentials are available:
+
+```bash
+agents-cli eval run
+```
+
+## Deployment Shape
+
+The agent package is independently buildable and extractable. Do not rely on root-level pnpm builds for Market Analyst deployment. The backend MCP server remains independently deployable from `servers/market`.
+
+## Smoke Test
+
+With the backend reachable:
+
+```bash
+cd agents/market-analyst
+MARKET_MCP_URL=https://market-mcp.example.com agents-cli run \
+  "Compare Chevron and ExxonMobil in the Delaware Basin on production and costs"
+```
+
+The response should cite the Market backend path and avoid unreviewed final investment approval.

@@ -1,14 +1,23 @@
-# How It Works — @shaleyeah/market-analyst
+# How It Works - Market Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#371](https://github.com/ryemyster/ShaleYeah/issues/371).
+Market Analyst translates market diligence questions into calls against the Market MCP server.
 
-## The simple version (for a 12-year-old)
+## Components
 
-Oil and gas prices go up and down like a roller coaster. Companies need to know: what's the price today, what might it be next year, and how can they protect themselves if it drops?
+`app/agent.py` defines the ADK root agent, instructions, planning helper, backend status helper, and callable tool surface.
 
-The **market analyst** watches the commodity markets like a weather forecaster watches the sky. It tracks oil and gas prices, figures out whether you're getting a fair price at your specific location (some places get less because they're far from buyers), and suggests ways to lock in a good price now in case prices drop later.
+`app/market_mcp.py` owns the MCP client boundary. It maps Python tool arguments to the current `servers/market` MCP tool schemas and serializes returned MCP content for the ADK response path.
 
-## The technical version
+`servers/market` remains the tool backend. It performs market-condition and competitive-analysis operations and can keep its own TypeScript package because it is not an agent.
 
-1. **market server (Tier 1):** Fetches and analyzes commodity price data, basis differentials, forward curves, and comparable transaction metrics.
-2. **market-analyst agent (Tier 2):** ReAct loop — interprets market questions, sequences the right lookups and calculations, produces a market intelligence summary.
+## Request Flow
+
+1. A user asks for market diligence.
+2. The ADK agent decides whether the task is market conditions or competitive analysis.
+3. The Python wrapper calls `MARKET_MCP_URL`.
+4. The backend returns structured MCP content.
+5. The agent explains the result and calls out uncertainty or missing data.
+
+## Review Boundary
+
+The agent can support diligence. It cannot approve a final bid, acquisition, investment committee decision, or capital allocation without human review.
