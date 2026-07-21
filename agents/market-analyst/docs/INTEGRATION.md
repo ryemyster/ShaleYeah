@@ -1,19 +1,30 @@
-# Integration Guide — @shaleyeah/market-analyst
+# Integration Guide - Market Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#371](https://github.com/ryemyster/ShaleYeah/issues/371).
+Integrate Market Analyst through its ADK package, not through a TypeScript agent adapter.
 
-## Planned interface
+## Local ADK Invocation
 
-```typescript
-import { runMarketAnalystTask } from "@shaleyeah/market-analyst";
-
-const result = await runMarketAnalystTask(
-    "What is the current WTI/Midland basis, and what hedging strategy would protect a 10,000 BOE/day producer at $65 WTI?",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
+```bash
+cd agents/market-analyst
+MARKET_MCP_URL=http://localhost:3007 agents-cli run \
+  "Analyze current oil and gas market conditions for the Permian over a 1 year timeframe"
 ```
 
-## Upstream / downstream
+## Backend Contract
 
-- **Upstream:** research-analyst provides intelligence on competitor activity; external data APIs (EIA, CME)
-- **Downstream:** economist consumes price assumptions and basis differentials for NPV modeling; investment-chair uses hedge coverage in decision package
+The ADK tools map to the current Market MCP server tools:
+
+| ADK wrapper | MCP tool |
+|-------------|----------|
+| `analyze_market_conditions` | `analyze_market_conditions` |
+| `competitive_market_analysis` | `competitive_analysis` |
+
+The MCP backend URL comes from `MARKET_MCP_URL`. The default is `http://localhost:3007`.
+
+## Orchestration Boundary
+
+An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs or recreate a TypeScript agent adapter. Shared contracts belong in `sdk/`; Market execution stays behind `servers/market`.
+
+## Human Review
+
+Downstream systems must treat final bid approval, investment approval, and acquisition authorization as human-review actions. Market Analyst can provide supporting analysis only.

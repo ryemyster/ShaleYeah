@@ -1,13 +1,19 @@
-# Changelog — @shaleyeah/market-analyst
+# Changelog — Market Analyst ADK Agent
 
 ## [Unreleased]
 
 ### Added
-- `runMarketAnalystTask` Layer 2 execution loop — LLM-driven multi-step loop with Permission Gate via `runtime.execute()`, HITL throw when no callback provided, and max-steps synthesis (#440)
-- `executeWithRetry` — exponential backoff (500ms/1s/2s, up to 3 retries) for retryable tool failures before surfacing error to LLM (#440)
-- **Permanent halt guard** — `executeLoop` returns immediately when `execResult.retryable === false` (blocking evals, scope rejections, security gates); does not continue to next LLM step (#440)
-- 2 market tools: `market-analyst.analyze_market_conditions`, `market-analyst.competitive_analysis` — all wired to `@shaleyeah/server-market` over HTTP (port 3007) (#440)
-- `callMarketTool` MCP HTTP client — delegates to `@shaleyeah/server-market` over HTTP transport (#440)
-- `createMarketAnalystRuntime` / `createMarketAnalystEndpoint` factories (#440)
-- `marketAnalystManifest` + `marketAnalystConfig` — full Arcade-compliant manifest with HITL, evals (schema: blocking, redactSecrets: blocking), memory namespace, and model routing (#440)
-- 51 tests: full contract suite (manifest validation, progressive discovery, model routing, HITL policy, evals, health endpoint, permanent halt) + MCP client tests (#440)
+
+- **Market Analyst ADK migration** (#530) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/market_mcp.py`.
+- **Market MCP tool parity** (#530) — added ADK Python wrappers for `analyze_market_conditions` and `competitive_analysis`.
+- **ADK eval coverage** (#530) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.
+- **Python regression tests** (#530) — added pytest coverage for ADK project shape, Market MCP wrapper parity, eval harness shape, and the absence of dangling npm/TypeScript agent surfaces.
+
+### Changed
+
+- **Agent runtime surface** (#530) — Market Analyst is now an ADK/Python agent package. New Market Analyst reasoning/runtime work belongs in `app/agent.py` and `app/market_mcp.py`.
+- **Documentation** (#530) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/market` MCP backend.
+
+### Removed
+
+- **TypeScript agent adapter** (#530) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only agent tests from `agents/market-analyst`.
