@@ -24,6 +24,7 @@ cd agents/geologist
 agents-cli info
 agents-cli install      # installs Python ADK dependencies when needed
 agents-cli run "Assess the data quality of sample.las"
+pnpm adk:eval           # runs the package-local ADK eval harness
 ```
 
 `app/agent.py` is the target authoring surface for Geologist reasoning, instructions, and ADK tools. `app/geowiz_mcp.py` owns the first ADK-side Geowiz MCP execution path for `assess_quality`.
@@ -49,6 +50,7 @@ pnpm turbo test --filter @shaleyeah/geologist
 |------|--------------|-------------------|
 | `tests/adk-project-shape.test.ts` | Package-local ADK markers and root-boundary regression | No |
 | `tests/adk-mcp-execution-shape.test.ts` | First ADK-owned Geowiz MCP execution boundary | No |
+| `tests/adk-eval-harness-shape.test.ts` | ADK eval dataset/config shape and minimum case coverage | No |
 | `tests/agent.test.ts` | Manifest validation, runtime contract, HITL, model routing, evals, standalone boot | No (3 execute tests skip if geowiz is down) |
 | `tests/mcp-client.test.ts` | MCP HTTP client, SDK error exports, HITL gate, `runGeologistTask` | No (integration tests skip if unreachable) |
 | `sdk/tests/errors.test.ts` | `RetryableToolError` / `PermanentToolError` | No |

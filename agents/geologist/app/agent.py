@@ -67,4 +67,4 @@ root_agent = Agent(
     tools=[geowiz_backend_status, plan_geowiz_tool_call, assess_geowiz_quality],
 )
 
-app = App(root_agent=root_agent, name="geologist")
+app = App(root_agent=root_agent, name="app")

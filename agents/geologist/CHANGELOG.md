@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- **ADK migration retrospective audit** (#596, revisits #580/#587/#589) — added package-local ADK eval harness files for Geologist with control, edge, and capability-boundary cases, a deterministic/LLM-judge eval config, and a shape test to keep the harness present in CI. Clarified the TypeScript adapter deletion path and fixed the ADK `App` name to match the `app` package directory for eval/session compatibility.
 - **First ADK-side Geowiz MCP execution tool** (#589) — added package-local Python MCP support for `assess_quality` via `GEOWIZ_MCP_URL` and exposed `assess_geowiz_quality` on the ADK `root_agent`. Broader TypeScript runtime code remains classified as adapter until each caller has a direct ADK replacement.
 - **ADK MCP execution boundary tests** (#589) — added `tests/adk-mcp-execution-shape.test.ts` to assert the Python ADK path owns the first real Geowiz execution boundary and repo-local dependency declaration.
 - **Package-local ADK project shape** (#587) — added `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, and `app/agent.py` under `agents/geologist` only. The ADK slice makes Geowiz backend selection explicit while preserving `servers/geowiz` as the independently runnable MCP backend and keeping repo root free of ADK scaffolding.
