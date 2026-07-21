@@ -1,15 +1,44 @@
-# Local Testing — @shaleyeah/legal-analyst
+# Local Testing - Legal Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#370](https://github.com/ryemyster/ShaleYeah/issues/370).
+Use package-local Python commands for the agent.
 
-## Once implemented
+## Fast Verification
 
 ```bash
-cd servers/legal && PORT=3006 pnpm start
-# (new terminal)
 cd agents/legal-analyst
-npx tsx tests/agent.test.ts
-npx tsx tests/mcp-client.test.ts
+uv run pytest
+uv run python -m py_compile app/agent.py app/legal_mcp.py
+agents-cli info
 ```
 
-Follow `agents/geologist/docs/LOCAL_TESTING.md` as the reference — replace ports and names.
+## Live Backend Verification
+
+Start the Legal MCP server in another shell:
+
+```bash
+cd servers/legal
+PORT=3006 pnpm start
+```
+
+Then run the ADK agent:
+
+```bash
+cd agents/legal-analyst
+LEGAL_MCP_URL=http://localhost:3006 agents-cli run \
+  "Analyze legal exposure for a Texas development project covering three Permian leases"
+```
+
+## Eval Verification
+
+```bash
+cd agents/legal-analyst
+agents-cli eval run
+```
+
+If credentials are unavailable, keep the pytest eval-shape tests passing so the dataset and config remain in place for CI or credentialed local runs.
+
+## Common Failures
+
+`LEGAL_MCP_URL` connection errors mean the backend server is not running or the URL is wrong.
+
+An npm, TypeScript, or `src/agent` file under `agents/legal-analyst` means the agent package has regressed from the ADK migration boundary.

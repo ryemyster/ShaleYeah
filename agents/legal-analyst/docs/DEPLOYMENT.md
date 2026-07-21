@@ -1,18 +1,43 @@
-# Deployment — @shaleyeah/legal-analyst
+# Deployment - Legal Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#370](https://github.com/ryemyster/ShaleYeah/issues/370).
+Legal Analyst deploys as an ADK/Python agent package paired with the Legal MCP backend.
 
-## Environment variables (planned)
+## Required Runtime Inputs
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `LEGAL_MCP_URL` | No | `http://localhost:3006` | legal server URL |
-| `PORT` | No | `4006` | Agent endpoint port |
+| Variable | Required | Default |
+|----------|----------|---------|
+| `LEGAL_MCP_URL` | No | `http://localhost:3006` |
+| `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
 
-## Pair ports
+Set `LEGAL_MCP_URL` to the deployed `servers/legal` endpoint for non-local deployments.
 
-| Service | Port |
-|---------|------|
-| legal (Tier 1) | 3006 |
-| legal-analyst (Tier 2) | 4006 |
+## Pre-Deployment Checks
+
+```bash
+cd agents/legal-analyst
+uv run pytest
+uv run python -m py_compile app/agent.py app/legal_mcp.py
+agents-cli info
+```
+
+Run ADK evals when credentials are available:
+
+```bash
+agents-cli eval run
+```
+
+## Deployment Shape
+
+The agent package is independently buildable and extractable. Do not rely on root-level pnpm builds for Legal Analyst deployment. The backend MCP server remains independently deployable from `servers/legal`.
+
+## Smoke Test
+
+With the backend reachable:
+
+```bash
+cd agents/legal-analyst
+LEGAL_MCP_URL=https://legal-mcp.example.com agents-cli run \
+  "Assess compliance requirements for a New Mexico production project with 18 assets"
+```
+
+The response should cite the Legal backend path and avoid unreviewed legal opinion, filing, signature, or approval authority.

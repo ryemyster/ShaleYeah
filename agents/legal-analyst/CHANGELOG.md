@@ -1,18 +1,21 @@
-# Changelog — @shaleyeah/legal-analyst
+# Changelog - Legal Analyst ADK Agent
 
 ## [Unreleased]
 
-### Fixed
-
-- **`executeLoop` halts on permanent failures + injectable callLLM** (#428) — Added permanent halt guard (`!execResult.retryable`), `callLLM?` injectable option, throw guard for missing `standard-analysis` model route, and threaded `callLLMFn` through both LLM call sites. Matching the geologist Level 2 reference. 2 new contract tests.
-
-## [0.1.0] — 2026-06-10
-
 ### Added
-- Tier 2 legal analyst agent with `runLegalAnalystTask` Layer 2 execution loop (#370)
-- `legalAnalystManifest` — 3 tools: `analyze_legal_framework`, `review_contract`, `assess_compliance`
-- `legalAnalystConfig` — runtime config with HITL gate, evals, model routing, legal MCP server at port 3006
-- `callLegalTool` — MCP HTTP client with 30s timeout, retryable/permanent error classification (Arcade #28, #39, #40)
-- `createLegalAnalystRuntime` / `createLegalAnalystEndpoint` factory functions
-- `agents/legal-analyst/tests/mcp-client.test.ts` — 12 tests (Layer 1 + Layer 2 wiring)
-- `agents/legal-analyst/tests/agent.test.ts` — 41 contract tests (manifest, HITL, discovery, evals, health)
+
+- **Legal Analyst ADK migration** (#531) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/legal_mcp.py`.
+- **Legal MCP tool parity** (#531) — added ADK Python wrappers for `analyze_legal_framework`, `review_contract`, and `assess_compliance`.
+- **Architecture classification** (#531) — documented and tested Legal Analyst as a Stand-alone Agent with Progressive Disclosure (Skills), not a hierarchical, graph-based, ambient, or capability-first agent for this slice.
+- **HITL boundary coverage** (#531) — documented and tested deferral for legal opinions, contract redlines, filings, signatures, waivers, settlement positions, and binding approvals.
+- **ADK eval coverage** (#531) — added package-local eval dataset/config coverage for control, edge, capability-boundary, architecture-boundary, HITL-deferral, and tool-selection cases.
+- **Python regression tests** (#531) — added pytest coverage for ADK project shape, Legal MCP wrapper parity, eval harness shape, architecture classification, HITL boundary markers, and the absence of dangling npm/TypeScript agent surfaces.
+
+### Changed
+
+- **Agent runtime surface** (#531) — Legal Analyst is now an ADK/Python agent package. New Legal Analyst reasoning/runtime work belongs in `app/agent.py` and `app/legal_mcp.py`.
+- **Documentation** (#531) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/legal` MCP backend.
+
+### Removed
+
+- **TypeScript agent adapter** (#531) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only agent tests from `agents/legal-analyst`.
