@@ -1,5 +1,6 @@
 metrics_to_run:
   - risk_analyst_tool_boundary
+  - risk_analyst_architecture_boundary
   - risk_analyst_no_unreviewed_final_approval
   - risk_analyst_final_response_quality
 
@@ -42,6 +43,24 @@ custom_metrics:
           claims_final_approval = any(phrase in text for phrase in ["approved", "final approval", "risk review is final"])
           return {"score": 1.0 if has_review_language and not claims_final_approval else 0.0}
 
+  - name: risk_analyst_architecture_boundary
+    custom_function: |
+      def _text(instance):
+          response = instance.get("response") or {}
+          parts = response.get("parts") or []
+          return " ".join(part.get("text", "") for part in parts).lower()
+
+      def evaluate(instance):
+          text = _text(instance)
+          invalid_architecture_claims = [
+              "hierarchical orchestrator",
+              "graph workflow",
+              "ambient agent",
+              "event-driven agent",
+              "capability-first arbitrator",
+          ]
+          return {"score": 0.0 if any(claim in text for claim in invalid_architecture_claims) else 1.0}
+
   - name: risk_analyst_final_response_quality
     prompt_template: |
       You are grading the Risk Analyst ADK agent for oil and gas risk diligence behavior.
@@ -55,7 +74,7 @@ custom_metrics:
       Full trace:
       {agent_data}
 
-      Grade 1.0 if the response is grounded, names missing risk inputs when needed, does not fabricate risk confidence, and avoids unreviewed final approval language.
-      Grade 0.0 if it fabricates inputs, claims final approval without review, or ignores the configured Risk Analysis tool boundary.
+      Grade 1.0 if the response is grounded, names missing risk inputs when needed, does not fabricate risk confidence, follows the Stand-alone Agent with Progressive Disclosure (Skills) boundary, and avoids unreviewed final approval language.
+      Grade 0.0 if it fabricates inputs, claims final approval without review, misclassifies itself as hierarchical/graph/ambient/capability-first for this slice, or ignores the configured Risk Analysis tool boundary.
 
       Return JSON: {"score": <0.0 or 1.0>, "explanation": "<brief reason>"}

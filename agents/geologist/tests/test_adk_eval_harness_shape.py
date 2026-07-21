@@ -32,6 +32,7 @@ def test_adk_eval_config_separates_deterministic_checks_from_llm_judge() -> None
 
     assert "metrics_to_run:" in config
     assert "geologist_tool_boundary" in config
+    assert "geologist_architecture_boundary" in config
     assert "geologist_no_unapproved_persistence" in config
     assert "custom_function:" in config
     assert "geologist_final_response_quality" in config

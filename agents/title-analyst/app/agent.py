@@ -23,9 +23,11 @@ def title_backend_status() -> dict[str, Any]:
         "url": title_backend_url(),
         "transport": "mcp-http",
         "independentBackend": True,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "notes": [
             "servers/title remains independently runnable.",
             "Set TITLE_MCP_URL to use a compatible internal or proprietary MCP backend.",
+            "This agent is not hierarchical, graph-based, ambient, or capability-first in #528.",
         ],
     }
 
@@ -59,6 +61,7 @@ def plan_title_tool_call(goal: str, document_type: str = "ownership") -> dict[st
         "toolName": tool_name,
         "goal": goal,
         "documentType": document_type,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "executionBoundary": "adk-mcp",
         "executionTool": execution_tool_by_tool_name.get(tool_name),
         "requiresReviewForLegalOpinion": True,
@@ -70,6 +73,7 @@ root_agent = Agent(
     model=os.getenv("TITLE_ANALYST_ADK_MODEL", "gemini-flash-latest"),
     instruction=(
         "You are Titulus Verificatus, a title diligence agent for oil and gas assets. "
+        "Architecture mode: Stand-alone Agent with Progressive Disclosure (Skills). "
         "Use Title-compatible MCP tools for ownership, lease, burden, and chain-of-title "
         "analysis. Treat your output as diligence support, not a final legal opinion. "
         "Surface missing documents, legal descriptions, tract identifiers, jurisdiction, "

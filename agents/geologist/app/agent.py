@@ -29,9 +29,11 @@ def geowiz_backend_status() -> dict[str, Any]:
         "url": geowiz_backend_url(),
         "transport": "mcp-http",
         "independentBackend": True,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "notes": [
             "servers/geowiz remains independently runnable.",
             "Set GEOWIZ_MCP_URL to use a compatible internal or proprietary MCP backend.",
+            "This agent is not hierarchical, graph-based, ambient, or capability-first in #597.",
         ],
     }
 
@@ -72,6 +74,7 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
             "dataType": data_type,
         },
         "goal": goal,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "executionBoundary": "adk-mcp",
         "executionTool": execution_tool_by_tool_name.get(tool_name),
     }
@@ -82,6 +85,7 @@ root_agent = Agent(
     model=os.getenv("GEOLOGIST_ADK_MODEL", "gemini-flash-latest"),
     instruction=(
         "You are Marcus Aurelius Geologicus, a geological diligence agent. "
+        "Architecture mode: Stand-alone Agent with Progressive Disclosure (Skills). "
         "Use Geowiz-compatible MCP tools for deterministic file processing and "
         "keep reasoning, tool selection, safety policy, and eval behavior in ADK. "
         "Never assume Geowiz is colocated; use the configured backend URL."

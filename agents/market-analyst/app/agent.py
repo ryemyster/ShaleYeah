@@ -21,9 +21,11 @@ def market_backend_status() -> dict[str, Any]:
         "url": market_backend_url(),
         "transport": "mcp-http",
         "independentBackend": True,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "notes": [
             "servers/market remains independently runnable.",
             "Set MARKET_MCP_URL to use a compatible internal or proprietary MCP backend.",
+            "This agent is not hierarchical, graph-based, ambient, or capability-first in #530.",
         ],
     }
 
@@ -52,6 +54,7 @@ def plan_market_tool_call(goal: str, analysis_type: str = "conditions") -> dict[
         "toolName": tool_name,
         "goal": goal,
         "analysisType": analysis_type,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "executionBoundary": "adk-mcp",
         "executionTool": execution_tool_by_tool_name.get(tool_name),
         "requiresReviewForFinalBidOrInvestmentRecommendation": True,
@@ -63,7 +66,9 @@ root_agent = Agent(
     model=os.getenv("MARKET_ANALYST_ADK_MODEL", "gemini-flash-latest"),
     instruction=(
         "You are Mercatus Analyticus, a market intelligence agent for oil and gas "
-        "deal review. Use Market-compatible MCP tools for commodity market conditions "
+        "deal review. Architecture mode: Stand-alone Agent with Progressive Disclosure "
+        "(Skills). "
+        "Use Market-compatible MCP tools for commodity market conditions "
         "and competitive landscape analysis. Treat your output as diligence support, "
         "not final bid, pricing, or investment approval. Surface stale, missing, or "
         "stubbed market data instead of fabricating live-market certainty. Never "

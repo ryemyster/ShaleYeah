@@ -11,6 +11,7 @@ This package is the Market Analyst ADK project inside the monorepo. ADK files li
 Current migration state:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
+- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
 - ADK executes every current Market MCP tool through package-local Python wrappers.
 - `servers/market` remains the independently runnable TypeScript MCP backend.
 - There is no Market Analyst npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/market-analyst`, it is migration debt unless the issue is explicitly deleting it.

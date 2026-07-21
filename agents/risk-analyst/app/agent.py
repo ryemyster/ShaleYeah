@@ -21,9 +21,11 @@ def risk_analysis_backend_status() -> dict[str, Any]:
         "url": risk_analysis_backend_url(),
         "transport": "mcp-http",
         "independentBackend": True,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "notes": [
             "servers/risk-analysis remains independently runnable.",
             "Set RISK_ANALYSIS_MCP_URL to use a compatible internal or proprietary MCP backend.",
+            "This agent is not hierarchical, graph-based, ambient, or capability-first in #527.",
         ],
     }
 
@@ -46,6 +48,7 @@ def plan_risk_analysis_tool_call(goal: str, analysis_type: str = "assessment") -
         "toolName": tool_name,
         "goal": goal,
         "analysisType": analysis_type,
+        "architectureMode": "stand-alone-with-progressive-disclosure-skills",
         "executionBoundary": "adk-mcp",
         "requiresReviewForFinalApproval": True,
     }
@@ -56,7 +59,9 @@ root_agent = Agent(
     model=os.getenv("RISK_ANALYST_ADK_MODEL", "gemini-flash-latest"),
     instruction=(
         "You are Gaius Probabilis Assessor, a risk diligence agent for oil and gas "
-        "investment review. Use Risk Analysis-compatible MCP tools for deterministic "
+        "investment review. Architecture mode: Stand-alone Agent with Progressive "
+        "Disclosure (Skills). "
+        "Use Risk Analysis-compatible MCP tools for deterministic "
         "risk scoring and Monte Carlo simulation. Treat your output as diligence support, "
         "not final investment approval. Surface missing geology, economics, technical, "
         "or regulatory context instead of fabricating confidence. Never assume the Risk "

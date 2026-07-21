@@ -11,6 +11,7 @@ This package is the Title Analyst ADK project inside the monorepo. ADK files liv
 Current migration state:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
+- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
 - ADK executes every current Title MCP tool through package-local Python wrappers.
 - `servers/title` remains the independently runnable TypeScript MCP backend.
 - There is no Title Analyst npm/package.json/TypeScript adapter surface in this package. If one reappears under `agents/title-analyst`, it is migration debt unless the issue is explicitly deleting it.

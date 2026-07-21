@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.
 - **Risk Analyst ADK migration** (#527) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/risk_analysis_mcp.py`.
 - **Risk Analysis MCP tool parity** (#527) — added ADK Python wrappers for `assess_investment_risk` and `monte_carlo_simulation`.
 - **ADK eval coverage** (#527) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.

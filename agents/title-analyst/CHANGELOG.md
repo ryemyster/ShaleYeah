@@ -4,6 +4,7 @@
 
 ### Added
 
+- **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.
 - **Title Analyst ADK migration** (#528) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/title_mcp.py`.
 - **Title MCP tool parity** (#528) — added ADK Python wrappers for `examine_ownership`, `analyze_lease`, `check_burdens`, and `trace_chain_of_title`.
 - **ADK eval coverage** (#528) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.

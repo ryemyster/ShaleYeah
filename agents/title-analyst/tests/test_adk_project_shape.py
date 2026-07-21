@@ -22,6 +22,15 @@ def test_adk_python_entrypoint_exists_inside_title_analyst_package() -> None:
     assert "servers/title remains independently runnable" in agent
 
 
+def test_architecture_mode_is_explicit_and_not_misclassified() -> None:
+    spec = (PACKAGE_ROOT / ".agents-cli-spec.md").read_text()
+    agent = (PACKAGE_ROOT / "app" / "agent.py").read_text()
+
+    assert "Stand-alone Agent with Progressive Disclosure (Skills)" in spec
+    assert "stand-alone-with-progressive-disclosure-skills" in agent
+    assert "not hierarchical, graph-based, ambient, or capability-first" in agent
+
+
 def test_repo_root_does_not_become_an_adk_project() -> None:
     for file_name in ("agents-cli-manifest.yaml", "pyproject.toml", ".agents-cli-spec.md"):
         assert not (REPO_ROOT / file_name).exists(), f"{file_name} must not be added at repo root"

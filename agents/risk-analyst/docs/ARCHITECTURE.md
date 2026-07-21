@@ -16,6 +16,14 @@
 
 The Risk Analyst agent intentionally has no `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent tests. TypeScript/pnpm remains valid for the Risk Analysis MCP server and shared workspace packages.
 
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Risk Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Risk Analysis MCP tools when investment-risk diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #527.
+
+Graph-based workflow is reserved for a later issue if risk review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+
 ## Execution Path
 
 ```
