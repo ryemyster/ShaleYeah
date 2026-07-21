@@ -1,16 +1,24 @@
-# How It Works — @shaleyeah/risk-analyst
+# How It Works — Risk Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#366](https://github.com/ryemyster/ShaleYeah/issues/366).
+The Risk Analyst agent is the reasoning layer for risk diligence. It decides whether to assess project risk or run uncertainty simulation, calls the Risk Analysis MCP backend, and explains the result.
 
-## The simple version (for a 12-year-old)
+## Plain Language Flow
 
-When you flip a coin, you know there's a 50% chance of heads. But in oil and gas, the "coin" has thousands of sides — oil prices, how much oil is really there, drilling costs, government rules.
+1. You ask a risk question or request uncertainty analysis.
+2. The ADK agent chooses a matching Risk Analysis tool.
+3. `app/risk_analysis_mcp.py` sends the request to the configured Risk Analysis MCP server.
+4. The agent receives the tool result and responds.
+5. If the user asks for final approval, the agent defers to human review.
 
-The **risk analyst** is like a very fast gambler who flips that coin a million times in a computer simulation (called Monte Carlo). By running all those simulations, it can tell you: "There's a 90% chance this project makes money, and a 10% chance you lose everything — but here's what that loss looks like."
+## The Two Pieces
 
-## The technical version
+| Piece | What it does |
+|-------|--------------|
+| Risk Analyst agent | ADK/Python reasoning, tool choice, instructions, and eval behavior |
+| Risk Analysis server | TypeScript MCP backend that scores risk and runs Monte Carlo simulation |
 
-1. **risk-analysis server (Tier 1):** Runs Monte Carlo simulations using triangular, uniform, and normal distributions. Uses `Math.random()` intentionally — this is the one place in SHALE YEAH where randomness is the point.
-2. **risk-analyst agent (Tier 2):** ReAct loop — interprets the risk question, defines the input distributions based on domain knowledge, calls the server, interprets the output distribution into a risk narrative.
+This split is intentional. Agents are ADK/Python. Servers may remain TypeScript/pnpm.
 
-`project_ranking` uses `deep-reasoning` routing because comparing correlated multi-variable portfolios requires deeper inference than simple tool calls.
+## Safety Boundary
+
+Risk output supports diligence. It is not final investment approval. Missing geology, economics, technical, or regulatory inputs must be surfaced instead of hidden behind false confidence.

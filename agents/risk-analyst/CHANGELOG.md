@@ -1,13 +1,19 @@
-# Changelog — @shaleyeah/risk-analyst
+# Changelog — Risk Analyst ADK Agent
 
 ## [Unreleased]
 
 ### Added
-- `runRiskAnalystTask` Layer 2 execution loop — LLM-driven multi-step loop with Permission Gate via `runtime.execute()`, HITL throw when no callback provided, and max-steps synthesis (#443)
-- `executeWithRetry` — exponential backoff (500ms/1s/2s, up to 3 retries) for retryable tool failures before surfacing error to LLM (#443)
-- **Permanent halt guard** — `executeLoop` returns immediately when `execResult.retryable === false` (blocking evals, scope rejections, security gates); does not continue to next LLM step (#443)
-- 2 risk tools: `risk-analyst.assess_investment_risk`, `risk-analyst.monte_carlo_simulation` — all wired to `@shaleyeah/server-risk-analysis` over HTTP (port 3005) (#443)
-- `callRiskAnalysisTool` MCP HTTP client — delegates to `@shaleyeah/server-risk-analysis` over HTTP transport (#443)
-- `createRiskAnalystRuntime` / `createRiskAnalystEndpoint` factories (#443)
-- `riskAnalystManifest` + `riskAnalystConfig` — full Arcade-compliant manifest with HITL, evals (schema: blocking, redactSecrets: blocking), memory namespace, and model routing (#443)
-- 51 tests: full contract suite (manifest validation, progressive discovery, model routing, HITL policy, evals, health endpoint, permanent halt) + MCP client tests (#443)
+
+- **Risk Analyst ADK migration** (#527) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/risk_analysis_mcp.py`.
+- **Risk Analysis MCP tool parity** (#527) — added ADK Python wrappers for `assess_investment_risk` and `monte_carlo_simulation`.
+- **ADK eval coverage** (#527) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.
+- **Python regression tests** (#527) — added pytest coverage for ADK project shape, Risk Analysis MCP wrapper parity, eval harness shape, and the absence of dangling npm/TypeScript agent surfaces.
+
+### Changed
+
+- **Agent runtime surface** (#527) — Risk Analyst is now an ADK/Python agent package. New Risk Analyst reasoning/runtime work belongs in `app/agent.py` and `app/risk_analysis_mcp.py`.
+- **Documentation** (#527) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/risk-analysis` MCP backend.
+
+### Removed
+
+- **TypeScript agent adapter** (#527) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only agent tests from `agents/risk-analyst`.

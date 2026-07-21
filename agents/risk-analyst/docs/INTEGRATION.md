@@ -1,19 +1,28 @@
-# Integration Guide — @shaleyeah/risk-analyst
+# Integration — Risk Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#366](https://github.com/ryemyster/ShaleYeah/issues/366).
+Integrate with Risk Analyst through the ADK project in `agents/risk-analyst`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
 
-## Planned interface
+## Local ADK Invocation
 
-```typescript
-import { runRiskAnalystTask } from "@shaleyeah/risk-analyst";
-
-const result = await runRiskAnalystTask(
-    "Run a Monte Carlo analysis on a 10-well program. P10/P50/P90 EUR = 200/350/600 Mboe, cost = $4-6M/well.",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
+```bash
+cd agents/risk-analyst
+RISK_ANALYSIS_MCP_URL=http://localhost:3005 agents-cli run \
+  "Run a Monte Carlo simulation for price, production, decline, and capex uncertainty"
 ```
 
-## Upstream / downstream
+## Backend Contract
 
-- **Upstream:** economist provides deterministic NPV inputs; geologist provides EUR range estimates
-- **Downstream:** investment-chair consumes risked values and probability distributions for final decision
+The agent calls the Risk Analysis-compatible MCP backend configured by `RISK_ANALYSIS_MCP_URL`.
+
+| Backend tool | Agent wrapper |
+|--------------|---------------|
+| `assess_investment_risk` | `assess_investment_risk` |
+| `monte_carlo_simulation` | `monte_carlo_simulation` |
+
+## Orchestrator Boundary
+
+Future orchestration should call the ADK agent as a standalone unit. Keep task routing, fleet learning loops, and deployment control plane work outside this package unless an issue explicitly scopes it here.
+
+## Server Integration
+
+Claude Desktop and other MCP clients can connect directly to `servers/risk-analysis` for Tier 1 tool access. The Tier 2 Risk Analyst behavior remains in ADK and uses the same backend URL.
