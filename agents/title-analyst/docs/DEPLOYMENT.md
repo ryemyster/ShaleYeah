@@ -1,18 +1,41 @@
-# Deployment — @shaleyeah/title-analyst
+# Deployment — Title Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#372](https://github.com/ryemyster/ShaleYeah/issues/372).
+The Title Analyst agent deploys as an ADK/Python unit. The Title MCP server deploys separately and may remain TypeScript/pnpm.
 
-## Environment variables (planned)
+## Required Pairing
+
+| Unit | Path | Runtime |
+|------|------|---------|
+| Title Analyst agent | `agents/title-analyst` | ADK/Python |
+| Title MCP backend | `servers/title` | TypeScript/pnpm MCP server |
+
+Set `TITLE_MCP_URL` in the Title Analyst runtime to the reachable Title MCP endpoint.
+
+## Environment
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `TITLE_MCP_URL` | No | `http://localhost:3010` | title server URL |
-| `PORT` | No | `4010` | Agent endpoint port |
+| `TITLE_MCP_URL` | No | `http://localhost:3010` | Title-compatible MCP backend URL |
+| `TITLE_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
-## Pair ports
+Provider credentials depend on the selected ADK model and deployment target.
 
-| Service | Port |
-|---------|------|
-| title (Tier 1) | 3010 |
-| title-analyst (Tier 2) | 4010 |
+## Local Production Smoke
+
+```bash
+cd agents/title-analyst
+uv run pytest
+uv run python -m py_compile app/agent.py app/title_mcp.py
+agents-cli info
+```
+
+With Title running:
+
+```bash
+TITLE_MCP_URL=http://localhost:3010 agents-cli run \
+  "Examine ownership for Section 12 in Reeves County, Texas"
+```
+
+## Cleanup Rule
+
+Do not add deployment scripts that require npm/pnpm inside `agents/title-analyst`. If deployment needs TypeScript, it belongs in `servers/title`, `sdk`, `orchestrator`, or shared workspace automation.

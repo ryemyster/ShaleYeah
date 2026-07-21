@@ -1,16 +1,58 @@
-# Development — @shaleyeah/title-analyst
+# Development Guide — Title Analyst ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#372](https://github.com/ryemyster/ShaleYeah/issues/372).
+## Prerequisites
 
-## Implementation checklist
+```bash
+uv
+agents-cli
+```
 
-1. Write failing tests — copy `agents/geologist/tests/`, rename `titleAnalyst`/`title`, port `3010`
-2. Create `src/agent/index.ts` from `.claude/rules/agent-template.md`
-3. Create `src/agent/title-client.ts` — copy `geowiz-client.ts`, rename to `callTitleTool`
-4. Run tests until green; uncomment export; run `/pre-commit`
+## Setup
 
-## Notes
+```bash
+cd agents/title-analyst
+uv sync --extra eval
+```
 
-- Env var: `TITLE_MCP_URL`
-- `title_opinion`: `type: "command"`, `destructive: true`, `requiresHumanApproval: true`, `modelRequirement: "deep-reasoning"`
-- `curative_needs`: `modelRequirement: "deep-reasoning"` (multi-document inference)
+## ADK Package-Local Workflow
+
+```bash
+cd agents/title-analyst
+agents-cli info
+agents-cli install
+agents-cli run "Examine ownership for Section 12 in Reeves County, Texas"
+agents-cli eval run
+```
+
+`app/agent.py` is the target authoring surface for Title Analyst reasoning, instructions, and ADK tools. `app/title_mcp.py` owns the ADK-side Title MCP execution paths.
+
+This package intentionally has no npm/package.json/TypeScript agent surface. `servers/title` may remain TypeScript/pnpm; the Title Analyst agent itself is ADK/Python.
+
+## TDD Workflow
+
+```bash
+cd agents/title-analyst
+uv run pytest
+uv run python -m py_compile app/agent.py app/title_mcp.py
+agents-cli info
+```
+
+## Test Suites
+
+| File | What it tests | Live server needed? |
+|------|--------------|-------------------|
+| `tests/test_adk_project_shape.py` | Package-local ADK markers, root-boundary regression, and no dangling npm surface | No |
+| `tests/test_adk_mcp_execution_shape.py` | ADK-owned Title MCP execution boundaries | No |
+| `tests/test_adk_eval_harness_shape.py` | ADK eval dataset/config shape and minimum case coverage | No |
+
+## Adding A New Tool
+
+1. Add or update the wrapper in `app/title_mcp.py`.
+2. Register the wrapper in `app/agent.py`.
+3. Make sure the corresponding tool exists in `servers/title/src/index.ts` or open an issue against that server.
+4. Add or update pytest coverage under `tests/`.
+5. Run `uv run pytest`, `uv run python -m py_compile app/agent.py app/title_mcp.py`, and `agents-cli info`.
+
+## Safety Boundary
+
+The agent can provide title diligence and curative guidance. It must not present final clean-title or legal approval without human legal or land review.
