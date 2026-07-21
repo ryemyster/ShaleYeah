@@ -64,6 +64,7 @@ gitleaks-report.json
 # Personal agent-runtime tooling — every contributor picks their own tool and
 # workflow; none of it is checked in. Covers config dirs, entrypoint MD files,
 # and local state for Claude Code, Antigravity, Codex, Cursor, Windsurf, etc.
+.claude
 .claude/
 .claude.json
 .agents/
