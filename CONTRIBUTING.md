@@ -23,17 +23,25 @@ git checkout -b issue-<number>-<slug>
 
 Use a spec-driven, issue-first workflow.
 
-1. Write the issue as a small, independently executable block.
-2. Record the operating mode, boundaries, inputs, outputs, and exit criteria.
-3. Build on a branch cut from `develop`.
-4. Run the full local lifecycle for the affected package(s).
-5. Keep displaced code deleted unless an adapter is explicitly required.
-6. Open a PR back into `develop` when the unit is clean.
+1. Write implementation work with the **Implementation Spec** issue template.
+2. Record the role, use case, operating mode, boundaries, inputs, outputs, HITL, memory, runtime, tests/evals, trust notes, topology impact, deletion/migration notes, non-goals, and dependencies.
+3. Include Given/When/Then behavior and at least one failure case.
+4. Get maintainer approval on the issue plan before code changes.
+5. Build on a branch cut from `develop`.
+6. Run the full local lifecycle for the affected package(s).
+7. Keep displaced code deleted unless an adapter is explicitly required.
+8. Open a PR back into `develop` when the unit is clean.
 
 Issue classes:
 
 - Isolated work: branch from `develop`, build, verify, PR back to `develop`.
 - Cross-issue work: treat as asynchronous and block on the upstream issue or contract.
+- Process-only work: use the template, mark runtime and memory as not applicable, and still define verification.
+
+The template is enforced in two places:
+
+- GitHub issue forms require the implementation fields when creating a new implementation issue.
+- `pnpm check:issue-template` verifies that the required spec fields, planning gate, failure case prompt, and deletion/migration prompt remain present in the template.
 
 ## Local Agent Tooling
 
