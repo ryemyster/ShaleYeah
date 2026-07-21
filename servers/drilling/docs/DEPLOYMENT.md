@@ -44,10 +44,10 @@ services:
     ports:
       - "3003:3003"
   drilling-engineer:
-    image: shaleyeah/drilling-engineer:latest
+    image: shaleyeah/drilling-engineer-adk:latest
     environment:
       DRILLING_MCP_URL: http://drilling:3003
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      DRILLING_ENGINEER_ADK_MODEL: gemini-flash-latest
     depends_on: [drilling]
 ```
 
@@ -65,4 +65,4 @@ curl -X POST http://kong:8001/services/drilling/routes -d paths[]=/mcp/drilling
 - [ ] `ANTHROPIC_API_KEY` set and valid
 - [ ] `PORT=3003` set
 - [ ] Registered with Kong at `/mcp/drilling`
-- [ ] Paired with `drilling-engineer` agent at port 4003
+- [ ] Paired with the ADK/Python `agents/drilling-engineer` package through `DRILLING_MCP_URL`

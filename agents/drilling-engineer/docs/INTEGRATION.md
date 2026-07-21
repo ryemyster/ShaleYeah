@@ -1,20 +1,29 @@
-# Integration Guide — @shaleyeah/drilling-engineer
+# Integration — Drilling Engineer ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#374](https://github.com/ryemyster/ShaleYeah/issues/374).
+Integrate with Drilling Engineer through the ADK project in `agents/drilling-engineer`. Do not import a TypeScript agent package from this directory; that adapter has been retired.
 
-## Planned interface
+## Local ADK Invocation
 
-```typescript
-import { runDrillingEngineerTask } from "@shaleyeah/drilling-engineer";
-
-const result = await runDrillingEngineerTask(
-    "Design a wellbore program for a 10,000 ft vertical well in the Permian Basin.",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
+```bash
+cd agents/drilling-engineer
+DRILLING_MCP_URL=http://localhost:3003 agents-cli run \
+  "Assess drilling risks for a deep horizontal shale well at 13500 ft"
 ```
 
-## Upstream / downstream
+## Backend Contract
 
-- **Upstream:** development-planner passes target well locations
-- **Downstream:** economist consumes AFE estimates for NPV modeling
-- **Fleet coordinator:** investment-chair synthesizes drilling program into final decision
+The agent calls the Drilling-compatible MCP backend configured by `DRILLING_MCP_URL`.
+
+| Backend tool | Agent wrapper |
+|--------------|---------------|
+| `design_drilling_program` | `design_drilling_program` |
+| `estimate_well_costs` | `estimate_well_costs` |
+| `assess_drilling_risks` | `assess_drilling_risks` |
+
+## Orchestrator Boundary
+
+Future orchestration should call the ADK agent as a standalone unit. Keep task routing, fleet learning loops, runtime eval nodes, and deployment control plane work outside this package unless an issue explicitly scopes it here.
+
+## Server Integration
+
+Claude Desktop and other MCP clients can connect directly to `servers/drilling` for Tier 1 tool access. The Tier 2 Drilling Engineer behavior remains in ADK and uses the same backend URL.

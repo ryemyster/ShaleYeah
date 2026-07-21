@@ -16,14 +16,8 @@ PORT=3003 ANTHROPIC_API_KEY=sk-... pnpm start
 
 # Terminal 2
 cd agents/drilling-engineer
-DRILLING_MCP_URL=http://localhost:3003 npx tsx tests/mcp-client.test.ts
-```
-
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-# Expect: authentication error (proves synthesizeDrillingAnalysisWithLLM was reached)
+DRILLING_MCP_URL=http://localhost:3003 agents-cli run \
+  "Design a drilling program for a horizontal Wolfcamp well at 10000 ft"
 ```
 
 ## Test the fallback path

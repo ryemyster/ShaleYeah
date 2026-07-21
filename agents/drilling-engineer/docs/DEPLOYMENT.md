@@ -1,20 +1,30 @@
-# Deployment — @shaleyeah/drilling-engineer
+# Deployment — Drilling Engineer ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#374](https://github.com/ryemyster/ShaleYeah/issues/374).
+The Drilling Engineer agent is a package-local ADK/Python project. It should remain deployable independently from the Drilling MCP backend and from the optional orchestrator.
 
-## Environment variables (planned)
+## Environment Variables
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `DRILLING_MCP_URL` | No | `http://localhost:3003` | drilling server URL |
-| `PORT` | No | `4003` | Agent endpoint port |
+| `DRILLING_MCP_URL` | No | `http://localhost:3003` | Drilling-compatible MCP backend URL |
+| `DRILLING_ENGINEER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id |
 
-## Pair ports
+## Deployment Boundary
 
-| Service | Port |
-|---------|------|
-| drilling (Tier 1) | 3003 |
-| drilling-engineer (Tier 2) | 4003 |
+- Agent package: `agents/drilling-engineer`
+- Backend MCP server: `servers/drilling`
+- Shared contracts: `sdk`
+- Optional control plane: `orchestrator`
 
-See `agents/geologist/docs/DEPLOYMENT.md` for the full deployment reference pattern.
+Do not hardcode a single deployment target into this package. The ADK app should remain portable across local execution, containerized runs, Cloud Run, GKE, Agent Runtime, or another compatible runtime.
+
+## Pre-Deployment Checks
+
+```bash
+cd agents/drilling-engineer
+uv run pytest
+uv run python -m py_compile app/agent.py app/drilling_mcp.py
+agents-cli info
+```
+
+Run `agents-cli eval run` when provider credentials and eval runtime are configured.
