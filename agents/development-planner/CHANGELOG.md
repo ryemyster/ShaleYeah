@@ -1,19 +1,18 @@
-# Changelog — @shaleyeah/development-planner
+# Changelog — Development Planner
 
 ## [Unreleased]
 
-### Fixed
-
-- **`executeLoop` permanent halt guard + injectable `callLLM`** (#425) — `else` branch now returns immediately when `execResult.retryable === false` (blocking evals, scope rejections), matching geologist Level 2 reference. Also wires `options.callLLM` injectable through to `executeLoop` so tests can drive the model without a real API key. Adds 2 contract tests verifying loop halt on permanent failure.
-
-## [0.1.0] — 2026-06-10
-
 ### Added
-- Implemented Tier 2 development-planner agent (Issue #373)
-- `developmentPlannerManifest` — AgentManifest with 3 tools: `create_development_plan`, `estimate_project_timeline`, `monitor_development_progress`
-- `developmentPlannerConfig` — AgentRuntimeConfig with port 3011, `DEVELOPMENT_MCP_URL` env var, autonomy="reviewed"
-- `callDevelopmentTool` — MCP HTTP client with 30s timeout, RetryableToolError/PermanentToolError classification
-- `runDevelopmentPlannerTask` — Layer 2 LLM-driven execution loop (MAX_STEPS=8, executeWithRetry with 3 retries at 500ms/1000ms/2000ms)
-- `createDevelopmentPlannerRuntime` / `createDevelopmentPlannerEndpoint` — factory functions
-- `tests/mcp-client.test.ts` — 12 tests: client exports, URL/transport, HITL gate, runTask API key validation
-- `tests/agent.test.ts` — 42 tests: manifest validation, progressive discovery, model routing, HITL policy, evals, health endpoint
+
+- Converted the Development Planner into a package-local ADK/Python agent for #534.
+- Added Python MCP wrappers for `create_development_plan`, `estimate_project_timeline`, and `monitor_development_progress`.
+- Added pytest coverage for ADK project shape, MCP wrapper parity, eval harness shape, and the no-dangling-npm agent boundary.
+- Added ADK eval fixtures for control, edge, and human-review boundary cases.
+
+### Changed
+
+- Rewrote package docs around the current ADK app: what the agent does, how it works, how to run/test/deploy it, and where human review is required.
+
+### Removed
+
+- Removed the old TypeScript agent package surface: `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only agent tests.

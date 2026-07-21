@@ -1,16 +1,41 @@
-# How It Works — @shaleyeah/development-planner
+# How It Works
 
-> **Status: Planned** — Not yet implemented. See [#373](https://github.com/ryemyster/ShaleYeah/issues/373).
+The Development Planner helps a user think through how an oil and gas asset could be developed over time.
 
-## The simple version (for a 12-year-old)
+It collects or infers the planning task, identifies missing inputs, chooses a Development MCP tool, and turns the tool output into planning guidance. It should be explicit when the result is provisional.
 
-Imagine you own a big farm and you want to put in 50 apple trees. You can't just plant them anywhere — they need enough space so their roots don't fight each other, and you want to pick them in a smart order so you're not hauling bushels from the wrong side every day.
+## Main Inputs
 
-The **development planner** does the same thing for oil wells. It figures out the best places to put each well, how far apart they should be so they don't steal oil from each other, and what order to drill them in so you spend money wisely.
+Useful inputs include:
 
-## The technical version
+- project name and location
+- reserves
+- well count
+- target schedule
+- capital budget
+- surface, environmental, regulatory, facility, or technical constraints
+- progress metrics for active projects
 
-1. **development server (Tier 1):** Runs well spacing optimization, pad placement geometry, infill screening, and phased development scheduling.
-2. **development-planner agent (Tier 2):** ReAct loop — takes reservoir and economic constraints, sequences the right spatial and scheduling calculations, produces a field development plan.
+If those inputs are missing, the agent should ask for them or explain the assumptions needed for a provisional answer.
 
-`development_schedule` uses `deep-reasoning` because it involves multi-constraint optimization (capital pacing, rig availability, infrastructure readiness).
+## Tool Selection
+
+| User Need | Tool |
+|-----------|------|
+| Draft a field-development plan | `create_development_plan` |
+| Estimate phases, milestones, or schedule risk | `estimate_project_timeline` |
+| Summarize active-project progress | `monitor_development_progress` |
+
+The agent uses `plan_development_tool_call` to explain the intended backend call and the ADK-to-MCP boundary.
+
+## Output Style
+
+Good responses should:
+
+- ground conclusions in tool output
+- separate known facts from assumptions
+- name missing inputs that affect confidence
+- call out schedule, budget, infrastructure, and operating constraints
+- defer final approval or authorization decisions to humans
+
+The agent should not invent reserves, budgets, facility availability, regulatory status, or partner commitments.

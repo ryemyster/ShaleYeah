@@ -1,33 +1,28 @@
-# Development — @shaleyeah/server-development
+# Development — Development MCP Server
+
+Work here when the Development MCP tool contracts or deterministic backend behavior changes. Work in `agents/development-planner` when the ADK agent instructions, tool-selection behavior, evals, or docs change.
 
 ## Setup
 
 ```bash
 cd servers/development
-pnpm install && pnpm build
+pnpm install
+pnpm build
 ```
 
-## Test commands
+## Tests
 
 ```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-development
+cd servers/development
+pnpm test
+pnpm build
+pnpm lint
 ```
 
-## LLM wiring checklist
+## Boundaries
 
-- [ ] Both tools call `callLLM()` for synthesis
-- [ ] Fallback: `deriveDefaultDevelopmentOutlook(wellCount, budget, risks)` exported
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
-
-## Key constraints
-
-- No `Math.random()` in fallback functions
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- Governance (HITL, audit) lives in the `development-planner` agent, not here
-
-## Linting
-
-```bash
-cd servers/development && npx biome check src/
-```
+- TypeScript and pnpm are correct for this MCP server.
+- Do not import from `agents/development-planner`.
+- Do not implement HITL approval decisions here; the agent defers those in its prompt, tests, and evals.
+- Do not import provider SDKs directly; use shared `callLLM` support from `@shaleyeah/sdk`.
+- Keep deterministic fallback logic stable and covered by tests.

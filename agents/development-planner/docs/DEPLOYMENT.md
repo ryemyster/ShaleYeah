@@ -1,18 +1,43 @@
-# Deployment — @shaleyeah/development-planner
+# Deployment
 
-> **Status: Planned** — Not yet implemented. See [#373](https://github.com/ryemyster/ShaleYeah/issues/373).
+Deploy the Development Planner as a Python ADK app from `agents/development-planner`. Deploy `servers/development` separately as the MCP backend.
 
-## Environment variables (planned)
+## Required Runtime Pieces
+
+- Python 3.11 through 3.13.
+- ADK dependencies from `pyproject.toml`.
+- Network access from the agent runtime to the Development MCP backend.
+- Model-provider credentials supplied by the runtime environment.
+
+## Environment Variables
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011` | development server URL |
-| `PORT` | No | `4011` | Agent endpoint port |
+| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011` | Development MCP backend URL |
+| `DEVELOPMENT_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK root-agent model |
 
-## Pair ports
+## Deployment Targets
 
-| Service | Port |
-|---------|------|
-| development (Tier 1) | 3011 |
-| development-planner (Tier 2) | 4011 |
+The package is portable. Valid targets include local ADK, a container, Cloud Run, GKE, Agent Runtime, Fly.io, or another Python-capable runtime.
+
+Keep these units independent:
+
+- The agent deploys from `agents/development-planner`.
+- The MCP backend deploys from `servers/development`.
+- Shared contracts stay in the monorepo shared packages until extracted.
+
+## Pre-Deploy Checks
+
+```bash
+cd agents/development-planner
+uv run pytest
+uv run python -m py_compile app/agent.py app/development_mcp.py
+```
+
+For the backend:
+
+```bash
+cd servers/development
+pnpm test
+pnpm build
+```
