@@ -2,41 +2,49 @@
 
 ## Who calls drilling?
 
-The `drilling-engineer` agent (`agents/drilling-engineer/`) connects to drilling over HTTP using `StreamableHTTPClientTransport`.
+The ADK/Python `drilling-engineer` agent (`agents/drilling-engineer/`) connects to drilling over HTTP using the Python MCP Streamable HTTP client.
 
 ## Example call (agent side)
 
-```typescript
-import { callDrillingTool } from "./drilling-client.js";
+```python
+from app.drilling_mcp import design_drilling_program
 
-const result = await callDrillingTool(
-    "http://localhost:3003",
-    "design_drilling_program",
-    {
-        wellParameters: {
-            targetDepth: 10500,
-            wellType: "horizontal",
-            formation: "wolfcamp",
-        },
-        location: {
-            latitude: 31.9686,
-            longitude: -99.9018,
-            surface: "Midland Basin surface pad",
-        },
-        constraints: {
-            budget: 8000000,
-            timeline: "Q3 2026",
-            environmental: ["water disposal", "flaring restriction"],
-        },
+result = await design_drilling_program(
+    well_parameters={
+        "targetDepth": 10500,
+        "wellType": "horizontal",
+        "formation": "wolfcamp",
     },
-);
+    constraints={
+        "budget": 8000000,
+        "timeline": "Q3 2026",
+    },
+)
 ```
 
 ## Tool call reference
 
 | Tool | Required args | Returns |
 |------|--------------|---------|
-| `design_drilling_program` | `wellParameters`, `location` | Full program: trajectory, casing, costs, risks, interpretation |
+| `design_drilling_program` | `wellParameters` | Program risk, casing, mud, completion, considerations, recommendation |
+| `estimate_well_costs` | `wellParameters` | Drilling, completion, facilities, total cost, cost/ft, estimated days |
+| `assess_drilling_risks` | `wellParameters` | Geological, operational, environmental, and overall risk with mitigations |
+
+## Direct MCP Input Shape
+
+```json
+{
+  "wellParameters": {
+    "targetDepth": 10500,
+    "wellType": "horizontal",
+    "formation": "wolfcamp"
+  },
+  "constraints": {
+    "budget": 8000000,
+    "timeline": "Q3 2026"
+  }
+}
+```
 
 ## Upstream dependencies
 
@@ -53,8 +61,8 @@ Anthropic API
 ```
 drilling (port 3003)
   ↑ MCP over HTTP
-drilling-engineer agent (port 4003)
-  ↑ LocalAgentRuntime
+drilling-engineer ADK agent
+  ↑ agents-cli / ADK runtime
 Orchestrator / API client
 ```
 

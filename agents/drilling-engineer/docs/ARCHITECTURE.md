@@ -1,35 +1,85 @@
-# Architecture — @shaleyeah/drilling-engineer
+# Architecture — Drilling Engineer ADK Agent
 
-> **Status: Planned** — Not yet implemented. See [#374](https://github.com/ryemyster/ShaleYeah/issues/374).
+`agents/drilling-engineer` is the package-local ADK/Python project for the Drilling Engineer role. The monorepo root remains workspace coordination only.
 
-## Planned topology
+## Package Boundary
+
+| Path | Purpose |
+|------|---------|
+| `agents-cli-manifest.yaml` | agents-cli project marker for this package |
+| `.agents-cli-spec.md` | reference-pair spec and package boundary |
+| `pyproject.toml` | Python ADK dependencies |
+| `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
+| `app/drilling_mcp.py` | Python MCP client and Drilling execution wrappers |
+| `tests/` | pytest shape tests plus ADK eval dataset/config |
+| `servers/drilling` | independent TypeScript MCP backend |
+
+The Drilling Engineer agent intentionally has no `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, `dist/agent/`, or TypeScript agent tests. TypeScript/pnpm remains valid for the Drilling MCP server and shared workspace packages.
+
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Drilling Engineer is a stand-alone specialist that equips package-local instructions, eval criteria, and Drilling MCP tools when drilling diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #532.
+
+Graph-based workflow is reserved for a later issue if drilling review needs deterministic nodes, conditional routes, stateful sessions, runtime eval nodes, or explicit HITL gates as workflow nodes.
+
+## Execution Path
 
 ```
-Orchestrator / Caller
-        │
-        ▼
-┌──────────────────────────────┐
-│ @shaleyeah/drilling-engineer │  Tier 2 — ReAct loop + governance
-│ (port 4003)                  │  LocalAgentRuntime: HITL · scope · audit
-└────────────┬─────────────────┘
-             │ MCP/HTTP
-             ▼
-┌────────────────────────┐
-│ @shaleyeah/server-     │  Tier 1 — stateless tool server
-│ drilling (port 3003)   │  Zod-validated inputs, structured error types
-└────────────────────────┘
+ADK runner / agents-cli
+  |
+  v
+app/agent.py
+  |
+  |-- drilling_backend_status()
+  |-- plan_drilling_tool_call()
+  |-- design_drilling_program()
+  |-- estimate_well_costs()
+  `-- assess_drilling_risks()
+       |
+       v
+app/drilling_mcp.py
+       |
+       v
+DRILLING_MCP_URL, default http://localhost:3003
+       |
+       v
+servers/drilling
 ```
 
-## Planned tools
+## Tool Parity
 
-| Tool | Type | Model | Description |
-|------|------|-------|-------------|
-| `drilling-engineer.wellbore_design` | query | standard-analysis | Wellbore trajectory and casing program |
-| `drilling-engineer.afe_estimate` | query | standard-analysis | Authority-for-expenditure cost estimate |
-| `drilling-engineer.bha_selection` | query | standard-analysis | Bottom-hole assembly configuration |
-| `drilling-engineer.hazard_assessment` | query | deep-reasoning | Formation pressure and drilling hazard flags |
-| `drilling-engineer.mud_program` | query | standard-analysis | Drilling fluid design |
+| Drilling MCP tool | ADK Python wrapper |
+|-------------------|--------------------|
+| `design_drilling_program` | `design_drilling_program` |
+| `estimate_well_costs` | `estimate_well_costs` |
+| `assess_drilling_risks` | `assess_drilling_risks` |
 
-## Arcade patterns
+## Eval Harness
 
-All Tier 2 agents implement the same six Arcade governance patterns. See `agents/geologist/docs/ARCHITECTURE.md` for the complete reference implementation.
+Behavior evals live under `tests/eval/`.
+
+| File | Purpose |
+|------|---------|
+| `tests/eval/datasets/drilling-engineer-adk-reference.json` | Control, edge, and capability-boundary cases for ADK tool selection |
+| `tests/eval/eval_config.yaml` | Deterministic hard-boundary checks plus LLM-judged response quality |
+
+Run from `agents/drilling-engineer`:
+
+```bash
+agents-cli eval run
+```
+
+## Runtime Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `DRILLING_MCP_URL` | `http://localhost:3003` | Drilling-compatible MCP backend URL |
+| `DRILLING_ENGINEER_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
+
+The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Drilling MCP backend is reachable when execution tools are invoked.
+
+## HITL Boundary
+
+Drilling Engineer may analyze well parameters, design provisional drilling programs, estimate costs, and assess risks. It must not present final AFE approval, spud approval, field-execution authorization, safety-critical approval, or an unrevised final drilling program without human engineering review.

@@ -2,22 +2,24 @@
 
 ## Role
 
-Tier 1 MCP tool server. Designs drilling programs, optimizes well trajectories, and estimates drilling costs. Paired with the `drilling-engineer` agent (port 4003).
+Tier 1 MCP tool server. Designs drilling programs, estimates well costs, and assesses drilling risks. Paired with the ADK/Python Drilling Engineer agent in `agents/drilling-engineer`.
 
 ## Tool inventory
 
 | Tool | Handler | LLM? | Purpose |
 |------|---------|------|---------|
-| `design_drilling_program` | `synthesizeDrillingAnalysisWithLLM()` | ✅ `callLLM` | Well program: trajectory, casing, cost estimate, risk assessment |
+| `design_drilling_program` | `synthesizeDrillingProgramWithLLM()` | yes, with deterministic fallback | Program risk, casing, mud, completion type, and recommendation |
+| `estimate_well_costs` | `synthesizeWellCostsWithLLM()` | yes, with deterministic fallback | Drilling, completion, facilities, total cost, cost/ft, and estimated days |
+| `assess_drilling_risks` | `synthesizeDrillingRisksWithLLM()` | yes, with deterministic fallback | Geological, operational, environmental, and overall risk with mitigations |
 
 ## LLM + fallback pattern
 
-Computes deterministic cost/timeline estimates from well parameters, then calls `callLLM()` once for Perforator Maximus to interpret risks. Falls back to `deriveDefaultDrillingInterpretation()` if the API is unavailable.
+Computes deterministic drilling outputs from well parameters, then calls `callLLM()` for Perforator Maximus synthesis. Each tool falls back to deterministic domain logic if the API is unavailable.
 
 ```typescript
-const interpretation = await synthesizeDrillingAnalysisWithLLM(params);
+const program = await synthesizeDrillingProgramWithLLM(params);
 // Falls back to:
-const interpretation = deriveDefaultDrillingInterpretation(wellType, targetDepth, formation);
+const program = deriveDrillingProgram(wellType, targetDepth, formation);
 ```
 
 ## Transport modes
@@ -28,17 +30,20 @@ const interpretation = deriveDefaultDrillingInterpretation(wellType, targetDepth
 ## Data flow
 
 ```
-MCP tool call: design_drilling_program { wellParameters, location, constraints }
-  → Compute deterministic cost (depth × rate factor by well type)
-  → synthesizeDrillingAnalysisWithLLM(params) → callLLM()
-  ↘ fallback: deriveDefaultDrillingInterpretation()
-  → Return full drilling program JSON
+MCP tool call
+  → design_drilling_program | estimate_well_costs | assess_drilling_risks
+  → Normalize formation identifier
+  → synthesize...WithLLM(params) → callLLM()
+  ↘ fallback: derive...()
+  → Return structured MCP result with confidence
 ```
 
 ## Key exports
 
-`deriveDefaultDrillingInterpretation(wellType, depth, formation)` — exported, used by tests.
-`synthesizeDrillingAnalysisWithLLM(params)` — exported, used by anti-stub tests.
+`deriveDrillingProgram(wellType, depth, formation)` — exported, used by tests.
+`deriveWellCostBreakdown(wellType, depth)` — exported, used by tests.
+`deriveDrillingRiskProfile(wellType, depth, formation, environmentalConstraints)` — exported, used by tests.
+`synthesize...WithLLM(params)` functions — exported, used by anti-stub tests.
 
 ## Dependencies
 

@@ -1,17 +1,27 @@
-# Changelog — @shaleyeah/drilling-engineer
+# Changelog — Drilling Engineer ADK Agent
 
 ## [Unreleased]
 
-### Fixed
+### Added
 
-- **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM** (#426) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), and `callLLM?` injectable option. Matching the geologist Level 2 reference. 2 new contract tests.
+- **Drilling Engineer ADK migration** (#532) — added package-local ADK/Python project shape with `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/drilling_mcp.py`.
+- **Drilling MCP tool parity** (#532) — added ADK Python wrappers for `design_drilling_program`, `estimate_well_costs`, and `assess_drilling_risks`.
+- **Architecture classification** (#532) — documented and tested Drilling Engineer as a Stand-alone Agent with Progressive Disclosure (Skills), not a hierarchical, graph-based, ambient, or capability-first agent for this slice.
+- **HITL boundary coverage** (#532) — documented and tested deferral for final drilling programs, AFE approval, spud approval, field-execution authorization, and safety-critical approval.
+- **ADK eval coverage** (#532) — added package-local eval dataset/config coverage for control, edge, capability-boundary, architecture-boundary, and tool-selection cases.
+- **Python regression tests** (#532) — added pytest coverage for ADK project shape, Drilling MCP wrapper parity, eval harness shape, architecture classification, HITL boundary markers, and the absence of dangling npm/TypeScript agent surfaces.
+
+### Changed
+
+- **Agent runtime surface** (#532) — Drilling Engineer is now an ADK/Python agent package. New Drilling Engineer reasoning/runtime work belongs in `app/agent.py` and `app/drilling_mcp.py`.
+- **Documentation** (#532) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/drilling` MCP backend.
+
+### Removed
+
+- **TypeScript agent adapter** (#532) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only agent tests from `agents/drilling-engineer`.
 
 ## [0.1.0] — 2026-06-10
 
 ### Added
-- Initial Tier 2 agent implementation — `drillingEngineerManifest`, `drillingEngineerConfig`, `runDrillingEngineerTask` (#374)
-- `src/agent/drilling-client.ts` — MCP HTTP client with 30s timeout, RetryableToolError/PermanentToolError classification
-- `src/agent/index.ts` — 3-tool manifest (`design_drilling_program`, `estimate_well_costs`, `assess_drilling_risks`), LocalAgentRuntime wiring, Layer 2 LLM execution loop
-- `tests/mcp-client.test.ts` — 13 tests: HTTP client, Layer 2 runTask, SDK error exports, HITL gate
-- `tests/agent.test.ts` — 34 contract tests: manifest validation, discovery, model routing, HITL, evals, scope enforcement, blocking eval halt
-- Pairs with `servers/drilling` (default port 3003, `DRILLING_MCP_URL` env var)
+
+- Historical TypeScript Tier 2 implementation paired with `servers/drilling`. This package surface is retired by the #532 ADK migration; new Drilling Engineer agent work belongs in `app/`.

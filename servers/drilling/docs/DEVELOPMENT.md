@@ -26,7 +26,7 @@ pnpm turbo test --filter=@shaleyeah/server-drilling
 - [ ] `synthesizeDrillingAnalysisWithLLM()` calls `callLLM()` from `@shaleyeah/sdk`
 - [ ] `deriveDefaultDrillingInterpretation()` is deterministic (no `Math.random()`)
 - [ ] Handler wraps with try/catch, falls back on any error
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
+- [ ] Server tests cover deterministic fallbacks without live credentials.
 
 ## Key constraints
 
