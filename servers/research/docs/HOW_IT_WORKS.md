@@ -1,41 +1,29 @@
-# How Research Works — @shaleyeah/server-research
+# How Research Works
 
-## Plain language (12-year-old version)
+The Research server gives callers structured tools for gathering and synthesizing oil and gas market intelligence.
 
-Before you invest in a basin, it helps to know what's happening there — who's drilling, what the industry is saying, what the analysts think. Research is like having an expert who can quickly browse the web, read articles about the oil and gas market, and summarize what's relevant for your investment decision.
+The ADK agent decides what the user is asking for. This server executes the requested MCP tool and returns structured output.
 
-You tell it what topic and region you care about. It fetches relevant content, then asks Claude to synthesize the key findings into a structured research summary.
-
-## Technical explanation
-
-Research is a **Tier 1 MCP tool server** — stateless. It exposes 2 market intelligence tools backed by web fetching.
-
-### Tool inventory
+## Tools
 
 | Tool | What it does |
-|------|-------------|
-| `conduct_market_research` | Fetches web content about a topic + region, synthesizes into market summary |
-| `analyze_competition` | Profiles competitor activity and strategic positioning in a basin |
+|------|--------------|
+| `conduct_market_research` | Builds a research summary with source references, findings, competitive intelligence, trends, forecasts, confidence, and recommendations |
+| `analyze_competition` | Builds operator or competitor entries with activities, strategy, threat level, and data-source metadata |
 
-### Request lifecycle
+## Request Lifecycle
 
+```text
+MCP caller
+  -> tool name plus JSON arguments
+  -> validation in src/index.ts
+  -> domain helper in src/tools/
+  -> source fetches or deterministic fallback inputs
+  -> optional callLLM synthesis
+  -> deterministic fallback if LLM is unavailable
+  -> structured MCP response
 ```
-Agent (research-analyst)
-  → MCP tool call: conduct_market_research { topic, region, scope }
-      ↓
-  Research server (src/index.ts)
-      ↓
-  1. fetchUrl(relevant URLs)     → src/tools/web-fetch.ts
-  2. callLLM(synthesis prompt with raw content)
-     OR fallback: deriveDefaultResearchSummary()
-  3. Return: structured research summary
-```
 
-### Web fetch pattern
+## Fallback Behavior
 
-`web-fetch.ts` is a thin HTTP wrapper — it fetches URLs and returns raw content. No LLM inside. The synthesis happens in the tool handler.
-
-### Transport modes
-
-- **stdio** (default): pipe-based
-- **HTTP** (when `PORT=3008`): `StreamableHTTPServerTransport` — used by the research-analyst agent
+Fallbacks are deterministic. They should return useful intelligence scaffolding without pretending to have verified live market data. If the user needs final approvals, current disclosure authority, reserves language, or verified proprietary-source claims, the ADK agent must defer to human review.

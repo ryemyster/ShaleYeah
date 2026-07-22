@@ -1,60 +1,32 @@
-# Deployment — @shaleyeah/server-research
+# Deployment — Research MCP Server
 
-## Transport modes
+Deploy this package as the Research MCP backend. Deploy the ADK agent from `agents/research-analyst` separately.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3008` | Agent fleet, Docker, Kong |
+## Commands
 
 ```bash
-# stdio mode
-pnpm build && pnpm start
-
-# HTTP mode
+cd servers/research
+pnpm build
 PORT=3008 pnpm start
 ```
 
-## Environment variables
+Without `PORT`, the server runs in stdio mode for local MCP clients. With `PORT=3008`, it runs over Streamable HTTP for the ADK agent or other MCP callers.
+
+## Environment Variables
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Scientius Researchicus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3008`) |
-| `DATA_PATH` | No | `./data` | Path to research data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+| `ANTHROPIC_API_KEY` | No | unset | Enables optional LLM synthesis through shared `callLLM`; deterministic fallback is used when unavailable |
+| `PORT` | No | stdio | Set to `3008` for HTTP transport |
 
-## Docker Compose (agent pair)
+Approved source or subscription credentials should be supplied by deployment infrastructure, not checked into this package.
 
-```yaml
-services:
-  research:
-    image: shaleyeah/research:latest
-    environment:
-      PORT: "3008"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3008:3008"
-  research-analyst:
-    image: shaleyeah/research-analyst:latest
-    environment:
-      RESEARCH_MCP_URL: http://research:3008
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [research]
-```
+## Pairing With The Agent
 
-## Kong gateway
+When the server is deployed somewhere other than `http://localhost:3008`, configure the agent with:
 
 ```bash
-curl -X POST http://kong:8001/upstreams -d name=research
-curl -X POST http://kong:8001/upstreams/research/targets -d target=research:3008
-curl -X POST http://kong:8001/services -d name=research -d host=research
-curl -X POST http://kong:8001/services/research/routes -d paths[]=/mcp/research
+RESEARCH_MCP_URL=https://your-research-mcp.example.com
 ```
 
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3008` set
-- [ ] Registered with Kong at `/mcp/research`
-- [ ] Paired with `research-analyst` agent at port 4008
+The agent and server should remain independently deployable.

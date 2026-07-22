@@ -1,34 +1,24 @@
-# Local Testing — @shaleyeah/server-research
+# Local Testing — Research MCP Server
 
-## Quick start
+Run backend checks from the server package:
 
 ```bash
 cd servers/research
+pnpm test
 pnpm build
-npx tsx tests/server.test.ts
+pnpm lint
 ```
 
-## HTTP mode testing
+To test the ADK agent against this backend:
 
 ```bash
 # Terminal 1
-PORT=3008 ANTHROPIC_API_KEY=sk-... pnpm start
+cd servers/research
+PORT=3008 pnpm start
 
 # Terminal 2
 cd agents/research-analyst
-RESEARCH_MCP_URL=http://localhost:3008 npx tsx tests/mcp-client.test.ts
+RESEARCH_MCP_URL=http://localhost:3008 uv run pytest
 ```
 
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3008` | Server not started in HTTP mode | `PORT=3008 pnpm start` |
-| Fetch failures in tests | Network access | Mock `fetchUrl()` in unit tests |
-| Tests fail to import | Build needed | `pnpm build` first |
+The package-local agent tests mock wrapper calls by default. Running the backend separately is useful when you need to verify end-to-end MCP transport behavior.

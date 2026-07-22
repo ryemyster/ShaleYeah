@@ -1,56 +1,28 @@
-# Integration — @shaleyeah/server-research
+# Integration — Research MCP Server
 
-## Who calls research?
+The Research Analyst ADK agent connects to this server over Streamable HTTP. Other MCP clients may call the same tools directly.
 
-The `research-analyst` agent (`agents/research-analyst/`) connects over HTTP.
+## Start HTTP Mode
 
-## Example call (agent side)
-
-```typescript
-import { callResearchTool } from "./research-client.js";
-
-const result = await callResearchTool(
-    "http://localhost:3008",
-    "conduct_market_research",
-    {
-        topic: "Permian Basin M&A activity",
-        region: "West Texas",
-        scope: "regional",
-        timeframe: "current",
-    },
-);
+```bash
+cd servers/research
+PORT=3008 pnpm start
 ```
 
-## Tool call reference
+## Agent Configuration
 
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `conduct_market_research` | `topic`, `region` | Market research summary with key findings |
-| `analyze_competition` | `competitors`, `basin` | Competitor profiles and positioning |
-
-## Upstream dependencies
-
-Research fetches from the web (via `web-fetch.ts`) and Anthropic API.
-
-```
-Web (HTTP fetches)
-  ↓
-research (port 3008)
-  ↓ callLLM()
-Anthropic API
+```bash
+cd agents/research-analyst
+RESEARCH_MCP_URL=http://localhost:3008 uv run pytest
 ```
 
-## Downstream consumers
+The Python wrapper functions in `agents/research-analyst/app/research_mcp.py` map Python-friendly arguments to the MCP JSON contract.
 
-```
-research (port 3008)
-  ↑ MCP over HTTP
-research-analyst agent (port 4008)
-```
+## Tool Contract Summary
 
-## Error types
+| Tool | Key args |
+|------|----------|
+| `conduct_market_research` | `topic`, optional `scope`, `timeframe`, `sources`, `outputPath` |
+| `analyze_competition` | `region`, optional `competitors`, `analysisType`, `timeframe`, `outputPath`, `matchThreshold` |
 
-```json
-{ "error_type": "retryable", "message": "Fetch timeout — retry" }
-{ "error_type": "permanent", "message": "Invalid scope parameter" }
-```
+See `src/index.ts` for the source-of-truth schemas.
