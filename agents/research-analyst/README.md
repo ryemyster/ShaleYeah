@@ -1,40 +1,54 @@
-# @shaleyeah/research-analyst
+# Research Analyst
 
-O&G market intelligence agent. Pairs with the **research** Tier 1 MCP server to deliver competitive landscape analysis, price forecasting, and evidence-backed recommendations.
+The Research Analyst is the ADK agent for oil and gas market intelligence. It helps gather and synthesize evidence about basins, operators, commodities, regulations, technologies, source URLs, and competitive activity.
 
-Implemented in [#369](https://github.com/ryemyster/ShaleYeah/issues/369). Reference implementation: `agents/geologist/`.
+It does not approve acquisitions, bids, capital allocation, trades, securities disclosures, reserve/resource classifications, legal or regulatory conclusions, publication of confidential research, or sensitive memory promotion. Those decisions need qualified human review.
 
-## Pair
+## What This Package Contains
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-research` | 3008 |
-| Tier 2 (agent) | `@shaleyeah/research-analyst` | 4008 |
+| Path | Purpose |
+|------|---------|
+| `app/agent.py` | ADK root agent, instructions, architecture marker, and tool list |
+| `app/research_mcp.py` | Python MCP client wrappers for `servers/research` |
+| `tests/` | pytest coverage for package shape, MCP wrapper parity, and eval harness shape |
+| `tests/eval/` | ADK eval dataset and metric config for control, edge, and boundary cases |
+| `agents-cli-manifest.yaml` | package-local Agents CLI manifest |
 
-## Quick start
+`servers/research` is the TypeScript MCP backend. This agent package is Python/ADK; backend tool implementation work belongs in the server package.
+
+## How It Works
+
+The agent runs as a stand-alone specialist with progressive disclosure of its Research MCP tools. It decides whether the user needs:
+
+- `conduct_market_research` for market, source, commodity, technology, policy, or regulatory research.
+- `analyze_competition` for operator, competitor, strategy, performance, or regional competitive-landscape work.
+
+The default MCP backend URL is `http://localhost:3008`. Set `RESEARCH_MCP_URL` to point at another compatible Research MCP server.
+
+## Run Locally
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/research && PORT=3008 pnpm start
-
-# Terminal 2 — run a task
 cd agents/research-analyst
-ANTHROPIC_API_KEY=sk-ant-... RESEARCH_MCP_URL=http://localhost:3008 \
-  npx tsx src/agent/index.ts "Research Permian Basin competitive landscape"
+uv run pytest
 ```
 
-## Tools
-
-| Tool | Description |
-|------|-------------|
-| `research-analyst.conduct_market_research` | Web intelligence, trend analysis, price forecasts, LLM synthesis |
-| `research-analyst.analyze_competition` | Competitor profiles, threat classification, strategic benchmarking |
-
-## Tests
+To exercise the MCP path, start the backend separately:
 
 ```bash
-pnpm test   # 47 tests (13 mcp-client + 34 agent contract)
+cd servers/research
+PORT=3008 pnpm start
 ```
+
+Then run ADK or pytest commands from `agents/research-analyst`.
+
+## Environment
+
+| Variable | Required | Default | Purpose |
+|----------|----------|---------|---------|
+| `RESEARCH_MCP_URL` | No | `http://localhost:3008` | Research MCP backend URL |
+| `RESEARCH_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
+
+Provider credentials are supplied by the ADK runtime or deployment environment. Do not check secrets or subscription credentials into this package.
 
 ## Docs
 

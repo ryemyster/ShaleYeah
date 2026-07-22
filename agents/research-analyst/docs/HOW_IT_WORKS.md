@@ -1,16 +1,41 @@
-# How It Works — @shaleyeah/research-analyst
+# How It Works
 
-> **Status: Planned** — Not yet implemented. See [#369](https://github.com/ryemyster/ShaleYeah/issues/369).
+The Research Analyst helps a user gather market intelligence and competitor evidence for oil and gas diligence.
 
-## The simple version (for a 12-year-old)
+It collects or infers the research task, identifies missing scope, chooses a Research MCP tool, and turns the tool output into a source-aware intelligence summary. It should be explicit when evidence is stale, inaccessible, conflicting, or low confidence.
 
-Before a company decides to drill in a new area, they want to know: has anyone else drilled here before? What happened? Are the neighbors doing well?
+## Main Inputs
 
-The **research analyst** is like a private investigator for oil and gas. It searches public permit databases, operator filings, and technical papers to find out what other companies have already learned. That way your company can learn from what worked and avoid what didn't — without having to reinvent the wheel.
+Useful inputs include:
 
-## The technical version
+- topic or research question
+- basin, region, operator, commodity, regulation, or technology scope
+- timeframe
+- preferred public, user-provided, or approved source URLs
+- named competitors or operators
+- required output style
+- confidentiality or sharing constraints
 
-1. **research server (Tier 1):** Queries public databases — state permit APIs, production databases, patent registries, technical journals. Structured search results.
-2. **research-analyst agent (Tier 2):** ReAct loop — interprets the research question, sequences targeted searches, synthesizes findings into an intelligence package.
+If those inputs are missing, the agent should ask for them or explain that only a provisional research plan is possible.
 
-Permit searches use `small-fast` routing (deterministic lookups). Synthesis tasks use `standard-analysis`.
+## Tool Selection
+
+| User Need | Tool |
+|-----------|------|
+| Market, commodity, source, policy, technology, or regulatory research | `conduct_market_research` |
+| Operator, competitor, strategy, performance, or regional competitive landscape | `analyze_competition` |
+
+The agent uses `plan_research_tool_call` to explain the intended backend call and the ADK-to-MCP boundary.
+
+## Output Style
+
+Good responses should:
+
+- ground conclusions in tool output
+- separate cited facts from source-derived inferences and assumptions
+- identify source URLs, source classes, or source gaps
+- name stale, inaccessible, conflicting, or low-confidence evidence
+- provide a concise intelligence summary and follow-up data requests
+- defer final approvals or disclosures to humans
+
+The agent should not invent market facts, paywalled-source contents, reserve classifications, legal conclusions, or public-disclosure language.

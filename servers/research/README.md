@@ -1,6 +1,6 @@
-# @shaleyeah/server-research
+# Research MCP Server
 
-Percival Findmore — Research Analyst — one of the 14 specialist AI agents in the ShaleYeah deal team.
+`servers/research` is the TypeScript MCP backend for oil and gas market intelligence and competitive analysis. The ADK agent lives separately in `agents/research-analyst`.
 
 ## Quick start
 
@@ -19,6 +19,13 @@ Connect via Claude Desktop or any MCP-compatible client:
 pnpm build        # compile to dist/
 pnpm type-check   # type-only, no emit
 ```
+
+## Tools
+
+| Tool | Purpose |
+|------|---------|
+| `conduct_market_research` | Market, commodity, policy, technology, or source-backed research |
+| `analyze_competition` | Regional operator and competitor analysis |
 
 ## Environment
 

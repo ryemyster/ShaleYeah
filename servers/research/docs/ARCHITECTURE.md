@@ -1,46 +1,38 @@
-# Architecture — @shaleyeah/server-research
+# Architecture — Research MCP Server
 
-## Role
+`servers/research` is the TypeScript MCP backend for oil and gas market intelligence and competitive analysis. It is independent from the ADK agent in `agents/research-analyst`.
 
-Tier 1 MCP tool server. Fetches and synthesizes web-based market intelligence, competitive analysis, and industry research. Paired with the `research-analyst` agent (port 4008).
+## Responsibilities
 
-## Tool inventory
+This server owns executable tool contracts, argument validation, source fetching or adapter invocation, deterministic fallbacks, and optional LLM synthesis for:
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `conduct_market_research` | `fetchUrl()` + LLM | ✅ `callLLM` | Market trends, pricing outlook, supply/demand synthesis |
-| `analyze_competition` | `fetchUrl()` + LLM | ✅ `callLLM` | Competitor activity and positioning in a basin |
+| Tool | Purpose |
+|------|---------|
+| `conduct_market_research` | Gather and synthesize market, commodity, policy, technology, or source-specific research |
+| `analyze_competition` | Analyze regional operator or competitor activity, strategy, performance, and threat level |
 
-## Local tool (src/tools/)
+The agent owns natural-language reasoning, source-quality judgment, tool choice, evals, and HITL deferral. The server does not approve investments, disclosures, reserve classifications, legal conclusions, or memory promotion.
 
-`web-fetch.ts` — HTTP fetch wrapper. `fetchUrl(url)` returns typed `FetchResult` with raw content. No LLM calls inside.
+## Runtime Flow
 
-## LLM + fallback pattern
-
-Handlers call `fetchUrl()` to retrieve raw content, then pass it to `callLLM()` for synthesis. Falls back to `deriveDefaultResearchSummary()` and `deriveDefaultCompetitorEntry()` if the API is unavailable.
-
-## Key exports
-
-`deriveDefaultResearchSummary()` and `deriveDefaultCompetitorEntry()` — exported pure functions, used in anti-stub tests.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3008`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: conduct_market_research { topic, region, scope, timeframe }
-  → fetchUrl(relevant URLs)            # web-fetch.ts
-  → callLLM(prompt with raw content)
-  ↘ fallback: deriveDefaultResearchSummary()
+```text
+agents/research-analyst
+Python ADK agent
+        |
+        | Streamable HTTP MCP
+        v
+servers/research
+TypeScript MCP server on PORT=3008
 ```
 
-## Dependencies
+## Transport Modes
 
-```
-@shaleyeah/server-research
-  ├── @shaleyeah/sdk       (MCPServer, callLLM)
-  └── src/tools/web-fetch  (HTTP fetch wrapper)
-```
+- stdio when `PORT` is not set.
+- HTTP with `StreamableHTTPServerTransport` when `PORT=3008`.
+
+## Key Modules
+
+- `src/index.ts` registers MCP tools.
+- `src/tools/market-research.ts` derives market-research output and optional LLM synthesis.
+- `src/tools/competitive-analysis.ts` derives competitor analysis and optional LLM synthesis.
+- `src/tools/web-fetch.ts` fetches approved source URLs and returns text extraction output.
