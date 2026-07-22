@@ -1,18 +1,30 @@
-# Deployment — @shaleyeah/infrastructure-planner
+# Deployment
 
-> **Status: Planned** — Not yet implemented. See [#375](https://github.com/ryemyster/ShaleYeah/issues/375).
+This package is an ADK/Python agent. It can run locally, in a container, on Cloud Run, on Agent Runtime, or in another ADK-compatible environment. The Infrastructure MCP backend remains a separate deployable service.
 
-## Environment variables (planned)
+## Required Wiring
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012` | infrastructure server URL |
-| `PORT` | No | `4012` | Agent endpoint port |
+| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012` | Infrastructure MCP backend URL |
+| `INFRASTRUCTURE_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
 
-## Pair ports
+Provider credentials should come from the deployment environment or secret manager. Do not bake credentials or confidential project data into the image.
 
-| Service | Port |
-|---------|------|
-| infrastructure (Tier 1) | 3012 |
-| infrastructure-planner (Tier 2) | 4012 |
+## Pair Deployment
+
+Deploy `servers/infrastructure` and `agents/infrastructure-planner` independently. Point the agent at the backend with `INFRASTRUCTURE_MCP_URL`.
+
+```yaml
+services:
+  infrastructure:
+    image: shaleyeah/infrastructure:latest
+    environment:
+      PORT: "3012"
+  infrastructure-planner:
+    image: shaleyeah/infrastructure-planner:latest
+    environment:
+      INFRASTRUCTURE_MCP_URL: http://infrastructure:3012
+```
+
+Before production deployment, verify HITL handling for route approval, construction, capital, ROW/easement, midstream commitments, permit certification, PHMSA/UIC approvals, environmental conclusions, public disclosure, and sensitive memory promotion.

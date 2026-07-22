@@ -1,16 +1,23 @@
-# How It Works — @shaleyeah/infrastructure-planner
+# How It Works
 
-> **Status: Planned** — Not yet implemented. See [#375](https://github.com/ryemyster/ShaleYeah/issues/375).
+The Infrastructure Planner turns a development concept into a surface and midstream feasibility analysis.
 
-## The simple version (for a 12-year-old)
+## Flow
 
-After you drill an oil well, the oil doesn't magically appear at a gas station. It has to travel through pipes, get pumped through compressors, and be separated from water before it can be sold.
+1. A user or another agent provides project location, well count, production assumptions, phasing, water-handling needs, surface constraints, or commercial constraints.
+2. The ADK agent identifies the requested infrastructure work and missing inputs.
+3. The agent calls the matching Infrastructure MCP tool over HTTP.
+4. The MCP backend returns structured pipeline, facility, cost, or compliance output.
+5. The agent summarizes the result, separates assumptions from tool output, and states what requires human review.
 
-The **infrastructure planner** designs all the "plumbing" that connects the wells to the market. It figures out how big the pipes need to be, where to put the pump stations, how to handle all the salty water that comes up with the oil, and how much all this equipment will cost.
+## Outputs
 
-## The technical version
+- Pipeline or gathering strategy with takeaway-risk notes.
+- Facility sizing for batteries, separators, compression, and saltwater disposal.
+- Infrastructure CAPEX estimate with assumptions and confidence limits.
+- Compliance and permitting risk summary.
+- Missing-input checklist and human-review deferrals.
 
-1. **infrastructure server (Tier 1):** Runs pipeline hydraulic calculations, compression modeling, SWD capacity analysis, and surface facilities cost estimating.
-2. **infrastructure-planner agent (Tier 2):** ReAct loop — takes the development plan (well locations, production forecasts), sequences the right facilities calculations, produces an infrastructure design and capital estimate.
+## Data Limits
 
-`infrastructure_schedule` uses `deep-reasoning` — it must sequence facilities construction to match well completion timing without creating production bottlenecks.
+Public maps, GIS sources, pipeline capacity data, and permitting sources can be stale or incomplete. The agent should preserve provenance and data vintage when available and avoid treating public GIS output as survey-grade truth.

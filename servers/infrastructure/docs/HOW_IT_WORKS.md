@@ -1,4 +1,4 @@
-# How Infrastructure Works — @shaleyeah/server-infrastructure
+# How Infrastructure Works
 
 ## Plain language (12-year-old version)
 
@@ -8,32 +8,33 @@ Infrastructure is like the logistics expert on the deal team. You tell it how ma
 
 ## Technical explanation
 
-Infrastructure is a **Tier 1 MCP tool server** — stateless. It exposes 1 midstream planning tool backed by LLM synthesis.
+Infrastructure is a stateless MCP tool server. It exposes four focused midstream and surface-infrastructure tools backed by LLM synthesis and deterministic fallbacks.
 
 ### Tool inventory
 
 | Tool | What it does |
 |------|-------------|
-| `plan_infrastructure` | Takeaway capacity assessment, facility sizing, cost estimate, risk level |
+| `plan_pipeline` | Gathering/transmission routing, capacity, and takeaway risk |
+| `size_facilities` | Tank batteries, separators, compression, and SWD sizing |
+| `estimate_costs` | Pipeline, facility, compression, and SWD CAPEX |
+| `assess_compliance` | Permits, approval timeline, and environmental risk |
 
 ### Request lifecycle
 
 ```
 Agent (infrastructure-planner)
-  → MCP tool call: plan_infrastructure { wellCount, productionRate, location }
+  → MCP tool call: plan_pipeline | size_facilities | estimate_costs | assess_compliance
       ↓
   Infrastructure server (src/index.ts)
       ↓
-  1. callLLM(infrastructure planning prompt)
-     OR fallback: deriveDefaultInfrastructureInterpretation(wellCount, productionRate, location)
-  2. Return: { takeawayCapacity, facilitySizing, costEstimate, riskLevel }
+  1. callLLM(domain-specific infrastructure prompt)
+     OR deterministic fallback module
+  2. Return: structured pipeline, facility, cost, or compliance output
 ```
 
 ### Fallback logic
 
-`deriveDefaultInfrastructureInterpretation()` is deterministic:
-- Remote location + large wellCount → "High" takeaway risk
-- Texas + small wellCount (≤3) → "Low" takeaway risk
+The server exports deterministic fallback functions for pipeline planning, facility sizing, cost estimation, and compliance assessment so CI can verify behavior without external LLM calls.
 
 ### Transport modes
 

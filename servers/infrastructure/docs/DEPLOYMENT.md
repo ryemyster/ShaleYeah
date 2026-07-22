@@ -39,7 +39,6 @@ services:
     image: shaleyeah/infrastructure-planner:latest
     environment:
       INFRASTRUCTURE_MCP_URL: http://infrastructure:3012
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
     depends_on: [infrastructure]
 ```
 
@@ -57,4 +56,4 @@ curl -X POST http://kong:8001/services/infrastructure/routes -d paths[]=/mcp/inf
 - [ ] `ANTHROPIC_API_KEY` set and valid
 - [ ] `PORT=3012` set
 - [ ] Registered with Kong at `/mcp/infrastructure`
-- [ ] Paired with `infrastructure-planner` agent at port 4012
+- [ ] Paired with `infrastructure-planner` ADK agent through `INFRASTRUCTURE_MCP_URL`

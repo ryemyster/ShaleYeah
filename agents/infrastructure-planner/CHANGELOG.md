@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- **Infrastructure Planner ADK migration and adapter retirement** (#543) — Converted this package into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Infrastructure tools, documented the Stand-alone + Skills architecture mode and infrastructure HITL deferral boundary, and removed the legacy TypeScript agent surface. `servers/infrastructure` remains the TypeScript/pnpm MCP backend.
+
 ### Fixed
 
 - **`executeLoop` halts on permanent failures + executeWithRetry + injectable callLLM** (#427) — Added `executeWithRetry` with 3-attempt exponential backoff, permanent halt guard (`!execResult.retryable`), model routing via `reasoningModel`, and `callLLM?` injectable option. Matching the geologist Level 2 reference. 2 new contract tests.
