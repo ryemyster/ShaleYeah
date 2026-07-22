@@ -1,22 +1,25 @@
-# Architecture — @shaleyeah/server-infrastructure
+# Architecture
 
 ## Role
 
-Tier 1 MCP tool server. Assesses midstream infrastructure needs — pipelines, processing, takeaway capacity. Paired with the `infrastructure-planner` agent (port 4012).
+`servers/infrastructure` is the TypeScript MCP backend for surface and midstream infrastructure analysis. It is independently runnable and can be used by the Infrastructure Planner ADK agent or another compatible MCP client.
 
 ## Tool inventory
 
 | Tool | Handler | LLM? | Purpose |
 |------|---------|------|---------|
-| `plan_infrastructure` | LLM | ✅ `callLLM` | Takeaway capacity, facility sizing, cost estimate |
+| `plan_pipeline` | pipeline module | yes, with fallback | Gathering/transmission routing, capacity, takeaway risk |
+| `size_facilities` | facilities module | yes, with fallback | Batteries, separators, compressors, SWD wells |
+| `estimate_costs` | cost-estimation module | yes, with fallback | Pipeline, facility, compression, and SWD CAPEX |
+| `assess_compliance` | compliance module | yes, with fallback | Permits, approval timeline, environmental risk |
 
 ## LLM + fallback pattern
 
-Passes well count, production rate, and location to `callLLM()`. Falls back to `deriveDefaultInfrastructureInterpretation()` — remote large projects produce "High" takeaway risk; Texas small projects produce "Low".
+Each tool uses shared `callLLM()` synthesis with deterministic fallback functions exported from the server modules.
 
 ## Key exports
 
-`deriveDefaultInfrastructureInterpretation(wellCount, productionRate, location)` — deterministic fallback, exported for anti-stub testing.
+`derivePipelinePlan`, `deriveFacilitySizing`, `deriveInfrastructureCostEstimate`, and `deriveComplianceAssessment` are deterministic fallbacks exported for tests and CI-safe behavior.
 
 ## Transport modes
 
@@ -26,10 +29,10 @@ Passes well count, production rate, and location to `callLLM()`. Falls back to `
 ## Data flow
 
 ```
-MCP tool call: plan_infrastructure { wellCount, productionRate, location }
-  → callLLM(infrastructure planning prompt)
-  ↘ fallback: deriveDefaultInfrastructureInterpretation(wellCount, productionRate, location)
-  → Return: { takeawayCapacity, facilitySizing, costEstimate, riskLevel }
+MCP tool call: plan_pipeline | size_facilities | estimate_costs | assess_compliance
+  → callLLM(domain-specific infrastructure prompt)
+  ↘ fallback: deterministic domain module
+  → Return: structured pipeline, facility, cost, or compliance result
 ```
 
 ## Dependencies

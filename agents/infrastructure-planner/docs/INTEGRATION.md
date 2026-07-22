@@ -1,19 +1,35 @@
-# Integration Guide — @shaleyeah/infrastructure-planner
+# Integration Guide
 
-> **Status: Planned** — Not yet implemented. See [#375](https://github.com/ryemyster/ShaleYeah/issues/375).
+Integrate with this package as an ADK agent. Keep direct backend execution in `servers/infrastructure`.
 
-## Planned interface
+## MCP Pairing
 
-```typescript
-import { runInfrastructurePlannerTask } from "@shaleyeah/infrastructure-planner";
+Set the backend URL for live tool calls:
 
-const result = await runInfrastructurePlannerTask(
-    "Size the gathering system for a 20-well pad program producing 5,000 BOE/day at peak.",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
+```bash
+INFRASTRUCTURE_MCP_URL=http://localhost:3012
 ```
 
-## Upstream / downstream
+The Python wrappers call these MCP tools:
 
-- **Upstream:** development-planner provides pad locations and production forecasts
-- **Downstream:** economist consumes facilities CAPEX for total project cost; development-planner uses infrastructure schedule to constrain drilling pace; investment-chair uses infrastructure cost in decision package
+| Tool | Required inputs |
+|------|-----------------|
+| `plan_pipeline` | `wellCount`, `expectedProduction`, `location` |
+| `size_facilities` | `wellCount`, `expectedProduction`, `location` |
+| `estimate_costs` | `wellCount`, `compressors`, `swdWells`, `location` |
+| `assess_compliance` | `wellCount`, `location`; optional `environmentalConstraints` |
+
+## Typical Inputs
+
+- Basin, county, state, coordinates, lease, tract, pad, or well locations.
+- Well count, production, fluid mix, peak/average rates, and phasing.
+- Existing or proposed gathering, processing, compression, disposal, road, power, and interconnect context.
+- Facility, water, legal/title, surface, ROW, environmental, and commercial constraints.
+
+## Typical Outputs
+
+- Pipeline/gathering plan and takeaway-risk summary.
+- Facility sizing recommendation.
+- Infrastructure CAPEX estimate.
+- Permitting, safety, environmental, ROW, and compliance risk summary.
+- Missing-input list and human-review boundary.
