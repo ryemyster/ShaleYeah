@@ -1,22 +1,29 @@
-# How It Works — @shaleyeah/investment-chair
+# How It Works
 
-> **Status: Planned** — Not yet implemented. See [#367](https://github.com/ryemyster/ShaleYeah/issues/367).
+The Investment Chair is a thin ADK agent over the Decision MCP backend.
 
-## The simple version (for a 12-year-old)
+1. The user asks for investment decision, bid strategy, or portfolio-fit support.
+2. `app/agent.py` exposes lightweight planning and status tools so the model can identify the correct backend capability.
+3. `app/decision_mcp.py` maps Python arguments to the exact `servers/decision` MCP contract.
+4. The Decision MCP server returns structured analysis.
+5. The agent explains the advisory result, assumptions, missing inputs, risks, data-vintage limits, and required human-review steps.
 
-After all 13 other agents do their homework — the geologist, the accountant, the lawyer, the risk analyst — someone has to read all of it and say: "Should we do this deal or not?"
+## Tool Selection
 
-The **investment chair** is like the CEO of the agent team. It reads every report, weighs the pros and cons, and produces a clear recommendation: "Yes, drill — here's why" or "No, pass — here's what would need to change."
+| User intent | ADK wrapper | Decision MCP tool |
+|-------------|-------------|-------------------|
+| Investment recommendation, go/no-go, IC memo | `make_investment_decision` | `make_investment_decision` |
+| Bid range, auction posture, valuation strategy | `calculate_bid_strategy` | `calculate_bid_strategy` |
+| Portfolio fit, concentration, diversification, synergies, conflicts | `analyze_portfolio_fit` | `analyze_portfolio_fit` |
 
-It never makes the final decision alone. It always asks a real human to approve before anything is committed — because spending $50 million needs a person in the loop.
+The agent also exposes `decision_backend_status` and `plan_decision_tool_call` for runtime inspection and architecture/HITL markers.
 
-## The technical version
+## Required Context
 
-1. **decision server (Tier 1):** Aggregates structured analysis packages, runs portfolio ranking algorithms, formats decision memos.
-2. **investment-chair agent (Tier 2):** ReAct loop — ingests the full analysis package, synthesizes across domains, uses `deep-reasoning` model routing for all synthesis calls.
+Useful inputs include geology, engineering, economics, risk, title, legal, market, infrastructure, drilling, development, research, portfolio, financing, governance, and comparable-sales context.
 
-The `go_no_go` tool is `requiresHumanApproval: true` and `destructive: true`. The agent prepares the recommendation; a human must explicitly approve it before it is treated as an investment decision.
+When inputs are sparse or stale, the correct behavior is to say what is missing and produce only a provisional checklist or advisory framing. The agent should not invent confidence, source support, reserves classifications, or approval authority.
 
-## What makes this agent different
+## Sensitive Data
 
-Most agents in the fleet are domain experts — they go deep in one area. The investment chair goes wide — it must hold the full picture of geology, economics, risk, legal, market, and operations simultaneously and make a coherent judgment. This is why it defaults to `deep-reasoning` model routing.
+Treat bid limits, valuation models, IC materials, seller names, counterparty terms, legal/title findings, reserves data, financing terms, conflicts, portfolio strategy, and secrets as sensitive. Do not place them in prompts, logs, checked-in config, or shared memory unless the runtime has an approved storage and review path.

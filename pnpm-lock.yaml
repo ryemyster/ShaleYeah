@@ -40,28 +40,6 @@ importers:
         specifier: ^6.0.2
         version: 6.0.3
 
-  agents/investment-chair:
-    dependencies:
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@4.4.3)
-      '@shaleyeah/sdk':
-        specifier: workspace:*
-        version: link:../../sdk
-    devDependencies:
-      '@biomejs/biome':
-        specifier: ^2.5.0
-        version: 2.5.0
-      '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
-      tsx:
-        specifier: ^4.21.0
-        version: 4.22.4
-      typescript:
-        specifier: ^6.0.2
-        version: 6.0.3
-
   agents/quality-assurance:
     dependencies:
       '@modelcontextprotocol/sdk':
