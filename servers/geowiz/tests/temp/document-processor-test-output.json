@@ -1,0 +1,161 @@
+{
+  "format": "PDF",
+  "fileName": "sample.pdf",
+  "pages": 3,
+  "content": {
+    "text": "Demo PDF document content for oil & gas analysis.\n\nThis would contain extracted text from the actual document including technical specifications, economic data, and operational parameters.",
+    "tables": [
+      {
+        "pageNumber": 1,
+        "headers": [
+          "Well Name",
+          "Total Depth (ft)",
+          "Lateral Length (ft)",
+          "EUR (Mboe)"
+        ],
+        "rows": [
+          [
+            "DEMO-WELL-1",
+            "12500",
+            "8500",
+            "1250"
+          ],
+          [
+            "DEMO-WELL-2",
+            "13200",
+            "9100",
+            "1450"
+          ]
+        ],
+        "caption": "Well Summary Data",
+        "type": "technical"
+      },
+      {
+        "pageNumber": 2,
+        "headers": [
+          "Parameter",
+          "Value",
+          "Unit"
+        ],
+        "rows": [
+          [
+            "NPV @ 10%",
+            "15.2",
+            "MM$"
+          ],
+          [
+            "IRR",
+            "18.5",
+            "%"
+          ],
+          [
+            "Payout",
+            "2.8",
+            "years"
+          ]
+        ],
+        "caption": "Economic Summary",
+        "type": "financial"
+      }
+    ],
+    "images": [
+      {
+        "pageNumber": 1,
+        "caption": "Location Map",
+        "type": "map"
+      },
+      {
+        "pageNumber": 3,
+        "caption": "Decline Curve Analysis",
+        "type": "chart"
+      }
+    ],
+    "sections": [
+      {
+        "title": "Executive Summary",
+        "level": 1,
+        "pageNumber": 1,
+        "content": "Demo executive summary content...",
+        "type": "executive_summary"
+      },
+      {
+        "title": "Technical Analysis",
+        "level": 1,
+        "pageNumber": 2,
+        "content": "Demo technical analysis content...",
+        "type": "technical"
+      },
+      {
+        "title": "Economic Evaluation",
+        "level": 1,
+        "pageNumber": 3,
+        "content": "Demo economic evaluation content...",
+        "type": "financial"
+      }
+    ],
+    "footnotes": [
+      "EUR = Estimated Ultimate Recovery",
+      "NPV = Net Present Value"
+    ],
+    "headers": [
+      "Executive Summary",
+      "Technical Analysis",
+      "Economic Evaluation"
+    ]
+  },
+  "metadata": {
+    "filePath": "/Users/rmcdonald/Repos/ryemyster/ShaleYeah/servers/geowiz/tests/sample-files/sample.pdf",
+    "fileSize": 883,
+    "createdDate": "2026-06-04T22:43:46.071Z",
+    "modifiedDate": "2026-06-04T22:43:46.071Z",
+    "isPasswordProtected": false
+  },
+  "oilGasData": {
+    "wellNames": [
+      "DEMO-WELL-1",
+      "DEMO-WELL-2"
+    ],
+    "formations": [],
+    "economicData": [
+      {
+        "parameter": "NPV @ 10%",
+        "value": 15.2,
+        "unit": "MM$",
+        "pageNumber": 2
+      },
+      {
+        "parameter": "IRR",
+        "value": 18.5,
+        "unit": "%",
+        "pageNumber": 2
+      },
+      {
+        "parameter": "Payout",
+        "value": 2.8,
+        "unit": "years",
+        "pageNumber": 2
+      }
+    ],
+    "technicalSpecs": [
+      {
+        "parameter": "DEMO-WELL-1",
+        "value": "12500",
+        "category": "production",
+        "pageNumber": 1
+      },
+      {
+        "parameter": "DEMO-WELL-2",
+        "value": "13200",
+        "category": "production",
+        "pageNumber": 1
+      }
+    ],
+    "legalTerms": []
+  },
+  "qualityMetrics": {
+    "completeness": 1,
+    "readability": 1,
+    "dataExtraction": 1,
+    "confidence": 1
+  }
+}

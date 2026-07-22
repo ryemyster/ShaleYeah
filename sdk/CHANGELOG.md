@@ -1,0 +1,30 @@
+# Changelog — @shaleyeah/sdk
+
+All notable changes to this package.
+
+## [Unreleased]
+
+### Fixed
+
+- **`LocalAgentRuntime.execute()` audits scope failures** (#403) — Scope rejections now call `this.audit()` before returning the `failed` result, so missing-scope events appear in the audit trail alongside HITL and eval failures.
+
+### Added
+- **Paginated Result — Arcade #31** (#450) — `PaginatedResult<T>` interface (with `data`, `cursor?`, `hasMore`, `totalCount?`), `encodeCursor(offset)`, `decodeCursor(cursor)`, and `paginateArray(items, options)` helper exported from `sdk/src/types.ts`. Cursor is a base64url-encoded numeric offset; `decodeCursor` returns `0` on any malformed input. `paginateArray` clamps `pageSize` to `[1, 100]`, defaults to `25`. 11 tests in `sdk/tests/paginated-result.test.ts`.
+- **Identity Anchor — Arcade #35** (#449) — `SessionIdentity` interface (`userId`, `orgId`, `sessionId`, `roles`) added and exported. `AgentExecutionRequest` gains optional `identity` field. `AuditLogEntry` gains optional `userId` field. `LocalAgentRuntime.execute()` propagates identity to all audit call sites. `StandaloneToolHandlerContext` exposes `identity`. `MCPServer` now generates real UUIDs per session via `randomUUID()` (was `undefined`).
+- **Dependency Hints — Arcade #14** (#448) — `AgentToolManifestSchema` gains optional `dependsOn: string[]` and `provides: string[]` fields on each tool entry. Non-breaking — tools without these fields are unchanged.
+- **Tool Chain — Arcade #21** (#455) — `ToolChainSchema` exported from `@shaleyeah/sdk`. Optional `toolChains: ToolChain[]` field on `AgentManifestSchema`. Each `ToolChain` declares `id`, `description`, ordered `steps[]`, and optional `trigger` hint for the LLM. Non-breaking — manifests without `toolChains` are unchanged.
+- **Mutual Exclusivity — Arcade #9** (#453) — new `sdk/src/mutual-exclusivity.ts` exports `checkMutualExclusivity(args, groups)` (returns error string or null) and `buildMutualExclusivityError(group, provided)` (returns `{error_type: "permanent", error, hint}`). `AgentToolManifestSchema` gains optional `mutuallyExclusive: string[][]` field for declaring XOR param groups in tool manifests. 10 unit tests in `sdk/tests/mutual-exclusivity.test.ts`.
+- **Fallback Tool — Arcade #44** (#454) — `AgentToolManifestSchema` gains optional `fallbackTo: string` field. When a tool's `executeLoop` encounters a permanent failure (`retryable: false`), agents check this field and attempt the named fallback tool with the same args before surfacing an error. Successful fallback results are tagged `{ usedFallback: true, primaryTool }` in the conversation history.
+- **HTTP transport mode for `MCPServer`** (#363) — `MCPServer` now selects `StreamableHTTPServerTransport` when the `PORT` env var is set at construction time, and falls back to `StdioServerTransport` otherwise. All 14 inheriting servers gain HTTP capability without any per-server code change. New public helpers: `isHttpMode()` and `httpPort()`. `initialize()` starts the Node.js HTTP server and binds on the configured port; `stop()` closes it cleanly.
+
+## [0.1.0] — 2026-06-04
+
+### Added
+- Initial package extraction from monorepo conversion (#385)
+- `MCPServer` base class (from `src/shared/mcp-server.ts`)
+- `LLMClient` shared Anthropic SDK wrapper (from `src/shared/llm-client.ts`)
+- `ServerFactory` bootstrap helper (from `src/shared/server-factory.ts`)
+- `AgentManifest`, `AgentRuntime`, `AgentService` contracts (from `src/agents/`)
+- `FileIntegrationManager`, `FileFormatDetector`, `FileUtils` (from `src/shared/`)
+- Parser suite: LAS, Excel, GIS, SEGY (from `src/shared/parsers/`)
+- Domain types: geological, economic, risk, market, investment (from `src/shared/types.ts`)
