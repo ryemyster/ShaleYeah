@@ -1,40 +1,38 @@
-# Local Testing — @shaleyeah/investment-chair
+# Local Testing
 
-> **Status: Planned** — Not yet implemented. See [#367](https://github.com/ryemyster/ShaleYeah/issues/367).
+Use local tests for deterministic package behavior and evals for agent behavior.
 
-## Once implemented
+## Pytest
 
 ```bash
-cd servers/decision && PORT=3013 pnpm start
-# (new terminal)
 cd agents/investment-chair
-npx tsx tests/agent.test.ts
-npx tsx tests/mcp-client.test.ts
+uv sync
+uv run pytest
 ```
 
-## Testing the HITL gate
+Pytest checks:
 
-The `go_no_go` tool always triggers approval. In tests, always wire `onApprovalRequired`:
+- ADK manifest and root agent shape.
+- The app name matches the `app/` directory for eval sessions.
+- Python wrappers map to the Decision MCP contract.
+- HITL and architecture markers are present.
+- Eval dataset and config files exist with control, edge, and boundary cases.
 
-```typescript
-const result = await runInvestmentChairTask(goal, {
-    onApprovalRequired: async (challenge) => ({
-        approved: true,
-        reviewerId: "test-deal-team",
-    }),
-});
+## Decision Server Smoke Check
+
+```bash
+cd servers/decision
+pnpm test
 ```
 
-## Cost note
+This verifies the independent TypeScript MCP backend. It is a separate package from the ADK agent.
 
-`deep-reasoning` routing uses `claude-opus-4-8`. For local testing, consider overriding `modelRouting` in the config to use `claude-haiku-4-5-20251001` for all tiers to control cost:
+## ADK Eval
 
-```typescript
-const testConfig = {
-    ...investmentChairConfig,
-    modelRouting: {
-        ...investmentChairConfig.modelRouting,
-        "deep-reasoning": { provider: "anthropic", model: "claude-haiku-4-5-20251001" },
-    },
-};
+```bash
+cd agents/investment-chair
+agents-cli eval generate
+agents-cli eval grade
 ```
+
+Eval coverage lives in `tests/eval/`. It is where prompt behavior, tool-use quality, final-response quality, and high-consequence HITL boundaries should be judged. Do not write pytest tests that assert on LLM wording.

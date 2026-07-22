@@ -1,38 +1,32 @@
-# Integration Guide — @shaleyeah/investment-chair
+# Integration
 
-> **Status: Planned** — Not yet implemented. See [#367](https://github.com/ryemyster/ShaleYeah/issues/367).
+The Investment Chair integrates with Decision-compatible MCP backends over Streamable HTTP.
 
-## Planned interface
+## Environment
 
-```typescript
-import { runInvestmentChairTask } from "@shaleyeah/investment-chair";
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `DECISION_MCP_URL` | `http://localhost:3013` | Decision MCP backend URL |
+| `INVESTMENT_CHAIR_ADK_MODEL` | `gemini-flash-latest` | ADK model for the agent |
 
-// Pass the aggregated analysis package from all upstream agents
-const result = await runInvestmentChairTask(
-    `Evaluate this opportunity and provide a go/no-go recommendation.
-     Geology: ${geologistReport}
-     Economics: ${economistReport}
-     Risk: ${riskReport}
-     Legal: ${legalReport}
-     Market: ${marketReport}`,
-    {
-        apiKey: process.env.ANTHROPIC_API_KEY,
-        onApprovalRequired: async (challenge) => {
-            // Always fires for go_no_go — this is the human-in-the-loop checkpoint
-            const decision = await presentToDealTeam(challenge);
-            return { approved: decision.approved, reviewerId: decision.reviewerId };
-        },
-    },
-);
-```
+## Decision Contract
 
-## Fleet integration (orchestrator pattern)
+`app/decision_mcp.py` maps Python calls to the current Decision MCP schemas:
 
-The investment chair is the terminal node in the fleet. The orchestrator (#362, Temporal workflows) will:
+- `make_investment_decision(analysis_inputs, investment_criteria=None, market_conditions=None, output_path=None)`
+- `calculate_bid_strategy(valuation, market_data=None, strategy="CONSERVATIVE", output_path=None)`
+- `analyze_portfolio_fit(opportunity, current_portfolio=None, portfolio_strategy=None, match_threshold=None)`
 
-1. Fan out to all domain agents in parallel
-2. Collect structured outputs
-3. Call investment-chair with the aggregated package
-4. Surface the go/no-go recommendation to the deal team
+The Python wrapper intentionally uses the Decision server's current names: `analysisInputs`, `investmentCriteria`, `marketConditions`, `valuation`, `marketData`, `strategy`, `opportunity`, `currentPortfolio`, `portfolioStrategy`, and `matchThreshold`.
 
-See `ARCHITECTURE.md` (root) for the full fleet topology.
+## Upstream Inputs
+
+Callers can provide outputs from geology, engineering, economics, risk, title, legal, market, research, drilling, development, infrastructure, and QA packages as structured context. The Investment Chair does not require those agents to be colocated; it only needs the user or orchestrator to supply their diligence outputs.
+
+## Compatible MCP Backends
+
+Any internal or third-party MCP backend can replace `servers/decision` if it implements the same tool contract and trust boundary. The agent should not assume a particular deployment platform, hostname, or vendor.
+
+## Human Review
+
+Integrators must enforce review before final approvals, binding bids, transaction documents, capital release, disclosures, legal/tax/title/fiduciary/conflict conclusions, reserve/resource classifications, final allocation decisions, or sensitive memory promotion.

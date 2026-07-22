@@ -1,22 +1,42 @@
-# Development — @shaleyeah/investment-chair
+# Development
 
-> **Status: Planned** — Not yet implemented. See [#367](https://github.com/ryemyster/ShaleYeah/issues/367).
+Work from this package directory when changing the Investment Chair agent.
 
-## Implementation checklist
+```bash
+cd agents/investment-chair
+uv sync
+uv run pytest
+```
 
-1. Write failing tests — copy `agents/geologist/tests/`, rename `investmentChair`/`decision`, port `3013`
-2. Create `src/agent/index.ts` from `.claude/rules/agent-template.md`
-3. Create `src/agent/decision-client.ts` — copy `geowiz-client.ts`, rename to `callDecisionTool`
-4. Run tests until green; uncomment export; run `/pre-commit`
+The package is ADK/Python. TypeScript and pnpm remain valid for `servers/decision` and shared workspace packages.
 
-## Key differences from other agents
+## Files
 
-- Default model routing: consider overriding `standard-analysis` default to `deep-reasoning` in `investmentChairConfig`
-- `go_no_go`: `type: "command"`, `destructive: true`, `requiresHumanApproval: true`, `modelRequirement: "deep-reasoning"`
-- All synthesis tools: `modelRequirement: "deep-reasoning"`
-- Callers **must** provide `onApprovalRequired` — this agent will always trigger the HITL gate on final recommendations
+| Path | Purpose |
+|------|---------|
+| `agents-cli-manifest.yaml` | agents-cli project metadata |
+| `.agents-cli-spec.md` | role, architecture, safety, eval, and deletion spec |
+| `app/agent.py` | ADK root agent, instructions, tool registration, HITL markers |
+| `app/decision_mcp.py` | Python MCP wrappers for the Decision server |
+| `tests/test_adk_project_shape.py` | package shape and cleanup checks |
+| `tests/test_adk_mcp_execution_shape.py` | MCP wrapper contract checks |
+| `tests/test_adk_eval_harness_shape.py` | eval dataset/config shape checks |
+| `tests/eval/` | behavior eval dataset and metrics config |
 
-## Notes
+## Change Rules
 
-- Env var: `DECISION_MCP_URL`
-- This is the last agent in the orchestration chain — it depends on outputs from 11 other agents
+- Keep the agent and Decision MCP server independently runnable.
+- Match wrapper argument names to `servers/decision/src/index.ts`.
+- Add pytest coverage for deterministic code and contract mapping.
+- Add eval coverage for agent behavior, tool use, edge cases, and HITL boundaries.
+- Update README, docs, and changelog when behavior or commands change.
+- Keep migration/deletion evidence in `.agents-cli-spec.md`, changelogs, tests, issue comments, and PR body.
+
+## Common Commands
+
+```bash
+uv run pytest
+agents-cli run "Create an advisory bid strategy for this valuation."
+agents-cli eval generate
+agents-cli eval grade
+```
