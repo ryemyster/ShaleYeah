@@ -20,7 +20,7 @@
 	},
 	"dependencies": {
 		"@anthropic-ai/sdk": "^0.104.1",
-		"@modelcontextprotocol/sdk": "^1.29.0",
+		"@modelcontextprotocol/sdk": "^1.30.0",
 		"@turf/turf": "^7.3.4",
 		"exceljs": "^4.4.0",
 		"shapefile": "^0.6.6",
