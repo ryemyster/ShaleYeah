@@ -14,7 +14,7 @@
 	},
 	"dependencies": {
 		"@shaleyeah/sdk": "workspace:*",
-		"zod": "^4.3.6"
+		"zod": "^4.5.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
