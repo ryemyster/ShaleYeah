@@ -17,7 +17,7 @@
 		"@turf/turf": "^7.3.4",
 		"shapefile": "^0.6.6",
 		"xml2js": "^0.6.2",
-		"zod": "^4.3.6"
+		"zod": "^4.5.4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
