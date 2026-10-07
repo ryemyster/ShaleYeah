@@ -1,8 +1,8 @@
 # Shale Yeah Topology
 
-Date: 2026-07-11
-
-This document captures the current understanding of the system topology and the boundaries we are designing against.
+This document describes the target topology and unit boundaries. The accepted
+decision is [ADR 0001](adr/0001-durable-employee-contracts.md); current implementation
+and gaps are described in [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## What This Project Is
 
@@ -12,6 +12,10 @@ Shale Yeah is a monorepo that contains many independently buildable project unit
 - 14 matching MCP servers or service backends where applicable
 - an optional orchestrator
 - shared contract packages and runtime helpers
+
+Agents augment human employees with specific responsibilities. Each owns its
+working context, configurable job evaluations and human review. Roman names are
+display identities; role/capability identifiers stay explicit.
 
 The monorepo is a workspace, not the architecture itself. Each unit must remain independently useful, independently runnable, and independently extractable into its own repository without breaking the rest of the system.
 
@@ -35,7 +39,7 @@ flowchart TB
 
   subgraph Repo[Monorepo Workspace]
     Docs[Docs / README / Issue Specs]
-    Shared[Shared Contracts\nschemas, auth rules, observability formats,\nagent metadata, runtime helpers]
+    Shared[Business Contracts\njob, task, evidence, context, review, eval]
     ADK[ADK Authoring Layer]
   end
 
@@ -75,7 +79,6 @@ flowchart TB
     Registry[Discovery / Registry]
     Router[Task Routing / Handoff]
     Learner[Learning Loop / Memory Promotion]
-    Evals[Runtime Evals / Guardrails]
   end
 
   subgraph Trust[Trust Layer]
@@ -85,9 +88,10 @@ flowchart TB
   end
 
   subgraph Platform[Platform Services]
-    Memory[Vector Store / Embeddings]
+    Memory[Scoped Context Storage / Optional Vector Retrieval]
     Obs[Structured Logs / Traces / SIEM Export]
     Config[Per-unit Config Profiles / BYO Providers]
+    Evals[Per-employee Evals / Guardrails]
   end
 
   User --> A1
@@ -116,7 +120,6 @@ flowchart TB
   Orchestrator --> Registry
   Orchestrator --> Router
   Orchestrator --> Learner
-  Orchestrator --> Evals
 
   A1 --> Auth
   A2 --> Auth
@@ -226,15 +229,18 @@ flowchart TB
 
 ## Operating Modes
 
-The project intentionally supports more than one agent pattern.
+Each role selects one primary mode using the
+[ADR decision matrix](adr/0001-durable-employee-contracts.md#operating-mode-selection).
+Standalone plus skills is the specialist default. Hierarchy needs distinct
+delegated responsibilities and authority. Explicit graphs control business
+transitions and human review; their framework types remain adapter-local.
+Ambient work requires event identity, deduplication and bounded authority.
+Capability-first routing is a layer over the primary mode.
 
-- Stand-alone plus skills: the default for most specialist roles.
-- Hierarchical: only when a role genuinely needs child agents.
-- Graph-based: for conditional business logic, stateful workflows, and HITL gates.
-- Ambient: for event-driven background work.
-- Capability-first: a routing policy for offloading deterministic work.
-
-The architecture decision is per role, not globally one-size-fits-all.
+The shared services above describe contracts, not mandatory central infrastructure.
+Context is scoped by customer, asset, task and employee; sharing needs access
+checks and reviewed promotion. Vector retrieval and warehouses are optional.
+Employee evaluations and trust checks work without a coordinator.
 
 ## What Must Stay Independent
 
@@ -252,16 +258,26 @@ If any unit cannot be extracted into a separate repo without breaking the rest o
 
 ## Shared Contracts
 
-Shared code is allowed when it behaves like a contract:
+Small shared business contracts define:
 
 - schemas and types
-- MCP tool metadata
+- protocol-neutral employee/capability metadata
 - auth and consent policy
 - logging and audit format
 - memory and learning contracts
 - deployment and config conventions
 
-Shared code is not allowed to become a hidden runtime dependency pile that couples all units together.
+Contract artifacts/bindings do not import ADK, provider, protocol, storage or cloud
+SDKs. Parsers and adapter helpers may be installed, versioned packages with
+explicit dependencies; they must not become hidden runtime coupling. The
+[ADR dependency matrix](adr/0001-durable-employee-contracts.md#package-dependency-direction)
+defines permitted directions and extraction requirements.
+
+Domain schemas, adapters, protocol profiles and evaluation configuration have
+separate versions. Declare compatibility and migration/deprecation paths; pin
+accepted dependencies and model/config/profile versions; rerun job, trust, context
+and conformance regressions before promotion. Moving latest aliases are not
+automatically accepted release changes.
 
 ## Build Order
 
@@ -298,3 +314,8 @@ The working interpretation of the project is:
 - learning through reviewed memory, not silent mutation
 
 That is the topology this backlog should now support.
+
+Chief of Staff is an optional bounded coordinator, initially for Geologist and
+Research Analyst. Investment Chair remains provisionally a separate employee.
+#675 decides authority and the split before #676. Each specialist remains directly
+usable with its own human owner and context.

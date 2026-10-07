@@ -1,33 +1,25 @@
 # @shaleyeah/orchestrator
 
-> **Status: Planned — #362**
+This package is a stub for optional coordination. Its only export is
+`ORCHESTRATOR_VERSION = "0.1.0"`; it has no workflow, employee endpoint or deal
+analysis client.
 
-Temporal workflow engine for the ShaleYeah agent fleet. When implemented, the orchestrator will coordinate multi-agent deal workflows — scatter-gathering across all 14 domain agents, managing retries and timeouts, and assembling final reports.
+The accepted [architecture decision](../docs/adr/0001-durable-employee-contracts.md)
+keeps every employee independently useful. #675 defines Chief of Staff authority
+and its relationship to Investment Chair; #676 implements one bounded Geologist
+and Research Analyst diligence workflow. Those issues select the coordinator
+implementation and package location. Temporal is an optional future adapter.
 
-## Current state
+From the repository root, compile and check the existing stub:
 
-This package is a stub. The only export is:
-
-```typescript
-export const ORCHESTRATOR_VERSION = "0.1.0";
+```sh
+pnpm --dir orchestrator build
+pnpm --dir orchestrator type-check
 ```
 
-No business logic. See issue #362.
+Build output goes to `orchestrator/dist/`. These checks establish compilation,
+not coordination or professional workflow acceptance.
 
-## When implemented
-
-The orchestrator will replace the ad-hoc scatter-gather patterns that currently require manual agent chaining. A single workflow call will:
-
-1. Fan out to all 14 Tier 1 domain servers in parallel
-2. Collect structured results with automatic retry on `error_type: "retryable"` errors
-3. Pass assembled results to the reporter server
-4. Return a complete deal package
-
-## Architecture
-
-See `docs/ARCHITECTURE.md`.
-
-## Related
-
-- `ARCHITECTURE.md` — fleet topology
-- Issue #362 — Temporal workflow implementation
+See [architecture](docs/ARCHITECTURE.md), [development](docs/DEVELOPMENT.md),
+[integration](docs/INTEGRATION.md), [deployment](docs/DEPLOYMENT.md),
+[local checks](docs/LOCAL_TESTING.md) and [workflow scope](docs/HOW_IT_WORKS.md).

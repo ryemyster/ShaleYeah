@@ -1,40 +1,22 @@
-# How the Orchestrator Works — @shaleyeah/orchestrator
+# Coordinator workflow scope
 
-> **Status: Planned — #362**
+There is no running coordinator in this stub. The planned pilot helps a human
+owner assign a geological diligence task to Geologist and Research Analyst,
+review their findings and prepare a decision within granted authority.
 
-## Plain language (12-year-old version)
+The bounded #676 workflow, after the #675 charter, must:
 
-Imagine you're the project manager for a big oil deal. You need 14 different experts to each do their job, then compile all their findings into one report. You could call each one manually — but that takes forever and if one fails, you lose track of everything.
+1. Receive an authenticated task with scope and permitted outcomes.
+2. Delegate identified child tasks with bounded authority and context.
+3. Receive source-linked work products and their review status.
+4. Surface missing inputs, conflicts, failures or required human decisions.
+5. Resume only the correct reviewed revision after interruption.
+6. Return an evidenced result and correlated audit trail.
 
-The Orchestrator is your automation. You say "run a full deal analysis on this property," and it calls all 14 experts at once, waits for them to finish, handles any that need to retry, collects all the results, and sends them to the reporter to write the final document. If your computer crashes halfway through, it picks up exactly where it left off.
+Each employee's human owner still reviews that employee's work. Coordination
+does not expose all private employee memories or automatically approve actions.
+The chosen adapter must prove persistence and recovery; this page does not
+claim that the current stub resumes work.
 
-## Technical explanation
-
-The orchestrator is a **Temporal workflow worker** — planned for issue #362. It sits above the two-tier fleet and drives multi-agent deal workflows.
-
-### Planned workflow lifecycle
-
-```
-Client calls DealWorkflow("Permian Basin Acquisition")
-  ↓
-Temporal schedules workflow execution
-  ↓
-Worker fans out 14 parallel Activities:
-  → geologist agent (port 4001)
-  → economist agent (port 4002)
-  → ... all 14 agents
-  ↓
-Worker collects all results (retries on error_type: "retryable")
-  ↓
-Worker calls reporter agent with assembled results
-  ↓
-Returns complete deal package
-```
-
-### Durable execution
-
-If the worker crashes mid-workflow, Temporal replays history and resumes from the last completed activity. No domain analysis is lost.
-
-### Current state
-
-Stub only. See issue #362.
+See the [architecture decision](../../docs/adr/0001-durable-employee-contracts.md)
+and [MVP acceptance plan](../../docs/mvp-release-plan.md).

@@ -33,10 +33,11 @@ displaced source, prompts, fixtures, commands and documentation in the owning PR
 An employee's durable boundary is its job charter, task, evidence, work product,
 context manifest, review decision and evaluation result. Models, ADK or other
 runtimes, MCP clients, storage, retrieval and deployment are replaceable adapters.
-[#567](https://github.com/ryemyster/ShaleYeah/issues/567) records the architecture
-decision; [#568](https://github.com/ryemyster/ShaleYeah/issues/568) implements the
-versioned contracts. Roman names remain display identities alongside explicit
-role and capability IDs.
+[ADR 0001](adr/0001-durable-employee-contracts.md), owned by
+[#567](https://github.com/ryemyster/ShaleYeah/issues/567), records the architecture
+decision and transferred #569 operating-mode scope. #568 publishes exact schemas
+and bindings; #572 selects tested protocol/composition profiles. Roman names
+remain display identities alongside explicit role and capability IDs.
 
 The plan includes role-specific data hooks, configurable evaluations, persistent
 working context, human review and restart-safe continuation. The Chief of Staff
@@ -256,6 +257,13 @@ tests pass. #541/#542/#680/#681 own the remaining TypeScript agent migrations.
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.
 
+Transport-session mechanics stay adapter-local. #572 declares tested MCP profiles;
+#668 repairs lifecycle for supported session-based adapters. Modern stateless
+support needs separate conformance evidence. Domain context and review identity
+must survive either transport. Existing moving model aliases must be resolved or
+explicitly limited in #669/#577 and role adoption before an accepted release;
+the architecture PR does not upgrade runtime dependencies.
+
 Keep verifiable domain calculations, canonical data models, parsers and bounded
 tool logic. Large files are split where ownership/testing requires it. Temporary
 coexistence must name the retained adapter, its reason and a deletion issue.
@@ -320,7 +328,7 @@ readiness.
 | Decision | Owner | Completion requirement |
 | --- | --- | --- |
 | Exact role workflows, professional thresholds, source availability and rights | #665, #538, role outcomes | Cited domain evidence, realistic cases and accountable human reviewers |
-| Contract versions, compatibility and adapter boundaries | #567, #568, #572 | Published schemas and explicit supported/unsupported capability behavior |
+| Exact schemas, initial versions/bindings and tested composition profiles under ADR 0001 | #568, #572 | Published schemas and explicit supported/unsupported capability behavior |
 | Context storage/retrieval, budgets, retention and reviewed knowledge promotion | #571, #672 | Policy and restart/isolation/staleness evidence |
 | Identity, scopes, reviewer enrollment and revision-bound approval | #573, #678, #673 | Trusted enforcement and negative/replay tests |
 | Supported provider pairs, runtimes and deploy modes | #669, #572, #578, #674 | Exact versions, commands and qualification limits |
