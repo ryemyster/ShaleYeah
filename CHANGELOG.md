@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **MVP delivery and acceptance plan** (#664) — committed the dependency-ordered issue ledger for all 14 specialists and the bounded Chief of Staff pilot, with per-issue evidence, cleanup ownership, provider/deployment support limits, integrated qualification, human acceptance and release gates.
+
 - **Delivery-specific merge checks** (#698) — scoped SDLC completion to the current PR and actual merge push workflow suites, requiring CI, CodeQL and secret scans while excluding unrelated release-PR and background dependency checks sharing the commit SHA.
 
 - **Sequential issue delivery** (#696) — added `pnpm sdlc` start/status/complete commands, a receipt shared across Git worktrees, commit/push guards that preserve prior quality hooks, CI checks for current-base and single-PR delivery, and installable SDLC skills for Codex, Antigravity and Claude Code. The next issue starts only after the previous PR is merged, its CI passes and develop is synchronized.

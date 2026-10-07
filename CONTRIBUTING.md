@@ -17,6 +17,9 @@ Branch from `develop`. PRs target `develop` — never `main` directly.
 Deliver issues sequentially: finish one issue's PR, merge it into `develop`, verify
 the merged checks, synchronize `develop`, then start the next issue. See
 [`docs/sdlc.md`](docs/sdlc.md) for the command, Git hooks and coding-agent setup.
+Use [`docs/mvp-release-plan.md`](docs/mvp-release-plan.md) for the MVP issue order,
+dependencies and acceptance evidence. Complete one issue through develop before
+starting the next.
 
 ```bash
 pnpm sdlc install
