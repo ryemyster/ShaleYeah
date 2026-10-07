@@ -3,12 +3,15 @@ name: CI
 on:
   pull_request:
     branches: [ main, develop ]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
   push:
     branches: [ main, develop ]
   workflow_dispatch:
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
 
 jobs:
   pr-checks:
@@ -28,6 +31,13 @@ jobs:
 
     - run: pnpm install --frozen-lockfile
     - run: pnpm check:issue-template
+    - run: pnpm test:sdlc
+    - name: Sequential develop delivery
+      if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SDLC_PR: ${{ github.event.pull_request.number }}
+      run: node scripts/sdlc.mjs ci "$SDLC_PR"
     - run: pnpm turbo type-check
     - run: pnpm turbo lint
     - run: pnpm turbo build

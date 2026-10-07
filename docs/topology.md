@@ -275,6 +275,11 @@ The current build philosophy is:
 6. Verify the unit in isolation.
 7. Only then consider orchestration or cross-unit integration.
 
+Deliver each issue through one PR into `develop`. Merge and verify that result,
+synchronize develop, then start the next issue from the updated commit. The shared
+command and Git-hook contract is documented in [sdlc.md](sdlc.md); it applies to
+Codex, Antigravity and Claude Code.
+
 ## Current Interpretation
 
 The working interpretation of the project is:

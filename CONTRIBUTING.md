@@ -14,9 +14,16 @@ pnpm turbo test
 
 Branch from `develop`. PRs target `develop` — never `main` directly.
 
+Deliver issues sequentially: finish one issue's PR, merge it into `develop`, verify
+the merged checks, synchronize `develop`, then start the next issue. See
+[`docs/sdlc.md`](docs/sdlc.md) for the command, Git hooks and coding-agent setup.
+
 ```bash
-git checkout develop
-git checkout -b issue-<number>-<slug>
+pnpm sdlc install
+pnpm sdlc start <number> <slug>
+# Implement, verify, review and merge one PR into develop.
+pnpm sdlc complete <merged-pr-number>
+# Only now start the next issue.
 ```
 
 ## Work Model
@@ -27,16 +34,17 @@ Use a spec-driven, issue-first workflow.
 2. Record the role, use case, operating mode, boundaries, inputs, outputs, HITL, memory, runtime, tests/evals, trust notes, topology impact, deletion/migration notes, non-goals, and dependencies.
 3. Include Given/When/Then behavior and at least one failure case.
 4. Get maintainer approval on the issue plan before code changes.
-5. Build on a branch cut from `develop`.
+5. Start one issue with `pnpm sdlc start`, which cuts its branch from freshly fetched `develop`.
 6. Run the full local lifecycle for the affected package(s).
 7. Keep displaced code deleted unless an adapter is explicitly required.
 8. For agent migrations, ADK/Python is the target surface. A lingering `agents/<name>/package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent test suite is migration debt unless the issue is explicitly deleting or temporarily adapter-gating it.
 9. Open a PR back into `develop` when the unit is clean.
+10. Merge after verification and review, wait for merged CI, verify acceptance, and run `pnpm sdlc complete` before starting another issue. Opening a PR does not close an issue.
 
 Issue classes:
 
-- Isolated work: branch from `develop`, build, verify, PR back to `develop`.
-- Cross-issue work: treat as asynchronous and block on the upstream issue or contract.
+- Isolated work: start from refreshed `develop`, build, verify, merge one PR, and complete before the next issue.
+- Cross-issue work: finish upstream issues in dependency order; each downstream branch includes the merged upstream contract.
 - Process-only work: use the template, mark runtime and memory as not applicable, and still define verification.
 
 The template is enforced in two places:
@@ -48,7 +56,7 @@ The template is enforced in two places:
 
 `.agents/` and `AGENTS.md` are maintainer-local dev environment files — gitignored, not part of this repository's tracked contract. They hold one contributor's working notes for driving Codex/Antigravity sessions against this repo and are not required to build, test, or contribute.
 
-The tracked source of truth for architecture and target state is [`docs/topology.md`](docs/topology.md) and [`ARCHITECTURE.md`](ARCHITECTURE.md).
+The tracked source of truth for architecture and target state is [`docs/topology.md`](docs/topology.md) and [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Shared development tooling lives in `scripts/`; `pnpm sdlc install` creates local skill bindings for Codex, Antigravity and Claude Code without tracking their personal runtime directories.
 
 ## Security and Verification
 
