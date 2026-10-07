@@ -73,8 +73,14 @@ tracked `CONTRIBUTING.md`, this document and `scripts/`.
    ```
 
    Complete verifies the exact issue branch head, PR base, merged state,
-   fetched develop ancestry, successful `PR checks` and other reported checks
-   on both the PR and merged commit. It fast-forwards develop, closes the issue
+   fetched develop ancestry and all reported checks on the current PR. For the
+   merged commit it requires successful push runs for `ci.yml`, `codeql.yml` and
+   `gitleaks.yml`, and successful `PR checks` and other checks in those push suites.
+   Other push workflows also must succeed. A different release PR or background
+   dependency job sharing that SHA cannot change this delivery's result. The
+   workflow file paths are defined in `MERGE_WORKFLOWS` in `scripts/sdlc.mjs`;
+   update that list when renaming or replacing a required merge workflow.
+   Completion fast-forwards develop, closes the issue
    with merge evidence, records completion and releases the active slot. Missing,
    failed or pending checks keep it locked. The next `start` fetches develop
    again and branches from its current SHA. The tool does not merge PRs or
@@ -84,6 +90,9 @@ A reopened issue follows the same sequence with a new branch slug. Each
 implementation attempt still completes before the next issue starts.
 
 ## Enforcement and limits
+
+The GitHub account used for completion needs repository issue write access and
+Actions read access. CI's PR-order check uses only its existing read permissions.
 
 The common Git directory holds `sdlc/state.json` and an atomic operation lock.
 Worktrees of this clone share one active issue. A stopped process may leave a

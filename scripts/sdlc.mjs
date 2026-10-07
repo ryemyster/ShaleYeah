@@ -5,6 +5,7 @@ import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REPO = 'ryemyster/ShaleYeah';
+const MERGE_WORKFLOWS = ['ci', 'codeql', 'gitleaks'].map((name) => `.github/workflows/${name}.yml`);
 const HELP = `Sequential issue delivery (Git, gh and Node >=18 required)
   pnpm sdlc install                  install shared Git hooks and local skills
   pnpm sdlc status                   show the active issue and last completion
@@ -163,8 +164,16 @@ export function createSdlc({ cwd = process.cwd(), gh: github } = {}) {
     green(pr.statusCheckRollup, 'PR head');
     const developSha = fetchDevelop();
     if (!ancestor(pr.mergeCommit.oid, developSha)) throw new Error('Merged result is not in fetched develop.');
+    const runs = gh(['api', `repos/${REPO}/actions/runs?head_sha=${pr.mergeCommit.oid}&event=push&per_page=100`, '--paginate', '--slurp'])
+      .flatMap((page) => page.workflow_runs);
+    if (MERGE_WORKFLOWS.some((path) => !runs.some((run) => run.path === path)) ||
+        runs.some((run) => run.status !== 'completed' || run.conclusion !== 'success' || !run.check_suite_id)) {
+      throw new Error('Merge push workflows are missing, pending or failed. Active issue stays locked.');
+    }
+    const suites = new Set(runs.map((run) => run.check_suite_id));
     const checks = gh(['api', `repos/${REPO}/commits/${pr.mergeCommit.oid}/check-runs?per_page=100`, '--paginate', '--slurp']);
-    green(checks.flatMap((page) => page.check_runs), 'Merged commit');
+    // A commit can also be the head of an unrelated release PR or background job.
+    green(checks.flatMap((page) => page.check_runs).filter((check) => suites.has(check.check_suite?.id)), 'Merge push');
     noOtherPr();
     syncDevelop(developSha);
     gh(['issue', 'close', String(record.issue), '--repo', REPO, '--comment',
