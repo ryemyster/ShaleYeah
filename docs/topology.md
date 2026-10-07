@@ -280,6 +280,10 @@ synchronize develop, then start the next issue from the updated commit. The shar
 command and Git-hook contract is documented in [sdlc.md](sdlc.md); it applies to
 Codex, Antigravity and Claude Code.
 
+The finite MVP delivery order, role coverage and release acceptance gates live
+in [mvp-release-plan.md](mvp-release-plan.md). Architecture and research issues
+refine that ledger through their own PRs; it does not certify untested behavior.
+
 ## Current Interpretation
 
 The working interpretation of the project is:

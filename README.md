@@ -66,6 +66,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Build and run the current workspace | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Architecture details | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |
+| MVP delivery order and acceptance gates | [docs/mvp-release-plan.md](docs/mvp-release-plan.md) |
 | Contributing and branch workflow | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Security policy | [SECURITY.md](SECURITY.md) |
 | Package-local usage | `agents/*/README.md`, `servers/*/README.md`, `orchestrator/README.md` |
