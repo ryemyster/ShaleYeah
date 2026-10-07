@@ -28,7 +28,9 @@ function fixture(t) {
     issue: { state: 'OPEN' }, pulls: [],
     pr: { number: 10, state: 'OPEN', baseRefName: 'develop', headRefName: 'issue-1-first', headRefOid: baseline,
       isCrossRepository: false, mergeCommit: null, statusCheckRollup: [{ name: 'PR checks', status: 'COMPLETED', conclusion: 'SUCCESS' }] },
-    checks: { check_runs: [{ name: 'PR checks', status: 'completed', conclusion: 'success' }] },
+    checks: { check_runs: [{ name: 'PR checks', status: 'completed', conclusion: 'success', check_suite: { id: 1 } }] },
+    runs: { workflow_runs: ['ci', 'codeql', 'gitleaks'].map((name, index) => ({ path: `.github/workflows/${name}.yml`,
+      status: 'completed', conclusion: 'success', check_suite_id: index + 1 })) },
     closed: [], offline: false, ci: null, mergeBase: baseline,
   };
   const gh = (args) => {
@@ -41,6 +43,7 @@ function fixture(t) {
     if (args[0] === 'api' && args[1].includes('/pulls/')) return data.ci;
     if (args[0] === 'api' && args[1].includes('/git/ref/')) return { object: { sha: baseline } };
     if (args[0] === 'api' && args[1].includes('/compare/')) return { merge_base_commit: { sha: data.mergeBase } };
+    if (args[0] === 'api' && args[1].includes('/actions/runs?')) return [data.runs];
     throw new Error(`Unexpected gh command: ${args.join(' ')}`);
   };
   const api = createSdlc({ cwd, gh });
@@ -236,6 +239,7 @@ else if (args[1].includes('/check-runs')) result = [data.checks];
 else if (args[1].includes('/pulls/')) result = data.ci;
 else if (args[1].includes('/git/ref/')) result = { object: { sha: data.mergeBase } };
 else if (args[1].includes('/compare/')) result = { merge_base_commit: { sha: data.mergeBase } };
+else if (args[1].includes('/actions/runs?')) result = [data.runs];
 else throw new Error('Unexpected command');
 console.log(typeof result === 'string' ? result : JSON.stringify(result));
 `;
@@ -274,4 +278,29 @@ test('branch collisions preserve work and prior-hook errors propagate', (t) => {
   assert.throws(() => f.api.previousHook('pre-commit', [], ''), /Command failed/);
   f.git('config', 'sdlc.previousHooksPath', 'scripts/git-hooks');
   assert.throws(() => f.api.previousHook('pre-commit', [], ''), /Recursive/);
+});
+
+test('completion ignores unrelated release and background checks, keeping current push checks', (t) => {
+  const f = fixture(t); f.api.start(1, 'first'); f.commit(); f.merge();
+  f.data.checks.check_runs.push(
+    { name: 'CodeQL', status: 'completed', conclusion: 'failure', check_suite: { id: 99 } },
+    { name: 'Dependabot', status: 'in_progress', conclusion: null, check_suite: { id: 100 } },
+  );
+  f.api.complete(10);
+  assert.equal(f.api.status().active, null);
+});
+
+test('missing, pending or failed push workflows and failed push checks keep the slot', (t) => {
+  const f = fixture(t); f.api.start(1, 'first'); f.commit(); f.merge();
+  const original = f.data.runs.workflow_runs;
+  for (const runs of [[], original.slice(0, 2), original.map(run => ({ ...run, status: 'in_progress' })),
+    original.map(run => ({ ...run, conclusion: 'failure' }))]) {
+    f.data.runs.workflow_runs = runs;
+    assert.throws(() => f.api.complete(10), /workflow/i);
+    assert.equal(f.api.status().active.issue, 1);
+  }
+  f.data.runs.workflow_runs = original;
+  f.data.checks.check_runs.push({ name: 'CodeQL', status: 'completed', conclusion: 'failure', check_suite: { id: 2 } });
+  assert.throws(() => f.api.complete(10), /check/i);
+  assert.deepEqual(f.data.closed, []);
 });

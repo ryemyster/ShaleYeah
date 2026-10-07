@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Delivery-specific merge checks** (#698) — scoped SDLC completion to the current PR and actual merge push workflow suites, requiring CI, CodeQL and secret scans while excluding unrelated release-PR and background dependency checks sharing the commit SHA.
+
 - **Sequential issue delivery** (#696) — added `pnpm sdlc` start/status/complete commands, a receipt shared across Git worktrees, commit/push guards that preserve prior quality hooks, CI checks for current-base and single-PR delivery, and installable SDLC skills for Codex, Antigravity and Claude Code. The next issue starts only after the previous PR is merged, its CI passes and develop is synchronized.
 
 - **Investment Chair ADK migration and adapter retirement** (#539) — converted `agents/investment-chair` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Decision tools, documented the Stand-alone + Skills architecture mode and investment governance HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/decision` remains the TypeScript/pnpm MCP backend.
