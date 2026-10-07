@@ -4,6 +4,11 @@ Brief description of the changes.
 
 Fixes #(issue number)
 
+SDLC-Base: (active.baseSha from `pnpm sdlc status`)
+
+- [ ] Previous issue was merged, green and completed before this branch started
+- [ ] This is the only open implementation PR into `develop`
+
 ## Issue Spec
 
 - [ ] Linked issue uses the Implementation Spec template, or this PR explains why it is not implementation work.

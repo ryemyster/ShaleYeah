@@ -11,6 +11,8 @@
     "lint": "pnpm turbo lint",
     "type-check": "pnpm turbo type-check",
     "check:issue-template": "node scripts/check-issue-spec-template.mjs",
+    "sdlc": "node scripts/sdlc.mjs",
+    "test:sdlc": "node --test scripts/tests/sdlc.test.mjs",
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {
