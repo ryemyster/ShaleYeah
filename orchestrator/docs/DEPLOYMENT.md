@@ -1,45 +1,16 @@
-# Deployment — @shaleyeah/orchestrator
+# Coordinator deployment status
 
-> **Status: Planned — #362**
+No coordinator service or deployment configuration exists in this stub. There is
+no worker/start command, required Temporal service or live workflow endpoint.
 
-## Current state
+#675/#676 decide the pilot implementation and package location. #578 defines
+support claims; qualification requires recorded local/container evidence before
+any hosted-platform certification. The chosen adapter must pin dependencies,
+externalize configuration, preserve review/restart behavior and enforce authority.
 
-This package is a stub — no deployment configuration exists yet. See issue #362.
+Credentials are resolved through authorized secret references outside prompts,
+work products and logs. Each executing employee/tool service enforces its own
+scope; a coordinator does not forward a universal model key.
 
-## Planned deployment
-
-### Environment variables (planned)
-
-| Variable | Required | Purpose |
-|----------|----------|---------|
-| `TEMPORAL_ADDRESS` | Yes | Temporal server address (e.g. `localhost:7233`) |
-| `TEMPORAL_NAMESPACE` | No | Temporal namespace (default: `default`) |
-| `ANTHROPIC_API_KEY` | Inherited | Passed through to agent calls |
-
-### Planned Docker Compose (excerpt)
-
-```yaml
-services:
-  temporal:
-    image: temporalio/auto-setup:latest
-    ports:
-      - "7233:7233"
-  orchestrator:
-    image: shaleyeah/orchestrator:latest
-    environment:
-      TEMPORAL_ADDRESS: temporal:7233
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [temporal]
-    # depends_on: all 14 agent services
-```
-
-### Kong registration (planned)
-
-```bash
-curl -X POST http://kong:8001/services -d name=orchestrator -d host=orchestrator
-curl -X POST http://kong:8001/services/orchestrator/routes -d paths[]=/api/deal
-```
-
-## Related
-
-- Issue #362 — Temporal workflow implementation
+See [ADR 0001](../../docs/adr/0001-durable-employee-contracts.md) and the
+[MVP release gates](../../docs/mvp-release-plan.md#mvp-entry-exit-and-release-gates).

@@ -1,48 +1,21 @@
-# Development — @shaleyeah/orchestrator
+# Working on the coordinator stub
 
-> **Status: Planned — #362**
+From the repository root, use these package-local commands:
 
-## Current state
-
-This package is a stub. Do not add business logic until issue #362 is worked.
-
-## Setup (stub)
-
-```bash
-cd orchestrator
-pnpm install && pnpm build
+```sh
+pnpm --dir orchestrator build
+pnpm --dir orchestrator type-check
 ```
 
-## When #362 is implemented
+They compile the version export into `orchestrator/dist/` and check TypeScript
+types. Use the repository contributor setup for workspace dependencies.
 
-### Dependencies to add
+#675 defines the charter before #676 implements the pilot. Follow
+[sequential delivery](../../docs/sdlc.md), write acceptance cases before behavior,
+and use [ADR 0001](../../docs/adr/0001-durable-employee-contracts.md) for contracts
+and dependency direction. The implementation must prove bounded delegation,
+employee isolation, revision-bound human review, failure recovery and redacted
+events without requiring a full fleet or mandatory workflow engine.
 
-```bash
-pnpm add @temporalio/client @temporalio/worker @temporalio/workflow
-```
-
-### File layout (planned)
-
-```
-orchestrator/src/
-  workflows/
-    deal-workflow.ts     ← DealWorkflow definition
-    bid-workflow.ts      ← BidWorkflow definition
-  activities/
-    agent-activities.ts  ← HTTP calls to Tier 2 agents
-  worker.ts              ← Temporal worker startup
-  client.ts              ← Workflow client for external callers
-  index.ts               ← Public exports
-```
-
-### Key constraints
-
-- Workflows must be deterministic — no `Date.now()`, `Math.random()`, or direct I/O inside workflow functions
-- All side effects (HTTP calls to agents) must be in Activity functions
-- Use `@shaleyeah/sdk` contracts for type safety — do not re-declare AgentManifest shapes
-
-## Linting
-
-```bash
-cd orchestrator && npx biome check src/
-```
+Do not copy retired workflow examples or use a framework object as a public
+business contract. Select and verify an installed adapter in the owning issue.

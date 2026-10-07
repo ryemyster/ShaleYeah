@@ -1,52 +1,21 @@
-# Local Testing — @shaleyeah/orchestrator
+# Coordinator checks
 
-> **Status: Planned — #362**
+Current stub checks, run from the repository root:
 
-## Current state
-
-This package is a stub. No tests exist yet. See issue #362.
-
-## Build the stub
-
-```bash
-cd orchestrator
-pnpm build
+```sh
+pnpm --dir orchestrator build
+pnpm --dir orchestrator type-check
 ```
 
-## When #362 is implemented
+There is no coordinator test suite or running worker yet. Compilation does not
+establish workflow acceptance.
 
-### Prerequisites
+Before #676 behavior, define fixtures for bounded child tasks, source-linked
+handoffs, denied authority, private-context isolation, stale approvals, missing
+inputs, child failures, cancellation and restart/resume. Required fixture checks
+must run without live provider keys. Record protocol/config versions and the
+chosen adapter's persistence limitations.
 
-Start a local Temporal dev server:
-
-```bash
-brew install temporal
-temporal server start-dev
-```
-
-### Run the worker
-
-```bash
-TEMPORAL_ADDRESS=localhost:7233 pnpm start
-```
-
-### Run workflow tests
-
-```bash
-npx tsx tests/deal-workflow.test.ts
-```
-
-### Test without Temporal (unit test activities)
-
-```typescript
-import { runDealActivities } from "../src/activities/agent-activities.js";
-// Call activity functions directly — no Temporal worker needed
-```
-
-## Common issues (planned)
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `Connection refused :7233` | Temporal not running | `temporal server start-dev` |
-| Workflow non-determinism error | Side effect in workflow function | Move to Activity |
-| Agent call failures | Agent servers not running | Start all 14 agent services |
+The [MVP ledger](../../docs/mvp-release-plan.md) requires standalone Geologist
+and Research Analyst acceptance first. Human professional acceptance remains a
+separate release gate.
