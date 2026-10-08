@@ -3,8 +3,20 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { CONTRACT_VERSION, ContractValidationError, validateContract } from "../src/index.js";
 
-const records = JSON.parse(readFileSync(new URL("../fixtures/records.json", import.meta.url), "utf8"));
-const cases = JSON.parse(readFileSync(new URL("../fixtures/cases.json", import.meta.url), "utf8"));
+const authority = JSON.parse(readFileSync(new URL("../fixtures/authority-review.json", import.meta.url), "utf8"));
+const baseRecords = JSON.parse(readFileSync(new URL("../fixtures/records.json", import.meta.url), "utf8"));
+assert(
+	Object.keys(authority.records).every((name) => !Object.hasOwn(baseRecords, name)),
+	"authority fixture shadows a base record",
+);
+const records = {
+	...baseRecords,
+	...authority.records,
+};
+const cases = [
+	...JSON.parse(readFileSync(new URL("../fixtures/cases.json", import.meta.url), "utf8")),
+	...authority.validationCases,
+];
 for (const fixture of cases) {
 	test(fixture.name, () => {
 		const value = structuredClone(records[fixture.record]);
@@ -54,4 +66,25 @@ test("non-JSON values cannot carry framework objects", () => {
 	]) {
 		assert.throws(() => validateContract(value), ContractValidationError);
 	}
+});
+
+test("authority reference binds the task, reviewed product, source and human decision", () => {
+	const control = authority.control;
+	assert.deepEqual(control.scope, records.work.scope);
+	assert.equal(control.taskRevision, records.task.revision);
+	assert.deepEqual(control.productRef, records.work.artifact);
+	assert.deepEqual(control.requestRef, { id: records.saveRequest.id, revision: records.saveRequest.revision });
+	assert.deepEqual(control.decisionRef, { id: records.saveDecision.id, revision: records.saveDecision.revision });
+	assert.deepEqual(records.saveDecision.requestRef, control.requestRef);
+	assert.deepEqual(records.saveDecision.productRef, control.productRef);
+	assert.deepEqual(records.saveRequest.productRef, control.productRef);
+	assert.deepEqual(control.reviewer, records.saveDecision.reviewer);
+	assert.deepEqual(control.reviewer.authorityPolicy, records.saveRequest.reviewerPolicy);
+	assert.deepEqual(control.inputs, records.work.inputs);
+	assert.deepEqual(control.evidence, records.work.evidence);
+	assert.deepEqual(control.assumptions, records.work.assumptions);
+	assert.deepEqual(control.auditRef, records.saveDecision.auditRef);
+	assert.equal(records.saveDecision.decision, "approve");
+	assert(records.saveRequest.requestedDecision.includes(control.operation.name));
+	assert(records.saveRequest.requestedDecision.includes(control.operation.target));
 });

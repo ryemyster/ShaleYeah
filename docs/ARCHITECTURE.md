@@ -71,8 +71,10 @@ Roman display names are separate from employee, role and capability IDs.
 
 These records are ready for adoption; current employees do not yet emit them.
 The package verifies structure and declared references, not reviewer identity,
-real source content/rights or execution permission. #573/#672/#673 supply those
-trusted runtime boundaries. Eval profiles/results are #666/#667.
+real source content/rights or execution permission.
+[ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
+specifies trusted identity and exact-revision review; #678/#672/#673 implement
+the entry/context/review boundaries. Eval profiles/results are #666/#667.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
@@ -87,10 +89,15 @@ portable results and promotion gates are #666/#667/#577/#691. Each role needs
 professional cases and human acceptance; importing an agent is not job-quality
 evidence.
 
-Trusted code enforces identity, scopes, revision-bound human review, audit and
-redaction under #573/#678/#673/#574. Namespace strings, prompts and transport
-session IDs cannot grant authority. Legacy runtime checks do not establish
-protection on every current ADK-to-MCP path.
+ADR 0003 requires the executing backend to enforce identity, scopes, exact
+input/product/action review, source rights and redacted durable audit. Its
+reference cases validate current contract comparisons and specify future
+execution failures; they do not install that enforcement. #678/#673/#574 and
+connector/provider/context owners implement it. Namespace strings, prompts,
+caller approval booleans and transport session IDs cannot grant authority.
+Legacy runtime checks do not establish protection on every current ADK-to-MCP
+path: scopes are optional caller data, approval trusts a boolean, and HTTP tool
+dispatch has no authenticated gate today.
 
 ## Optional coordination
 

@@ -258,6 +258,13 @@ If any unit cannot be extracted into a separate repo without breaking the rest o
 
 ## Shared Contracts
 
+[ADR 0003](../contracts/docs/0003-authority-and-review.md) specifies trusted
+identity/policy, local/remote modes, exact input/product/action human review,
+protected backend enforcement, replay/audit failure, secrets and data-access
+limits. Its executable examples exercise existing contract comparisons; runtime
+enforcement remains in the entry, review, connector, context and events adapters.
+An employee, external replacement or coordinator cannot grant itself authority.
+
 [ADR 0002](../contracts/docs/0002-context-lifecycle.md) defines private context,
 explicit reviewed knowledge sharing, revision/rights invalidation and bounded
 retrieval for every role and compatible coordinator. Its reference records use

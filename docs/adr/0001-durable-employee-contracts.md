@@ -179,7 +179,9 @@ rejects or approves within authority, and resumes the correct revision after
 restart. Trusted code validates reviewer authority and consumes revision-bound
 decisions. Prompts, retrieved text, self-reported scopes and coordinator prose
 cannot grant permission. Protected-action policy is enforced at execution.
-#573 specifies that boundary; #678/#673 implement it.
+[ADR 0003](../../contracts/docs/0003-authority-and-review.md), delivered by #573,
+specifies that boundary, including exact operation/input binding, replay and audit
+failure recovery; #678/#673 implement it with connector/context/events owners.
 
 ADK tool confirmation can pause for a response, but current documentation marks
 it experimental and lists unsupported persistent session services. Test those
