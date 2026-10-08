@@ -28,6 +28,15 @@ Geologist does not import Geowiz TypeScript source. Its wrapper initializes a
 client session and calls named tools at the configured URL. Lifecycle/results/
 client consolidation are #668/#677/#679; HTTP access enforcement is #678.
 
+[ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
+specifies our/third-party employee and MCP combinations, standalone use and optional
+coordination. The selected reference profile is MCP 2025-11-25, with stdio and
+Streamable HTTP qualification still required in #674. Geologist's lock resolves
+ADK 2.4.0 and Python MCP 1.28.1; the TypeScript workspace resolves MCP SDK 1.29.0.
+A2A remains unconfigured and unqualified. Executed external employee record cases
+prove structure/binding; future adapter scenarios define discovery, error, scope,
+review, cancellation and credential acceptance checks.
+
 The agent requests ADK confirmation for `save_geowiz_finding`. That flag does
 not prove authenticated revision-bound professional review or restart recovery.
 Its manifest declares in-memory sessions. Durable context and review/revision/

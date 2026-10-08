@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Added ADR 0004 for #572: mandatory/conditional employee/tool compositions,
+  pinned MCP 2025-11-25 profile, deferred A2A, discovery/schema/state mapping,
+  context/review/credential boundaries, cancellation/deadline requirements and
+  adapter upgrade/deletion owners. Added 34 shared validator cases and a bound
+  external employee control; 28 adapter scenarios and an MCP transcript remain
+  future acceptance targets. No production schema, dependency or runtime change.
+
 - Added ADR 0003 for #573: trusted principal/policy provenance, explicit local and
   remote modes, protected operations, exact-revision review, replay/idempotency,
   audit failure/reconciliation, credentials and source/workspace/egress limits.

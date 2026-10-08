@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **BYO employee and MCP composition specification** (#572) — added ADR 0004 and reference cases for mandatory employee/tool combinations, optional coordination, pinned protocol profiles, state/artifact mapping, cancellation, human review and credential/source boundaries. Transferred superseded #575 requirements; shared record cases execute in Python/TypeScript, while protocol conformance and runtime qualification remain assigned to implementation owners.
+
 - **Employee authority and human review policy** (#573) — added ADR 0003 for trusted identity/scopes, explicit local/remote modes, protected backend operations, exact input/product/action review, replay and audit failure recovery, secrets and source/file/egress controls. Added shared validator cases and future runtime acceptance scenarios; authentication, execution grants and operational enforcement remain with their implementation owners.
 
 - **Employee context lifecycle** (#571) — added ADR 0002 and synthetic reference cases for private ownership, reviewed sharing, deterministic retrieval/budgets, source-preserving compaction, invalidation, restart and export/deletion. Storage, authenticated enforcement and professional qualification remain in their implementation issues; lexical/vector/warehouse adapters are optional.

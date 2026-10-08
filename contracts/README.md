@@ -28,6 +28,14 @@ comparisons and define backend acceptance scenarios for identity, review, replay
 audit, secrets and data access. These are policy requirements; the package does
 not authenticate callers or implement execution grants.
 
+[ADR 0004](docs/0004-composition-conformance.md) specifies replacement employees,
+tool-only and agent-only use, third-party MCP tools and optional coordination.
+It selects the pinned MCP 2025-11-25 reference profile and keeps A2A unqualified.
+Its [composition cases](fixtures/composition-conformance.json) add 34 executable
+record comparisons and 28 future adapter scenarios, including a generic MCP
+transcript and fake external employee record chain. The transcript/scenarios are
+acceptance targets; this package does not implement or certify those transports.
+
 ## Install and use
 
 Installation metadata permits Node 22 or newer for TypeScript and Python

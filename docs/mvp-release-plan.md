@@ -36,7 +36,7 @@ runtimes, MCP clients, storage, retrieval and deployment are replaceable adapter
 [ADR 0001](adr/0001-durable-employee-contracts.md), owned by
 [#567](https://github.com/ryemyster/ShaleYeah/issues/567), records the architecture
 decision and transferred #569 operating-mode scope. #568 publishes exact schemas
-and bindings; #572 selects tested protocol/composition profiles. Roman names
+and bindings; #572 specifies required protocol/composition profiles. Roman names
 remain display identities alongside explicit role and capability IDs.
 
 The plan includes role-specific data hooks, configurable evaluations, persistent
@@ -107,7 +107,7 @@ below are the completion minimums, supplemented by each linked issue's spec.
 | 4 | [#568](https://github.com/ryemyster/ShaleYeah/issues/568) | Implement versioned employee, task, work-product, context and review contracts | #567 | develop | Valid and invalid contract cases; version/compatibility behavior; independent consumers |
 | 5 | [#571](https://github.com/ryemyster/ShaleYeah/issues/571) | Commit the lifecycle for private employee context and reviewed shared knowledge; include the maintainer-requested SDK JSON-fence regex repair | #567, #568 | develop | Ownership, retention, retrieval budgets, provenance, access rules and reviewed promotion specified; parser behavior/stress tests and CodeQL repair verified |
 | 6 | [#573](https://github.com/ryemyster/ShaleYeah/issues/573) | Specify authenticated authority and approval bound to the reviewed revision | #567 | develop | [ADR 0003](../contracts/docs/0003-authority-and-review.md) specifies identity/scopes, exact input/product/action binding, secrets, audit/redaction and stale/replayed approval cases; validator examples execute, runtime enforcement remains assigned |
-| 7 | [#572](https://github.com/ryemyster/ShaleYeah/issues/572) | Commit BYO-agent and MCP composition conformance requirements | #568, #573 | develop | Compatible replacement, missing capability, protocol/version mismatch and access-denial cases defined |
+| 7 | [#572](https://github.com/ryemyster/ShaleYeah/issues/572) | Commit BYO-agent and MCP composition conformance requirements | #568, #573 | develop | [ADR 0004](../contracts/docs/0004-composition-conformance.md) transfers #575 pairings, selects pinned MCP profiles and deferred A2A, and defines discovery/artifact/review/cancel/credential acceptance; record cases execute, adapter qualification remains #674/#676 and prerequisites |
 | 8 | [#576](https://github.com/ryemyster/ShaleYeah/issues/576) | Commit an actionable keep, cut and replace inventory | None | develop | Current callers, retained behavior/tests, deletion owner and replacement gate for each legacy surface |
 | 9 | [#578](https://github.com/ryemyster/ShaleYeah/issues/578) | Commit the portable-package and deployment-support matrix | #567 | develop | Each target labeled intended, verified or deferred, with commands, evidence requirements and limits |
 | 10 | [#498](https://github.com/ryemyster/ShaleYeah/issues/498) | Align contributor setup with package-local ADK authoring and delivery | #567, #664 | develop | New contributor can follow package-local setup and verification; commands and paths checked |
@@ -264,7 +264,8 @@ tests pass. #541/#542/#680/#681 own the remaining TypeScript agent migrations.
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.
 
-Transport-session mechanics stay adapter-local. #572 declares tested MCP profiles;
+Transport-session mechanics stay adapter-local. #572's ADR 0004 selects the pinned
+MCP 2025-11-25 reference profile; #674 supplies actual composition qualification.
 #668 repairs lifecycle for supported session-based adapters. Modern stateless
 support needs separate conformance evidence. Domain context and review identity
 must survive either transport. Existing moving model aliases must be resolved or

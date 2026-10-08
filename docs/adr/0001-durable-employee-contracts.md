@@ -246,16 +246,19 @@ The project adds these compatibility rules:
 Protocol versions belong to adapters. MCP revision 2026-07-28 uses per-request
 metadata; 2025-11-25 and earlier use initialization. Our current client initializes.
 Transport-session IDs never define employee identity, persistent context or
-review decisions. #572 selects tested protocol profiles; #668 repairs lifecycle
+review decisions. [ADR 0004](../../contracts/docs/0004-composition-conformance.md),
+delivered by #572, selects the pinned MCP 2025-11-25 reference profile; #674 must
+prove its compositions. #668 repairs lifecycle
 for supported session-based adapters. Modern stateless support is a separately
 verified change rather than an automatic upgrade of that repair.
-[MCP versioning and cross-revision compatibility](https://modelcontextprotocol.io/specification/2026-07-28/basic/versioning),
+[MCP's official cross-revision migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28),
 [MCP 2025-11-25 lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)
 
 BYO-model/key, BYO-agent/runtime, BYO-data and BYO-coordinator have separate
 conformance profiles. A model switch proves neither runtime replacement nor
-compatibility with all external employees. #572 defines required/optional
-composition; #669 tests full-path providers. Paid live smoke tests are opt-in,
+compatibility with all external employees. ADR 0004 defines mandatory/conditional
+composition, discovery/state/artifact/cancellation requirements and deferred A2A;
+#669 tests full-path providers. Paid live smoke tests are opt-in,
 with live support claims tied to recorded evidence. Local/container portability
 does not certify every hosted platform.
 
@@ -300,7 +303,7 @@ is not the migration strategy; verified domain logic survives behind boundaries.
 | Exact fields, initial versions, bindings/package names and migrations | #568 |
 | Context store/retrieval, retention and promotion implementation | #571, #672 |
 | Identity/credential resolution, reviewer authority and durable review adapter | #573, #678, #673 |
-| Tested protocol profiles, required/optional composition and alternate runtimes | #572, #674 |
+| Actual qualification of ADR 0004's selected profiles/compositions and optional alternate runtimes | #674, #676 and transport/client prerequisites; #572 specification delivered |
 | Provider pair/model versions and production/judge config | #669, #666, #667 |
 | Chief of Staff charter, Investment Chair split and package location | #675, #676 |
 | Hosted-platform certification and deployment choices | #578, #674 |
