@@ -1,0 +1,47 @@
+{
+	"name": "@shaleyeah/contracts",
+	"version": "0.1.0",
+	"description": "Portable employee business contracts, JSON Schema and validators",
+	"type": "module",
+	"private": false,
+	"license": "Apache-2.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		},
+		"./schema": "./shaleyeah_contracts/schemas/employee-0.1.0.schema.json"
+	},
+	"files": [
+		"dist",
+		"shaleyeah_contracts/schemas",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"check:isolation": "bash scripts/check-isolation.sh",
+		"generate": "tsx scripts/generate-types.ts",
+		"check:generated": "tsx scripts/generate-types.ts --check",
+		"build": "pnpm check:generated && tsc",
+		"type-check": "pnpm check:generated && tsc --noEmit",
+		"lint": "biome check . && uv run --locked ruff check .",
+		"test:ts": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/index.ts tests/contracts.test.ts",
+		"test:python": "uv run --locked pytest --cov=shaleyeah_contracts --cov-fail-under=90",
+		"test": "pnpm test:ts && pnpm test:python"
+	},
+	"dependencies": {
+		"ajv": "8.20.0",
+		"ajv-formats": "3.0.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.0",
+		"@types/node": "25.9.3",
+		"json-schema-to-typescript": "16.0.0",
+		"tsx": "4.21.0",
+		"typescript": "6.0.2"
+	}
+}

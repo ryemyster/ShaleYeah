@@ -2,6 +2,12 @@
 
 ## Setup
 
+Install [uv](https://docs.astral.sh/uv/) as well as Node/pnpm when running the full
+workspace checks. The shared [`contracts/`](contracts/README.md) package runs both
+TypeScript and Python fixture suites; its committed Python lock installs the
+required validator/test tools with `uv run --locked`. Individual packages still
+use their own documented setup.
+
 ```bash
 git clone https://github.com/ryemyster/ShaleYeah.git
 cd ShaleYeah

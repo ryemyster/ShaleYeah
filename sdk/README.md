@@ -1,10 +1,16 @@
 # @shaleyeah/sdk
 
-Shared language for the ShaleYeah agent fleet — types, LLM client, MCP base server, file parsers, and agent contracts.
+TypeScript helpers for SHALE YEAH — domain types, LLM client, MCP base server,
+file parsers and existing runtime contracts.
 
 ## What this package is
 
-Every ShaleYeah agent and MCP server speaks the same language. This package is that language: the interfaces, base classes, and utilities that all 14 servers and 14 agents depend on. If you're building a new agent or server in this fleet, you depend on `@shaleyeah/sdk`.
+The current TypeScript MCP servers and remaining TypeScript employees use this
+package. Python ADK employees call tool servers through MCP rather than importing
+this SDK. New employee business records live in the independent
+[`contracts/` package](../contracts/README.md), which supplies the common JSON
+schemas and Python/TypeScript validation. Install SDK helpers only when needed
+by your TypeScript unit.
 
 ## Quick start
 
@@ -35,7 +41,7 @@ const response = await client.complete([{ role: "user", content: "analyze this w
 | `MCPServer` | Base class for all Tier 1 MCP tool servers |
 | `LLMClient` | Shared Anthropic SDK wrapper — all LLM calls go through here |
 | `ServerFactory` | Standardized server bootstrap |
-| `AgentManifest`, `AgentRuntime`, `AgentService` | Tier 2 agent contracts |
+| `AgentManifest`, `AgentRuntime`, `AgentService` | Existing TypeScript tool/runtime configuration and interfaces; distinct from portable employee business records |
 | `FileIntegrationManager` | Unified file ingestion (LAS, Excel, GIS, SEGY) |
 | `FileFormatDetector` | Auto-detect file type by extension + magic bytes |
 | Domain types | `LASData`, `GeologicalAnalysis`, `EconomicAnalysis`, `RiskAssessment`, etc. |

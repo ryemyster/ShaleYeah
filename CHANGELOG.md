@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Portable employee contracts** (#568) — added an extractable JSON Schema 0.1.0 package for charters, tasks, evidence-backed work products, bounded context and revision-bound review records; generated TypeScript types, Python/TypeScript fixture parity, scope/revision/policy comparisons, compatibility rules and isolated npm/wheel verification. Validation does not authenticate reviewers or authorize actions; employee adoption and trusted runtime enforcement remain assigned to their own issues.
+
 - **Employee role and evidence matrix** (#665) — committed workflows, required/optional inputs, handoffs, private context, configurable evaluations and human decisions for all 14 specialists plus the proposed Chief of Staff; documented primary-source access/rights limits, three Geologist connector candidates and evidence gaps owned by existing implementation issues.
 
 - **Durable employee architecture decision** (#567) — recorded language-neutral business contracts, replaceable adapters, package dependency direction, per-role operating modes, context/review ownership and controlled compatibility/upgrade rules; corrected stale TypeScript Geologist and mandatory Temporal architecture claims.

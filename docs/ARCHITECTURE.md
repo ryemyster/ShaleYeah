@@ -38,6 +38,7 @@ still uses the SDK's Anthropic-specific client.
 
 | Area | Current responsibility | Target boundary |
 | --- | --- | --- |
+| `contracts/` | Canonical JSON Schema 0.1.0, generated TypeScript types and Python/TypeScript validators for employee records | Extractable business contracts independent of agent, tool, model and storage adapters |
 | `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
@@ -60,6 +61,18 @@ Every unit needs install/run/check docs and declared dependencies. #674 and role
 PRs verify extraction; moving a folder alone does not prove independent operation.
 
 ## Context, evaluations and trust
+
+[`contracts/`](../contracts/README.md) defines employee charters, task assignments,
+work products with evidence/assumptions, bounded context manifests, review requests
+and review decisions. Both language bindings validate the same fixtures; exact
+version checks reject unsupported records. Expected scope/revision comparisons
+and a separately supplied policy check support callers without granting authority.
+Roman display names are separate from employee, role and capability IDs.
+
+These records are ready for adoption; current employees do not yet emit them.
+The package verifies structure and declared references, not reviewer identity,
+real source content/rights or execution permission. #573/#672/#673 supply those
+trusted runtime boundaries. Eval profiles/results are #666/#667.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
