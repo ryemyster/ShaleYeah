@@ -71,6 +71,10 @@ Preserve useful trust behavior and regression cases at the replacement boundary.
 
 Every unit needs install/run/check docs and declared dependencies. #674 and role
 PRs verify extraction; moving a folder alone does not prove independent operation.
+The [deployment support guide](deployment-support.md) records current no-key
+reference checks, actual ports/config/data paths, durable-state/review gaps and
+optional-host qualification. Geowiz maintains transport sessions and writes
+findings; process separation does not make it stateless or prove replica safety.
 
 ## Context, evaluations and trust
 

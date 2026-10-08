@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Portable support and deployment evidence** (#578) — documented current reference setup, actual credentials/ports/file locations, local smoke limits, durable context/review/export/restore and resource gates, with independent package/container targets and untested optional hosts. Replaced reference deployment examples that implied built images, fixed employee ports, stateless scaling or unsupported production sizing/settings; no container or hosted deployment is certified by this documentation delivery.
+
 - **Caller-backed migration inventory** (#576) — added the keep/refactor/adapter/delete ledger for four TypeScript employees, ten Python MCP wrappers, SDK exports, domain tools and process residue, with named replacement owners and extraction/authority gates. Verified existing Python package cleanup guards; filed separate market/research fallback, confidence metadata, economics and type-curve repairs (#708–#712) and inserted them before their qualification consumers. Runtime deletions remain in owning migration PRs and final cleanup #692.
 
 - **BYO employee and MCP composition specification** (#572) — added ADR 0004 and reference cases for mandatory employee/tool combinations, optional coordination, pinned protocol profiles, state/artifact mapping, cancellation, human review and credential/source boundaries. Transferred superseded #575 requirements; shared record cases execute in Python/TypeScript, while protocol conformance and runtime qualification remain assigned to implementation owners.

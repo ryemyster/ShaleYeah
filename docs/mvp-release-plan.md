@@ -239,7 +239,9 @@ evidence; a model-provider switch does not prove agent-runtime replacement.
 
 The following are delivery targets, not certification claims. At this plan's
 baseline, support is unqualified unless evidence from the owning issue proves
-the stated mode. #578 refines the matrix and #674 supplies reference portability
+the stated mode. #578's [deployment support guide](deployment-support.md) records
+bounded local workspace/import/health evidence, planned isolated/container
+acceptance and untested optional hosts. #674 supplies reference portability
 evidence. Role PRs record their own limits; #693 reconciles release support.
 
 | Mode | MVP requirement | Current qualification | Evidence owner |

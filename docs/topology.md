@@ -333,6 +333,11 @@ retained behavior, temporary adapters and deletion owners. Each replacement PR
 removes its displaced paths and commands after acceptance; #692 verifies final
 shared cleanup. Inventory completion does not mean those runtime cuts shipped.
 
+The [deployment support matrix](deployment-support.md) separates current local
+checks from planned isolated packages/containers and untested optional hosts.
+Portable hosting is a target boundary; #674 and role PRs supply actual receipts
+before a target is described as verified.
+
 ## Current Interpretation
 
 The working interpretation of the project is:
