@@ -354,6 +354,8 @@ The working interpretation of the project is:
 That is the topology this backlog should now support.
 
 Chief of Staff is an optional bounded coordinator, initially for Geologist and
-Research Analyst. Investment Chair remains provisionally a separate employee.
-#675 decides authority and the split before #676. Each specialist remains directly
-usable with its own human owner and context.
+Research Analyst. The [charter from #675](chief-of-staff-role.md) keeps Investment
+Chair distinct as an advisory investment specialist; the human owner retains
+consequential decisions. #676 implements the pilot in `orchestrator/`, using
+ADK/Python as the preferred adapter. Each specialist remains directly usable
+with its own human owner and context; runtime qualification remains pending.

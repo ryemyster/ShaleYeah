@@ -229,7 +229,7 @@ are separate composition choices governed by #568, #572 and #573.
 - **Sources and hooks:** Versioned employee work products and internal policy/portfolio exports first. Professional reporting references [S14](#s14-professional-reporting-references) inform limits; no additional external feed is mandatory.
 - **Configurable evaluation:** Required-evidence coverage, revision reconciliation, policy conformity, disagreement/condition visibility, unsupported reserves claims and correct deferral.
 - **Human decisions:** Investment committee, board or other authorized owner commits capital, offers and binding disclosures. The agent's recommendation grants no additional authority.
-- **Unresolved validation:** Investment owner validates mandate, required packet and acceptable advice. #675 decides the relationship to Chief of Staff before #690 implements it; avoid two competing final decision-makers.
+- **Unresolved validation:** Investment owner validates mandate, required packet and acceptable advice. The [#675 charter](chief-of-staff-role.md) keeps advisory investment synthesis distinct from organizational coordination; #690 implements that boundary. Neither employee supplies final human investment authority.
 
 ### Reporter
 
@@ -262,7 +262,7 @@ are separate composition choices governed by #568, #572 and #573.
 - **Sources and hooks:** Employee task/artifact/status interfaces first; optional internal task API/file export. Transport choices follow ADR 0001 and #572. Coordination does not require a fifteenth specialist data server or a mandatory warehouse.
 - **Configurable evaluation:** Correct role routing, sufficient scoped context, preserved disagreement, dependency completion, bounded retries/budget, follow-up quality and human decision burden.
 - **Human decisions:** Company owner grants specific planning/delegation authority and controls consequential decisions. Any limited autonomous action must be explicit in trusted policy; a title or prompt cannot grant it.
-- **Unresolved validation:** #675 approves this charter and the Investment Chair relationship. #676 proves only the bounded Geologist/Research Analyst pilot. Broader autonomy requires evidence and an owning issue.
+- **Unresolved validation:** The [#675 charter](chief-of-staff-role.md) specifies decision rights, three journeys, scoped context and 14 future cases; no coordinator runtime is qualified. #676 proves only the bounded Geologist/Research Analyst pilot in `orchestrator/`. Actual operator cases/rights, expert labels and measured reviewer effort remain pending. Broader autonomy requires evidence and an owning issue.
 
 ## Representative evaluation cases
 
@@ -592,7 +592,7 @@ its own bounded issue if a customer later requires it.
 | Geologist quality checks / QA | Domain checks stay near their tools; QA independently tests data/work products and tracks cross-role defects. Shared rule IDs reduce duplication |
 | Risk / specialist uncertainty | Specialists own source uncertainty; Risk owns cross-role exposure/dependencies and mitigation analysis. It cannot overwrite the specialist evidence |
 | Investment Chair / Reporter | Investment Chair owns advisory investment synthesis; Reporter presents sourced results. Reporter's current decision-named tool cannot grant investment authority |
-| Chief of Staff / Investment Chair | Proposed separation: Chief of Staff coordinates work/status; Investment Chair advises on investments. #675 must approve the final authority split before implementation |
+| Chief of Staff / Investment Chair | [#675 charter](chief-of-staff-role.md): Chief of Staff coordinates bounded work/status; Investment Chair advises on investments; human owner retains consequential decisions. #676/#690 implement their boundaries |
 
 For the #676 pilot, the owner gives Chief of Staff an objective and permitted
 sources; Chief of Staff delegates a geological task and a source-collection
@@ -620,7 +620,7 @@ The [delivery ledger](mvp-release-plan.md) retains the sequential order.
 | Evals must change through configuration without trusting arbitrary code or model judgments as authority | Implement validated profiles and trusted metrics, then role cases and required gates | #666/#667/#577/#691: versioned scores, deterministic failures, expert labels and offline CI |
 | Human edits/approval and continuation need exact-revision identity | Specify authority and implement authenticated, restart-safe review; reject stale/replayed approvals | #573/#673 plus role adoption; no flag or prompt constitutes acceptance |
 | Professional tolerances, source rights and actual review effort remain unvalidated | Obtain permitted operator packets and named professional review; measure comparable manual work | Each role outcome and #694; no present enterprise/MVP quality claim from this document |
-| Chief of Staff authority and Investment Chair overlap are unresolved | Approve one explicit ownership split before bounded orchestration | #675 charter, #676 pilot; no new broad autonomy in this research issue |
+| Chief of Staff / Investment Chair split is specified; enforcement is pending | Implement explicit coordination/advisory/human ownership with scoped review | #675 charter, #676 pilot and #690 specialist; no broad autonomy qualified by research |
 
 Before an employee's adoption issue closes, its owner selects a realistic
 required-input packet, a permitted offline fixture, a professional reviewer,

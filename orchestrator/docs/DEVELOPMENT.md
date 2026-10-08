@@ -10,7 +10,8 @@ pnpm --dir orchestrator type-check
 They compile the version export into `orchestrator/dist/` and check TypeScript
 types. Use the repository contributor setup for workspace dependencies.
 
-#675 defines the charter before #676 implements the pilot. Follow
+The [#675 charter](../../docs/chief-of-staff-role.md) defines the job, authority,
+context, cases and pilot scope before #676 implements it. Follow
 [sequential delivery](../../docs/sdlc.md), write acceptance cases before behavior,
 and use [ADR 0001](../../docs/adr/0001-durable-employee-contracts.md) for contracts
 and dependency direction. The implementation must prove bounded delegation,
