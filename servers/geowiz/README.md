@@ -2,7 +2,7 @@
 
 **Marcus Aurelius Geologicus** — Tier 1 geological analysis MCP server.
 
-Stateless tool server exposing 9 geological analysis tools over the Model Context Protocol. Handles LAS/DLIS/WITSML well logs, GIS files, seismic data, geological documents, and petroleum databases. Used directly by Claude Desktop (stdio) or called by the geologist Tier 2 agent over HTTP.
+Tool server exposing 9 geological analysis tools over the Model Context Protocol. It maintains HTTP transport sessions and writes findings/artifacts. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
 
 ---
 
@@ -31,7 +31,7 @@ Restart Claude Desktop. You'll see 9 geology tools available. Ask Claude: *"Use 
 
 ```bash
 cd servers/geowiz
-PORT=3001 ANTHROPIC_API_KEY=sk-ant-... pnpm start
+PORT=3001 pnpm start
 # ✅ Marcus Aurelius Geologicus ready
 # 🚀 HTTP server listening on :3001
 ```
@@ -40,10 +40,16 @@ Verify it's up:
 
 ```bash
 curl http://localhost:3001/health
-# { "status": "ok", "server": "geowiz", "version": "0.1.0" }
+# { "status": "ok", "server": "geowiz", "version": "1.0.0" }
 ```
 
 Tool calls go through the MCP protocol (used by the geologist agent or any MCP client). To send a real task in natural language, use the geologist Tier 2 agent — see [`agents/geologist`](../../agents/geologist).
+
+Startup/health need no model key. Real model-assisted tools need a separately
+loaded provider credential. Current HTTP entry binds without a host restriction
+or authenticated tool gate; use a trusted private development host. A healthy
+port does not prove source access, session isolation or reviewed persistence.
+Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) for build/state and qualification steps.
 
 ---
 
@@ -51,12 +57,13 @@ Tool calls go through the MCP protocol (used by the geologist agent or any MCP c
 
 ```bash
 # Terminal 1 — this server
-cd servers/geowiz && PORT=3001 pnpm start
+cd servers/geowiz
+PORT=3001 pnpm start
 
 # Terminal 2 — the Tier 2 agent
 cd agents/geologist
-ANTHROPIC_API_KEY=sk-ant-... npx tsx src/agent/index.ts \
-  "Analyze the Permian Basin formation in data/test.las"
+GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+  "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
 → See [`agents/geologist/README.md`](../../agents/geologist/README.md) for the full agent quick start.
@@ -106,6 +113,6 @@ pnpm lint         # Biome
 | [HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | New to the project — plain-language + technical lifecycle |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Tool inventory, data flow, LLM call locations |
 | [INTEGRATION.md](docs/INTEGRATION.md) | Calling geowiz tools from an agent or MCP client |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | stdio vs HTTP modes, Docker, Kong, production checklist |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local transport/setup, storage and qualified deployment limits |
 | [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Running locally, testing tools directly |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Adding tools, LLM wiring pattern, TDD checklist |

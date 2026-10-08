@@ -69,6 +69,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Employee record schemas, Python/TypeScript validation and compatibility | [contracts/README.md](contracts/README.md) |
 | Employee workflows, data, context, evaluations and human review | [Employee role matrix](docs/employee-role-matrix.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |
+| Local reference setup and qualified deployment limits | [Deployment support](docs/deployment-support.md) |
 | MVP delivery order and acceptance gates | [docs/mvp-release-plan.md](docs/mvp-release-plan.md) |
 | Contributing and branch workflow | [CONTRIBUTING.md](CONTRIBUTING.md) |
 | Security policy | [SECURITY.md](SECURITY.md) |

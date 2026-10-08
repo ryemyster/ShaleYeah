@@ -130,6 +130,6 @@ Run these from `agents/geologist`.
 | [HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | New to the project — plain-language + five-component framework |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Understanding the topology, execution paths, Arcade patterns |
 | [INTEGRATION.md](docs/INTEGRATION.md) | Calling this agent from your own code |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Running in production — Docker, Kong, scopes, BYOE |
+| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local setup, state/review requirements and qualified deployment limits |
 | [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Running both processes locally, HITL testing |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | TDD workflow, adding tools, implementation notes |

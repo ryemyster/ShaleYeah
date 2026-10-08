@@ -12,6 +12,8 @@
 
 ### Changed
 
+- **Deployment documentation** (#578) — linked ordered reference setup and the support matrix, separated provider credentials and actual CLI ports, and documented in-memory session, backend authority and durable context/review qualification limits. No employee runtime change.
+
 - **Agent runtime surface** (#597) — Geologist is now an ADK/Python agent package. New Geologist reasoning/runtime work belongs in `app/agent.py` and `app/geowiz_mcp.py`.
 - **Documentation** (#597) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/geowiz` MCP backend.
 
