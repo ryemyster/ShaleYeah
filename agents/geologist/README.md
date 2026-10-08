@@ -30,12 +30,16 @@ At runtime:
 
 ```bash
 cd agents/geologist
-agents-cli install
-GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
-  "Use process_geowiz_well_logs to process sample.las with format auto and page size 25"
+uv sync --frozen --extra eval
+GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+  "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
-This path uses `app/agent.py` and the Python MCP client in `app/geowiz_mcp.py`.
+Start Geowiz and load the chosen model credentials before this live command;
+follow the [ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally).
+The fixture path resolves on the Geowiz host. This path uses `app/agent.py` and
+the Python MCP client in `app/geowiz_mcp.py`; it remains subject to provider,
+source and composition qualification.
 
 Start the Geowiz MCP server separately when you want live backend execution:
 
@@ -56,12 +60,16 @@ Add the server (Tier 1) to your MCP config. The Geologist ADK agent consumes tha
     "geowiz": {
       "command": "pnpm",
       "args": ["--filter", "@shaleyeah/server-geowiz", "start"],
-      "cwd": "/path/to/ShaleYeah",
-      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+      "cwd": "/path/to/ShaleYeah"
     }
   }
 }
 ```
+
+Load Geowiz's provider credential through your local secret loader, outside the
+saved config. Leave `PORT` unset for this stdio launch mode. The configuration
+does not establish MCP client/session, identity or professional-result
+qualification; see [deployment limits](docs/DEPLOYMENT.md).
 
 ---
 
@@ -77,7 +85,7 @@ Add the server (Tier 1) to your MCP config. The Geologist ADK agent consumes tha
 | `geologist.process_document` | Geological document parsing and extraction | query | No |
 | `geologist.process_seismic_data` | SEG-Y seismic interpretation | query | No |
 | `geologist.process_aries_database` | ARIES reserves database processing | query | No |
-| `geologist.save_finding` | Persist a key finding to the agent memory store | **command** (transactional) | **Yes** |
+| `geologist.save_finding` | Write finding JSON on the Geowiz host; durable employee context is separate | **command** | **Yes**, ADK confirmation; backend enforcement pending |
 
 ## HITL Boundary
 
@@ -100,12 +108,18 @@ Run these from `agents/geologist`.
 
 | Task | Command |
 |------|---------|
-| Install dependencies | `uv sync --extra eval` |
-| Test package behavior | `uv run pytest` |
-| Build/syntax check | `uv run python -m py_compile app/agent.py app/geowiz_mcp.py` |
+| Install dependencies | `uv sync --frozen --extra eval` |
+| Test package/tool/eval shape | `uv run --frozen pytest -q` |
+| Syntax check | `uv run --frozen python -m py_compile app/agent.py app/geowiz_mcp.py` |
 | Inspect ADK project | `agents-cli info` |
-| Run a local task | `GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run "Assess the data quality of sample.las"` |
-| Run evals | `agents-cli eval run` |
+| Run a live local task | Follow [the ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally) with backend and provider configured |
+| Run configured live evals | `agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json --config tests/eval/eval_config.yaml` |
+
+The eleven current pytest checks are shape checks, not employee performance
+scores. Live evals need the tool/model and selected grader prerequisites; see
+[LOCAL_TESTING.md](docs/LOCAL_TESTING.md#run-adk-evals) for inputs, artifacts and
+limits. A passing mock, import or healthy port does not qualify geological work
+or backend approval enforcement.
 
 ---
 

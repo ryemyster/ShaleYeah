@@ -7,7 +7,9 @@ order. Do not create a batch of issue branches from an earlier develop snapshot.
 
 ## Setup for Codex, Antigravity and Claude Code
 
-From the repository root, with Git, Node >=18, pnpm and authenticated `gh`:
+From the repository root, with Git, Node >=22, the root `packageManager` pnpm
+version and authenticated `gh`. Use [Getting Started](GETTING_STARTED.md) for
+locked workspace/package dependencies before installation:
 
 ```sh
 pnpm sdlc install

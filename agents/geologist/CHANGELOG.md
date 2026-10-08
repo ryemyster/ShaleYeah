@@ -12,6 +12,8 @@
 
 ### Changed
 
+- **Contributor commands** (#498) — frozen setup and shape checks, fixture paths, explicit eval dataset/config and artifact/prerequisite guidance, tests-first tool workflow and optional lint extra. Removed inline fake-key config and generic eval defaults; no runtime or metric behavior changed.
+
 - **Deployment documentation** (#578) — linked ordered reference setup and the support matrix, separated provider credentials and actual CLI ports, and documented in-memory session, backend authority and durable context/review qualification limits. No employee runtime change.
 
 - **Agent runtime surface** (#597) — Geologist is now an ADK/Python agent package. New Geologist reasoning/runtime work belongs in `app/agent.py` and `app/geowiz_mcp.py`.
