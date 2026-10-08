@@ -48,6 +48,17 @@ const response = await client.complete([{ role: "user", content: "analyze this w
 
 ## Running tests
 
+The task-loop parser accepts raw JSON and outer JSON/untagged code fences.
+It strips outer markers with string operations so long whitespace responses
+cannot trigger regex backtracking, and literal fence text inside JSON values is
+preserved. Invalid JSON retains the existing task-loop fallback behavior.
+The parser regressions use mocked responses, including a killable stress worker.
+
+`ContextStore` remains process-local and does not enforce authenticated namespace
+access or reviewed sharing. The portable context policy is
+[ADR 0002](../contracts/docs/0002-context-lifecycle.md); durable implementation is
+owned by #672 and supporting trust/review issues.
+
 ```bash
 pnpm test
 ```

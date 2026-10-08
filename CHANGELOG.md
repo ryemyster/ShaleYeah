@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Employee context lifecycle** (#571) — added ADR 0002 and synthetic reference cases for private ownership, reviewed sharing, deterministic retrieval/budgets, source-preserving compaction, invalidation, restart and export/deletion. Storage, authenticated enforcement and professional qualification remain in their implementation issues; lexical/vector/warehouse adapters are optional.
+
 - **Portable employee contracts** (#568) — added an extractable JSON Schema 0.1.0 package for charters, tasks, evidence-backed work products, bounded context and revision-bound review records; generated TypeScript types, Python/TypeScript fixture parity, scope/revision/policy comparisons, compatibility rules and isolated npm/wheel verification. Validation does not authenticate reviewers or authorize actions; employee adoption and trusted runtime enforcement remain assigned to their own issues.
 
 - **Employee role and evidence matrix** (#665) — committed workflows, required/optional inputs, handoffs, private context, configurable evaluations and human decisions for all 14 specialists plus the proposed Chief of Staff; documented primary-source access/rights limits, three Geologist connector candidates and evidence gaps owned by existing implementation issues.
@@ -71,6 +73,8 @@ Develop-only — not yet released to main.
 - **Model routing into `callLLM`** (#402) — all agents resolve `config.modelRouting["standard-analysis"].model` on every LLM call; injectable `callLLM` option added to all `runTask` functions for test capture without real API calls.
 
 ### Fixed
+
+- **SDK fenced-JSON parsing** (#571, CodeQL alert #51) — replaced polynomial whitespace regex cleanup with outer-marker string operations; preserved literal fence text inside JSON values and added a killable 250,000-space stress regression. Removed the stale mandatory Supabase/vector Phase 2 promise from the existing context-store documentation.
 
 - **Level 2 parity — 9 agents** (#403, #404, #423–#430) — `executeWithRetry` (3-attempt exponential backoff) and permanent halt guard (`!execResult.retryable`) applied to geologist, economist, quality-assurance, title-analyst, research-analyst, development-planner, drilling-engineer, infrastructure-planner, legal-analyst. Each gains 2 contract tests verifying a blocking eval halts the loop.
 - **`LocalAgentRuntime.execute()` scope audit** (#403) — scope rejections now written to audit trail before returning.

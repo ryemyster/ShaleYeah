@@ -194,10 +194,11 @@ function buildTranscript(history: Turn[]): string {
 
 function parseJson(text: string): ParsedAgentResponse | null {
 	try {
-		const cleaned = text
-			.replace(/^```(?:json)?\s*/m, "")
-			.replace(/\s*```\s*$/m, "")
-			.trim();
+		// Strip only outer markers; unanchored whitespace regexes backtrack on long responses.
+		let cleaned = text.trim();
+		if (cleaned.startsWith("```json")) cleaned = cleaned.slice(7).trimStart();
+		else if (cleaned.startsWith("```")) cleaned = cleaned.slice(3).trimStart();
+		if (cleaned.endsWith("```")) cleaned = cleaned.slice(0, -3).trimEnd();
 		return JSON.parse(cleaned);
 	} catch {
 		return null;

@@ -13,6 +13,13 @@ The [fixtures](fixtures/records.json) contain synthetic Geologist examples, incl
 zero confidence, unknown porosity, blocked work, a replacement employee and review
 decisions. They are format examples, not qualified geological findings.
 
+[ADR 0002](docs/0002-context-lifecycle.md) specifies private employee context,
+reviewed sharing, selection budgets, compaction, invalidation and export/deletion.
+Its [synthetic examples](fixtures/context-lifecycle.json) use the same 0.1.0
+records. Tests validate example shapes and reference binding; the sixteen expected
+policy scenarios are acceptance specifications for #672/#673, not an implemented
+authorization/retrieval service.
+
 ## Install and use
 
 Installation metadata permits Node 22 or newer for TypeScript and Python

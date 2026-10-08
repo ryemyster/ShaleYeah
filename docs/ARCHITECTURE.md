@@ -76,8 +76,11 @@ trusted runtime boundaries. Eval profiles/results are #666/#667.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
-knowledge. Policy/storage are #571/#672. Warehouses, vectors and hosted memory
-are optional adapters.
+knowledge. [ADR 0002](../contracts/docs/0002-context-lifecycle.md), delivered by
+#571, defines private ownership, reviewed handoffs, bounded retrieval, compaction,
+invalidation and export/deletion. #672 implements durable storage and retrieval;
+the policy/reference fixtures do not enforce it today. Warehouses, vectors and
+hosted memory are optional adapters selected through measured qualification.
 
 Existing shape tests/eval assets are foundational. Configurable job scorecards,
 portable results and promotion gates are #666/#667/#577/#691. Each role needs

@@ -1,4 +1,6 @@
 import assert from "node:assert";
+import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import {
 	type AgentManifest,
 	type AgentRuntimeConfig,
@@ -6,6 +8,7 @@ import {
 	ContextStore,
 	type LLMCallOptions,
 	LocalAgentRuntime,
+	parseAgentJsonResponse,
 	RetryableToolError,
 	runAgentTask,
 	type StandaloneToolHandler,
@@ -170,7 +173,66 @@ function sequenceLLM(responses: string[], systems?: string[]): (opts: LLMCallOpt
 	};
 }
 
+// A separate process lets the parent stop synchronous regex backtracking.
+if (process.argv.includes("--json-fence-stress-worker")) {
+	const response = `${" ".repeat(250_000)}x`;
+	const answer = `prefix${" ".repeat(250_000)}suffix`;
+	const json = JSON.stringify({ action: "done", answer });
+	for (const [input, expected] of [
+		[response, response],
+		[json, answer],
+		[`\`\`\`json\n${json}\n\`\`\``, answer],
+	]) {
+		const result = await runAgentTask("large response", runtimeWith(), { config, callLLM: sequenceLLM([input]) });
+		assert.strictEqual(result, expected);
+	}
+	process.exit(0);
+}
+
 console.log("\n🧪 Agent Loop Tests (#479)\n");
+
+await test("JSON values retain literal fence text after Unicode line separators", async () => {
+	const answer = "Source text: \u2028```json keep these backticks\u2029end";
+	const result = await runAgentTask("preserve source text", runtimeWith(), {
+		config,
+		callLLM: sequenceLLM([JSON.stringify({ action: "done", answer })]),
+	});
+	assert.strictEqual(result, answer);
+});
+
+await test("large whitespace responses finish without polynomial cleanup", () => {
+	const result = spawnSync(
+		process.execPath,
+		["--import", "tsx", fileURLToPath(import.meta.url), "--json-fence-stress-worker"],
+		{ cwd: fileURLToPath(new URL("../", import.meta.url)), timeout: 5_000, encoding: "utf8" },
+	);
+	assert.strictEqual(result.error, undefined, `parser worker failed: ${result.error?.message}`);
+	assert.strictEqual(result.status, 0, result.stderr);
+});
+
+await test("raw, JSON-tagged and untagged fenced responses preserve JSON values", async () => {
+	const json = JSON.stringify({ action: "done", answer: "literal ``` stays" });
+	for (const response of [json, ` \n\t${json}\n `, `\`\`\`json\n${json}\n\`\`\``, `\`\`\`\n${json}\n\`\`\``]) {
+		const result = await runAgentTask("parse completion", runtimeWith(), { config, callLLM: sequenceLLM([response]) });
+		assert.strictEqual(result, "literal ``` stays");
+	}
+});
+
+await test("public parser preserves fenced values and returns null for malformed input", () => {
+	const value = { action: "done", answer: "source\u2028```json literal fence" };
+	assert.deepStrictEqual(parseAgentJsonResponse(`\`\`\`json\n${JSON.stringify(value)}\n\`\`\``), value);
+	assert.strictEqual(parseAgentJsonResponse("```json\n{invalid}\n```"), null);
+});
+
+await test("maximum-step synthesis preserves fenced JSON values", async () => {
+	const answer = "source\u2028```json literal fence";
+	const result = await runAgentTask("synthesize findings", runtimeWith(), {
+		config,
+		maxSteps: 0,
+		callLLM: sequenceLLM([`\`\`\`json\n${JSON.stringify({ action: "done", answer })}\n\`\`\``]),
+	});
+	assert.strictEqual(result, answer);
+});
 
 await test("successful tool call feeds result back to final synthesis and stores context", async () => {
 	ContextStore.clear("loop-agent");
