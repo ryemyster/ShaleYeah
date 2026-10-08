@@ -258,6 +258,13 @@ If any unit cannot be extracted into a separate repo without breaking the rest o
 
 ## Shared Contracts
 
+[`contracts/`](../contracts/README.md) implements the initial language-neutral
+employee/task/work-product/context/review schemas. Python and TypeScript validate
+the same cases against JSON Schema; TypeScript declarations are generated.
+Its validators depend only on schema-validation libraries and do not import the
+SDK or an agent runtime. Policy/authentication, storage and evaluation execution
+remain separate consumers.
+
 Small shared business contracts define:
 
 - schemas and types

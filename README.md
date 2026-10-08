@@ -3,7 +3,7 @@
 ## Open-source agent OS for oil and gas investment diligence
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Node.js](https://img.shields.io/badge/node.js-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node.js-%3E%3D22.0.0-brightgreen.svg)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 [![MCP Compatible](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://modelcontextprotocol.io/)
 
@@ -66,6 +66,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Build and run the current workspace | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Architecture details | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Durable employee contracts and technology boundaries | [ADR 0001](docs/adr/0001-durable-employee-contracts.md) |
+| Employee record schemas, Python/TypeScript validation and compatibility | [contracts/README.md](contracts/README.md) |
 | Employee workflows, data, context, evaluations and human review | [Employee role matrix](docs/employee-role-matrix.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |
 | MVP delivery order and acceptance gates | [docs/mvp-release-plan.md](docs/mvp-release-plan.md) |

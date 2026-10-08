@@ -4,8 +4,9 @@ This page explains how to work with the current repository layout. The project i
 
 ## Prerequisites
 
-- Node.js 18 or newer
+- Node.js 22 or newer (the shared contract test/coverage commands require it)
 - pnpm 9 or newer
+- uv and Python 3.11–3.14 for the shared contract parity checks; CI uses Python 3.12
 - Git
 - Optional model provider keys for real LLM-backed runs
 
@@ -34,10 +35,15 @@ pnpm build
 pnpm test
 ```
 
+For Python employees, follow their package-local README. To check the shared
+business records in both languages:
+
 ```bash
-cd agents/geologist
+cd contracts
 pnpm build
+pnpm lint
 pnpm test
+pnpm check:isolation
 ```
 
 ## Run An MCP Server

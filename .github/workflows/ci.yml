@@ -30,6 +30,11 @@ jobs:
         cache: 'pnpm'
 
     - run: pnpm install --frozen-lockfile
+    - name: Setup uv for contract parity checks
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+      with:
+        version: '0.12.21'
+        python-version: '3.12'
     - run: pnpm check:issue-template
     - run: pnpm test:sdlc
     - name: Sequential develop delivery
@@ -42,3 +47,4 @@ jobs:
     - run: pnpm turbo lint
     - run: pnpm turbo build
     - run: pnpm turbo test
+    - run: pnpm --dir contracts check:isolation
