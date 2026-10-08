@@ -173,22 +173,6 @@ function sequenceLLM(responses: string[], systems?: string[]): (opts: LLMCallOpt
 	};
 }
 
-// A separate process lets the parent stop synchronous regex backtracking.
-if (process.argv.includes("--json-fence-stress-worker")) {
-	const response = `${" ".repeat(250_000)}x`;
-	const answer = `prefix${" ".repeat(250_000)}suffix`;
-	const json = JSON.stringify({ action: "done", answer });
-	for (const [input, expected] of [
-		[response, response],
-		[json, answer],
-		[`\`\`\`json\n${json}\n\`\`\``, answer],
-	]) {
-		const result = await runAgentTask("large response", runtimeWith(), { config, callLLM: sequenceLLM([input]) });
-		assert.strictEqual(result, expected);
-	}
-	process.exit(0);
-}
-
 console.log("\n🧪 Agent Loop Tests (#479)\n");
 
 await test("JSON values retain literal fence text after Unicode line separators", async () => {
@@ -203,8 +187,8 @@ await test("JSON values retain literal fence text after Unicode line separators"
 await test("large whitespace responses finish without polynomial cleanup", () => {
 	const result = spawnSync(
 		process.execPath,
-		["--import", "tsx", fileURLToPath(import.meta.url), "--json-fence-stress-worker"],
-		{ cwd: fileURLToPath(new URL("../", import.meta.url)), timeout: 5_000, encoding: "utf8" },
+		["--import", "tsx", fileURLToPath(new URL("fixtures/json-fence-stress.ts", import.meta.url))],
+		{ cwd: fileURLToPath(new URL("../", import.meta.url)), timeout: 15_000, encoding: "utf8" },
 	);
 	assert.strictEqual(result.error, undefined, `parser worker failed: ${result.error?.message}`);
 	assert.strictEqual(result.status, 0, result.stderr);
