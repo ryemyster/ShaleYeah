@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Employee role and evidence matrix** (#665) — committed workflows, required/optional inputs, handoffs, private context, configurable evaluations and human decisions for all 14 specialists plus the proposed Chief of Staff; documented primary-source access/rights limits, three Geologist connector candidates and evidence gaps owned by existing implementation issues.
+
 - **Durable employee architecture decision** (#567) — recorded language-neutral business contracts, replaceable adapters, package dependency direction, per-role operating modes, context/review ownership and controlled compatibility/upgrade rules; corrected stale TypeScript Geologist and mandatory Temporal architecture claims.
 
 - **MVP delivery and acceptance plan** (#664) — committed the dependency-ordered issue ledger for all 14 specialists and the bounded Chief of Staff pilot, with per-issue evidence, cleanup ownership, provider/deployment support limits, integrated qualification, human acceptance and release gates.

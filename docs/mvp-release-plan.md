@@ -45,6 +45,13 @@ pilot coordinates Geologist and Research Analyst in one diligence workflow;
 every specialist also works independently. Chief of Staff authority and its
 relationship to Investment Chair remain decisions owned by #675.
 
+The [employee role matrix](employee-role-matrix.md), owned by #665, specifies
+required and optional inputs, work products, role-local context, source/access
+limits, configurable scorecards and human review for all 14 specialists plus
+Chief of Staff. Its four case families per role feed #666/#667 and each adoption
+issue. Professional thresholds and actual operator workflow acceptance remain
+explicit validation work; documented sources do not certify live connectors.
+
 ## Deliver one issue at a time
 
 Follow [sdlc.md](sdlc.md) and [CONTRIBUTING.md](../CONTRIBUTING.md). These commands
