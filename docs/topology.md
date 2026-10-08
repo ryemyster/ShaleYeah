@@ -258,6 +258,12 @@ If any unit cannot be extracted into a separate repo without breaking the rest o
 
 ## Shared Contracts
 
+[ADR 0002](../contracts/docs/0002-context-lifecycle.md) defines private context,
+explicit reviewed knowledge sharing, revision/rights invalidation and bounded
+retrieval for every role and compatible coordinator. Its reference records use
+the same schema; trusted storage/access/compaction adapters must enforce the
+policy rather than treating a framework session or retrieval index as authority.
+
 [`contracts/`](../contracts/README.md) implements the initial language-neutral
 employee/task/work-product/context/review schemas. Python and TypeScript validate
 the same cases against JSON Schema; TypeScript declarations are generated.

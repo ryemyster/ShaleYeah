@@ -164,8 +164,10 @@ Scope context by customer, asset, task and employee, with authenticated access
 checks and retention/provenance policy. Namespace strings and prompts are
 insufficient isolation. Assemble a bounded set using authorized evidence, source
 rights, freshness and task relevance. Files and small structured stores can meet
-small-dataset needs; vector search and warehouses are optional. #571 sets policy;
-#672 implements the reference.
+small-dataset needs; vector search and warehouses are optional.
+[ADR 0002](../../contracts/docs/0002-context-lifecycle.md), delivered by #571,
+sets the lifecycle, selection and reviewed-sharing policy; #672 implements the
+reference.
 
 Raw model output remains unreviewed. Shared-knowledge promotion requires
 authorized review, provenance and retention metadata. Superseded revisions,

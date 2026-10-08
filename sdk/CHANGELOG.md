@@ -6,6 +6,11 @@ All notable changes to this package.
 
 ### Fixed
 
+- **Fenced-JSON parser** (#571, CodeQL alert #51) — removed polynomial whitespace
+  regexes in `runAgentTask` response parsing, preserved literal fence text in JSON
+  values and added raw/fenced/large-response regressions. Updated ContextStore
+  documentation to the portable lifecycle policy and optional retrieval adapters.
+
 - **`LocalAgentRuntime.execute()` audits scope failures** (#403) — Scope rejections now call `this.audit()` before returning the `failed` result, so missing-scope events appear in the audit trail alongside HITL and eval failures.
 
 ### Added

@@ -29,7 +29,7 @@
 		"build": "pnpm check:generated && tsc",
 		"type-check": "pnpm check:generated && tsc --noEmit",
 		"lint": "biome check . && uv run --locked ruff check .",
-		"test:ts": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/index.ts tests/contracts.test.ts",
+		"test:ts": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/index.ts tests/*.test.ts",
 		"test:python": "uv run --locked pytest --cov=shaleyeah_contracts --cov-fail-under=90",
 		"test": "pnpm test:ts && pnpm test:python"
 	},

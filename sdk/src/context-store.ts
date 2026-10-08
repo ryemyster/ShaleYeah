@@ -4,9 +4,10 @@
  * Each agent writes synthesized findings to its namespace after each run and reads
  * prior findings before building the system prompt. This is a process-level singleton —
  * findings persist across runXxxTask() calls within the same process but are lost on
- * restart. Phase 2 will swap this backing store for Supabase pgvector (#405).
+ * restart. Durable context follows the lifecycle policy in contracts/docs/0002-context-lifecycle.md
+ * and the reference implementation in #672; retrieval backends remain optional adapters.
  *
- * Namespaces are isolated: geologist cannot read economist findings.
+ * Callers choose namespaces. This map does not enforce authenticated access or reviewed promotion.
  */
 const store = new Map<string, string[]>();
 
