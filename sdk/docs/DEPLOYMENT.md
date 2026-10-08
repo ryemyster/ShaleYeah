@@ -5,7 +5,7 @@ The sdk is a library package — it is not deployed standalone. It is built and 
 ## Building for consumption
 
 ```bash
-pnpm build   # emits CJS + ESM + .d.ts to dist/
+pnpm build   # emits ESM JavaScript + .d.ts to dist/
 ```
 
 Packages in this workspace reference it as `"@shaleyeah/sdk": "workspace:*"`, resolved by pnpm to the local `dist/`.
@@ -15,8 +15,20 @@ Packages in this workspace reference it as `"@shaleyeah/sdk": "workspace:*"`, re
 | Variable | Required by | Purpose |
 |----------|-------------|---------|
 | `ANTHROPIC_API_KEY` | `LLMClient` | Authenticates Anthropic API calls |
+| `PORT` | HTTP MCP mode | Integer 0–65535; absent selects stdio; 0 requests an OS-assigned test port |
+| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | HTTP session lifecycle | Idle expiry; default 900000 ms (15 minutes) |
+| `MCP_HTTP_REQUEST_TIMEOUT_MS` | HTTP session lifecycle | Each JSON body-read / accepted POST response deadline; default 120000 ms |
+| `MCP_HTTP_MAX_SESSIONS` | HTTP session lifecycle | Active/pending initialized protocol instances; default 128, capacity returns 503 |
 
-No other env vars. Servers and agents bring their own config.
+Limits accept positive finite integers up to 2147483647. Optional
+`MCPServerConfig.http` values override these environment limits. JSON request
+bodies are limited to 1 MiB. No provider key is needed for deterministic tools.
+
+Sessions are process-local and end at shutdown/expiry/DELETE/response timeout.
+Clients initialize after 404; session IDs do not grant authenticated identity,
+source permissions or human approval. Current HTTP binding/authentication is
+still subject to #678; do not infer hosted qualification from these settings.
+Employee working context/review persists through its own adapters, not this map.
 
 ## When this package ships as an npm package
 

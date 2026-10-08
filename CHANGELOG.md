@@ -88,6 +88,8 @@ Develop-only — not yet released to main.
 
 ### Fixed
 
+- **Independent MCP HTTP sessions** (#668) — removed the shared transport that rejected a second client; isolated protocol state and concurrent responses, bounded lifecycle/resources, and cleaned up expiry/DELETE/timeout/shutdown/restart and listener callbacks. Added real HTTP regressions; scopes/authentication, result schemas and professional qualification remain separately owned.
+
 - **SDK fenced-JSON parsing** (#571, CodeQL alert #51) — replaced polynomial whitespace regex cleanup with outer-marker string operations; preserved literal fence text inside JSON values and added a killable 250,000-space stress regression. Removed the stale mandatory Supabase/vector Phase 2 promise from the existing context-store documentation.
 
 - **Level 2 parity — 9 agents** (#403, #404, #423–#430) — `executeWithRetry` (3-attempt exponential backoff) and permanent halt guard (`!execResult.retryable`) applied to geologist, economist, quality-assurance, title-analyst, research-analyst, development-planner, drilling-engineer, infrastructure-planner, legal-analyst. Each gains 2 contract tests verifying a blocking eval halts the loop.

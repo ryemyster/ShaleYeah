@@ -87,8 +87,9 @@ defines initialization, capability/version agreement and shutdown. The
 [transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
 defines stdio and Streamable HTTP. These are the sources for the selected tool
 profile. Our current Python wrapper initializes before calling tools; the shared
-TypeScript base has both transports but currently shares one HTTP transport.
-Those paths establish starting behavior, not qualification or HTTP authority.
+TypeScript base has both transports; #668 replaced its shared HTTP transport with
+tested per-session protocol instances and finite lifecycle cleanup. That
+evidence does not establish HTTP authority, result conformance or extraction.
 
 [MCP's official 2026-07-28 migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28)
 describes a different per-request model. It is an optional future adapter profile;
@@ -273,7 +274,7 @@ new parallel production path:
 
 | Retained path / gap | Replacement and deletion owner |
 | --- | --- |
-| [Shared MCP base](../../sdk/src/mcp-server.ts): one HTTP transport, unstructured success/error text, direct unauthenticated tool dispatch and stdout diagnostics | #668 isolates sessions/lifecycle; #677 preserves schemas/errors; #678 enforces entry authority; #674 proves generic-client/stdio/HTTP behavior |
+| [Shared MCP base](../../sdk/src/mcp-server.ts): #668 per-session lifecycle checks; unstructured success/error text, direct unauthenticated dispatch and stdout diagnostics remain | #677 preserves schemas/errors; #678 enforces entry authority; #574 fixes stdio/event logging; #674 proves extraction and required composition |
 | [Geologist Python wrapper](../../agents/geologist/app/geowiz_mcp.py): initializes per call and selects named tools, with no full advertised-schema/structured-result negotiation | #679 supplies an installed reusable client; #677/#674 verify replacement; retain role tool mappings with their own tests |
 | Other copied package-local MCP wrappers and four remaining TypeScript employees | #576 inventories exact callers; client adoption/role migrations remove displaced wrappers; #692 removes obsolete custom runtime after the last caller |
 | Optional coordinator is not an implemented universal task router | #675 defines authority; #676 implements the bounded workflow and C6 adapter proof |
