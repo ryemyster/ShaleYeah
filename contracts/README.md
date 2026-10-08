@@ -20,6 +20,14 @@ records. Tests validate example shapes and reference binding; the sixteen expect
 policy scenarios are acceptance specifications for #672/#673, not an implemented
 authorization/retrieval service.
 
+[ADR 0003](docs/0003-authority-and-review.md) specifies trusted employee authority,
+restricted local/authenticated remote modes and human approval bound to the
+reviewed inputs, work product and operation. Its
+[reference cases](fixtures/authority-review.json) exercise existing validator
+comparisons and define backend acceptance scenarios for identity, review, replay,
+audit, secrets and data access. These are policy requirements; the package does
+not authenticate callers or implement execution grants.
+
 ## Install and use
 
 Installation metadata permits Node 22 or newer for TypeScript and Python
@@ -148,7 +156,8 @@ It cannot authenticate a reviewer, establish policy provenance, verify a
 referenced approval, authorize a tool call, check source rights, enforce actual
 byte/token use, redact secrets embedded in free text, or implement durable
 context/review/resume. Do not treat a valid `approved` field as permission to act.
-The authenticated trust design is #573; context policy/storage is #571/#672;
+The authenticated trust design is [ADR 0003](docs/0003-authority-and-review.md),
+delivered by #573; HTTP entry enforcement is #678. Context policy/storage is #571/#672;
 review binding and continuation are #673; connector behavior is #670. Evaluation
 profiles/results are #666/#667. These contracts currently reference eval profiles.
 

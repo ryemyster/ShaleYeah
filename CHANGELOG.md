@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Employee authority and human review policy** (#573) — added ADR 0003 for trusted identity/scopes, explicit local/remote modes, protected backend operations, exact input/product/action review, replay and audit failure recovery, secrets and source/file/egress controls. Added shared validator cases and future runtime acceptance scenarios; authentication, execution grants and operational enforcement remain with their implementation owners.
+
 - **Employee context lifecycle** (#571) — added ADR 0002 and synthetic reference cases for private ownership, reviewed sharing, deterministic retrieval/budgets, source-preserving compaction, invalidation, restart and export/deletion. Storage, authenticated enforcement and professional qualification remain in their implementation issues; lexical/vector/warehouse adapters are optional.
 
 - **Portable employee contracts** (#568) — added an extractable JSON Schema 0.1.0 package for charters, tasks, evidence-backed work products, bounded context and revision-bound review records; generated TypeScript types, Python/TypeScript fixture parity, scope/revision/policy comparisons, compatibility rules and isolated npm/wheel verification. Validation does not authenticate reviewers or authorize actions; employee adoption and trusted runtime enforcement remain assigned to their own issues.

@@ -49,8 +49,10 @@ responses and a timeout-controlled child process.
 
 Context ownership, reviewed sharing, compaction and invalidation follow
 [ADR 0002](../../contracts/docs/0002-context-lifecycle.md). The existing map and
-stored synthesized output do not enforce those policies; #672/#573/#673 provide
-the durable/authenticated boundaries. Storage and retrieval adapters remain
+stored synthesized output do not enforce those policies.
+[ADR 0003](../../contracts/docs/0003-authority-and-review.md) specifies trusted
+authority; #672/#678/#673 implement durable context and authenticated entry/review.
+Storage and retrieval adapters remain
 optional, selected through measured role qualification.
 
 TypeScript LLM calls flow through `callLLM()` from `llm-client.ts` — SDK consumers should not directly instantiate `@anthropic-ai/sdk`. This keeps prompt caching, model pinning, and retry logic in one place. ADK/Python employees select their own provider adapters.

@@ -8,7 +8,10 @@ from shaleyeah_contracts import CONTRACT_VERSION, ContractValidationError, valid
 
 ROOT = Path(__file__).resolve().parents[1]
 RECORDS = json.loads((ROOT / "fixtures/records.json").read_text())
-CASES = json.loads((ROOT / "fixtures/cases.json").read_text())
+AUTHORITY = json.loads((ROOT / "fixtures/authority-review.json").read_text())
+assert set(RECORDS).isdisjoint(AUTHORITY["records"]), "authority fixture shadows a base record"
+RECORDS.update(AUTHORITY["records"])
+CASES = json.loads((ROOT / "fixtures/cases.json").read_text()) + AUTHORITY["validationCases"]
 
 
 @pytest.mark.parametrize("fixture", CASES, ids=lambda item: item["name"])
@@ -45,3 +48,24 @@ def test_non_json_input():
     for value in [float("nan"), float("inf"), object(), cycle, {1: "non-string-key"}]:
         with pytest.raises(ContractValidationError):
             validate_contract(value)
+
+
+def test_authority_reference_binding():
+    control = AUTHORITY["control"]
+    assert control["scope"] == RECORDS["work"]["scope"]
+    assert control["taskRevision"] == RECORDS["task"]["revision"]
+    assert control["productRef"] == RECORDS["work"]["artifact"]
+    assert control["requestRef"] == {"id": RECORDS["saveRequest"]["id"], "revision": RECORDS["saveRequest"]["revision"]}
+    assert control["decisionRef"] == {"id": RECORDS["saveDecision"]["id"], "revision": RECORDS["saveDecision"]["revision"]}
+    assert RECORDS["saveDecision"]["requestRef"] == control["requestRef"]
+    assert RECORDS["saveDecision"]["productRef"] == control["productRef"]
+    assert RECORDS["saveRequest"]["productRef"] == control["productRef"]
+    assert control["reviewer"] == RECORDS["saveDecision"]["reviewer"]
+    assert control["reviewer"]["authorityPolicy"] == RECORDS["saveRequest"]["reviewerPolicy"]
+    assert control["inputs"] == RECORDS["work"]["inputs"]
+    assert control["evidence"] == RECORDS["work"]["evidence"]
+    assert control["assumptions"] == RECORDS["work"]["assumptions"]
+    assert control["auditRef"] == RECORDS["saveDecision"]["auditRef"]
+    assert RECORDS["saveDecision"]["decision"] == "approve"
+    assert control["operation"]["name"] in RECORDS["saveRequest"]["requestedDecision"]
+    assert control["operation"]["target"] in RECORDS["saveRequest"]["requestedDecision"]
