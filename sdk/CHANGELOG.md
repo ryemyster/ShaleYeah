@@ -4,6 +4,12 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+### Documentation
+
+- **Migration ownership** (#576) — linked SDK callers, public API compatibility,
+  utility qualification limits and legacy execution-helper deletion gates from
+  the README to the shared migration ledger. No runtime or export changes.
+
 ### Fixed
 
 - **Fenced-JSON parser** (#571, CodeQL alert #51) — removed polynomial whitespace

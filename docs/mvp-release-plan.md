@@ -97,6 +97,11 @@ Every row is required for this MVP. Initial delivery state is open for all 45
 rows; check GitHub and merged evidence for current status. Outcomes and evidence
 below are the completion minimums, supplemented by each linked issue's spec.
 
+The inventory in #576 adds five separate repair rows (#708–#712), bringing the
+delivery ledger to 50 outcomes. Lettered positions preserve the existing row
+numbers while placing each repair before its consumer. These are required
+missing-evidence/numerical fixes, not additional employee migrations.
+
 ### Foundations and decisions
 
 | Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
@@ -108,7 +113,7 @@ below are the completion minimums, supplemented by each linked issue's spec.
 | 5 | [#571](https://github.com/ryemyster/ShaleYeah/issues/571) | Commit the lifecycle for private employee context and reviewed shared knowledge; include the maintainer-requested SDK JSON-fence regex repair | #567, #568 | develop | Ownership, retention, retrieval budgets, provenance, access rules and reviewed promotion specified; parser behavior/stress tests and CodeQL repair verified |
 | 6 | [#573](https://github.com/ryemyster/ShaleYeah/issues/573) | Specify authenticated authority and approval bound to the reviewed revision | #567 | develop | [ADR 0003](../contracts/docs/0003-authority-and-review.md) specifies identity/scopes, exact input/product/action binding, secrets, audit/redaction and stale/replayed approval cases; validator examples execute, runtime enforcement remains assigned |
 | 7 | [#572](https://github.com/ryemyster/ShaleYeah/issues/572) | Commit BYO-agent and MCP composition conformance requirements | #568, #573 | develop | [ADR 0004](../contracts/docs/0004-composition-conformance.md) transfers #575 pairings, selects pinned MCP profiles and deferred A2A, and defines discovery/artifact/review/cancel/credential acceptance; record cases execute, adapter qualification remains #674/#676 and prerequisites |
-| 8 | [#576](https://github.com/ryemyster/ShaleYeah/issues/576) | Commit an actionable keep, cut and replace inventory | None | develop | Current callers, retained behavior/tests, deletion owner and replacement gate for each legacy surface |
+| 8 | [#576](https://github.com/ryemyster/ShaleYeah/issues/576) | Commit an actionable keep, cut and replace inventory | None | develop | [Caller-backed ledger](legacy-migration-ledger.md), retained behavior/test limits, deletion owners, existing cleanup guard evidence and replacement/extraction gates |
 | 9 | [#578](https://github.com/ryemyster/ShaleYeah/issues/578) | Commit the portable-package and deployment-support matrix | #567 | develop | Each target labeled intended, verified or deferred, with commands, evidence requirements and limits |
 | 10 | [#498](https://github.com/ryemyster/ShaleYeah/issues/498) | Align contributor setup with package-local ADK authoring and delivery | #567, #664 | develop | New contributor can follow package-local setup and verification; commands and paths checked |
 | 11 | [#538](https://github.com/ryemyster/ShaleYeah/issues/538) | Commit the QA employee charter and data-quality review handoffs | #665, #568 | develop | QA responsibilities, evidence, input-quality cases and human decision boundaries specified |
@@ -120,6 +125,7 @@ below are the completion minimums, supplemented by each linked issue's spec.
 | --- | --- | --- | --- | --- | --- |
 | 13 | [#668](https://github.com/ryemyster/ShaleYeah/issues/668) | Isolate MCP HTTP sessions and manage their lifecycle | #572 | develop | Separate clients stay isolated; restart, closure and failure do not leak or reuse another session |
 | 14 | [#677](https://github.com/ryemyster/ShaleYeah/issues/677) | Preserve MCP schemas and failure results from tool to employee | #568, #572 | develop | Schema-driven validation and structured error results survive the full call path |
+| 14a | [#710](https://github.com/ryemyster/ShaleYeah/issues/710) | Preserve zero and unavailable confidence in shared analysis metadata | #576 | develop | Zero/absent/invalid and scale cases; no invented 0.85 score; affected callers and public result compatibility checked |
 | 15 | [#678](https://github.com/ryemyster/ShaleYeah/issues/678) | Enforce configured identity and scopes at MCP HTTP entry | #573, #572 | develop | Allowed/denied/missing identity and scope cases; identity reaches audit without exposing secrets |
 | 16 | [#679](https://github.com/ryemyster/ShaleYeah/issues/679) | Install a reusable Python MCP client across employee packages | #668, #677, #678, #568 | develop | Isolated installation and transport regressions pass; role wrappers keep typed behavior; displaced copies removed |
 | 17 | [#669](https://github.com/ryemyster/ShaleYeah/issues/669) | Configure model providers across the complete Geologist execution path | #568, #573 | develop | Provider switch includes model-assisted server calls; unsupported settings fail clearly; secrets remain outside outputs |
@@ -131,7 +137,7 @@ below are the completion minimums, supplemented by each linked issue's spec.
 | 23 | [#672](https://github.com/ryemyster/ShaleYeah/issues/672) | Persist and assemble bounded Geologist working context | #568, #571, #573, #670 | develop | Restart recovery, budget limits, provenance, stale context and employee/customer isolation |
 | 24 | [#673](https://github.com/ryemyster/ShaleYeah/issues/673) | Implement Geologist review, revision and restart-safe continuation | #573, #574, #668, #671, #672, #667, #677, #678, #679 | develop | Human review/changes/resume completes; stale or unauthorized approval fails; restart resumes the correct revision |
 | 25 | [#577](https://github.com/ryemyster/ShaleYeah/issues/577) | Gate reference releases and runtime changes on configured evaluations | #666, #667, #573, #574 | develop | CI rejects contract, trust and job-quality regressions; #671/#672/#673 cases included before #674 acceptance |
-| 26 | [#674](https://github.com/ryemyster/ShaleYeah/issues/674) | Prove Geologist and Geowiz work as isolated packages and containers | #568, #572, #577, #668, #669, #671, #672, #673, #677, #678, #679 | develop | Clean install and container journey with context, provider switch and human review; no hidden monorepo runtime dependency |
+| 26 | [#674](https://github.com/ryemyster/ShaleYeah/issues/674) | Prove Geologist and Geowiz work as isolated packages and containers | #568, #572, #577, #668, #669, #671, #672, #673, #677, #678, #679, #710 | develop | Clean install and container journey with context, provider switch and human review; no hidden monorepo runtime dependency |
 
 ### Employee rollout
 
@@ -145,15 +151,19 @@ Independent defects discovered during adoption receive their own repair issue.
 | --- | --- | --- | --- | --- | --- |
 | 27 | [#541](https://github.com/ryemyster/ShaleYeah/issues/541) | Migrate Reporter to the reference employee contracts | #674, #568, #571, #572, #573, #577, #679 | develop | Reporting fixtures, source-linked work product, human edits/review, isolated operation and TypeScript removal |
 | 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #568, #571, #572, #573, #577, #679 | develop | Data-quality failures and review handoffs, independent checks, context/evaluations and TypeScript removal |
-| 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
-| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
+| 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Independent NPV/IRR/payback fixtures, units/periods, non-solution and zero/missing cases; synthetic success removed |
+| 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
+| 29a | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
+| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
 | 31 | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Adopt employee contracts for Risk Analyst | #674, #665, #679 | develop | Reproducible risk cases and assumptions; common employee checks |
 | 32 | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Adopt employee contracts for Legal Analyst | #674, #665, #679 | develop | Source/jurisdiction evidence and human legal review; common employee checks |
-| 33 | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Adopt employee contracts for Market Analyst | #674, #665, #679 | develop | Dated market evidence and stale/missing-source cases; common employee checks |
+| 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Actual observations vs reviewed assumptions vs unavailable data; no name-derived factual metrics |
+| 33 | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Adopt employee contracts for Market Analyst | #674, #665, #679, #708 | develop | Dated market evidence and stale/missing-source cases; common employee checks |
 | 34 | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Adopt employee contracts for Title Analyst | #674, #665, #679 | develop | Ownership evidence, conflicts and professional review; common employee checks |
 | 35 | [#686](https://github.com/ryemyster/ShaleYeah/issues/686) | Adopt employee contracts for Drilling Engineer | #674, #665, #679 | develop | Engineering constraints, evidence and human review; common employee checks |
 | 36 | [#687](https://github.com/ryemyster/ShaleYeah/issues/687) | Adopt employee contracts for Development Planner | #674, #665, #679 | develop | Development alternatives, assumptions and human review; common employee checks |
-| 37 | [#688](https://github.com/ryemyster/ShaleYeah/issues/688) | Adopt employee contracts for Research Analyst | #674, #665, #679 | develop | Cited findings, conflicting/untrusted evidence and bounded context; common employee checks |
+| 36a | [#709](https://github.com/ryemyster/ShaleYeah/issues/709) | Defer research findings when source evidence is missing | #576 | develop | Cited control findings, outage/coverage/contradiction cases; unsupported defaults cannot become evidence |
+| 37 | [#688](https://github.com/ryemyster/ShaleYeah/issues/688) | Adopt employee contracts for Research Analyst | #674, #665, #679, #709 | develop | Cited findings, conflicting/untrusted evidence and bounded context; common employee checks |
 | 38 | [#689](https://github.com/ryemyster/ShaleYeah/issues/689) | Adopt employee contracts for Infrastructure Planner | #674, #665, #679 | develop | Infrastructure constraints, source limitations and review; common employee checks |
 | 39 | [#690](https://github.com/ryemyster/ShaleYeah/issues/690) | Adopt employee contracts for Investment Chair | #674, #665, #679 | develop | Evidence-linked investment synthesis and human decision boundary; common employee checks |
 
@@ -162,11 +172,11 @@ Independent defects discovered during adoption receive their own repair issue.
 | Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674 | develop | All role checks discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
+| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
 | 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
-| 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42, including #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
+| 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
 | 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
-| 45 | [#695](https://github.com/ryemyster/ShaleYeah/issues/695) | Promote accepted develop to main | All rows 1–44, including #693 and #694 | main (head develop) | Candidate/release relationship verified; human sign-off, checks, release notes and rollback/runbook evidence; post-merge checks pass |
+| 45 | [#695](https://github.com/ryemyster/ShaleYeah/issues/695) | Promote accepted develop to main | All rows 1–44 including lettered repairs, #693 and #694 | main (head develop) | Candidate/release relationship verified; human sign-off, checks, release notes and rollback/runbook evidence; post-merge checks pass |
 
 ## Complete employee coverage
 
@@ -257,12 +267,18 @@ whose upgrades must rerun applicable conformance and role checks.
 
 ## Cleanup ownership
 
-#576 commits the caller-backed inventory before broad source deletion. Delete
+#576 commits the [caller-backed inventory](legacy-migration-ledger.md) before broad source deletion. Delete
 each role's displaced runtime/adapters in its adoption PR, after replacement
 tests pass. #541/#542/#680/#681 own the remaining TypeScript agent migrations.
 #679 owns duplicated Python transport consolidation. #692 deletes shared custom
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.
+
+#708/#709 repair unsupported market/research fallbacks; #710 preserves zero and
+unavailable confidence; #711/#712 qualify economics/type-curve outputs. They are
+separate PRs before the affected role/reference qualification. #577/#691 must
+run the existing Python no-npm project-shape guards in shared required checks;
+the current TypeScript CI suite does not supply fleet Python qualification.
 
 Transport-session mechanics stay adapter-local. #572's ADR 0004 selects the pinned
 MCP 2025-11-25 reference profile; #674 supplies actual composition qualification.

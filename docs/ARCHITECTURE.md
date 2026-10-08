@@ -64,6 +64,9 @@ Those TypeScript agents use `LocalAgentRuntime` and copied task loops.
 HTTP employee service. `sdk/src/agent-loop.ts` exports a shared loop with tests
 but no internal production caller. #576 verifies caller/public API implications;
 migrations and #692 remove displaced runtime after replacement acceptance.
+The [legacy migration ledger](legacy-migration-ledger.md) records the verified
+four-employee callers, public exports, ten Python wrappers, numerical/fallback
+repairs and cleanup gates. Its inventory does not change runtime behavior.
 Preserve useful trust behavior and regression cases at the replacement boundary.
 
 Every unit needs install/run/check docs and declared dependencies. #674 and role
