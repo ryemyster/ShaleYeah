@@ -1,10 +1,21 @@
 # @shaleyeah/quality-assurance
 
-Testius Validatus — the ShaleYeah fleet's quality assurance agent.
+Testius Validatus helps a quality-assurance (QA) or data professional find and
+review defects in oil-and-gas inputs and analysis products.
 
-Tier 2 intelligence layer: wraps the Tier 1 qa-server MCP server's tools with agent-level reasoning, eval framework, and HITL controls.
+The [employee charter](docs/ROLE.md) defines its job, own context, configurable
+rules, source hooks, evaluation cases and human decisions. The current runtime
+wraps two qa-server tools through MCP (Model Context Protocol), with reasoning
+and human-in-the-loop (HITL) settings. Its existing configuration-based assessments
+are not observed data-quality checks. [Issue #716](https://github.com/ryemyster/ShaleYeah/issues/716)
+implements those checks; [#542](https://github.com/ryemyster/ShaleYeah/issues/542)
+implements the charter in the independently runnable ADK/Python employee.
 
 ## Quick start
+
+Run from `agents/quality-assurance` after the contributor setup in
+[CONTRIBUTING.md](../../CONTRIBUTING.md). These commands run the current
+TypeScript package while #542 owns its replacement.
 
 ```bash
 pnpm start   # runs the agent's standalone runtime
@@ -14,7 +25,7 @@ pnpm start   # runs the agent's standalone runtime
 
 ```bash
 pnpm build
-pnpm test    # 42 tests
+pnpm test    # current package regressions; not professional QA qualification
 ```
 
 ## Environment

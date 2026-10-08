@@ -102,6 +102,11 @@ delivery ledger to 50 outcomes. Lettered positions preserve the existing row
 numbers while placing each repair before its consumer. These are required
 missing-evidence/numerical fixes, not additional employee migrations.
 
+QA research in #538 adds [#716](https://github.com/ryemyster/ShaleYeah/issues/716)
+at 27a, bringing the current plan to **51 outcomes**. It replaces configuration-
+based PASS and estimated coverage with observed rule results before #542;
+independent domain algorithm work stays outside that employee migration.
+
 ### Foundations and decisions
 
 | Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
@@ -150,7 +155,8 @@ Independent defects discovered during adoption receive their own repair issue.
 | Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 27 | [#541](https://github.com/ryemyster/ShaleYeah/issues/541) | Migrate Reporter to the reference employee contracts | #674, #568, #571, #572, #573, #577, #679 | develop | Reporting fixtures, source-linked work product, human edits/review, isolated operation and TypeScript removal |
-| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #568, #571, #572, #573, #577, #679 | develop | Data-quality failures and review handoffs, independent checks, context/evaluations and TypeScript removal |
+| 27a | [#716](https://github.com/ryemyster/ShaleYeah/issues/716) | Replace QA pass estimates with observed rule results | #538, #568, #573, #666, #670, #677, #678, #710, #674 | develop | Eight declared quality dimensions, source/rule/version-linked results and actual denominators; unavailable inputs cannot PASS; reports derive from recorded checks |
+| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #568, #571, #572, #573, #577, #679 | develop | Observed server results, data-quality failures/review handoffs, independent checks, context/evaluations and TypeScript removal |
 | 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Independent NPV/IRR/payback fixtures, units/periods, non-solution and zero/missing cases; synthetic success removed |
 | 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
 | 29a | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
@@ -172,7 +178,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
+| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
 | 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
 | 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
 | 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
@@ -188,7 +194,7 @@ and fills gaps before adoption; historical closure does not waive current tests.
 | --- | --- | --- | --- | --- |
 | Geologist | `agents/geologist` | `servers/geowiz` | #671, #672, #673, #674 | Reassessed in #665 |
 | Reporter | `agents/reporter-agent` | `servers/reporter` | #541 | [#540](https://github.com/ryemyster/ShaleYeah/issues/540) |
-| Quality Assurance | `agents/quality-assurance` | `servers/qa-server` | #542 | Current charter #538 |
+| Quality Assurance | `agents/quality-assurance` | `servers/qa-server` | #716, #542 | [Charter from #538](../agents/quality-assurance/docs/ROLE.md) |
 | Economist | `agents/economist` | `servers/econobot` | #680 | [#522](https://github.com/ryemyster/ShaleYeah/issues/522) |
 | Reservoir Engineer | `agents/reservoir-engineer` | `servers/curve-smith` | #681 | [#520](https://github.com/ryemyster/ShaleYeah/issues/520) |
 | Risk Analyst | `agents/risk-analyst` | `servers/risk-analysis` | #682 | [#529](https://github.com/ryemyster/ShaleYeah/issues/529) |
