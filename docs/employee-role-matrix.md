@@ -39,8 +39,9 @@ and [Investment Chair findings](https://github.com/ryemyster/ShaleYeah/issues/54
 Some old issues contain only a checklist or a migration handoff. Their closure
 does not demonstrate current data access, professional accuracy or integration
 readiness. This issue's committed deliverable supersedes earlier instructions
-to leave shared research only in issue comments. QA's detailed charter remains
-owned by [#538](https://github.com/ryemyster/ShaleYeah/issues/538).
+to leave shared research only in issue comments. QA's detailed
+[employee charter](../agents/quality-assurance/docs/ROLE.md) is the committed
+research deliverable from [#538](https://github.com/ryemyster/ShaleYeah/issues/538).
 
 The coverage table links actual agent packages and registered server tools.
 Ten agents currently use Python and Google's Agent Development Kit (ADK).
@@ -64,7 +65,7 @@ Versioned capability IDs will be published in #568.
 | Infrastructure Planner | [infrastructure-planner](../agents/infrastructure-planner/README.md) | [infrastructure](../servers/infrastructure/src/index.ts): `plan_pipeline`, `size_facilities`, `estimate_costs`, `assess_compliance` | #689 |
 | Investment Chair | [investment-chair](../agents/investment-chair/README.md) | [decision](../servers/decision/src/index.ts): `make_investment_decision`, `calculate_bid_strategy`, `analyze_portfolio_fit` | #690 |
 | Reporter | [reporter-agent](../agents/reporter-agent/src/agent/index.ts) | [reporter](../servers/reporter/src/index.ts): `generate_investment_decision`, `create_executive_report`, `synthesize_analysis` | #541 |
-| Quality Assurance | [quality-assurance](../agents/quality-assurance/README.md) | [qa-server](../servers/qa-server/src/index.ts): `run_quality_tests`, `generate_quality_report` | #538, #542 |
+| Quality Assurance | [quality-assurance](../agents/quality-assurance/README.md) | [qa-server](../servers/qa-server/src/index.ts): `run_quality_tests`, `generate_quality_report` | #538, #716, #542 |
 | Chief of Staff, proposed | No separate employee package yet | [Optional coordinator source](../orchestrator/src/index.ts) is a scaffold; no additional specialist server is assumed | #675, #676 |
 
 ## Common employee requirements
@@ -250,7 +251,7 @@ are separate composition choices governed by #568, #572 and #573.
 - **Sources and hooks:** Customer CSV/schema/rule exports and access-controlled artifacts; PPDM [S09](#s09-ppdm-data-rules) and Energistics [S08](#s08-energistics-interchange) are optional references subject to their rights and versions.
 - **Configurable evaluation:** Detection precision/recall against labeled defects, severity calibration, reproducibility, false alarms, untested-rule disclosure and review burden. Observed checks and estimated confidence must be distinct.
 - **Human decisions:** Authorized reviewer accepts or waives critical defects with an audit trail; QA cannot silently lower thresholds, approve itself or waive someone else's professional obligation.
-- **Unresolved validation:** #538 supplies the detailed data-quality charter and operator reference defects; #542 implements it. Domain owners validate rule relevance and material severity.
+- **Unresolved validation:** The [detailed charter](../agents/quality-assurance/docs/ROLE.md) specifies future cases; actual operator dictionaries, rights and expert truth/severity labels remain unverified. #716 implements observed server checks; #542 implements the employee after those results and reference components are accepted. Domain owners validate rule relevance/materiality and a QA/data professional measures review effort.
 
 ### Chief of Staff, proposed
 
@@ -611,7 +612,7 @@ The [delivery ledger](mvp-release-plan.md) retains the sequential order.
 | --- | --- | --- |
 | Four remaining TypeScript employee implementations; two READMEs still say stub despite present source | Retain behavior needed during migration; replace the employee surface and delete displaced runtime/docs in its own PR | #541, #542, #680, #681; #576 inventories callers, #692 performs final shared-runtime deletion |
 | [Title ownership](../servers/title/src/tools/ownership.ts) estimates interests from description/basin or model output | Replace unsupported estimates as ownership facts; retain verifiable arithmetic under supplied terms | #685: instrument-backed interests, missing-chain and conflicting-record cases; cut displaced guesses |
-| [QA tool](../servers/qa-server/src/index.ts) reports an estimated coverage percentage and states no live test runner | Replace estimated success/coverage with reproducible rule results and explicit untested states | #538/#542: business-data charter, labeled defects, independent checks, observed evidence; cut displaced score estimates |
+| [QA tool](../servers/qa-server/src/index.ts) returns threshold-based PASS without target data, estimated coverage and verdict-derived passRate | Replace estimates with reproducible rule results, actual denominators and explicit untested/error states | #538 charter; #716 observed server checks before #542 employee adoption; expert labels and actual operator evidence remain required |
 | [Research fallbacks](../servers/research/src/tools/market-research.ts) include generic competitors/source labels | Retain useful collection/parsing behavior; replace unsupported claims with missing-evidence results | #688: source-resolvable findings, untrusted/stale/denied data cases; cut generic claims presented as collected facts |
 | [Reporter source](../servers/reporter/src/index.ts) includes decision synthesis and fallback narrative | Retain draft/report transforms that reconcile inputs; require source/revision links and remove unsupported decision authority | #541/#675/#690: faithful reporting, conflict retention, approved authority split |
 | All employees need private context and controlled shared handoffs | Specify lifecycle; persist/retrieve bounded references rather than every employee receiving a global transcript | #568/#571/#672 and role adoption: isolation, staleness, retention, restart and reviewed promotion |

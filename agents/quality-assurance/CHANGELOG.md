@@ -3,6 +3,8 @@
 ## [Unreleased]
 
 ### Added
+- **QA employee charter** (#538) — researched the data-quality job, independent context, eight configurable rule dimensions, observed-result evidence, human review, primary-source connector patterns and future eval cases. Assigned false PASS/coverage/report behavior to #716 before employee adoption #542; no runtime or professional qualification is delivered here.
+
 - **Initial package** (#376) — quality-assurance Tier 2 agent wrapping `@shaleyeah/server-qa` over MCP HTTP transport. Exports `qaAssuranceManifest`, `qaAssuranceConfig`, `createQAAssuranceRuntime()`, `createQAAssuranceEndpoint()`, and `callQAServerTool()`. Manifests 2 QA tools (`quality-assurance.run_quality_tests`, `quality-assurance.generate_quality_report`) with explicit model capability requirements, scopes, input schemas, and eval profiles. All tool handlers connect to qa-server via `StreamableHTTPClientTransport` at the URL in `AgentRuntimeConfig.mcpServers["qa-server"].url` (defaults to `http://localhost:3004`).
 
 - **Layer 2 execution loop** (#376) — `runQAAssuranceTask(goal, options)` drives a multi-step QA task via the LLM. Accepts a natural-language goal, reasons about which qa-server tools to call, routes every tool call through `LocalAgentRuntime.execute()` (Permission Gate — HITL + scope checks fire on every step), and returns a synthesized answer. Accepts `runtime?: LocalAgentRuntime` (caller-managed lifecycle) and `onApprovalRequired?: (challenge) => Promise<HumanApproval>` (HITL callback). Throws with a clear message when `approval_required` and no callback provided. Deferred: Context Injection (#395), Async Job (#396).

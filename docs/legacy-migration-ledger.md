@@ -166,7 +166,7 @@ independent algorithm defects get their own repair PR before role qualification.
 | [servers/development/src/](../servers/development/src/) | Planning/phasing/progress tools | #687 dependency/schedule/cost assumptions and revision review |
 | [servers/research/src/](../servers/research/src/) | Permitted retrieval and source synthesis | #709 unsupported finding repair, then #688 citation/coverage/access cases |
 | [servers/reporter/src/](../servers/reporter/src/) | Report assembly and input-faithful synthesis | #541 field/score mapping and human publication; independent redesign requires its own issue |
-| [servers/qa-server/src/](../servers/qa-server/src/) | Deterministic input quality and validation | #538 charter, #542 expert data-quality cases and independent verification |
+| [servers/qa-server/src/](../servers/qa-server/src/) | Intended input-quality checks; current configuration-based assessments are unqualified | #538 charter, #716 observed rule-result repair before #542 employee/expert cases |
 | [servers/infrastructure/src/](../servers/infrastructure/src/) | Pipeline/facility/cost/compliance tools | #689 units/engineering assumptions/source limits and human design review |
 | [servers/decision/src/](../servers/decision/src/) | Investment/portfolio/bid analysis tools | #690 provenance/missing-data/expert cases; human capital authority; #675 settles coordinator distinction |
 
@@ -185,6 +185,7 @@ only behind explicit labeling and cannot become measured or approved evidence.
 | Research `deriveDefaultCompetitorEntry` derives activity/threat from region/index; default summaries have no claim-level source check | Cited findings or explicit missing coverage; variation/source count cannot substitute for evidence | #709 before #688 |
 | SDK `createAnalysisTool` uses `analysis.confidence || 0.85` | Explicit zero preserved, missing/invalid values distinct, declared role scale respected | #710 before #674/#691 |
 | Reporter maps `geological.confidenceLevel` into `keyMetrics.netPay`; synthesis uses `economic?.confidence || geological?.confidenceLevel || 75` | Correct source field/units, zero/absence preservation and explicit score-scale mapping; narrow contract repair | #541; required before its role acceptance |
+| QA `deriveDefaultQAResult` returns threshold-based PASS; index estimates coverage by target count and passRate by verdict; reporting has no observed result input | Authorized source snapshots and allowlisted checks with rule/version/defect evidence; actual denominators and UNTESTED/ERROR; no template certifies data | #716 before #542; charter #538; no independent algorithm redesign hidden inside employee migration |
 | Generic `ServerUtils.calculateConfidence` and role hardcoded scores | Score meaning, scale and professional calibration documented/tested; no confidence value grants approval | #666/#667 define evaluation machinery; each role owns output scoring correctness |
 
 For numerical acceptance, the

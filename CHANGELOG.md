@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **QA employee charter and observed-check handoff** (#538) — specified the QA/data professional's workflow, private context, configurable rules, source/rights limits, defect metrics, future case specifications and exact-revision review. Filed #716 to replace configuration-based PASS, estimated coverage and template assessments before #542; the dependency ledger now contains 51 outcomes. No runtime checks or professional acceptance are claimed by this research delivery.
+
 - **Package-local contributor setup** (#498) — aligned checkout/prerequisites, ADK/Python and TypeScript verification, explicit reference eval files, tests-before-implementation and the shared sequential develop delivery flow. Removed manual branch shortcuts, root-first and Node-only test guidance, inline fake-key examples and shape-as-behavior claims; setup/eval instructions do not certify runtime or professional readiness.
 
 - **Portable support and deployment evidence** (#578) — documented current reference setup, actual credentials/ports/file locations, local smoke limits, durable context/review/export/restore and resource gates, with independent package/container targets and untested optional hosts. Replaced reference deployment examples that implied built images, fixed employee ports, stateless scaling or unsupported production sizing/settings; no container or hosted deployment is certified by this documentation delivery.
