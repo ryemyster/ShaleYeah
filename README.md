@@ -66,6 +66,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Build and run the current workspace | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Architecture details | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Durable employee contracts and technology boundaries | [ADR 0001](docs/adr/0001-durable-employee-contracts.md) |
+| Employee workflows, data, context, evaluations and human review | [Employee role matrix](docs/employee-role-matrix.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |
 | MVP delivery order and acceptance gates | [docs/mvp-release-plan.md](docs/mvp-release-plan.md) |
 | Contributing and branch workflow | [CONTRIBUTING.md](CONTRIBUTING.md) |
