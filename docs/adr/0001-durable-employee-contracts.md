@@ -197,12 +197,20 @@ human review. Failed, incomplete or unreviewed child results cannot authorize
 consequential action. Operators may call employees directly or use a compatible
 external coordinator.
 
-Investment Chair provisionally remains a separate investment-synthesis employee.
-Chief of Staff coordinates organizational work; neither automatically becomes
-the legal owner or autonomous capital decision maker. #675 decides charter,
-human owner, authority and organizational split before #676. The pilot involves
-Geologist and Research Analyst, not a full-deal Temporal pipeline. A workflow
-engine can be selected later with explicit acceptance evidence.
+The [Chief of Staff charter](../chief-of-staff-role.md), delivered by #675,
+keeps Investment Chair as a separate advisory investment-synthesis employee.
+Chief of Staff owns bounded planning/delegation/status; the authenticated human
+organization owner remains accountable. Neither employee grants itself capital,
+legal, professional or publication authority, waives required specialist review,
+or changes evaluator/shared-context policy silently.
+
+Use `orchestrator/` for the optional #676 coordinator, with ADK/Python as the
+preferred authoring adapter and installed contract/task/provider/storage
+adapters. Replace its obsolete TypeScript stub in that implementation PR. The
+pilot covers one asset's Geologist/Research Analyst diligence and corrected-input
+review/resume, with an external compatible fixture substitute. Whole-deal
+comparison, Temporal, full-fleet fan-out and binding decisions remain outside
+the pilot. Runtime qualification and actual human acceptance are still pending.
 
 ## Versions, compatibility and promotion
 

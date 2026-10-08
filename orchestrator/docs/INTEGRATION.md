@@ -3,7 +3,8 @@
 The stub exports a version constant. There is no `DealWorkflowClient` or execution
 API to call today.
 
-#572 specifies employee composition profiles; #675 defines authority; #676
+#572 specifies employee composition profiles; the [#675 charter](../../docs/chief-of-staff-role.md)
+defines authority and permitted handoffs; #676
 implements the bounded pilot. Operators may use employees directly or supply a
 compatible external coordinator. Compatible task clients exchange versioned
 tasks, permitted work products, review references and structured failures.

@@ -3,7 +3,8 @@
 No coordinator service or deployment configuration exists in this stub. There is
 no worker/start command, required Temporal service or live workflow endpoint.
 
-#675/#676 decide the pilot implementation and package location. #578 defines
+The [#675 charter](../../docs/chief-of-staff-role.md) selects this optional unit
+and ADK/Python as the preferred adapter; #676 implements and qualifies it. #578 defines
 support claims; qualification requires recorded local/container evidence before
 any hosted-platform certification. The chosen adapter must pin dependencies,
 externalize configuration, preserve review/restart behavior and enforce authority.

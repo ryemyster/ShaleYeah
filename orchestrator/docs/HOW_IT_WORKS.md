@@ -4,7 +4,11 @@ There is no running coordinator in this stub. The planned pilot helps a human
 owner assign a geological diligence task to Geologist and Research Analyst,
 review their findings and prepare a decision within granted authority.
 
-The bounded #676 workflow, after the #675 charter, must:
+The bounded #676 workflow implements J1/J3 in the
+[Chief of Staff charter](../../docs/chief-of-staff-role.md): one asset's
+Geologist/Research Analyst questions, including corrected-input review/resume.
+Investment Chair, whole-deal comparison and binding actions are outside this
+pilot. It must:
 
 1. Receive an authenticated task with scope and permitted outcomes.
 2. Delegate identified child tasks with bounded authority and context.

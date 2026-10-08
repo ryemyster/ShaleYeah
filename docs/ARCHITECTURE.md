@@ -51,7 +51,7 @@ still uses the SDK's Anthropic-specific client.
 | `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
-| `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional coordinator; charter #675 and bounded pilot #676 determine implementation |
+| `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
 Ten agents have ADK manifests: Geologist, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
@@ -119,8 +119,9 @@ dispatch has no authenticated gate today.
 
 `orchestrator/src/index.ts` has no Temporal workflow or fleet-wide deal pipeline.
 Employees run without it. Chief of Staff initially coordinates Geologist and
-Research Analyst within declared authority. Investment Chair provisionally stays
-a separate investment-synthesis role; #675 settles the split before #676's pilot.
+Research Analyst within declared authority. The [#675 charter](chief-of-staff-role.md)
+keeps Investment Chair separate for advisory investment synthesis and the human
+owner accountable. #676 implements that pilot; no coordinator runtime exists yet.
 
 Framework/model/protocol upgrades are reviewed adapter changes. Business contracts
 stay language-neutral and versioned; accepted releases pin tested dependencies

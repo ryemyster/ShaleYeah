@@ -42,8 +42,9 @@ remain display identities alongside explicit role and capability IDs.
 The plan includes role-specific data hooks, configurable evaluations, persistent
 working context, human review and restart-safe continuation. The Chief of Staff
 pilot coordinates Geologist and Research Analyst in one diligence workflow;
-every specialist also works independently. Chief of Staff authority and its
-relationship to Investment Chair remain decisions owned by #675.
+every specialist also works independently. The [#675 charter](chief-of-staff-role.md)
+specifies decision rights and keeps Investment Chair distinct for advisory
+investment synthesis; trusted implementation and human acceptance remain pending.
 
 The [employee role matrix](employee-role-matrix.md), owned by #665, specifies
 required and optional inputs, work products, role-local context, source/access
@@ -207,8 +208,9 @@ and fills gaps before adoption; historical closure does not waive current tests.
 | Infrastructure Planner | `agents/infrastructure-planner` | `servers/infrastructure` | #689 | [#544](https://github.com/ryemyster/ShaleYeah/issues/544) |
 | Investment Chair | `agents/investment-chair` | `servers/decision` | #690 | [#545](https://github.com/ryemyster/ShaleYeah/issues/545) |
 
-The optional-at-deployment Chief of Staff has charter #675 and pilot #676. Those
-issues decide its package location and implementation. It consumes permitted
+The optional-at-deployment Chief of Staff has [charter #675](chief-of-staff-role.md)
+and pilot #676 in `orchestrator/`, with ADK/Python as the preferred authoring
+adapter. Its runtime remains unimplemented. It consumes permitted
 work products and handoffs rather than all employees' private memory.
 
 ## Common employee acceptance matrix
@@ -364,7 +366,7 @@ readiness.
 | Context storage/retrieval, budgets, retention and reviewed knowledge promotion | #571, #672 | Policy and restart/isolation/staleness evidence |
 | Identity, scopes, reviewer enrollment and revision-bound approval | #573, #678, #673 | Trusted enforcement and negative/replay tests |
 | Supported provider pairs, runtimes and deploy modes | #669, #572, #578, #674 | Exact versions, commands and qualification limits |
-| Chief of Staff authority and separation from Investment Chair | #675 | Approved charter before #676 implementation |
+| Chief of Staff authority and separation from Investment Chair | #675, #676, #690 | Charter/ADR specify distinct roles and human owner; implement and qualify their boundaries before acceptance |
 | Configured scoring thresholds and trusted judge/metric registry | #666, #667, #577, #691 | Versioned profiles and gates; ordinary tuning does not require source edits |
 | Required GitHub merge protection | #577, #691 | Required checks and current-base enforcement verified; local hooks alone are insufficient |
 

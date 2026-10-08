@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Chief of Staff delegation and authority charter** (#675) — specified distinct coordination/investment-advice/human decision ownership, bounded supervisor state, private/delegated/shared/organization context, three operator journeys and 14 future evaluation cases. Updated ADR 0001 and selected the optional `orchestrator/` unit with ADK/Python as the preferred #676 adapter; runtime, recovery and actual human acceptance remain unqualified.
+
 - **QA employee charter and observed-check handoff** (#538) — specified the QA/data professional's workflow, private context, configurable rules, source/rights limits, defect metrics, future case specifications and exact-revision review. Filed #716 to replace configuration-based PASS, estimated coverage and template assessments before #542; the dependency ledger now contains 51 outcomes. No runtime checks or professional acceptance are claimed by this research delivery.
 
 - **Package-local contributor setup** (#498) — aligned checkout/prerequisites, ADK/Python and TypeScript verification, explicit reference eval files, tests-before-implementation and the shared sequential develop delivery flow. Removed manual branch shortcuts, root-first and Node-only test guidance, inline fake-key examples and shape-as-behavior claims; setup/eval instructions do not certify runtime or professional readiness.
