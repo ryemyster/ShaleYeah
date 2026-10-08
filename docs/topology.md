@@ -328,6 +328,11 @@ The finite MVP delivery order, role coverage and release acceptance gates live
 in [mvp-release-plan.md](mvp-release-plan.md). Architecture and research issues
 refine that ledger through their own PRs; it does not certify untested behavior.
 
+The [legacy migration ledger](legacy-migration-ledger.md) maps current callers,
+retained behavior, temporary adapters and deletion owners. Each replacement PR
+removes its displaced paths and commands after acceptance; #692 verifies final
+shared cleanup. Inventory completion does not mean those runtime cuts shipped.
+
 ## Current Interpretation
 
 The working interpretation of the project is:

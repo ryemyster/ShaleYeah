@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Caller-backed migration inventory** (#576) — added the keep/refactor/adapter/delete ledger for four TypeScript employees, ten Python MCP wrappers, SDK exports, domain tools and process residue, with named replacement owners and extraction/authority gates. Verified existing Python package cleanup guards; filed separate market/research fallback, confidence metadata, economics and type-curve repairs (#708–#712) and inserted them before their qualification consumers. Runtime deletions remain in owning migration PRs and final cleanup #692.
+
 - **BYO employee and MCP composition specification** (#572) — added ADR 0004 and reference cases for mandatory employee/tool combinations, optional coordination, pinned protocol profiles, state/artifact mapping, cancellation, human review and credential/source boundaries. Transferred superseded #575 requirements; shared record cases execute in Python/TypeScript, while protocol conformance and runtime qualification remain assigned to implementation owners.
 
 - **Employee authority and human review policy** (#573) — added ADR 0003 for trusted identity/scopes, explicit local/remote modes, protected backend operations, exact input/product/action review, replay and audit failure recovery, secrets and source/file/egress controls. Added shared validator cases and future runtime acceptance scenarios; authentication, execution grants and operational enforcement remain with their implementation owners.

@@ -12,6 +12,11 @@ this SDK. New employee business records live in the independent
 schemas and Python/TypeScript validation. Install SDK helpers only when needed
 by your TypeScript unit.
 
+The [migration ledger](../docs/legacy-migration-ledger.md#sdk-source-and-public-exports)
+maps SDK callers and compatibility decisions. Domain tools and parsers remain
+retention candidates within tested limits; employee execution helpers stay until
+their supported consumers migrate and public API impact is resolved in #692.
+
 ## Quick start
 
 ```bash
