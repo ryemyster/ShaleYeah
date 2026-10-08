@@ -2,23 +2,22 @@
 
 ## Setup
 
-Install [uv](https://docs.astral.sh/uv/) as well as Node/pnpm when running the full
-workspace checks. The shared [`contracts/`](contracts/README.md) package runs both
-TypeScript and Python fixture suites; its committed Python lock installs the
-required validator/test tools with `uv run --locked`. Individual packages still
-use their own documented setup.
+Follow [Getting Started](docs/GETTING_STARTED.md) for the ordered checkout,
+locked dependency setup and package selection. Use Node 22 or newer, the root
+`packageManager` version of pnpm, and uv with Python 3.12 for the reference
+employee. ADK (Google Agent Development Kit) employees use Python; MCP (Model
+Context Protocol) tool servers use TypeScript. Install agents-cli only when
+working on an ADK employee; install/authenticate `gh` for issue and PR delivery.
 
-```bash
-git clone https://github.com/ryemyster/ShaleYeah.git
-cd ShaleYeah
-pnpm install
-pnpm turbo build
-pnpm turbo test
-```
+Choose the owning package before running checks. Root Turbo checks cover the
+transitional TypeScript workspace, not every Python employee or its live evals.
+The shared [contracts package](contracts/README.md) checks business records in
+both languages. [Deployment support](docs/deployment-support.md) separates local
+setup evidence from portable/hosted support that still needs qualification.
 
 ## Branching
 
-Branch from `develop`. PRs target `develop` — never `main` directly.
+Branch from `develop`. Implementation PRs target `develop`.
 
 Deliver issues sequentially: finish one issue's PR, merge it into `develop`, verify
 the merged checks, synchronize `develop`, then start the next issue. See
@@ -26,6 +25,11 @@ the merged checks, synchronize `develop`, then start the next issue. See
 Use [`docs/mvp-release-plan.md`](docs/mvp-release-plan.md) for the MVP issue order,
 dependencies and acceptance evidence. Complete one issue through develop before
 starting the next.
+
+The release exception is a reviewed `develop` → `main` PR after exact candidate
+qualification and named human MVP acceptance in the [release plan](docs/mvp-release-plan.md#mvp-entry-exit-and-release-gates).
+Do not merge the rolling [monitor PR #703](https://github.com/ryemyster/ShaleYeah/pull/703)
+as an implementation shortcut.
 
 ```bash
 pnpm sdlc install
@@ -44,7 +48,9 @@ Use a spec-driven, issue-first workflow.
 3. Include Given/When/Then behavior and at least one failure case.
 4. Get maintainer approval on the issue plan before code changes.
 5. Start one issue with `pnpm sdlc start`, which cuts its branch from freshly fetched `develop`.
-6. Run the full local lifecycle for the affected package(s).
+6. Write failing tests/evals before implementation, then implement and verify the
+   affected package(s). For a documentation/research outcome, record the evidence
+   checklist before drawing conclusions.
 7. Keep displaced code deleted unless an adapter is explicitly required.
 8. For agent migrations, ADK/Python is the target surface. A lingering `agents/<name>/package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or TypeScript agent test suite is migration debt unless the issue is explicitly deleting or temporarily adapter-gating it.
 9. Open a PR back into `develop` when the unit is clean.
@@ -71,7 +77,7 @@ The tracked source of truth for architecture and target state is [`docs/topology
 
 This project expects TDD and security coverage to travel together.
 
-- Add or update tests before or during implementation.
+- Add or update failing tests before implementation.
 - Use package-local verification first.
 - Keep secrets out of prompts, logs, and memory.
 - Add explicit audit, redaction, and approval behavior for sensitive flows.
@@ -79,77 +85,102 @@ This project expects TDD and security coverage to travel together.
 
 ## Pre-commit gate
 
-Run the checks that match the touched package boundary before opening a PR. Root workspace checks are for shared workspace files, SDK/server-wide contracts, and CI drift.
+Run the checks that match the touched package boundary before every commit and
+PR. Update root/package changelogs and affected docs, review the diff, and scan
+staged changes for secrets. Shared delivery hooks enforce issue ordering; they
+do not replace useful tests, review or package quality checks.
+
+From the repository root, TypeScript tool work uses the package's own scripts:
+
+```bash
+pnpm --dir sdk build
+pnpm --dir servers/geowiz build
+pnpm --dir servers/geowiz type-check
+pnpm --dir servers/geowiz lint
+pnpm --dir servers/geowiz test
+```
+
+For Geologist, run from `agents/geologist` after its locked setup:
+
+```bash
+uv run --frozen pytest -q
+uv run --frozen python -m py_compile app/agent.py app/geowiz_mcp.py
+uv run --frozen python -c 'from app.agent import app, root_agent; print(app.name, root_agent.name)'
+agents-cli info
+```
+
+These existing Python tests inspect package/tool/eval shape. Live task behavior,
+professional correctness and backend review enforcement require separate
+evidence. Follow the package's [evaluation steps](agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals)
+when that behavior is ready; record dataset/config/provider/judge versions and
+per-case results. Do not relabel shape tests or a healthy port as employee evals.
+
+For shared workspace files, cross-package contracts or CI changes, also run:
 
 ```bash
 pnpm turbo build
 pnpm turbo type-check
 pnpm turbo lint
 pnpm turbo test
+pnpm check:issue-template
+pnpm test:sdlc
 ```
 
-Run per-package during development:
-
-```bash
-cd servers/geowiz && pnpm build && pnpm test
-cd agents/geologist && uv run python -m py_compile app/agent.py app/geowiz_mcp.py && agents-cli info
-cd sdk && pnpm build && pnpm test
-```
+Contracts have their own parity/coverage and extracted-install checks; follow
+[their README](contracts/README.md). Each other package's README declares its
+checks. No provider key is needed for the deterministic CI fixtures. A live
+model or grading service needs its separately configured credentials and may
+incur cost; never embed keys in commands, prompts, eval fixtures or artifacts.
 
 ## Adding a new MCP server
 
-1. Create `servers/<name>/` — copy structure from an existing server (e.g. `servers/legal/`)
-2. Extend `MCPServer` from `@shaleyeah/sdk`, give it a Roman persona, register tools with `registerTool()`
-3. Wire `callLLM()` from `@shaleyeah/sdk` — never import `@anthropic-ai/sdk` directly
-4. Add `servers/<name>/package.json` with `"@shaleyeah/sdk": "workspace:*"` dep
-5. Write three tests in `servers/<name>/tests/server.test.ts` (see Anti-Stub Pattern below)
-6. Add `servers/<name>/docs/ARCHITECTURE.md` and `.env.example`
-7. Add to `pnpm-workspace.yaml` if not already covered by `servers/*`
+1. Start an approved issue and write failing contract, tool and trust tests.
+2. Create `servers/<name>/` using an existing server's package-local shape.
+3. Use shared SDK server/tool patterns and a Roman display persona. Keep stable
+   role/capability IDs separate from the display name.
+4. Use the shared LLM client when synthesis is needed; never import a provider
+   SDK directly in the server. Preserve deterministic tools where they suffice.
+5. Declare package dependencies/scripts. Current SDK consumers use
+   `"@shaleyeah/sdk": "workspace:*"`; independent packaging is owned by #674.
+6. Add README, architecture/deployment docs, non-secret config examples and
+   control, edge and authority tests. A health check alone is insufficient.
+7. `servers/*` is already covered by `pnpm-workspace.yaml`. Change the workspace
+   list only if introducing a different boundary.
 
 ## Anti-stub test pattern
 
-Every server that calls `callLLM` must have all three types. These exist because servers were previously ghost-closed with hardcoded stubs while tests passed.
+For model-assisted tools, test these boundaries before implementation:
 
-**Type 1 — Mock-SDK:** prove `messages.create` is actually called.
+- The shared client/provider method is actually invoked, using an isolated
+  fixture or mock. An authentication failure proves an invocation boundary,
+  not a valid professional result.
+- Meaningfully different inputs affect the tool request or deterministic result;
+  hardcoded estimates cannot satisfy the source/domain acceptance case.
+- A missing provider key or unavailable source produces an explicit failure or
+  deferral, not fabricated data presented as analysis.
 
-```typescript
-process.env.ANTHROPIC_API_KEY = "sk-ant-api03-fake-key-for-testing-purposes-only-00000000000000000000000000";
-let err: Error | null = null;
-try { await callLLM({ prompt: "..." }); } catch (e) { err = e as Error; }
-assert.ok(err !== null);
-assert.ok(!err.message.includes("environment variable is not set")); // SDK was reached, not our guard
-```
-
-**Type 2 — Determinism:** different inputs → different outputs (hardcoded returns fail this).
-
-```typescript
-const r1 = deriveDefault("California", "exploration");
-const r2 = deriveDefault("Texas", "production");
-assert.notStrictEqual(r1, r2);
-```
-
-**Type 3 — Demo-fallback:** no key → clean error from `callLLM`, not a crash.
-
-```typescript
-delete process.env.ANTHROPIC_API_KEY;
-let threw = false;
-try { await callLLM({ prompt: "test" }); } catch { threw = true; }
-assert.ok(threw);
-```
+The [existing Geowiz tests](servers/geowiz/tests/server.test.ts) show current
+invocation and missing-key checks. Mock/placeholder processor fixtures are not
+professional format qualification; #671/#674 supply reference evidence.
 
 ## Adding a new agent
 
-1. Start with a package-local ADK/Python project shape under `agents/<name>/`.
-2. Choose the agent id (`market-analyst`, `title-analyst`, ...).
-3. Add `agents-cli-manifest.yaml`, `pyproject.toml`, `uv.lock`, `app/agent.py`, and package-local evals.
-4. Keep MCP/tool backend logic in the matching `servers/<name>/` package. Servers may remain TypeScript and use pnpm.
-5. Do not add a new agent `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or npm script surface.
-6. Add package docs (`README.md`, `docs/`) and eval coverage with control, edge, and capability-boundary cases.
-7. Add `agents/<name>/docs/ARCHITECTURE.md` — see `agents/geologist/docs/ARCHITECTURE.md` for the ADK boundary pattern.
+1. Start an approved issue, choose one architecture mode and define the role's
+   tests/evals and human-review boundary before implementation.
+2. Start with a package-local ADK/Python project shape under `agents/<name>/`.
+   Inspect an existing package before scaffolding; never scaffold the repo root.
+3. Choose the stable agent id (`market-analyst`, `title-analyst`, ...).
+4. Add `agents-cli-manifest.yaml`, `pyproject.toml`, `uv.lock`, `app/agent.py`, and package-local evals.
+5. Keep MCP/tool backend logic in the matching `servers/<name>/` package. Servers may remain TypeScript and use pnpm.
+6. Do not add a new agent `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, or npm script surface.
+7. Add package docs (`README.md`, `docs/`) and eval coverage with control, edge, and capability-boundary cases.
+8. Add `agents/<name>/docs/ARCHITECTURE.md` — see `agents/geologist/docs/ARCHITECTURE.md` for the ADK boundary pattern.
 
 ## Test pattern
 
-All tests use Node's built-in `assert` — no jest, no vitest. Tests must pass without `ANTHROPIC_API_KEY`.
+TypeScript package tests use Node's built-in `assert`; Python packages use
+pytest. Deterministic tests must pass without provider keys. Write them first
+and run the owning package's test command so its runner reports failures.
 
 ```typescript
 import assert from "node:assert";
@@ -162,7 +193,10 @@ await test("does the thing", () => {
 });
 ```
 
-Run a single test: `npx tsx servers/geowiz/tests/server.test.ts`
+From `servers/geowiz`, run a single TypeScript file with
+`pnpm exec tsx tests/server.test.ts`; use `pnpm test` for the package suite.
+From `agents/geologist`, run a single Python file with
+`uv run --frozen pytest tests/test_adk_project_shape.py`.
 
 ## Code standards
 

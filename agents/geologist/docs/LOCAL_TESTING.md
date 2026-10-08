@@ -6,8 +6,10 @@ The Geologist agent is ADK/Python. The Geowiz server is the TypeScript MCP backe
 
 ```bash
 cd agents/geologist
-uv run pytest
-uv run python -m py_compile app/agent.py app/geowiz_mcp.py
+uv sync --frozen --extra eval
+uv run --frozen pytest -q
+uv run --frozen python -m py_compile app/agent.py app/geowiz_mcp.py
+uv run --frozen python -c 'from app.agent import app, root_agent; print(app.name, root_agent.name)'
 agents-cli info
 ```
 
@@ -15,7 +17,9 @@ agents-cli info
 
 ## Run With A Live Geowiz Backend
 
-Start the MCP server in one terminal:
+First complete the [ordered build/config setup](../../../docs/deployment-support.md#run-the-current-reference-locally).
+Use synthetic fixtures on a private development host; current HTTP entry has no
+authenticated tool gate. Start the MCP server in one terminal:
 
 ```bash
 cd servers/geowiz
@@ -26,21 +30,49 @@ Run the ADK agent in another terminal:
 
 ```bash
 cd agents/geologist
-agents-cli install
-GEOWIZ_MCP_URL=http://localhost:3001 agents-cli run \
-  "Use assess_geowiz_quality to assess sample.las as LAS data"
+GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+  "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
-This exercises `app/agent.py` and `app/geowiz_mcp.py`.
+With model credentials configured, this exercises `app/agent.py` and
+`app/geowiz_mcp.py`. The fixture resolves on the Geowiz host from its working
+directory, not on the employee host. Import/health alone does not execute it.
 
 ## Run ADK Evals
 
+The dataset is [geologist-adk-reference.json](../tests/eval/datasets/geologist-adk-reference.json);
+metric selection/rubrics are [eval_config.yaml](../tests/eval/eval_config.yaml).
+The files define intended control, sparse-context edge and unapproved-persistence
+cases. Existing pytest checks inspect their shape; they do not execute or grade
+the employee. Several advertised format cases still need source qualification.
+
+From `agents/geologist`, inspect installed flags before a live run:
+
 ```bash
-cd agents/geologist
-agents-cli eval run
+agents-cli eval run --help
 ```
 
-The eval harness covers control cases, sparse-context edge behavior, and the boundary that the agent must not persist findings without approval.
+When Geowiz, model credentials, approved inputs and the configured grading
+service are ready, select the actual package files explicitly:
+
+```bash
+agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json \
+  --config tests/eval/eval_config.yaml
+```
+
+For the inspected CLI 1.3.1, `run` chains inference and grading. Inference traces
+go to `artifacts/traces/`; default timestamped JSON/HTML grade results go to
+`artifacts/grade_results/`. This config includes a model-based judge; configure
+its service identity/project separately from the agent/tool's model keys.
+Live runs may incur cost and are not a credential-free CI step. Run only trusted
+eval configuration; current custom metric functions execute code. Record source
+commit, dataset/config/provider/model/judge versions, per-case scores and limits;
+retain redacted artifacts and inspect failures instead of lowering thresholds.
+
+No successful live eval is claimed by these setup instructions. Portable
+declarative profiles/trusted metrics, the ADK adapter and promotion gates are
+#666/#667/#577. Professional geological review and backend review/resume
+enforcement remain separate from model scores and ADK confirmation.
 
 ## Common Issues
 
@@ -48,8 +80,9 @@ The eval harness covers control cases, sparse-context edge behavior, and the bou
 |---------|-------|-----|
 | `ECONNREFUSED localhost:3001` | Geowiz is not running | `cd servers/geowiz && PORT=3001 pnpm start` |
 | `agents-cli info` cannot find the project | Command was run from the wrong directory | `cd agents/geologist` |
-| Python import error for `mcp` or `google.adk` | Dependencies are not installed | `uv sync --extra eval` or `agents-cli install` |
-| Live eval needs credentials | Provider credentials are absent | Run shape tests with `uv run pytest`; live eval can run when credentials are configured |
+| Python import error for `mcp` or `google.adk` | Dependencies are not installed | From this package, `uv sync --frozen --extra eval` |
+| CLI cannot find default eval dataset | Generic scaffold filename differs from this package | Pass the explicit `--dataset` and `--config` shown above |
+| Live inference/grading needs credentials | Model or selected grading service is not configured | Run no-key shape checks separately; configure the required identities before a live eval |
 
 ## See Also
 

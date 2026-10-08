@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Package-local contributor setup** (#498) — aligned checkout/prerequisites, ADK/Python and TypeScript verification, explicit reference eval files, tests-before-implementation and the shared sequential develop delivery flow. Removed manual branch shortcuts, root-first and Node-only test guidance, inline fake-key examples and shape-as-behavior claims; setup/eval instructions do not certify runtime or professional readiness.
+
 - **Portable support and deployment evidence** (#578) — documented current reference setup, actual credentials/ports/file locations, local smoke limits, durable context/review/export/restore and resource gates, with independent package/container targets and untested optional hosts. Replaced reference deployment examples that implied built images, fixed employee ports, stateless scaling or unsupported production sizing/settings; no container or hosted deployment is certified by this documentation delivery.
 
 - **Caller-backed migration inventory** (#576) — added the keep/refactor/adapter/delete ledger for four TypeScript employees, ten Python MCP wrappers, SDK exports, domain tools and process residue, with named replacement owners and extraction/authority gates. Verified existing Python package cleanup guards; filed separate market/research fallback, confidence metadata, economics and type-curve repairs (#708–#712) and inserted them before their qualification consumers. Runtime deletions remain in owning migration PRs and final cleanup #692.

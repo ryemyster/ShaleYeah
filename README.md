@@ -63,7 +63,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 
 | Topic | Link |
 | --- | --- |
-| Build and run the current workspace | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
+| Choose a package, set it up and deliver one issue | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Architecture details | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Durable employee contracts and technology boundaries | [ADR 0001](docs/adr/0001-durable-employee-contracts.md) |
 | Employee record schemas, Python/TypeScript validation and compatibility | [contracts/README.md](contracts/README.md) |
@@ -80,6 +80,12 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 
 Current root commands are workspace conveniences, not permanent architecture constraints. Package-local READMEs and docs are the source of truth for each independently buildable unit.
+
+TypeScript workspace checks do not run every Python employee's tests or live
+evaluations. Contributor setup uses the owning package's commands and the
+[shared sequential delivery flow](docs/sdlc.md) for Codex, Antigravity and Claude
+Code. [Deployment support](docs/deployment-support.md) records which local checks
+ran and what still needs qualification.
 
 ## License
 
