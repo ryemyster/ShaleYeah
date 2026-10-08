@@ -4,6 +4,9 @@ import { test } from "node:test";
 import { CONTRACT_VERSION, ContractValidationError, validateContract } from "../src/index.js";
 
 const authority = JSON.parse(readFileSync(new URL("../fixtures/authority-review.json", import.meta.url), "utf8"));
+const composition = JSON.parse(
+	readFileSync(new URL("../fixtures/composition-conformance.json", import.meta.url), "utf8"),
+);
 const baseRecords = JSON.parse(readFileSync(new URL("../fixtures/records.json", import.meta.url), "utf8"));
 assert(
 	Object.keys(authority.records).every((name) => !Object.hasOwn(baseRecords, name)),
@@ -16,17 +19,27 @@ const records = {
 const cases = [
 	...JSON.parse(readFileSync(new URL("../fixtures/cases.json", import.meta.url), "utf8")),
 	...authority.validationCases,
+	...composition.validationCases,
 ];
+function fixtureValue(fixture: {
+	record: string;
+	patches?: Array<{ path: string[]; remove?: boolean; value?: unknown }>;
+}) {
+	assert(Object.hasOwn(records, fixture.record), `unknown fixture record: ${fixture.record}`);
+	const value = structuredClone(records[fixture.record]);
+	for (const patch of fixture.patches ?? []) {
+		let target = value;
+		for (const key of patch.path.slice(0, -1)) target = target[key];
+		const key = patch.path.at(-1);
+		assert(key !== undefined, "fixture patch needs a path");
+		if (patch.remove) delete target[key];
+		else target[key] = patch.value;
+	}
+	return value;
+}
 for (const fixture of cases) {
 	test(fixture.name, () => {
-		const value = structuredClone(records[fixture.record]);
-		for (const patch of fixture.patches ?? []) {
-			let target = value;
-			for (const key of patch.path.slice(0, -1)) target = target[key];
-			const key = patch.path.at(-1);
-			if (patch.remove) delete target[key];
-			else target[key] = patch.value;
-		}
+		const value = fixtureValue(fixture);
 		const before = JSON.stringify(value);
 		if (fixture.valid) assert.deepEqual(validateContract(value, fixture.options), value);
 		else
@@ -87,4 +100,34 @@ test("authority reference binds the task, reviewed product, source and human dec
 	assert.equal(records.saveDecision.decision, "approve");
 	assert(records.saveRequest.requestedDecision.includes(control.operation.name));
 	assert(records.saveRequest.requestedDecision.includes(control.operation.target));
+});
+
+test("replacement employee retains task, private context, evidence and review bindings", () => {
+	const examples = Object.fromEntries(
+		Object.entries(composition.control.records).map(([kind, name]) => {
+			const fixture = composition.validationCases.find((item: { name: string }) => item.name === name);
+			assert(fixture?.valid, `missing valid composition example: ${name}`);
+			return [kind, fixtureValue(fixture)];
+		}),
+	);
+	const { charter, task, work, context, request, decision } = examples;
+	assert.equal(charter.employeeId, composition.control.scope.employeeId);
+	assert.equal(charter.owner.customerId, composition.control.scope.customerId);
+	for (const record of [task, work, context, request, decision]) {
+		assert.deepEqual(record.scope, composition.control.scope);
+		assert.equal(record.kind === "task-assignment" ? record.revision : record.taskRevision, task.revision);
+	}
+	assert.equal(task.id, work.scope.taskId);
+	assert(task.requiredCapabilities.every((capability: string) => charter.capabilities.includes(capability)));
+	assert.deepEqual(work.inputs, task.inputs);
+	assert.deepEqual(context.workingArtifactRefs, task.inputs);
+	assert.deepEqual(context.selectedEvidence, work.evidence);
+	assert.deepEqual(context.contextPolicy, charter.contextPolicy);
+	assert.deepEqual(request.productRef, work.artifact);
+	assert.deepEqual(decision.productRef, work.artifact);
+	assert.deepEqual(decision.requestRef, { id: request.id, revision: request.revision });
+	assert.deepEqual(request.reviewerPolicy, decision.reviewer.authorityPolicy);
+	assert.equal(decision.decision, "approve");
+	assert.equal(work.status, "ready_for_review");
+	assert.equal(work.review.status, "unreviewed", "a separate decision does not promote a record");
 });
