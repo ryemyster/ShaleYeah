@@ -12,6 +12,8 @@
 
 ### Changed
 
+- **MCP schema and result boundary** (#677) — added bounded discovery/input/output validation, retained structured-only evidence and native errors, rejected conflicting representations and incompatible role capabilities, and recognized legacy success-masked failures. Declared JSON Schema as a direct dependency; added real behavioral fake-session controls. Existing ADK confirmation/role deferral remains; live domain, shared-client and access qualification remain separate.
+
 - **Contributor commands** (#498) — frozen setup and shape checks, fixture paths, explicit eval dataset/config and artifact/prerequisite guidance, tests-first tool workflow and optional lint extra. Removed inline fake-key config and generic eval defaults; no runtime or metric behavior changed.
 
 - **Deployment documentation** (#578) — linked ordered reference setup and the support matrix, separated provider credentials and actual CLI ports, and documented in-memory session, backend authority and durable context/review qualification limits. No employee runtime change.

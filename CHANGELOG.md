@@ -88,6 +88,8 @@ Develop-only — not yet released to main.
 
 ### Fixed
 
+- **MCP schema/error boundary** (#677) — preserved complete declared schemas and metadata, matching structured/JSON results, native failure classifications and existing analysis/file/XOR error records; removed factory/transport success masking. Geologist validates discovery/arguments/results and preserves structured-only evidence with bounded legacy compatibility. Deterministic protocol/fake-client evidence does not certify actual role calculations, source rights, authenticated review or fleet adoption.
+
 - **Independent MCP HTTP sessions** (#668) — removed the shared transport that rejected a second client; isolated protocol state and concurrent responses, bounded lifecycle/resources, and cleaned up expiry/DELETE/timeout/shutdown/restart and listener callbacks. Added real HTTP regressions; scopes/authentication, result schemas and professional qualification remain separately owned.
 
 - **SDK fenced-JSON parsing** (#571, CodeQL alert #51) — replaced polynomial whitespace regex cleanup with outer-marker string operations; preserved literal fence text inside JSON values and added a killable 250,000-space stress regression. Removed the stale mandatory Supabase/vector Phase 2 promise from the existing context-store documentation.

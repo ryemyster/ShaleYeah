@@ -8,6 +8,7 @@ authors = [
 dependencies = [
   "google-adk[gcp]>=2.0.0,<3.0.0",
   "mcp>=1.13.0,<2.0.0",
+  "jsonschema>=4.26.0,<5.0.0",
 ]
 requires-python = ">=3.11,<3.14"
 

@@ -6,7 +6,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
-import { MCPServer } from "./mcp-server.js";
+import { classifyToolError, isToolFailure } from "./errors.js";
+import { MCPServer, type MCPTool } from "./mcp-server.js";
 
 export interface ServerPersona {
 	name: string;
@@ -23,18 +24,7 @@ export interface ServerTemplate {
 	resources?: ServerResourceTemplate[];
 }
 
-export interface ServerToolTemplate {
-	name: string;
-	description: string;
-	inputSchema: z.ZodObject<z.ZodRawShape>;
-	// Handler intentionally uses any — args are validated by Zod schema before invocation
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	handler: (args: any) => Promise<any>;
-	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
-	type?: "query" | "command" | "discovery";
-	/** Supported response detail levels */
-	detailLevel?: "summary" | "standard" | "full";
-}
+export interface ServerToolTemplate extends MCPTool {}
 
 export interface ServerResourceTemplate {
 	pattern: string;
@@ -70,12 +60,7 @@ export class ServerFactory {
 			protected setupCapabilities(): void {
 				// Register all tools from template
 				for (const tool of template.tools) {
-					this.registerTool({
-						name: tool.name,
-						description: tool.description,
-						inputSchema: tool.inputSchema,
-						handler: tool.handler,
-					});
+					this.registerTool(tool);
 				}
 			}
 		};
@@ -102,6 +87,7 @@ export class ServerFactory {
 					const startTime = Date.now();
 					const analysis = await analyzeFunction(args);
 					const executionTime = Date.now() - startTime;
+					if (isToolFailure(analysis)) return analysis;
 
 					return {
 						success: true,
@@ -116,6 +102,7 @@ export class ServerFactory {
 					return {
 						success: false,
 						error: error instanceof Error ? error.message : String(error),
+						error_type: classifyToolError(error),
 						suggestions: ["Check input parameters", "Verify data format"],
 					};
 				}
@@ -155,6 +142,7 @@ export class ServerFactory {
 					}
 
 					const result = await processFunction(args.filePath, args);
+					if (isToolFailure(result)) return result;
 
 					return {
 						success: true,
@@ -170,6 +158,7 @@ export class ServerFactory {
 					return {
 						success: false,
 						error: error instanceof Error ? error.message : String(error),
+						error_type: classifyToolError(error),
 						suggestions: [
 							"Check file exists and is readable",
 							"Verify file format is supported",

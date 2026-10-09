@@ -11,7 +11,7 @@
 | `pyproject.toml` | Python ADK dependencies |
 | `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
 | `app/geowiz_mcp.py` | Python MCP client and Geowiz execution wrappers |
-| `tests/` | pytest shape tests plus ADK eval dataset/config |
+| `tests/` | pytest shape/result-boundary tests plus ADK eval dataset/config |
 | `servers/geowiz` | independent TypeScript MCP backend |
 
 ## Architecture Mode
@@ -65,6 +65,33 @@ servers/geowiz
 | `process_seismic_data` | `process_geowiz_seismic_data` |
 | `process_aries_database` | `process_geowiz_aries_database` |
 | `save_finding` | `save_geowiz_finding` with `FunctionTool(..., require_confirmation=True)` |
+
+## MCP result boundary
+
+Each call initializes the configured backend, discovers its tools in at most
+32 pages, rejects missing/duplicate names or repeated cursors, and validates
+arguments against the selected advertised input schema. Successful structured
+results are validated against any advertised output schema using JSON Schema
+validation. The installed MCP client also performs output-schema checks.
+
+The wrapper returns backend/tool identifiers, original `content`,
+`structuredContent` and `isError`. Structured-only success is retained. JSON
+compatibility text must match structured evidence; conflicts or schema failures
+raise a runtime error rather than return valid work. Error results retain their
+native details and are separate from the successful output schema.
+
+For legacy tools without an output schema, original JSON text remains supported.
+Known failure markers survive the former `success`/`data`/`analysis` wrappers;
+nesting beyond the supported three wrapper levels fails closed. The SDK now
+preserves factory envelopes instead of adding the former extra outer `data`.
+An invocation may return partial/draft output; this wrapper does not mark a
+business task completed, approve a finding or promote employee memory.
+
+`test_mcp_result_contract.py` checks these behaviors with fake sessions and an
+incompatible backend for every role hook. It does not prove geological accuracy,
+authenticated access or real ADK review. Shared client installation, connection
+limits/recovery and copied-wrapper replacement are #679; actual reference tool
+schemas/formats and end-to-end qualification remain #671/#674.
 
 ## Eval Harness
 

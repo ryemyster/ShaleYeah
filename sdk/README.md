@@ -40,6 +40,7 @@ class MyServer extends MCPServer {
     this.registerTool({
       name: "echo", description: "Return the supplied message", type: "query",
       inputSchema: z.object({ message: z.string() }),
+      outputSchema: z.object({ message: z.string() }),
       handler: async ({ message }: { message: string }) => ({ message }),
     });
   }
@@ -96,6 +97,8 @@ with bounded idle/request time and session capacity. See
 and [deployment settings](docs/DEPLOYMENT.md).
 
 Session IDs identify transport state, not employee memory or authenticated
-authority. #678 implements identity/source access checks; #677 implements
-structured result/error conformance. Current HTTP remains a trusted development
-path until those gates qualify it.
+authority. #678 implements identity/source access checks. Declared schemas,
+structured success and genuine tool failures are covered by #677's SDK and
+Geologist boundary checks; see [tool result compatibility](docs/ARCHITECTURE.md#tool-contracts-and-result-compatibility).
+Current HTTP remains a trusted development path pending access and reference
+qualification.

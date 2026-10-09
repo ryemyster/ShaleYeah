@@ -12,6 +12,8 @@ All notable changes to this package.
 
 ### Fixed
 
+- **MCP tool schemas and genuine failures** (#677) — preserved full input/output schemas and discovery metadata through factory registration, emitted matching structured success/JSON text, removed the extra success-masking wrapper, preserved typed errors and recognized existing XOR/file/analysis failure records. Declared-success-schema failures retain JSON error text with `isError` for pinned generic-client compatibility. Existing raw-result compatibility and partial statuses remain; role schema/domain and access qualification are separate.
+
 - **HTTP MCP session lifecycle** (#668) — replaced the shared stateful transport with independent protocol/transport instances, preserved tool/resource registrations, added bounded idle/request/capacity/body handling and DELETE/expiry/shutdown/restart cleanup. Real multi-client and lifecycle regressions include repeated-listener leak repair. Identity/authentication and result conformance remain #678/#677.
 
 - **Fenced-JSON parser** (#571, CodeQL alert #51) — removed polynomial whitespace
