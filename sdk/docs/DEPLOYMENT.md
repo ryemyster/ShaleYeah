@@ -38,3 +38,12 @@ Employee working context/review persists through its own adapters, not this map.
 2. `pnpm build` to regenerate `dist/`
 3. `pnpm publish --access public` (requires npm token)
 4. Downstream packages update `workspace:*` → the new semver range
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](../../docs/model-providers.md).

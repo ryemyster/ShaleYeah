@@ -45,7 +45,7 @@ export interface MCPTool {
 	outputSchema?: z.ZodObject<z.ZodRawShape>;
 	annotations?: ToolAnnotations;
 	_meta?: Record<string, unknown>;
-	handler: (args: any, context?: MCPExecutionContext) => Promise<any>;
+	handler: (args: any, context?: MCPExecutionContext, signal?: AbortSignal) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
 	/** Supported response detail levels */
@@ -215,13 +215,13 @@ export abstract class MCPServer {
 				annotations: tool.annotations,
 				_meta: tool._meta,
 			},
-			async (args: any) => {
+			async (args: any, extra) => {
 				try {
 					const context = this._httpAccess?.currentContext();
 					if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
 					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
 					const validatedArgs = tool.inputSchema.parse(args);
-					const result = await tool.handler(validatedArgs, context);
+					const result = await tool.handler(validatedArgs, context, extra.signal);
 					console.log(`✅ ${tool.name} completed`);
 					const hasOutcome = result !== null && typeof result === "object" && typeof result.success === "boolean";
 					const failed = isToolFailure(result);

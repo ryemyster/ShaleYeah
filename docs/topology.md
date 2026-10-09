@@ -368,3 +368,12 @@ Chair distinct as an advisory investment specialist; the human owner retains
 consequential decisions. #676 implements the pilot in `orchestrator/`, using
 ADK/Python as the preferred adapter. Each specialist remains directly usable
 with its own human owner and context; runtime qualification remains pending.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](model-providers.md).

@@ -39,6 +39,7 @@ const DEFAULT_MAX_TOKENS = 4096;
  * Throws with a clear message if ANTHROPIC_API_KEY is not set.
  * Uses adaptive thinking on Opus 4.6 for best reasoning quality.
  */
+/** Legacy compatibility for unmigrated callers; reference Geowiz uses model-provider. Removal: #692/#576. */
 export async function callLLM(options: LLMCallOptions): Promise<string> {
 	// Use injected key first (from kernel SecretsStore), then fall back to env.
 	// This allows tests and multi-tenant runs to supply keys without polluting process.env.

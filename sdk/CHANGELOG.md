@@ -4,6 +4,9 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+### Changed
+- #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
+
 ### Added
 
 - **Independent Python MCP client** (#679) — `python/` builds `shaleyeah-mcp-client`, pinned to maintained MCP/HTTP/validation dependencies. Geologist installs it without TypeScript or monorepo-source imports. Configured secret references, schema/result preservation, bounded setup retries and safe typed failures are covered by isolated-wheel and real protected-Geowiz controls; no tool replay, professional acceptance or registry publication is implied.

@@ -6,7 +6,11 @@ authors = [
   { name = "Ryan McDonald" },
 ]
 dependencies = [
-  "google-adk[gcp]>=2.0.0,<3.0.0",
+  "anthropic==1.13.0",
+  "google-adk[gcp]==2.4.0",
+  "google-genai==2.11.0",
+  "httpx==0.28.1",
+  "httpx2==2.13.1",
   "shaleyeah-mcp-client==0.1.0",
 ]
 requires-python = ">=3.11,<3.14"

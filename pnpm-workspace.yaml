@@ -6,4 +6,6 @@ packages:
   - 'orchestrator'
 allowBuilds:
   '@biomejs/biome': true
+  '@google/genai': false
   esbuild: true
+  protobufjs: false

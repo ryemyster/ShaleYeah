@@ -43,7 +43,7 @@ process with Ctrl-C.
 | `PORT` unset | stdio transport, managed as a child process by an MCP client |
 | `PORT=3001` | HTTP transport only with explicit access configuration |
 | `GEOWIZ_HTTP_CONFIG_FILE` | Private local-launch policy with credential/audit file references; see HTTP access setup |
-| `ANTHROPIC_API_KEY` | Required for real model-assisted analysis; not for startup/health or deterministic quality checks |
+| `GEOWIZ_MODEL_CONFIG_FILE` | Private model profile for stdio synthesis; HTTP uses `modelConfigFile` in its private access JSON |
 | Storage | SDK defaults to `./data/geowiz`; findings go to `./data/geowiz/findings` relative to working directory |
 | Input / output paths | Resolved on the Geowiz host; some tools write caller-supplied `outputPath` |
 
@@ -52,8 +52,8 @@ Setting them does not relocate persisted files, change log level or redact
 outputs. Source/output-root controls and audit/redaction are #670/#678/#574.
 
 Provider credentials must be injected through secret references outside prompts
-and command history. Geologist's Gemini credential is separate from Geowiz's
-Anthropic credential; #669 implements the reference's BYO provider contract.
+and command history. Geologist and Geowiz share a configured production provider, with dedicated key
+references. Follow [provider setup](../../../docs/model-providers.md).
 
 ## Use with the employee
 
@@ -61,7 +61,7 @@ Geologist uses the installed [Python MCP client](../../../sdk/python/README.md)
 with the same private credential file as the launcher. Its imports/tests work independently;
 the [generic-client test](HTTP_ACCESS.md#test-the-real-boundary-without-model-keys)
 checks ingress now. Live providers, permitted sources and employee/task behavior
-remain #669/#670/#671/#674; no model key grants tool authority.
+remain #670/#671/#674; no model key grants tool authority.
 
 ## Persistence, containers and scaling
 

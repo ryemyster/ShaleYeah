@@ -49,8 +49,9 @@ review, cancellation and credential acceptance checks.
 The agent requests ADK confirmation for `save_geowiz_finding`. That flag does
 not prove authenticated revision-bound professional review or restart recovery.
 Its manifest declares in-memory sessions. Durable context and review/revision/
-resume are #672/#673; full-path provider replacement is #669. Server synthesis
-still uses the SDK's Anthropic-specific client.
+resume are #672/#673. The reference reasoning/synthesis path now uses explicit
+Gemini/Anthropic profiles with independent judge configuration;
+[provider setup](model-providers.md) states its fixture qualification and limits.
 
 ## Packages and dependency boundaries
 
@@ -142,3 +143,12 @@ stay language-neutral and versioned; accepted releases pin tested dependencies
 and model/profile versions. ADR 0001 defines compatibility, deprecation and
 upgrade checks. Automatic latest-model promotion and mandatory provider/cloud
 dependencies are outside the target architecture.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](model-providers.md).

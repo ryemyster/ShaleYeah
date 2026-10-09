@@ -102,7 +102,7 @@ The actual pair's ingress controls and isolated installed-wheel checks pass;
 see [employee testing](../../../agents/geologist/docs/LOCAL_TESTING.md).
 These controls and the generic-client backend test supply bounded connection
 evidence. BYO providers, sources, durable
-context/review and real professional cases remain #669/#670/#671/#672/#673/#674.
+context/review and real professional cases remain #670/#671/#672/#673/#674.
 
 Remote verifiers and private policies are operator services, separate from model
 keys and agent prompts. The public SDK context preserves verified customer/

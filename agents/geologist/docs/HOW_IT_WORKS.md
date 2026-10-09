@@ -27,4 +27,5 @@ This split is intentional. Agents are ADK/Python. Servers may remain TypeScript/
 
 `GEOWIZ_MCP_URL` points the agent at the backend. The default is `http://127.0.0.1:3001/mcp`.
 
-`GEOLOGIST_ADK_MODEL` sets the local ADK model id. The default is `gemini-flash-latest`.
+`GEOLOGIST_MODEL_CONFIG_FILE` names the private, validated model profile.
+See [provider configuration](../../../docs/model-providers.md) for Gemini/Anthropic, limits and judge separation.

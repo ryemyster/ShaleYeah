@@ -52,8 +52,8 @@ It does not use the retired TypeScript LocalAgentRuntime or a fixed employee por
 Files resolve on the tool host. Source/workspace controls remain #670; advertised
 formats and geological evidence remain #671/#674. `assess_quality` currently
 returns fixed metrics without opening the file; it qualifies ingress rather
-than observed data quality. Model-assisted tools use shared `callLLM`; BYO
-provider support remains #669.
+than observed data quality. Formation synthesis uses an injected Gemini/Anthropic runtime; see
+[provider setup](../../../docs/model-providers.md). No provider failure becomes a fabricated result.
 
 The local example leaves `save_finding` ungranted. Authenticated exact-revision
 backend review/resume remains #673. Agent confirmation or approval prose cannot

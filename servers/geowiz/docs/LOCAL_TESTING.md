@@ -31,7 +31,7 @@ and concurrent users.
 The installed Geologist client passes protected connection controls. Run
 [employee Python checks](../../../agents/geologist/docs/LOCAL_TESTING.md)
 independently. Actual professional/source/provider behavior remains
-#669/#670/#671/#674. Protected backend review/resume is #673; agent confirmation
+#670/#671/#674. Protected backend review/resume is #673; agent confirmation
 alone does not authorize persistence.
 
 | Symptom | Next step |

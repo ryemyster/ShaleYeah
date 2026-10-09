@@ -59,8 +59,11 @@ from app import geowiz_mcp
 )
 async def test_role_hooks_preserve_arguments_and_backend_failures(monkeypatch, wrapper, arguments):
     calls = []
+    expected = {"provider": "gemini", "model": "fixture-001"}
 
     async def installed_client(settings, name, values):
+        if name == "get_model_profile":
+            return {"structuredContent": {"success": True, "analysis": expected}, "isError": False}
         calls.append((settings.endpoint, name, values))
         return {
             "content": [],
@@ -70,7 +73,7 @@ async def test_role_hooks_preserve_arguments_and_backend_failures(monkeypatch, w
 
     monkeypatch.setattr(geowiz_mcp, "call_tool", installed_client)
     monkeypatch.delenv("GEOWIZ_MCP_URL", raising=False)
-    result = await wrapper(**arguments)
+    result = await geowiz_mcp.bind_backend(wrapper, geowiz_mcp._backend_config(), expected)(**arguments)
     assert len(calls) == 1
     assert calls[0][0] == "http://127.0.0.1:3001/mcp"
     assert calls[0][1] == wrapper.__name__.replace("_geowiz", "")

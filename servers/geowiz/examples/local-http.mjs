@@ -1,5 +1,6 @@
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
+import { createFileModelCredentialResolver, createModelRuntime, parseReferenceModelConfig } from "@shaleyeah/sdk";
 import { GeowizServer } from "../dist/index.js";
 
 // This local example uses owned private files. Remote issuers and other secret/audit adapters are injected through the SDK API.
@@ -42,10 +43,19 @@ try {
 	const config = JSON.parse(await readPrivate(process.env.GEOWIZ_HTTP_CONFIG_FILE, 65_536));
 	const accessToken = (await readPrivate(config.accessTokenFile, 4096)).trim();
 	auditFile = await privateFile(config.auditFile, constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT, 0o600);
-	const { accessTokenFile: _tokenFile, auditFile: _auditFile, dataPath, ...settings } = config;
+	const { accessTokenFile: _tokenFile, auditFile: _auditFile, modelConfigFile, dataPath, ...settings } = config;
+	const modelConfig = modelConfigFile
+		? parseReferenceModelConfig(JSON.parse(await readPrivate(modelConfigFile, 65_536)))
+		: undefined;
+	const modelRuntime = modelConfig
+		? createModelRuntime(modelConfig.synthesis, {
+				resolveCredential: createFileModelCredentialResolver(modelConfig.synthesis.owner),
+			})
+		: undefined;
 	process.env.PORT ??= "3001";
 	server = new GeowizServer({
 		dataPath,
+		modelRuntime,
 		http: {
 			access: {
 				...settings,

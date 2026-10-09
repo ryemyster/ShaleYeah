@@ -122,6 +122,15 @@ Use deterministic grading for hard rules such as tool-call expectations and "do 
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `GEOWIZ_MCP_URL` | `http://127.0.0.1:3001/mcp` | Geowiz-compatible MCP backend URL |
-| `GEOLOGIST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
+| `GEOLOGIST_MODEL_CONFIG_FILE` | None | Private production/judge profile; [setup](../../../docs/model-providers.md) |
 
 The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Geowiz MCP backend is reachable when execution tools are invoked.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](../../../docs/model-providers.md).

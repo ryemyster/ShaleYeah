@@ -2,22 +2,22 @@
 
 ## Role
 
-Tier 1 MCP tool server. Exposes 8 geological analysis tools over the MCP protocol. Has no knowledge of the agent layer — it only handles tool calls.
+Tier 1 MCP tool server. Exposes 9 domain tools and one model-profile discovery tool over the MCP protocol. Has no knowledge of the agent layer — it only handles tool calls.
 
 ## Tool inventory
 
-| Tool | Handler | LLM? | Data input |
-|------|---------|------|-----------|
-| `analyze_formation` | `performFormationAnalysis()` | ✅ `callLLM` | LAS well log |
-| `process_gis` | `processEnhancedGIS()` | ✅ `callLLM` | GeoJSON, Shapefile, KML |
-| `process_well_logs` | `processMultiFormatWellLog()` | ✅ `callLLM` | LAS, DLIS, WITSML |
-| `assess_quality` | `assessDataQuality()` | ✅ `callLLM` | Any data source |
-| `process_access_database` | `processAccessDatabaseData()` | ✅ `callLLM` | Access / MDB files |
-| `process_document` | `processDocumentData()` | ✅ `callLLM` | PDF, Word, text |
-| `process_seismic_data` | `processSeismicAnalysis()` | ✅ `callLLM` | SEG-Y seismic |
-| `process_aries_database` | `processAriesAnalysis()` | ✅ `callLLM` | ARIES production databases |
+There are nine domain operations and one discovery operation. Only formation
+analysis currently uses a model. Other processor outputs still need source and
+format qualification; a successful RPC does not certify their professional quality.
 
-Every tool calls `callLLM()` from `@shaleyeah/sdk` for synthesis. Each falls back to `deriveDefaultFormationProperties()` when the API key is absent or the call fails.
+| Tool | Model use |
+| --- | --- |
+| `analyze_formation` | Injected Gemini/Anthropic structured synthesis |
+| `get_model_profile` | Public binding discovery without secret references |
+| `process_gis`, `process_well_logs`, `process_access_database` | Existing processors; no model call |
+| `process_document`, `process_seismic_data`, `process_aries_database` | Existing processors; no model call |
+| `assess_quality` | Existing fixed metrics; input-derived repair is #671 |
+| `save_finding` | File write; caller needs independent authorization/review |
 
 ## Local tools (src/tools/)
 
@@ -39,33 +39,29 @@ Private to this package — not re-exported, not part of the public API.
 
 ## Data flow
 
-```
-MCP tool call: analyze_formation { filePath, formations }
-  → parseLASFile(filePath)           # local: las-parse.ts
-  → analyzeLASCurve(curves)          # local: curve-qc.ts
-  → callLLM(prompt with extracted data)
-    → Claude: GeologicalAnalysis JSON
-  ↘ fallback: deriveDefaultFormationProperties(formations, depth)
-```
+The ADK employee calls MCP over the installed Python client; it does not import
+server implementation functions. Before model-backed analysis it discovers and
+checks the backend's public effective profile. The HTTP ingress supplies the
+verified customer/employee and scopes. The synthesis boundary checks ownership,
+parses LAS, performs curve checks, and invokes its private native SDK runtime.
+Structured output is validated and returned with provider/model revisions.
+Missing configuration, provider errors and invalid outputs remain failures.
 
-## LLM call locations
+The injected runtime is captured in each server's tool template before the SDK
+factory constructs/registers capabilities. Each analysis gets a fresh bounded
+synthesis budget; no global key or vendor default is consulted. Nonmodel tools
+remain usable without a model key. [Provider setup](../../../docs/model-providers.md)
+explains the contract and limits; [HTTP access](HTTP_ACCESS.md) explains authority.
 
-All in `src/index.ts`. Each handler constructs its own prompt from parsed data and calls `callLLM()` once. The local tool files in `src/tools/` are pure data processors — no LLM calls inside them.
-
-## Exports consumed by agents/geologist/
-
-`agents/geologist/` imports these functions directly (TypeScript, not over MCP) to avoid the transport overhead for in-process calls:
-
-- `performFormationAnalysis()`, `processEnhancedGIS()`, `processMultiFormatWellLog()`
-- `assessDataQuality()`, `processAccessDatabaseData()`, `processDocumentData()`
-- `processSeismicAnalysis()`, `processAriesAnalysis()`
-- `deriveDefaultFormationProperties()` — deterministic fallback, no LLM
+`deriveDefaultFormationProperties` remains a legacy utility export under #671;
+it is no longer a production synthesis fallback. Other parser estimates and
+source placeholders are not qualified by the provider fixture tests.
 
 ## Dependencies
 
 ```
 @shaleyeah/server-geowiz
-  ├── @shaleyeah/sdk      (MCPServer, callLLM, domain types)
+  ├── @shaleyeah/sdk      (MCPServer, configured model runtime, domain types)
   ├── @turf/turf           (GIS spatial operations in gis-processor)
   ├── shapefile            (Shapefile parsing in gis-processor)
   └── xml2js               (KML/WITSML XML parsing)

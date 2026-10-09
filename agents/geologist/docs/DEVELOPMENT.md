@@ -75,7 +75,8 @@ not protect direct callers. Follow [deployment state/review limits](DEPLOYMENT.m
 
 ## Changing model routing
 
-`GEOLOGIST_ADK_MODEL` controls the ADK model for local runs. The default is `gemini-flash-latest`.
+`GEOLOGIST_MODEL_CONFIG_FILE` selects the private trusted profile; there is no default model.
+See [provider configuration](../../../docs/model-providers.md).
 
 ## Lint
 
