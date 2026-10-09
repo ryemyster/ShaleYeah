@@ -195,6 +195,68 @@ test("partial domain output survives without being changed to completed work", a
 	}
 });
 
+test("declared zero and percentage confidence survive the real MCP boundary", async () => {
+	const app = await fixture([
+		ServerFactory.createAnalysisTool(
+			"zero",
+			"Zero confidence control",
+			input,
+			async () => ({ confidence: 0, npv: -42 }),
+			{
+				confidenceScale: "unit_interval",
+			},
+		),
+		ServerFactory.createAnalysisTool("percent", "Percentage control", input, async () => ({ confidence: 80 }), {
+			confidenceScale: "percentage",
+		}),
+	]);
+	try {
+		for (const [name, confidence, scale] of [
+			["zero", 0, "unit_interval"],
+			["percent", 80, "percentage"],
+		] as const) {
+			const result = await app.client.callTool({ name, arguments: { value: "x" } });
+			const parsed = textData(result);
+			assert.equal(result.isError, false);
+			assert.equal(parsed.analysis.confidence, confidence);
+			assert.equal(parsed.metadata.confidence, confidence);
+			assert.equal(parsed.metadata.confidenceScale, scale);
+			assert.equal(parsed.metadata.confidenceStatus, "available");
+			assert.deepEqual(parsed, result.structuredContent);
+			if (name === "zero") assert.equal(parsed.analysis.npv, -42);
+		}
+	} finally {
+		await app.close();
+	}
+});
+
+test("unavailable, invalid and undeclared scores remain distinct after JSON serialization", async () => {
+	const app = await fixture([
+		ServerFactory.createAnalysisTool("missing", "Missing control", input, async () => ({ findings: [] })),
+		ServerFactory.createAnalysisTool("invalid", "Non-finite control", input, async () => ({ confidence: Number.NaN }), {
+			confidenceScale: "percentage",
+		}),
+		ServerFactory.createAnalysisTool("unscaled", "Legacy control", input, async () => ({ confidence: 85 })),
+	]);
+	try {
+		for (const [name, confidence, scale, status] of [
+			["missing", null, null, "unavailable"],
+			["invalid", null, "percentage", "invalid"],
+			["unscaled", 85, null, "unscaled"],
+		] as const) {
+			const result = await app.client.callTool({ name, arguments: { value: "x" } });
+			const parsed = textData(result);
+			assert.equal(parsed.metadata.confidence, confidence);
+			assert.equal(parsed.metadata.confidenceScale, scale);
+			assert.equal(parsed.metadata.confidenceStatus, status);
+			assert.equal(parsed.metadata.approved, undefined);
+			assert.deepEqual(parsed, result.structuredContent);
+		}
+	} finally {
+		await app.close();
+	}
+});
+
 test("declared invalid success output fails and is never promoted as valid structured work", async () => {
 	const app = await fixture([
 		{

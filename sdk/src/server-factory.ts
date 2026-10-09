@@ -6,6 +6,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
+import { type ConfidenceScale, confidenceMetadata, validateConfidenceScale } from "./confidence-metadata.js";
 import { classifyToolError, isToolFailure } from "./errors.js";
 import { MCPServer, type MCPTool } from "./mcp-server.js";
 
@@ -25,6 +26,11 @@ export interface ServerTemplate {
 }
 
 export interface ServerToolTemplate extends MCPTool {}
+
+export interface AnalysisToolOptions {
+	/** Trusted declaration of the handler's score units; never inferred from result prose or magnitude. */
+	confidenceScale?: ConfidenceScale;
+}
 
 export interface ServerResourceTemplate {
 	pattern: string;
@@ -67,7 +73,7 @@ export class ServerFactory {
 	}
 
 	/**
-	 * Create analysis tool with standard confidence scoring
+	 * Create an analysis tool with truthful score availability and optional declared units.
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static createAnalysisTool(
@@ -76,7 +82,10 @@ export class ServerFactory {
 		inputSchema: z.ZodObject<z.ZodRawShape>,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		analyzeFunction: (args: any) => Promise<any>,
+		options: AnalysisToolOptions = {},
 	): ServerToolTemplate {
+		const scale = options.confidenceScale;
+		validateConfidenceScale(scale);
 		return {
 			name,
 			description,
@@ -94,7 +103,7 @@ export class ServerFactory {
 						analysis,
 						metadata: {
 							executionTime,
-							confidence: analysis.confidence || 0.85,
+							...confidenceMetadata(analysis.confidence, scale),
 							timestamp: new Date().toISOString(),
 						},
 					};
