@@ -96,10 +96,12 @@ SIEM integration or protected-action transactionality; #574/#673 own those gates
 
 ## Employee client and qualification
 
-The Geologist's current copied Python wrapper does not yet send MCP credentials.
-#679 adds the shared credential/destination client; then the pair can exercise
-this gate. Employee imports/tests can run now, and the generic-client backend
-test supplies the bounded access evidence. BYO providers, sources, durable
+Geologist uses the installed [Python client](../../../sdk/python/README.md) and
+loads the same private credential file through `GEOWIZ_MCP_ACCESS_TOKEN_FILE`.
+The actual pair's ingress controls and isolated installed-wheel checks pass;
+see [employee testing](../../../agents/geologist/docs/LOCAL_TESTING.md).
+These controls and the generic-client backend test supply bounded connection
+evidence. BYO providers, sources, durable
 context/review and real professional cases remain #669/#670/#671/#672/#673/#674.
 
 Remote verifiers and private policies are operator services, separate from model

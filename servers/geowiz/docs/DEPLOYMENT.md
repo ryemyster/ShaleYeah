@@ -57,8 +57,8 @@ Anthropic credential; #669 implements the reference's BYO provider contract.
 
 ## Use with the employee
 
-The current Geologist Python wrapper needs #679's credential/destination client
-before using this protected endpoint. Its imports/tests work independently;
+Geologist uses the installed [Python MCP client](../../../sdk/python/README.md)
+with the same private credential file as the launcher. Its imports/tests work independently;
 the [generic-client test](HTTP_ACCESS.md#test-the-real-boundary-without-model-keys)
 checks ingress now. Live providers, permitted sources and employee/task behavior
 remain #669/#670/#671/#674; no model key grants tool authority.

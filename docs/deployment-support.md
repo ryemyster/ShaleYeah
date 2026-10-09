@@ -37,8 +37,8 @@ Platform features do not turn an untested SHALE YEAH deployment into a verified 
 
 | Target | Repository status | State and ingress requirements | Evidence required before a support claim |
 | --- | --- | --- | --- |
-| Current checkout, local processes | **Verified, bounded:** locked Geologist install/import, SDK/Geowiz checks, session/schema/identity/scope fixtures and private local HTTP launcher | Test data only; employee sessions remain in memory and current copied client needs #679 credentials; actual IAM/TLS/source/review remain separate | Live employee/tool task, failures, review/restart and professional cases remain unqualified |
-| Extracted local packages | **Planned**, #674 and each role PR | Declared installed dependencies, package-local checks and local durable state; no root source/test-runner lookup | Clean install/run/check outside checkout, independent agent/MCP, compatible external client/tool, exact supported inputs |
+| Current checkout, local processes | **Verified, bounded:** locked Geologist import/checks, installed client, SDK/Geowiz session/schema/access fixtures and actual protected connection | Test data only; employee sessions remain in memory; actual IAM/TLS/source/review remain separate | Live employee/tool task, failures, review/restart and professional cases remain unqualified |
+| Extracted local packages | **Verified, bounded:** client/Geologist wheels install and pass behavior controls outside checkout; full journey planned in #674 and role PRs | Declared installed dependencies; complete tool extraction, durable state and source/review policy still need qualification | Clean complete journey, independent agent/MCP, compatible external client/tool, exact supported inputs |
 | Portable containers | **Planned**, #674 | Separate employee/tool images; external config/secrets; persistent state/artifacts; restricted ingress and authenticated tool entry | Reproducible image build/digests, locked dependencies, mounts/ownership, restart/restore and all reference acceptance cases |
 | VM | **Untested** optional host | Supervised processes/containers, durable disk, TLS/private network, backup/restore | VM recipe and observed install/restart/permissions/resource checks on a named revision |
 | Fly.io | **Untested** optional host | Declared app/image, mounted volume or external state, private connectivity; replication/backup explicit | Actual image/Machine/volume configuration and restart/restore/access tests; no tracked `fly.toml` today |
@@ -60,8 +60,9 @@ a dedicated access credential or verifier and an audit sink. The local example
 binds to loopback with exact host/origin policy. #668 supplies session lifecycle and
 [finite HTTP settings](../sdk/docs/DEPLOYMENT.md#environment-variables);
 #678 supplies the configured ingress boundary. Actual issuer/TLS, source rights,
-protected review and extraction/hosted qualification remain separate. The current
-copied employee client adopts credentials in #679; its offline checks work now.
+protected review and extraction/hosted qualification remain separate. The installed
+[Python client](../sdk/python/README.md) resolves the dedicated credential reference,
+checks results and bounds setup retries without replaying dispatched tools.
 
 1. From the repository root, install locked TypeScript dependencies and build
    the shared SDK, then the tool. Node 22 is the CI baseline; use the repository's
@@ -118,11 +119,12 @@ copied employee client adopts credentials in #679; its offline checks work now.
    model-assisted tools separately use `ANTHROPIC_API_KEY`. A credential-free
    import/health check does not validate either provider.
 
-   After #679 supplies the credential-aware client, from `agents/geologist`
-   with the backend and configured identity/model credentials ready:
+   From `agents/geologist`, use the same private credential file as the backend,
+   with its permitted scopes and the separate model credentials ready:
 
    ```bash
-   GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
+   GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
+  GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
      "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
    ```
 
@@ -146,7 +148,7 @@ copied employee client adopts credentials in #679; its offline checks work now.
 
 | Unit | Actual settings / paths | What must survive deployment |
 | --- | --- | --- |
-| Geologist | `GEOLOGIST_ADK_MODEL` defaults to `gemini-flash-latest`; `GEOWIZ_MCP_URL` defaults to `http://localhost:3001`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #669/#672/#673 |
+| Geologist | `GEOLOGIST_ADK_MODEL` defaults to `gemini-flash-latest`; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #669/#672/#673 |
 | Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; unset PORT selects stdio; model key is separate | #678 supplies ingress; source access, review enforcement, redacted operational audit and actual remote issuer/TLS remain #670/#673/#574/#674 |
 | Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; some tools also write caller `outputPath` | Mount the actual configured working-directory paths, restrict source/output roots and preserve ownership; #670/#678/#674 |
 | Current sessions | Geologist manifest `session_type: in_memory`; no package-configured persistent context/review store | Restart-safe scoped context, approval/revision invalidation and export/delete/restore; #672/#673 |

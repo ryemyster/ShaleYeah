@@ -10,7 +10,7 @@
 | `.agents-cli-spec.md` | reference-pair spec and package boundary |
 | `pyproject.toml` | Python ADK dependencies |
 | `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
-| `app/geowiz_mcp.py` | Python MCP client and Geowiz execution wrappers |
+| `app/geowiz_mcp.py` | Geowiz role mappings/configuration using installed `shaleyeah-mcp-client` |
 | `tests/` | pytest shape/result-boundary tests plus ADK eval dataset/config |
 | `servers/geowiz` | independent TypeScript MCP backend |
 
@@ -46,7 +46,7 @@ app/agent.py
 app/geowiz_mcp.py
        |
        v
-GEOWIZ_MCP_URL, default http://localhost:3001
+GEOWIZ_MCP_URL, default http://127.0.0.1:3001/mcp
        |
        v
 servers/geowiz
@@ -68,7 +68,7 @@ servers/geowiz
 
 ## MCP result boundary
 
-Each call initializes the configured backend, discovers its tools in at most
+The installed [Python MCP client](../../../sdk/python/README.md) initializes the configured backend, discovers its tools in at most
 32 pages, rejects missing/duplicate names or repeated cursors, and validates
 arguments against the selected advertised input schema. Successful structured
 results are validated against any advertised output schema using JSON Schema
@@ -87,11 +87,18 @@ preserves factory envelopes instead of adding the former extra outer `data`.
 An invocation may return partial/draft output; this wrapper does not mark a
 business task completed, approve a finding or promote employee memory.
 
-`test_mcp_result_contract.py` checks these behaviors with fake sessions and an
-incompatible backend for every role hook. It does not prove geological accuracy,
-authenticated access or real ADK review. Shared client installation, connection
-limits/recovery and copied-wrapper replacement are #679; actual reference tool
-schemas/formats and end-to-end qualification remain #671/#674.
+The role's `test_mcp_result_contract.py` checks tool mapping and genuine failure
+passthrough. Shared conformance tests cover schemas, errors and discovery.
+Credentials resolve from a dedicated private file before connection; validated
+destinations exclude URL credentials/query strings, redirects and ambient proxy
+trust. Setup retries are bounded; a dispatched tool is never automatically
+replayed. Cancellation propagates, and later calls use a fresh session.
+`MCPClientError` exposes safe codes/categories and conservative effect uncertainty.
+
+CI checks client/role behavior, wheel isolation and actual protected Geowiz
+interoperability. These do not prove geological accuracy or real ADK review.
+Actual reference tool schemas/formats and the full employee journey remain
+#671/#674; durable review/restart remains #673.
 
 ## Eval Harness
 
@@ -114,7 +121,7 @@ Use deterministic grading for hard rules such as tool-call expectations and "do 
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `GEOWIZ_MCP_URL` | `http://localhost:3001` | Geowiz-compatible MCP backend URL |
+| `GEOWIZ_MCP_URL` | `http://127.0.0.1:3001/mcp` | Geowiz-compatible MCP backend URL |
 | `GEOLOGIST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
 
 The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Geowiz MCP backend is reachable when execution tools are invoked.

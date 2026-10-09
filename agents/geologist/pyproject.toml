@@ -7,8 +7,7 @@ authors = [
 ]
 dependencies = [
   "google-adk[gcp]>=2.0.0,<3.0.0",
-  "mcp>=1.13.0,<2.0.0",
-  "jsonschema>=4.26.0,<5.0.0",
+  "shaleyeah-mcp-client==0.1.0",
 ]
 requires-python = ">=3.11,<3.14"
 
@@ -16,6 +15,7 @@ requires-python = ">=3.11,<3.14"
 dev = [
   "pytest>=9.0.2,<10.0.0",
   "pytest-asyncio>=1.0.0,<2.0.0",
+  "pytest-cov>=7.0.0,<8.0.0",
 ]
 
 [project.optional-dependencies]
@@ -42,6 +42,9 @@ asyncio_default_fixture_loop_scope = "function"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]

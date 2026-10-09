@@ -48,3 +48,15 @@ jobs:
     - run: pnpm turbo build
     - run: pnpm turbo test
     - run: pnpm --dir contracts check:isolation
+    - name: Python MCP client lint and conformance
+      working-directory: sdk/python
+      run: |
+        uv run --locked ruff check .
+        uv run --locked pytest -q --cov=shaleyeah_mcp --cov-fail-under=90
+    - name: Geologist first-consumer checks
+      working-directory: agents/geologist
+      run: uv run --locked pytest -q --cov=app --cov-fail-under=90
+    - name: Installed Python client and Geologist wheel isolation
+      run: bash sdk/python/scripts/check-isolation.sh
+    - name: Actual protected Geowiz interoperability
+      run: uv run --project agents/geologist --locked python sdk/python/scripts/check_geowiz.py

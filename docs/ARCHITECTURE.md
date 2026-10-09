@@ -19,16 +19,19 @@ HTTP. Geowiz processes domain inputs; the agent selects tools and prepares work.
 ```mermaid
 flowchart LR
     Human[Human operator] --> Agent[Geologist: ADK / Python]
-    Agent --> Client[Package-local Python MCP wrapper]
+    Agent --> Client[Installed Python MCP client]
     Client --> Server[Geowiz: MCP / TypeScript]
     Server --> Logic[Domain tools / parsers / configured sources]
 ```
 
-Geologist does not import Geowiz TypeScript source. Its wrapper initializes a
-client session and calls named tools at the configured URL. #668 supplies tested
+Geologist does not import Geowiz TypeScript source. Its thin role adapter calls
+the versioned [Python MCP client](../sdk/python/README.md) at a validated endpoint.
+#679 supplies installed-wheel isolation, dedicated credential references,
+safe typed failures and bounded setup retries without post-dispatch replay.
+#668 supplies tested
 independent HTTP protocol/transport lifecycles. #677 supplies declared-schema,
 structured-result and genuine-failure boundary checks in the SDK/Geologist;
-the shared installed credential/destination client remains #679. #678 requires
+the shared client preserves those result checks. #678 requires
 configured identity/scopes/audit at HTTP entry, including direct external clients
 and session ownership. See [HTTP access migration](../sdk/docs/http-access.md).
 Session IDs are not authority; actual role result schemas/domain qualification
@@ -57,6 +60,7 @@ still uses the SDK's Anthropic-specific client.
 | `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
+| `sdk/python/` | Independently buildable `shaleyeah-mcp-client`; Geologist first consumer | Installed protocol adapter with no ADK/domain/root source imports |
 | `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
 Ten agents have ADK manifests: Geologist, Risk Analyst, Legal Analyst, Market
@@ -122,7 +126,8 @@ Legacy runtime checks do not establish protection on every current ADK-to-MCP
 path: its scopes are optional caller data and approval trusts a boolean. The
 shared MCP HTTP boundary now requires explicit verified identity/scopes/audit;
 source rights, domain-review grants and actual issuer/TLS deployment still need
-their qualification owners. The copied Python clients adopt credentials in #679.
+their qualification owners. Geologist uses the installed credential-aware client;
+the other nine Python roles adopt it through their migration issues.
 
 ## Optional coordination
 

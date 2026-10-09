@@ -28,7 +28,7 @@ fails before listening. Health establishes startup; `/mcp` requires configured
 identity/scopes. SDK tests separately cover sessions, schemas, remote identity
 and concurrent users.
 
-The current copied Geologist client needs #679 before live pair execution. Run
+The installed Geologist client passes protected connection controls. Run
 [employee Python checks](../../../agents/geologist/docs/LOCAL_TESTING.md)
 independently. Actual professional/source/provider behavior remains
 #669/#670/#671/#674. Protected backend review/resume is #673; agent confirmation

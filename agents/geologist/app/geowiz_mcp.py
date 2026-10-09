@@ -1,137 +1,50 @@
 from __future__ import annotations
 
-import json
 import os
+from pathlib import Path
 from typing import Any
 
-GEOWIZ_DEFAULT_URL = "http://localhost:3001"
+from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, MCPClientError, call_tool
+
+GEOWIZ_DEFAULT_URL = "http://127.0.0.1:3001/mcp"
+
+
+async def _missing_credential() -> str:
+    raise MCPClientError("authentication_required", "auth_required")
+
+
+def _backend_config() -> MCPClientConfig:
+    reference = os.getenv("GEOWIZ_MCP_ACCESS_TOKEN_FILE")
+    try:
+        total_timeout = float(os.getenv("GEOWIZ_MCP_TIMEOUT_SECONDS", "30"))
+        request_timeout = float(os.getenv("GEOWIZ_MCP_REQUEST_TIMEOUT_SECONDS", "10"))
+        attempts = int(os.getenv("GEOWIZ_MCP_PREFLIGHT_ATTEMPTS", "2"))
+    except (ValueError, TypeError):
+        raise MCPClientError("invalid_configuration", "user_action") from None
+    return MCPClientConfig(
+        endpoint=os.getenv("GEOWIZ_MCP_URL", GEOWIZ_DEFAULT_URL),
+        credential=FileBearerCredential(Path(reference)) if reference else _missing_credential,
+        allow_loopback_http=True,
+        total_timeout=total_timeout,
+        request_timeout=request_timeout,
+        preflight_attempts=attempts,
+    )
 
 
 def geowiz_backend_url() -> str:
-    """Return the configured Geowiz-compatible MCP backend URL."""
-
-    return os.getenv("GEOWIZ_MCP_URL", GEOWIZ_DEFAULT_URL)
-
-
-def serialize_mcp_content(content: Any) -> list[dict[str, Any]]:
-    """Convert MCP content blocks into JSON-safe dictionaries."""
-
-    serialized: list[dict[str, Any]] = []
-    for item in content or []:
-        if hasattr(item, "model_dump"):
-            serialized.append(item.model_dump(mode="json"))
-        elif isinstance(item, dict):
-            serialized.append(item)
-        else:
-            serialized.append({"type": "unknown", "value": str(item)})
-    return serialized
-
-
-def _validate_schema(value: Any, schema: dict[str, Any], label: str) -> None:
-    from jsonschema import SchemaError, ValidationError
-    from jsonschema.validators import validator_for
-
-    try:
-        validator = validator_for(schema)
-        validator.check_schema(schema)
-        validator(schema).validate(value)
-    except (SchemaError, ValidationError) as exc:
-        raise RuntimeError(f"Invalid MCP {label} for the advertised schema") from exc
-
-
-async def _discover_tool(session: Any, name: str) -> Any:
-    cursor = None
-    selected = None
-    seen_cursors: set[str] = set()
-    for _ in range(32):
-        page = await session.list_tools(**({"cursor": cursor} if cursor else {}))
-        matches = [tool for tool in page.tools if tool.name == name]
-        if len(matches) > 1 or (matches and selected is not None):
-            raise RuntimeError(f"MCP tool discovery is ambiguous: {name}")
-        if matches:
-            selected = matches[0]
-        cursor = getattr(page, "nextCursor", None)
-        if not cursor:
-            if selected is not None:
-                return selected
-            raise RuntimeError(f"MCP tool was not advertised: {name}")
-        if cursor in seen_cursors:
-            raise RuntimeError("MCP tool discovery cursor repeated")
-        seen_cursors.add(cursor)
-    raise RuntimeError("MCP tool discovery exceeded 32 pages")
-
-
-def _legacy_failure(payload: Any, depth: int = 0) -> bool:
-    if not isinstance(payload, dict):
-        return False
-    if depth > 3:
-        raise RuntimeError("Legacy MCP result nesting exceeded supported depth")
-    if payload.get("success") is False:
-        return True
-    if payload.get("error_type") in (
-        "auth_required",
-        "user_action",
-        "retryable",
-        "permanent",
-    ) and isinstance(payload.get("error"), (str, dict)):
-        return True
-    # Only the documented legacy success wrappers are examined, never arbitrary domain fields.
-    if payload.get("success") is True:
-        return any(_legacy_failure(payload.get(key), depth + 1) for key in ("data", "analysis"))
-    return False
-
-
-def _read_result(result: Any, output_schema: dict[str, Any] | None) -> dict[str, Any]:
-    content = serialize_mcp_content(result.content)
-    structured = getattr(result, "structuredContent", None)
-    is_error = bool(getattr(result, "isError", False))
-    json_values = []
-    for block in content:
-        if block.get("type") == "text":
-            try:
-                json_values.append(json.loads(block["text"]))
-            except (ValueError, KeyError, TypeError):
-                pass
-    if structured is not None:
-        if not isinstance(structured, dict):
-            raise RuntimeError("MCP structured result must be an object")
-        if any(value != structured for value in json_values):
-            raise RuntimeError("MCP structured and JSON text results conflict")
-        is_error = is_error or _legacy_failure(structured)
-    else:
-        is_error = is_error or any(_legacy_failure(value) for value in json_values)
-    if not is_error and output_schema is not None:
-        if structured is None:
-            raise RuntimeError("MCP output schema requires structuredContent")
-        _validate_schema(structured, output_schema, "output result")
-    return {"content": content, "structuredContent": structured, "isError": is_error}
+    """Return a validated credential-free destination for execution/status/planning."""
+    return _backend_config().endpoint
 
 
 async def call_geowiz_tool(tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
-    """Call a Geowiz MCP tool over Streamable HTTP."""
-
-    try:
-        from mcp import ClientSession
-        from mcp.client.streamable_http import streamablehttp_client
-    except ImportError as exc:
-        raise RuntimeError(
-            "Python MCP client is required for ADK Geowiz execution. "
-            "Run `agents-cli install` from agents/geologist."
-        ) from exc
-
-    backend_url = geowiz_backend_url()
-    async with streamablehttp_client(backend_url) as (read_stream, write_stream, _):
-        async with ClientSession(read_stream, write_stream) as session:
-            await session.initialize()
-            tool = await _discover_tool(session, tool_name)
-            _validate_schema(arguments, tool.inputSchema, "input arguments")
-            result = await session.call_tool(tool_name, arguments)
-            return {
-                "backendUrl": backend_url,
-                "mcpServer": "geowiz",
-                "toolName": tool_name,
-                **_read_result(result, getattr(tool, "outputSchema", None)),
-            }
+    """Call the installed MCP client; geology mappings and configuration stay here."""
+    config = _backend_config()
+    return {
+        "backendUrl": config.endpoint,
+        "mcpServer": "geowiz",
+        "toolName": tool_name,
+        **await call_tool(config, tool_name, arguments),
+    }
 
 
 async def assess_geowiz_quality(

@@ -44,8 +44,9 @@ and [confidence semantics](../../../sdk/docs/confidence-metadata.md) apply.
 
 ## Employee, source and review boundaries
 
-The Geologist currently calls through `app/geowiz_mcp.py`. #679 replaces that
-copied client with credential/destination handling before protected connection.
+The Geologist's role adapter in `app/geowiz_mcp.py` calls the installed
+[Python MCP client](../../../sdk/python/README.md), with a validated endpoint and
+dedicated credential reference. Actual protected connection controls pass.
 It does not use the retired TypeScript LocalAgentRuntime or a fixed employee port.
 
 Files resolve on the tool host. Source/workspace controls remain #670; advertised
