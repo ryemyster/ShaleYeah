@@ -57,8 +57,10 @@ infer qualification beyond this matrix.
 These steps use a **checkout**, not an extracted package. Use synthetic fixtures
 on a trusted development host. Current Geowiz HTTP startup binds without an
 explicit host restriction and has no authenticated MCP entry; keep it off public
-or shared ingress. #678 implements executing identity/scopes, and #668 fixes
-session isolation. A health response does not prove either property.
+or shared ingress. #668 supplies independent session lifecycle checks and
+[finite HTTP settings](../sdk/docs/DEPLOYMENT.md#environment-variables);
+#678 still implements executing identity/scopes. A health response does not
+prove authenticated access or extraction/hosted qualification.
 
 1. From the repository root, install locked TypeScript dependencies and build
    the shared SDK, then the tool. Node 22 is the CI baseline; use the repository's

@@ -12,6 +12,8 @@ All notable changes to this package.
 
 ### Fixed
 
+- **HTTP MCP session lifecycle** (#668) — replaced the shared stateful transport with independent protocol/transport instances, preserved tool/resource registrations, added bounded idle/request/capacity/body handling and DELETE/expiry/shutdown/restart cleanup. Real multi-client and lifecycle regressions include repeated-listener leak repair. Identity/authentication and result conformance remain #678/#677.
+
 - **Fenced-JSON parser** (#571, CodeQL alert #51) — removed polynomial whitespace
   regexes in `runAgentTask` response parsing, preserved literal fence text in JSON
   values and added raw/fenced/large-response regressions. Updated ContextStore

@@ -3,15 +3,14 @@
  * Standards-compliant MCP server implementation for SHALE YEAH domain experts.
  */
 
-import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import type { z } from "zod";
 import { FileIntegrationManager } from "./file-integration.js";
+import { type MCPHttpOptions, MCPHttpSessions } from "./mcp-http-sessions.js";
 
 export interface MCPServerConfig {
 	name: string;
@@ -23,6 +22,7 @@ export interface MCPServerConfig {
 		expertise: string[];
 	};
 	dataPath?: string;
+	http?: MCPHttpOptions;
 }
 
 export interface MCPTool {
@@ -60,9 +60,12 @@ export interface MCPResource {
  */
 export abstract class MCPServer {
 	protected server: McpServer;
-	protected transport: StdioServerTransport | StreamableHTTPServerTransport;
+	protected transport?: StdioServerTransport;
 	private _httpServer?: http.Server;
+	private _httpSessions?: MCPHttpSessions;
 	private _port?: number;
+	private readonly tools: MCPTool[] = [];
+	private readonly resources: MCPResource[] = [];
 	public config: MCPServerConfig;
 	public dataPath: string;
 	public fileManager: FileIntegrationManager;
@@ -80,9 +83,11 @@ export abstract class MCPServer {
 
 		const portEnv = process.env.PORT;
 		if (portEnv) {
-			this._port = parseInt(portEnv, 10);
-			const httpTransport = new StreamableHTTPServerTransport({ sessionIdGenerator: () => randomUUID() });
-			this.transport = httpTransport;
+			this._port = Number(portEnv);
+			if (!Number.isInteger(this._port) || this._port < 0 || this._port > 65535) {
+				throw new Error("PORT must be an integer between 0 and 65535");
+			}
+			this._httpSessions = new MCPHttpSessions(() => this.createHttpProtocolServer(), config.http);
 			this._httpServer = http.createServer((req, res) => {
 				// Health probe — responds before MCP transport to avoid blocking the caller
 				// while the MCP session handshake is in progress.
@@ -92,16 +97,20 @@ export abstract class MCPServer {
 					res.end(body);
 					return;
 				}
-				httpTransport.handleRequest(req, res).catch((err) => {
-					console.error(`❌ HTTP request error on ${this.config.name}:`, err);
-					res.writeHead(500).end();
-				});
+				void this._httpSessions!.handleRequest(req, res);
 			});
 		} else {
 			this.transport = new StdioServerTransport();
 		}
 
 		this.setupCapabilities();
+	}
+
+	private createHttpProtocolServer(): McpServer {
+		const server = new McpServer({ name: this.config.name, version: this.config.version });
+		for (const tool of this.tools) this.installTool(server, tool);
+		for (const resource of this.resources) this.installResource(server, resource);
+		return server;
 	}
 
 	/** Returns true when the server is running in HTTP mode (PORT env var was set at construction). */
@@ -121,21 +130,31 @@ export abstract class MCPServer {
 		try {
 			await fs.mkdir(this.dataPath, { recursive: true });
 			await this.setupDataDirectories();
-			await this.server.connect(this.transport);
+			if (this.transport) await this.server.connect(this.transport);
 
-			if (this._httpServer && this._port) {
+			if (this._httpServer && this._port !== undefined) {
+				this._httpSessions!.open();
 				await new Promise<void>((resolve, reject) => {
-					this._httpServer!.listen(this._port, () => {
+					const onError = (error: Error) => {
+						this._httpServer!.off("listening", onListen);
+						reject(error);
+					};
+					const onListen = () => {
+						this._httpServer!.off("error", onError);
+						const address = this._httpServer!.address();
+						if (address && typeof address !== "string") this._port = address.port;
 						console.log(`🌐 ${this.config.name} HTTP transport listening on port ${this._port}`);
 						resolve();
-					});
-					this._httpServer!.once("error", reject);
+					};
+					this._httpServer!.once("error", onError);
+					this._httpServer!.listen(this._port, onListen);
 				});
 			}
 
 			this.initialized = true;
 			console.log(`✅ ${this.config.name} v${this.config.version} initialized`);
 		} catch (error) {
+			await this._httpSessions?.close();
 			console.error(`❌ Failed to initialize ${this.config.name}:`, error);
 			throw error;
 		}
@@ -151,7 +170,10 @@ export abstract class MCPServer {
 
 	async stop(): Promise<void> {
 		try {
-			if (this._httpServer) {
+			// Drain protocol streams before closing the listener; otherwise open SSE streams keep close() pending.
+			await this._httpSessions?.close();
+			if (this._httpServer?.listening) {
+				this._httpServer.closeAllConnections();
 				await new Promise<void>((resolve, reject) => {
 					this._httpServer!.close((err) => (err ? reject(err) : resolve()));
 				});
@@ -166,7 +188,13 @@ export abstract class MCPServer {
 	}
 
 	public registerTool(tool: MCPTool): void {
-		this.server.tool(tool.name, tool.description, tool.inputSchema.shape, async (args: any) => {
+		this.installTool(this.server, tool);
+		this._httpSessions?.forEachServer((server) => this.installTool(server, tool));
+		this.tools.push(tool);
+	}
+
+	private installTool(server: McpServer, tool: MCPTool): void {
+		server.tool(tool.name, tool.description, tool.inputSchema.shape, async (args: any) => {
 			try {
 				console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
 				const validatedArgs = tool.inputSchema.parse(args);
@@ -195,7 +223,13 @@ export abstract class MCPServer {
 	}
 
 	public registerResource(resource: MCPResource): void {
-		this.server.resource(resource.name, resource.uri, async (uri: URL) => {
+		this.installResource(this.server, resource);
+		this._httpSessions?.forEachServer((server) => this.installResource(server, resource));
+		this.resources.push(resource);
+	}
+
+	private installResource(server: McpServer, resource: MCPResource): void {
+		server.resource(resource.name, resource.uri, async (uri: URL) => {
 			try {
 				console.log(`📄 ${this.config.persona.name}: ${resource.name}`);
 				const result = await resource.handler(uri);

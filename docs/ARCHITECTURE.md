@@ -25,8 +25,9 @@ flowchart LR
 ```
 
 Geologist does not import Geowiz TypeScript source. Its wrapper initializes a
-client session and calls named tools at the configured URL. Lifecycle/results/
-client consolidation are #668/#677/#679; HTTP access enforcement is #678.
+client session and calls named tools at the configured URL. #668 supplies tested
+independent HTTP protocol/transport lifecycles. Results/client consolidation
+remain #677/#679; HTTP access enforcement is #678. Session IDs are not authority.
 
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional

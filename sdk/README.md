@@ -19,24 +19,35 @@ their supported consumers migrate and public API impact is resolved in #692.
 
 ## Quick start
 
+For a consuming TypeScript package, install an available SDK release (or its
+locally packed artifact) and declare Zod for the example schema. Checkout setup
+uses [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 ```bash
-pnpm add @shaleyeah/sdk
+pnpm add @shaleyeah/sdk zod
 ```
 
 ```typescript
-import { MCPServer, LLMClient, AgentManifest } from "@shaleyeah/sdk";
+import { MCPServer } from "@shaleyeah/sdk";
+import { z } from "zod";
 
 // Build an MCP server
 class MyServer extends MCPServer {
   constructor() {
-    super({ name: "my-server", version: "0.1.0", description: "...", persona: { name: "...", role: "...", expertise: [] } });
-    this.registerTool("my_tool", MyToolSchema, async (args) => { ... });
+    super({ name: "my-server", version: "0.1.0", description: "Echo a message", persona: { name: "Example", role: "example", expertise: [] } });
   }
+  protected setupCapabilities(): void {
+    this.registerTool({
+      name: "echo", description: "Return the supplied message", type: "query",
+      inputSchema: z.object({ message: z.string() }),
+      handler: async ({ message }: { message: string }) => ({ message }),
+    });
+  }
+  protected async setupDataDirectories(): Promise<void> {}
 }
 
-// Call an LLM
-const client = new LLMClient();
-const response = await client.complete([{ role: "user", content: "analyze this well" }]);
+const server = new MyServer();
+await server.initialize();
 ```
 
 ## What's in here
@@ -77,4 +88,14 @@ pnpm type-check  # type-only, no emit
 
 ## Configuration
 
-The `LLMClient` reads `ANTHROPIC_API_KEY` from the environment. No other env vars are required by the sdk itself.
+`LLMClient` reads `ANTHROPIC_API_KEY` for model calls. The echo example and
+transport tests need no model key. `MCPServer` uses stdio by default; setting
+`PORT` selects HTTP. Each HTTP client has its own protocol instance/transport,
+with bounded idle/request time and session capacity. See
+[HTTP configuration and lifecycle](docs/ARCHITECTURE.md#transport-modes-mcpserver)
+and [deployment settings](docs/DEPLOYMENT.md).
+
+Session IDs identify transport state, not employee memory or authenticated
+authority. #678 implements identity/source access checks; #677 implements
+structured result/error conformance. Current HTTP remains a trusted development
+path until those gates qualify it.
