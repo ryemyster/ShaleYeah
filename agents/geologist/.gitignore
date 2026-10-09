@@ -31,6 +31,7 @@ logs/
 
 # Coverage
 coverage/
+.coverage
 
 # Test artifacts
 tests/temp/

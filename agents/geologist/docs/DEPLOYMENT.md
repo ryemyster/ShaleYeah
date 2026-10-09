@@ -1,9 +1,10 @@
 # Running and deploying Geologist
 
-Geowiz HTTP now requires configured identity/scopes and dedicated credentials.
-Use [backend access setup](../../../servers/geowiz/docs/HTTP_ACCESS.md).
-The current copied Python wrapper needs #679's credential/destination integration
-before live connection; package checks remain available independently.
+Geowiz HTTP requires configured identity/scopes and a dedicated credential.
+Follow [backend access setup](../../../servers/geowiz/docs/HTTP_ACCESS.md), then
+point `GEOWIZ_MCP_ACCESS_TOKEN_FILE` at that launcher's private credential file.
+The installed [Python MCP client](../../../sdk/python/README.md) handles the
+connection; model-provider keys cannot substitute for tool authority.
 
 Geologist is a Python ADK employee that calls a separate Geowiz-compatible MCP
 (Model Context Protocol) tool server. Its current mode is **Stand-alone Agent
@@ -32,7 +33,8 @@ With a private development Geowiz at port 3001 and the chosen model credentials
 loaded into the environment:
 
 ```bash
-GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
+  GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
@@ -44,7 +46,9 @@ qualification remains #669/#670/#671/#674.
 
 | Setting | Current value / purpose |
 | --- | --- |
-| `GEOWIZ_MCP_URL` | Defaults to `http://localhost:3001`; use a reachable compatible tool endpoint |
+| `GEOWIZ_MCP_URL` | Defaults to `http://127.0.0.1:3001/mcp`; HTTPS for remote compatible endpoints |
+| `GEOWIZ_MCP_ACCESS_TOKEN_FILE` | Required private dedicated credential reference; the server's policy supplies scopes |
+| Transport limits | `GEOWIZ_MCP_TIMEOUT_SECONDS=30`, `GEOWIZ_MCP_REQUEST_TIMEOUT_SECONDS=10`, `GEOWIZ_MCP_PREFLIGHT_ATTEMPTS=2`; see [client bounds](../../../sdk/python/README.md) |
 | `GEOLOGIST_ADK_MODEL` | Defaults to moving alias `gemini-flash-latest`; accepted runs must record a qualified model/profile version |
 | Gemini credentials | `GOOGLE_API_KEY` or `GEMINI_API_KEY` for the default API path; selected cloud backends need their own identity |
 | Geowiz model credential | `ANTHROPIC_API_KEY` belongs in the separate tool process for its model-assisted tools |

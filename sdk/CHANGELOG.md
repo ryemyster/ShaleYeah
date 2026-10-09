@@ -4,6 +4,10 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+### Added
+
+- **Independent Python MCP client** (#679) — `python/` builds `shaleyeah-mcp-client`, pinned to maintained MCP/HTTP/validation dependencies. Geologist installs it without TypeScript or monorepo-source imports. Configured secret references, schema/result preservation, bounded setup retries and safe typed failures are covered by isolated-wheel and real protected-Geowiz controls; no tool replay, professional acceptance or registry publication is implied.
+
 ### Documentation
 
 - **Migration ownership** (#576) — linked SDK callers, public API compatibility,

@@ -1,9 +1,10 @@
 # Integration — Geologist ADK Agent
 
-Geowiz HTTP now requires configured identity/scopes and dedicated credentials.
-Use [backend access setup](../../../servers/geowiz/docs/HTTP_ACCESS.md).
-The current copied Python wrapper needs #679's credential/destination integration
-before live connection; package checks remain available independently.
+Geowiz HTTP requires configured identity/scopes and a dedicated credential.
+Follow [backend access setup](../../../servers/geowiz/docs/HTTP_ACCESS.md), then
+point `GEOWIZ_MCP_ACCESS_TOKEN_FILE` at that launcher's private credential file.
+The installed [Python MCP client](../../../sdk/python/README.md) handles the
+connection; model-provider keys cannot substitute for tool authority.
 
 Integrate with Geologist through the ADK project in `agents/geologist`.
 
@@ -11,7 +12,8 @@ Integrate with Geologist through the ADK project in `agents/geologist`.
 
 ```bash
 cd agents/geologist
-GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
+  GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
   "Use process_geowiz_gis to analyze acreage.geojson with oil and gas context"
 ```
 

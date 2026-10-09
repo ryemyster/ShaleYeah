@@ -71,18 +71,21 @@ the installable Python client from [#679](https://github.com/ryemyster/ShaleYeah
 and keep typed role tool mappings; remove displaced transport tests with the
 client, carrying useful failure/cancellation cases into replacement tests.
 
-## Ten Python MCP wrappers
+## Python MCP adapters
 
-All ten paths below are imported by their package's `app/agent.py`. Their
-`tests/test_adk_mcp_execution_shape.py` also reads the local wrapper. Current
-wrappers initialize an MCP session per call and serialize content; shared
+All ten paths below are imported by their package's `app/agent.py`. Geologist
+now uses the installed [Python client](../sdk/python/README.md); its thin adapter
+keeps only role configuration, labels and nine tool mappings. Its copied protocol
+and schema/result logic and old transport-text assertions were replaced in #679.
+The other nine packages still read/use their local copies, which initialize
+an MCP session per call and serialize content. Shared
 protocol/session/error/auth/cancel handling belongs in an installable helper.
 Role URL configuration, tool names, typed inputs and human-confirmation mapping
 remain role-local. Consolidation does not erase those responsibilities.
 
 | Current adapter path | Replacement/deletion owner | Expiry |
 | --- | --- | --- |
-| [geologist/app/geowiz_mcp.py](../agents/geologist/app/geowiz_mcp.py) | [#679](https://github.com/ryemyster/ShaleYeah/issues/679), Geologist first consumer | Helper installs independently and Geologist transport/failure/approval cases pass |
+| [geologist/app/geowiz_mcp.py](../agents/geologist/app/geowiz_mcp.py) | #679 replaced protocol plumbing with declared `shaleyeah-mcp-client==0.1.0`; retain useful role mappings | Client/Geologist wheels and actual protected Geowiz connection pass; full source/review journey remains #671/#673/#674 |
 | [risk-analyst/app/risk_analysis_mcp.py](../agents/risk-analyst/app/risk_analysis_mcp.py) | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Role adopts verified helper and deletes copied plumbing |
 | [legal-analyst/app/legal_mcp.py](../agents/legal-analyst/app/legal_mcp.py) | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Same, including human legal authority |
 | [market-analyst/app/market_mcp.py](../agents/market-analyst/app/market_mcp.py) | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Same, including source freshness/assumptions |
@@ -93,7 +96,7 @@ remain role-local. Consolidation does not erase those responsibilities.
 | [infrastructure-planner/app/infrastructure_mcp.py](../agents/infrastructure-planner/app/infrastructure_mcp.py) | [#689](https://github.com/ryemyster/ShaleYeah/issues/689) | Same, including engineering/compliance approval |
 | [investment-chair/app/decision_mcp.py](../agents/investment-chair/app/decision_mcp.py) | [#690](https://github.com/ryemyster/ShaleYeah/issues/690) | Same, including human capital authority |
 
-The ten files total **1,276 lines**, including useful role mappings. Delete
+The #576 inventory baseline counted **1,276 lines** in the ten files, including useful role mappings. Delete
 duplicated protocol machinery after the owning role passes; a thin role adapter
 may keep its filename if it only declares that role's mappings. The PR must
 identify the exact retained and removed behavior. #679 is not a fleet migration.
@@ -208,7 +211,7 @@ the method and reservoir-expert limitations rather than repeat that claim.
 | [scripts/run-tests.sh](../scripts/run-tests.sh) | SDK, all 14 MCPs and four TS employees invoke it through parent-relative package scripts; excludes three named infrastructure/integration/signal test files | Adapter for test commands: #674 proves reference checks outside root; role/utility extraction must bundle/install a runner or use package-local scripts. #691 records excluded tests/qualification limits; no silent success from a missing tests directory |
 | [scripts/add-perf-hints.mjs](../scripts/add-perf-hints.mjs) | One-off updater for old `agents/<role>/src/agent/index.ts`; tracked search found only its own run comment, no package/CI caller | Delete after gate #692 after confirming no supported contributor caller; #498 removes stale command guidance if found. Do not run it against migrated employees |
 | [pnpm-workspace.yaml](../pnpm-workspace.yaml), [pnpm-lock.yaml](../pnpm-lock.yaml), [turbo.json](../turbo.json) | TS tool/SDK/legacy-agent build/test workspace | Keep for TS units; owner PRs remove displaced dependency/agent tasks. `agents/*` glob is not itself an agent npm implementation; package-local guards prevent one reappearing |
-| [.github/workflows/ci.yml](../.github/workflows/ci.yml) | Runs issue-template/SDLC, root Turbo TS checks and contracts isolation | Keep; currently does not discover/run all Python employee checks. #577/#691 close this enforcement gap; local ignored hooks are not shared CI |
+| [.github/workflows/ci.yml](../.github/workflows/ci.yml) | Runs issue-template/SDLC, root Turbo TS checks, contracts isolation and #679 helper/Geologist checks, wheel isolation and actual protected Geowiz control | Keep; other Python employees/runtime job evals are not yet enforced. #577/#691 close that remaining gap; local ignored hooks are not shared CI |
 | [scripts/sdlc.mjs](../scripts/sdlc.mjs), its tests and [scripts/git-hooks/](../scripts/git-hooks/), [docs/sdlc.md](sdlc.md) | Shared sequential branch/PR/merged-check delivery contract | Keep; necessary process, not runtime bloat. Preserve Codex/Antigravity/Claude Code entrypoints |
 | [.github/ISSUE_TEMPLATE/](../.github/ISSUE_TEMPLATE/), [scripts/check-issue-spec-template.mjs](../scripts/check-issue-spec-template.mjs) | Issue form and CI spec checks | Keep; each replacement needs one scoped issue and acceptance evidence |
 | [orchestrator/src/index.ts](../orchestrator/src/index.ts), [orchestrator/package.json](../orchestrator/package.json) | Version-constant stub; unused workspace SDK dependency; no implemented Temporal workflow | #675 charter selects this optional unit; #676 replaces stub, unused workspace dependency and stale #362-only/full-deal assumptions with the bounded ADK/Python pilot. Don't present it as running or require it for employees |

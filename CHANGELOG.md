@@ -11,6 +11,8 @@ Develop-only — not yet released to main.
 
 ### Added
 
+- **Installed Python MCP client** (#679) — added the independent `sdk/python` package, versioned Geologist dependency, dedicated credential references, validated destinations, bounded preflight retries, safe typed failures and cancellation/cleanup without post-dispatch replay. Deleted Geologist's copied protocol/discovery/schema/result plumbing and moved useful cases into shared conformance. Shared CI checks helper coverage, first-consumer behavior, isolated wheels and the actual protected Geowiz connection; professional/source/review and complete reference qualification remain separate.
+
 - **Chief of Staff delegation and authority charter** (#675) — specified distinct coordination/investment-advice/human decision ownership, bounded supervisor state, private/delegated/shared/organization context, three operator journeys and 14 future evaluation cases. Updated ADR 0001 and selected the optional `orchestrator/` unit with ADK/Python as the preferred #676 adapter; runtime, recovery and actual human acceptance remain unqualified.
 
 - **QA employee charter and observed-check handoff** (#538) — specified the QA/data professional's workflow, private context, configurable rules, source/rights limits, defect metrics, future case specifications and exact-revision review. Filed #716 to replace configuration-based PASS, estimated coverage and template assessments before #542; the dependency ledger now contains 51 outcomes. No runtime checks or professional acceptance are claimed by this research delivery.

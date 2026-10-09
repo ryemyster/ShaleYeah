@@ -54,10 +54,11 @@ Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) for build/state and qualification ste
 
 ## I want to run the geologist agent against this server
 
-The current Geologist Python wrapper needs #679's credential/destination client
-before connecting to the protected `/mcp` endpoint. Run the no-key external-client
-boundary test from [HTTP access setup](docs/HTTP_ACCESS.md) now; employee package
-checks remain available independently. The live pair is qualified in #674.
+Geologist uses the installed [Python MCP client](../../sdk/python/README.md)
+with the launcher's dedicated private credential file. No-key controls prove
+the protected connection and rejected anonymous/ungranted calls. Follow
+[HTTP access setup](docs/HTTP_ACCESS.md); full source, review and employee
+performance qualification remains #674 and its dependencies.
 
 → See [`agents/geologist/README.md`](../../agents/geologist/README.md) for the full agent quick start.
 

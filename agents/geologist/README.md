@@ -28,23 +28,25 @@ At runtime:
 
 **ADK path — MCP-backed tools**
 
-Geowiz now requires configured MCP access credentials and scopes. The current
-copied Python wrapper needs #679's shared-client integration before a live tool
-task. Package imports/tests remain available; [backend HTTP access setup and its
-generic-client test](../../servers/geowiz/docs/HTTP_ACCESS.md) verify ingress now.
-The command below is for the pair after that client integration is ready.
+Geowiz requires configured MCP access credentials and scopes. Follow its
+[private access setup](../../servers/geowiz/docs/HTTP_ACCESS.md), then use the
+same credential file in the employee. The installed
+[Python MCP client](../../sdk/python/README.md) handles the connection.
+Model credentials are separate; the default local policy permits only
+`assess_quality` and does not authorize saves or certify its fixed quality metrics.
 
 ```bash
 cd agents/geologist
 uv sync --frozen --extra eval
-GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
+  GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
 Start Geowiz and load the chosen model credentials before this live command;
 follow the [ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally).
 The fixture path resolves on the Geowiz host. This path uses `app/agent.py` and
-the Python MCP client in `app/geowiz_mcp.py`; it remains subject to provider,
+the role adapter in `app/geowiz_mcp.py` and its installed MCP client; it remains subject to provider,
 source and composition qualification.
 
 Start Geowiz separately through its [configured local HTTP launcher](../../servers/geowiz/docs/HTTP_ACCESS.md).
@@ -99,7 +101,11 @@ The agent may analyze geological data, assess data quality, process files, and s
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
 | `GEOLOGIST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
-| `GEOWIZ_MCP_URL` | No | `http://localhost:3001` | geowiz Tier 1 server URL |
+| `GEOWIZ_MCP_URL` | No | `http://127.0.0.1:3001/mcp` | Validated Geowiz-compatible MCP endpoint |
+| `GEOWIZ_MCP_ACCESS_TOKEN_FILE` | For HTTP tools | None | Owned private file with the launcher's dedicated MCP credential |
+| `GEOWIZ_MCP_TIMEOUT_SECONDS` | No | `30` | Total call deadline, at most 120 seconds |
+| `GEOWIZ_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | HTTP request deadline, at most 120 seconds |
+| `GEOWIZ_MCP_PREFLIGHT_ATTEMPTS` | No | `2` | 1–3 setup attempts; tool actions are never automatically replayed |
 
 ---
 
@@ -116,10 +122,10 @@ Run these from `agents/geologist`.
 | Run a live local task | Follow [the ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally) with backend and provider configured |
 | Run configured live evals | `agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json --config tests/eval/eval_config.yaml` |
 
-Pytest includes project/eval shape checks and deterministic fake-session tests
-for discovered schemas, structured-only results, input/output rejection, legacy
-errors, bounded discovery and missing role capabilities. They are not employee
-performance scores. Live evals need the tool/model and selected grader prerequisites; see
+Pytest includes project/eval shape, role mapping/failure and credential controls.
+Shared discovery/schema/result, retry/cancel and error checks live in the
+[client package](../../sdk/python/README.md). CI also checks installed wheels and
+the actual protected Geowiz connection. These are not employee performance scores. Live evals need the tool/model and selected grader prerequisites; see
 [LOCAL_TESTING.md](docs/LOCAL_TESTING.md#run-adk-evals) for inputs, artifacts and
 limits. A passing mock, import or healthy port does not qualify geological work
 or backend approval enforcement.
@@ -131,13 +137,13 @@ or backend approval enforcement.
 | Path | Purpose |
 |------|---------|
 | [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Geowiz backend-selection tools |
-| [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Python MCP client and ADK-side execution tools for every current Geowiz tool |
+| [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Role configuration and ADK execution mappings using the installed MCP client |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
 | [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
 | [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Geowiz MCP execution |
 | [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
-| [`tests/test_mcp_result_contract.py`](tests/test_mcp_result_contract.py) | Schema/result/failure and incompatible-backend controls without a model key |
+| [`tests/test_mcp_result_contract.py`](tests/test_mcp_result_contract.py) | Role mapping and failure passthrough controls without a model key |
 
 ---
 

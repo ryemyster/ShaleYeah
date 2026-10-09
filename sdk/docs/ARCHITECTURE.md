@@ -139,7 +139,9 @@ qualified fleet clients: owners in the [migration ledger](../../docs/legacy-migr
 must adopt validation/status handling before release. The Geologist wrapper
 validates the selected tool, preserves structured evidence, rejects conflicting
 JSON text and retains a documented text-only legacy path when no output schema
-is advertised. #679 replaces copied transports with an installable client.
+is advertised. It now delegates those checks and configured credential/session
+handling to the installed [Python client](../python/README.md); the other role
+owners remove their copies when adopting it.
 
 `tests/mcp-tool-contract.test.ts` uses real HTTP MCP clients and the factory to
 check schemas, strict input, discovery metadata, typed/raw success, partial

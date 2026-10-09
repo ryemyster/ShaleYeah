@@ -12,6 +12,8 @@
 
 ### Changed
 
+- **Installed MCP client** (#679) — declared `shaleyeah-mcp-client==0.1.0`, replaced private session/discovery/schema/result logic with a thin role adapter, added dedicated private credential references and validated `/mcp` destinations/limits. Kept nine mappings, model/instructions and ADK confirmation. Moved protocol tests into the helper; role/failure, credential and isolated-wheel controls plus actual protected Geowiz interoperability pass. Backend source/review/professional qualification remains separate.
+
 - **MCP schema and result boundary** (#677) — added bounded discovery/input/output validation, retained structured-only evidence and native errors, rejected conflicting representations and incompatible role capabilities, and recognized legacy success-masked failures. Declared JSON Schema as a direct dependency; added real behavioral fake-session controls. Existing ADK confirmation/role deferral remains; live domain, shared-client and access qualification remain separate.
 
 - **Contributor commands** (#498) — frozen setup and shape checks, fixture paths, explicit eval dataset/config and artifact/prerequisite guidance, tests-first tool workflow and optional lint extra. Removed inline fake-key config and generic eval defaults; no runtime or metric behavior changed.

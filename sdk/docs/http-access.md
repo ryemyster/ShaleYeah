@@ -133,8 +133,9 @@ enforcement remain #673. Connector/file/source rights remain #670.
 
 Ingress scopes do not approve interpretations, certify sources, grant source
 export rights or authorize consequential domain actions. Each protected backend
-still needs its operation-specific review policy. The reference employee client
-adopts credential/destination handling in #679; role/reference qualification is
+still needs its operation-specific review policy. The reference employee uses the
+installed [Python MCP client](../python/README.md) for credential/destination
+handling; role/reference qualification is
 #671/#674 and fleet release qualification remains #691/#693.
 
 ## Verification

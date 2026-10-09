@@ -304,7 +304,10 @@ Small shared business contracts define:
 Contract artifacts/bindings do not import ADK, provider, protocol, storage or cloud
 SDKs. Parsers and adapter helpers may be installed, versioned packages with
 explicit dependencies; they must not become hidden runtime coupling. The
-[ADR dependency matrix](adr/0001-durable-employee-contracts.md#package-dependency-direction)
+current [Python MCP helper](../sdk/python/README.md) is installed by Geologist
+through a declared dependency. It has no ADK/domain or root source import;
+role mappings remain employee-local. Other role migrations replace their copies.
+The [ADR dependency matrix](adr/0001-durable-employee-contracts.md#package-dependency-direction)
 defines permitted directions and extraction requirements.
 
 Domain schemas, adapters, protocol profiles and evaluation configuration have

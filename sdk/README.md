@@ -110,3 +110,12 @@ null with an explicit status. Existing four-argument factory calls retain raw
 numbers with an undeclared scale; an optional fifth argument declares validated
 units. Consumers must check status/scale before using a score. See
 [confidence metadata and role compatibility](docs/confidence-metadata.md).
+
+## Python employee transport
+
+[python/](python/README.md) builds the separate `shaleyeah-mcp-client` wheel.
+It provides configured Streamable HTTP, credential references, schema/results,
+safe typed failures and bounded setup retries without repeating dispatched tools.
+It does not import ADK, domain logic or this TypeScript SDK. Geologist is the first
+declared consumer; remaining role owners adopt it and delete their copied clients.
+See its package-local checks, wheel-isolation and actual-Geowiz controls.
