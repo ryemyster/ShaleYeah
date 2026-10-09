@@ -2775,6 +2775,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "google-adk", extra = ["gcp"] },
+    { name = "jsonschema" },
     { name = "mcp" },
 ]
 
@@ -2797,6 +2798,7 @@ dev = [
 requires-dist = [
     { name = "google-adk", extras = ["eval"], marker = "extra == 'eval'", specifier = ">=2.0.0,<3.0.0" },
     { name = "google-adk", extras = ["gcp"], specifier = ">=2.0.0,<3.0.0" },
+    { name = "jsonschema", specifier = ">=4.26.0,<5.0.0" },
     { name = "mcp", specifier = ">=1.13.0,<2.0.0" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.4.6,<1.0.0" },
     { name = "ty", marker = "extra == 'lint'", specifier = ">=0.0.1a0" },

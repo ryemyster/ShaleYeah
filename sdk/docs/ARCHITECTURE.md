@@ -101,9 +101,51 @@ bad/interrupted input, late registrations and repeated stop/start. Existing
 constructor selection tests remain. These checks qualify lifecycle, not HTTP
 authentication, tool-result schemas, professional data quality or extraction.
 
+## Tool contracts and result compatibility
+
+`MCPTool` and `ServerToolTemplate` share one definition. Factory registration
+preserves the full Zod input object, optional success `outputSchema`, title,
+annotations and `_meta`. The pinned SDK advertises and validates those schemas;
+strict-object constraints are retained. Annotations are untrusted behavior
+hints and do not grant identity, source access or approval.
+
+| Handler result | MCP representation |
+| --- | --- |
+| Declared success output schema | Raw handler object in `structuredContent` and matching JSON text; the advertised schema validates that object |
+| Existing `success: true/false` or recognized `error_type`/`error` record | Preserve its envelope instead of wrapping it in another success; failures set `isError: true` |
+| Raw output without an output schema | Retain the existing `success`/`data`/metadata envelope, plus matching `structuredContent` |
+| Thrown tool failure | JSON error details and `isError: true`; native retry classification is retained |
+| Failure for a tool declaring a success schema | JSON error text and `isError: true`, with no success `structuredContent`; the pinned generic client otherwise validates the error against the success schema |
+
+The compatibility text is generated from the same serialized object as structured
+success. Analysis/file factories pass supported returned failures through before
+adding analysis/data metadata. A `partial` domain status remains partial; MCP
+invocation completion is not completed or accepted employee work.
+
+Migration: factory analysis/file outcomes previously appeared beneath an extra
+outer `data`. Read their preserved `analysis`/`data` and metadata directly now.
+The four remaining TypeScript clients and nine other Python wrappers read the
+retained `content` blocks without assuming that nesting in source. They are not
+qualified fleet clients: owners in the [migration ledger](../../docs/legacy-migration-ledger.md)
+must adopt validation/status handling before release. The Geologist wrapper
+validates the selected tool, preserves structured evidence, rejects conflicting
+JSON text and retains a documented text-only legacy path when no output schema
+is advertised. #679 replaces copied transports with an installable client.
+
+`tests/mcp-tool-contract.test.ts` uses real HTTP MCP clients and the factory to
+check schemas, strict input, discovery metadata, typed/raw success, partial
+output, thrown/returned/XOR errors and file helper outcomes. Synthetic output
+schemas prove boundary support, not the accuracy or completeness of every
+Geowiz domain schema; #671/#674 qualify the actual reference tools and employee.
+
 ## Error classification
 
-`errors.ts` exports `RetryableToolError` and `PermanentToolError`. Servers throw these to signal whether a caller should retry:
+`errors.ts` exports `RetryableToolError`, `PermanentToolError`,
+`classifyToolError` and `isToolFailure`. Native error classes take precedence over
+the retained legacy message classifier; factories and direct registrations use
+the same classification. Supported failure records use `success: false` or a
+known `error_type` with an error payload. These labels inform recovery; they do
+not establish permission or idempotency for retries:
 
 ```typescript
 throw new RetryableToolError("LLM timeout");   // agent sees error_type: "retryable"

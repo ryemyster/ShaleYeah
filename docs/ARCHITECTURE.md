@@ -26,8 +26,11 @@ flowchart LR
 
 Geologist does not import Geowiz TypeScript source. Its wrapper initializes a
 client session and calls named tools at the configured URL. #668 supplies tested
-independent HTTP protocol/transport lifecycles. Results/client consolidation
-remain #677/#679; HTTP access enforcement is #678. Session IDs are not authority.
+independent HTTP protocol/transport lifecycles. #677 supplies declared-schema,
+structured-result and genuine-failure boundary checks in the SDK/Geologist;
+the shared installed client remains #679 and HTTP access enforcement is #678.
+Session IDs are not authority; actual role result schemas/domain qualification
+remain owned by #671/#674 and their role peers.
 
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional

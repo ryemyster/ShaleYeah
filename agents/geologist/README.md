@@ -109,14 +109,16 @@ Run these from `agents/geologist`.
 | Task | Command |
 |------|---------|
 | Install dependencies | `uv sync --frozen --extra eval` |
-| Test package/tool/eval shape | `uv run --frozen pytest -q` |
+| Test project shape and MCP result boundaries | `uv run --frozen pytest -q` |
 | Syntax check | `uv run --frozen python -m py_compile app/agent.py app/geowiz_mcp.py` |
 | Inspect ADK project | `agents-cli info` |
 | Run a live local task | Follow [the ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally) with backend and provider configured |
 | Run configured live evals | `agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json --config tests/eval/eval_config.yaml` |
 
-The eleven current pytest checks are shape checks, not employee performance
-scores. Live evals need the tool/model and selected grader prerequisites; see
+Pytest includes project/eval shape checks and deterministic fake-session tests
+for discovered schemas, structured-only results, input/output rejection, legacy
+errors, bounded discovery and missing role capabilities. They are not employee
+performance scores. Live evals need the tool/model and selected grader prerequisites; see
 [LOCAL_TESTING.md](docs/LOCAL_TESTING.md#run-adk-evals) for inputs, artifacts and
 limits. A passing mock, import or healthy port does not qualify geological work
 or backend approval enforcement.
@@ -134,6 +136,7 @@ or backend approval enforcement.
 | [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
 | [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Geowiz MCP execution |
 | [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
+| [`tests/test_mcp_result_contract.py`](tests/test_mcp_result_contract.py) | Schema/result/failure and incompatible-backend controls without a model key |
 
 ---
 

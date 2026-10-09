@@ -8,7 +8,9 @@ import http from "node:http";
 import path from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import type { z } from "zod";
+import { classifyToolError, isToolFailure } from "./errors.js";
 import { FileIntegrationManager } from "./file-integration.js";
 import { type MCPHttpOptions, MCPHttpSessions } from "./mcp-http-sessions.js";
 
@@ -28,7 +30,12 @@ export interface MCPServerConfig {
 export interface MCPTool {
 	name: string;
 	description: string;
+	title?: string;
 	inputSchema: z.ZodObject<z.ZodRawShape>;
+	/** Describes the successful handler result, before any legacy compatibility wrapping. */
+	outputSchema?: z.ZodObject<z.ZodRawShape>;
+	annotations?: ToolAnnotations;
+	_meta?: Record<string, unknown>;
 	handler: (args: any) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
@@ -194,32 +201,45 @@ export abstract class MCPServer {
 	}
 
 	private installTool(server: McpServer, tool: MCPTool): void {
-		server.tool(tool.name, tool.description, tool.inputSchema.shape, async (args: any) => {
-			try {
-				console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
-				const validatedArgs = tool.inputSchema.parse(args);
-				const result = await tool.handler(validatedArgs);
-				console.log(`✅ ${tool.name} completed`);
-				return {
-					content: [
-						{
-							type: "text" as const,
-							text: JSON.stringify(this.formatResult(result), null, 2),
-						},
-					],
-				};
-			} catch (error) {
-				console.error(`❌ ${tool.name} failed:`, error);
-				return {
-					content: [
-						{
-							type: "text" as const,
-							text: JSON.stringify(this.formatError(tool.name, error), null, 2),
-						},
-					],
-				};
-			}
-		});
+		server.registerTool(
+			tool.name,
+			{
+				title: tool.title,
+				description: tool.description,
+				inputSchema: tool.inputSchema,
+				outputSchema: tool.outputSchema,
+				annotations: tool.annotations,
+				_meta: tool._meta,
+			},
+			async (args: any) => {
+				try {
+					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
+					const validatedArgs = tool.inputSchema.parse(args);
+					const result = await tool.handler(validatedArgs);
+					console.log(`✅ ${tool.name} completed`);
+					const hasOutcome = result !== null && typeof result === "object" && typeof result.success === "boolean";
+					const failed = isToolFailure(result);
+					const payload =
+						tool.outputSchema || hasOutcome || failed ? result : this.formatResult(result, tool.detailLevel);
+					return this.toolResult(payload, failed, Boolean(tool.outputSchema));
+				} catch (error) {
+					console.error(`❌ ${tool.name} failed:`, error);
+					return this.toolResult(this.formatError(tool.name, error), true, Boolean(tool.outputSchema));
+				}
+			},
+		);
+	}
+
+	private toolResult(payload: unknown, isError: boolean, hasOutputSchema: boolean): CallToolResult {
+		if (payload === null || typeof payload !== "object" || Array.isArray(payload)) {
+			throw new Error("Structured MCP tool output must be a JSON object");
+		}
+		// One serialized value prevents a compatibility client from seeing different evidence.
+		const text = JSON.stringify(payload);
+		// The pinned generic client validates any structuredContent against the success schema, including failures.
+		if (isError && hasOutputSchema) return { content: [{ type: "text", text }], isError };
+		const structuredContent = JSON.parse(text) as Record<string, unknown>;
+		return { content: [{ type: "text", text }], structuredContent, isError };
 	}
 
 	public registerResource(resource: MCPResource): void {
@@ -278,24 +298,12 @@ export abstract class MCPServer {
 			error: {
 				operation,
 				message,
-				error_type: this.classifyErrorType(message),
+				error_type: classifyToolError(error),
 				server: this.config.name,
 				persona: this.config.persona.name,
 				timestamp: new Date().toISOString(),
 			},
 		};
-	}
-
-	/**
-	 * Basic error type classification for MCP server responses.
-	 * The kernel's ResilienceMiddleware provides more detailed classification.
-	 */
-	private classifyErrorType(message: string): string {
-		if (/unauthorized|forbidden|api.?key|401|403/i.test(message)) return "auth_required";
-		if (/file.?not.?found|missing.?data|ENOENT/i.test(message)) return "user_action";
-		if (/timeout|rate.?limit|ECONNREFUSED|429|503/i.test(message)) return "retryable";
-		if (/invalid|validation|schema|zod/i.test(message)) return "permanent";
-		return "retryable";
 	}
 
 	protected async saveResult(filename: string, data: any): Promise<string> {
