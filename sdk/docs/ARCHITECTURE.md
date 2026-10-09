@@ -22,6 +22,7 @@ sdk/src/
 │                          RiskProfileSchema, DecisionSchema, WellAnalysisContextSchema
 ├── mcp-server.ts          MCPServer base class — all servers extend this
 ├── mcp-http-sessions.ts   Internal per-client protocol/transport lifecycle
+├── mcp-http-access.ts     Internal verified HTTP identity/scopes/audit/context boundary
 ├── server-factory.ts      ServerFactory — bootstraps an MCPServer from config
 ├── confidence-metadata.ts Internal score availability/range/declared-scale validation
 ├── llm-client.ts          callLLM() — sole source of truth for all LLM calls
@@ -53,7 +54,7 @@ Context ownership, reviewed sharing, compaction and invalidation follow
 [ADR 0002](../../contracts/docs/0002-context-lifecycle.md). The existing map and
 stored synthesized output do not enforce those policies.
 [ADR 0003](../../contracts/docs/0003-authority-and-review.md) specifies trusted
-authority; #672/#678/#673 implement durable context and authenticated entry/review.
+authority; #678 supplies configured HTTP ingress, while #672/#673 implement durable context and authenticated review.
 Storage and retrieval adapters remain
 optional, selected through measured role qualification.
 
@@ -61,13 +62,17 @@ TypeScript LLM calls flow through `callLLM()` from `llm-client.ts` — SDK consu
 
 ## Transport modes (MCPServer)
 
-`MCPServer` auto-detects transport at startup:
+`MCPServer` selects transport at startup:
 
 - **stdio** (default): when `process.env.PORT` is not set
-- **HTTP**: when `process.env.PORT` is set → one `StreamableHTTPServerTransport`
+- **HTTP**: when `process.env.PORT` is set, with explicit `http.access` → one `StreamableHTTPServerTransport`
   and `McpServer` protocol instance per initialized session
 
-Zero per-server code change required — all 14 Tier 1 servers use this auto-detection.
+All 14 Tier 1 servers inherit this boundary. Their HTTP launchers must supply
+identity/scopes/audit configuration; setting a port alone fails before listening.
+Factory constructors accept optional runtime HTTP/data-path settings. See
+[configured access and verified handler context](http-access.md) and the
+[Geowiz local launcher](../../servers/geowiz/docs/HTTP_ACCESS.md).
 
 The reference profile stays MCP SDK 1.29.0 / protocol 2025-11-25. A fresh valid
 initialization gets a cryptographic session ID; later requests route only to
@@ -79,7 +84,7 @@ DELETE and initialize again after 404. This follows the
 Registered tool/resource definitions are installed on each protocol instance;
 later registrations reach existing and new sessions. Owning tool handlers/data
 remain shared server responsibilities. Sessions do not provide customer/source
-authorization or persistent employee context; #678 and #672 own those boundaries.
+source rights or persistent employee context; #670 and #672 own those boundaries.
 
 `MCPServerConfig.http` accepts `sessionIdleTimeoutMs`, `requestTimeoutMs` and
 `maxSessions`. Explicit values override corresponding environment settings;
@@ -101,6 +106,9 @@ responses/resources, DELETE/reconnect, expiry/capacity, body/response deadlines,
 bad/interrupted input, late registrations and repeated stop/start. Existing
 constructor selection tests remain. These checks qualify lifecycle, not HTTP
 authentication, tool-result schemas, professional data quality or extraction.
+The additional access suite authenticates requests before dispatch, binds
+sessions to verified ownership, tests per-tool/resource scopes and redacted
+pre-dispatch audit, and preserves session/schema controls under explicit policy.
 
 ## Tool contracts and result compatibility
 

@@ -12,6 +12,8 @@ All notable changes to this package.
 
 ### Fixed
 
+- **Configured MCP HTTP authority** (#678) — deleted anonymous/all-interface entry, required explicit local/remote identity and exact host/origin policy, checked per-request issuer/audience/expiry/ownership and per-operation scopes, bound sessions to principals and required redacted audit before dispatch. Added credential-free immutable handler context and injectable factory runtime settings. STDIO remains a process boundary; real IAM/TLS, source rights and protected domain grants remain separate qualification work.
+
 - **Truthful analysis confidence metadata** (#710) — deleted the invented `0.85` fallback, preserved zero and declared positive scores, distinguished unavailable/invalid/unscaled values, and added optional trusted scale configuration without numerical conversion. Existing four-argument callers retain raw supported numbers; consumers must handle null/status/scale. Documented all 47 calls across 14 MCPs and their remaining role qualification owners; calculations and genuine failures are retained.
 
 - **MCP tool schemas and genuine failures** (#677) — preserved full input/output schemas and discovery metadata through factory registration, emitted matching structured success/JSON text, removed the extra success-masking wrapper, preserved typed errors and recognized existing XOR/file/analysis failure records. Declared-success-schema failures retain JSON error text with `isError` for pinned generic-client compatibility. Existing raw-result compatibility and partial statuses remain; role schema/domain and access qualification are separate.

@@ -12,7 +12,16 @@ import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/
 import type { z } from "zod";
 import { classifyToolError, isToolFailure } from "./errors.js";
 import { FileIntegrationManager } from "./file-integration.js";
+import { type MCPExecutionContext, MCPHttpAccess } from "./mcp-http-access.js";
 import { type MCPHttpOptions, MCPHttpSessions } from "./mcp-http-sessions.js";
+
+export type {
+	MCPExecutionContext,
+	MCPHttpAccessConfig,
+	MCPHttpSecurityEvent,
+	MCPPrincipal,
+	VerifiedMCPIdentity,
+} from "./mcp-http-access.js";
 
 export interface MCPServerConfig {
 	name: string;
@@ -36,7 +45,7 @@ export interface MCPTool {
 	outputSchema?: z.ZodObject<z.ZodRawShape>;
 	annotations?: ToolAnnotations;
 	_meta?: Record<string, unknown>;
-	handler: (args: any) => Promise<any>;
+	handler: (args: any, context?: MCPExecutionContext) => Promise<any>;
 	/** Tool classification: query (read-only), command (side effects), discovery (meta) */
 	type?: "query" | "command" | "discovery";
 	/** Supported response detail levels */
@@ -59,7 +68,7 @@ export interface MCPResource {
 	uri: string;
 	description: string;
 	mimeType?: string;
-	handler: (uri: URL) => Promise<any>;
+	handler: (uri: URL, context?: MCPExecutionContext) => Promise<any>;
 }
 
 /**
@@ -70,6 +79,7 @@ export abstract class MCPServer {
 	protected transport?: StdioServerTransport;
 	private _httpServer?: http.Server;
 	private _httpSessions?: MCPHttpSessions;
+	private _httpAccess?: MCPHttpAccess;
 	private _port?: number;
 	private readonly tools: MCPTool[] = [];
 	private readonly resources: MCPResource[] = [];
@@ -79,7 +89,8 @@ export abstract class MCPServer {
 	protected initialized = false;
 
 	constructor(config: MCPServerConfig) {
-		this.config = config;
+		// Credential/verifier configuration stays inside the executing access adapter, not the public server view.
+		this.config = { ...config, http: config.http ? { ...config.http, access: undefined } : undefined };
 		this.dataPath = config.dataPath || path.join("./data", config.name.toLowerCase());
 		this.fileManager = new FileIntegrationManager();
 
@@ -94,16 +105,9 @@ export abstract class MCPServer {
 			if (!Number.isInteger(this._port) || this._port < 0 || this._port > 65535) {
 				throw new Error("PORT must be an integer between 0 and 65535");
 			}
-			this._httpSessions = new MCPHttpSessions(() => this.createHttpProtocolServer(), config.http);
+			this._httpAccess = new MCPHttpAccess(config.http?.access, { name: config.name, version: config.version });
+			this._httpSessions = new MCPHttpSessions(() => this.createHttpProtocolServer(), config.http, this._httpAccess);
 			this._httpServer = http.createServer((req, res) => {
-				// Health probe — responds before MCP transport to avoid blocking the caller
-				// while the MCP session handshake is in progress.
-				if (req.method === "GET" && req.url === "/health") {
-					const body = JSON.stringify({ status: "ok", server: this.config.name, version: this.config.version });
-					res.writeHead(200, { "Content-Type": "application/json" });
-					res.end(body);
-					return;
-				}
 				void this._httpSessions!.handleRequest(req, res);
 			});
 		} else {
@@ -154,7 +158,7 @@ export abstract class MCPServer {
 						resolve();
 					};
 					this._httpServer!.once("error", onError);
-					this._httpServer!.listen(this._port, onListen);
+					this._httpServer!.listen(this._port, this._httpAccess!.bindHost, onListen);
 				});
 			}
 
@@ -213,9 +217,11 @@ export abstract class MCPServer {
 			},
 			async (args: any) => {
 				try {
+					const context = this._httpAccess?.currentContext();
+					if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
 					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
 					const validatedArgs = tool.inputSchema.parse(args);
-					const result = await tool.handler(validatedArgs);
+					const result = await tool.handler(validatedArgs, context);
 					console.log(`✅ ${tool.name} completed`);
 					const hasOutcome = result !== null && typeof result === "object" && typeof result.success === "boolean";
 					const failed = isToolFailure(result);
@@ -251,8 +257,10 @@ export abstract class MCPServer {
 	private installResource(server: McpServer, resource: MCPResource): void {
 		server.resource(resource.name, resource.uri, async (uri: URL) => {
 			try {
+				const context = this._httpAccess?.currentContext();
+				if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
 				console.log(`📄 ${this.config.persona.name}: ${resource.name}`);
-				const result = await resource.handler(uri);
+				const result = await resource.handler(uri, context);
 				return {
 					contents: [
 						{

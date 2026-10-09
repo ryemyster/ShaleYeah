@@ -11,6 +11,7 @@
  */
 
 import assert from "node:assert";
+import { randomUUID } from "node:crypto";
 import { MCPServer, type MCPServerConfig } from "@shaleyeah/sdk";
 
 let passed = 0;
@@ -41,6 +42,22 @@ const baseConfig: MCPServerConfig = {
 	version: "0.0.1",
 	description: "Transport selection test server",
 	persona: { name: "Tester", role: "test", expertise: [] },
+	http: {
+		access: {
+			mode: "local",
+			accessToken: randomUUID(),
+			allowedHosts: ["127.0.0.1"],
+			principal: { subjectId: "fixture", customerId: "fixture", employeeId: "fixture", scopes: ["fixture:connect"] },
+			policy: {
+				id: "selection-fixture",
+				version: "r1",
+				connectionScopes: ["fixture:connect"],
+				toolScopes: {},
+				resourceScopes: {},
+			},
+			audit: () => {},
+		},
+	},
 };
 
 async function runTests(): Promise<void> {

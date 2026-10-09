@@ -17,6 +17,12 @@ Agents augment human employees with specific responsibilities. Each owns its
 working context, configurable job evaluations and human review. Roman names are
 display identities; role/capability identifiers stay explicit.
 
+The current [HTTP access adapter](../sdk/docs/http-access.md) implements explicit
+local/remote ingress identity, scopes, safe audit and session ownership beneath
+the independent tool units. It does not replace source rights, employee context
+or exact-revision review. Framework/client/provider/hosting adapters remain
+replaceable and must preserve those boundaries.
+
 The monorepo is a workspace, not the architecture itself. Each unit must remain independently useful, independently runnable, and independently extractable into its own repository without breaking the rest of the system.
 
 ## Core Principles

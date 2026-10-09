@@ -96,12 +96,14 @@ with bounded idle/request time and session capacity. See
 [HTTP configuration and lifecycle](docs/ARCHITECTURE.md#transport-modes-mcpserver)
 and [deployment settings](docs/DEPLOYMENT.md).
 
-Session IDs identify transport state, not employee memory or authenticated
-authority. #678 implements identity/source access checks. Declared schemas,
+HTTP requires explicit local/remote `http.access` configuration, a dedicated
+credential or trusted verifier, scoped policy and audit sink. Setting PORT alone
+fails before listening; use [HTTP access configuration](docs/http-access.md).
+Session IDs identify transport state, not employee memory or authority. Declared schemas,
 structured success and genuine tool failures are covered by #677's SDK and
 Geologist boundary checks; see [tool result compatibility](docs/ARCHITECTURE.md#tool-contracts-and-result-compatibility).
-Current HTTP remains a trusted development path pending access and reference
-qualification.
+Actual issuer/TLS deployment, source rights, review and reference qualification
+remain with their owning adapters and acceptance checks.
 
 Analysis tools preserve zero confidence and report missing/invalid scores as
 null with an explicit status. Existing four-argument factory calls retain raw

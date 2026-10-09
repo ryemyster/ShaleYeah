@@ -8,7 +8,7 @@ import path from "node:path";
 import { z } from "zod";
 import { type ConfidenceScale, confidenceMetadata, validateConfidenceScale } from "./confidence-metadata.js";
 import { classifyToolError, isToolFailure } from "./errors.js";
-import { MCPServer, type MCPTool } from "./mcp-server.js";
+import { type MCPExecutionContext, MCPServer, type MCPServerConfig, type MCPTool } from "./mcp-server.js";
 
 export interface ServerPersona {
 	name: string;
@@ -24,6 +24,8 @@ export interface ServerTemplate {
 	tools: ServerToolTemplate[];
 	resources?: ServerResourceTemplate[];
 }
+
+export type ServerRuntimeOptions = Pick<MCPServerConfig, "http" | "dataPath">;
 
 export interface ServerToolTemplate extends MCPTool {}
 
@@ -46,14 +48,16 @@ export class ServerFactory {
 	/**
 	 * Create a new MCP server from template
 	 */
-	static createServer(template: ServerTemplate): new () => MCPServer {
+	static createServer(template: ServerTemplate): new (options?: ServerRuntimeOptions) => MCPServer {
 		return class ConcreteServer extends MCPServer {
-			constructor() {
+			constructor(options: ServerRuntimeOptions = {}) {
 				super({
 					name: template.name,
 					version: "1.0.0",
 					description: template.description,
 					persona: template.persona,
+					dataPath: options.dataPath,
+					http: options.http,
 				});
 			}
 
@@ -81,7 +85,7 @@ export class ServerFactory {
 		description: string,
 		inputSchema: z.ZodObject<z.ZodRawShape>,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		analyzeFunction: (args: any) => Promise<any>,
+		analyzeFunction: (args: any, context?: MCPExecutionContext) => Promise<any>,
 		options: AnalysisToolOptions = {},
 	): ServerToolTemplate {
 		const scale = options.confidenceScale;
@@ -91,10 +95,10 @@ export class ServerFactory {
 			description,
 			inputSchema,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			handler: async (args: any) => {
+			handler: async (args: any, context?: MCPExecutionContext) => {
 				try {
 					const startTime = Date.now();
-					const analysis = await analyzeFunction(args);
+					const analysis = await analyzeFunction(args, context);
 					const executionTime = Date.now() - startTime;
 					if (isToolFailure(analysis)) return analysis;
 

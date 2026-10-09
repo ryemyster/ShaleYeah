@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -14,6 +15,7 @@ const input = z.object({ value: z.string() }).strict();
 const output = z.object({ value: z.string() }).strict();
 
 async function fixture(tools: ServerToolTemplate[]) {
+	const token = randomUUID();
 	const prior = process.env.PORT;
 	process.env.PORT = "0";
 	let server: InstanceType<ReturnType<typeof ServerFactory.createServer>>;
@@ -25,7 +27,29 @@ async function fixture(tools: ServerToolTemplate[]) {
 			tools,
 			persona: { name: "Fixture", role: "fixture", expertise: [] },
 		});
-		server = new Server();
+		server = new Server({
+			http: {
+				access: {
+					mode: "local",
+					accessToken: token,
+					allowedHosts: ["127.0.0.1"],
+					principal: {
+						subjectId: "fixture",
+						customerId: "fixture",
+						employeeId: "fixture",
+						scopes: ["fixture:connect", "fixture:tool"],
+					},
+					policy: {
+						id: "contract-fixture",
+						version: "r1",
+						connectionScopes: ["fixture:connect"],
+						toolScopes: Object.fromEntries(tools.map((tool) => [tool.name, ["fixture:tool"]])),
+						resourceScopes: {},
+					},
+					audit: () => {},
+				},
+			},
+		});
 	} finally {
 		if (prior === undefined) delete process.env.PORT;
 		else process.env.PORT = prior;
@@ -33,7 +57,9 @@ async function fixture(tools: ServerToolTemplate[]) {
 	server.dataPath = await fs.mkdtemp(path.join(os.tmpdir(), "shale-mcp-contract-"));
 	await server.initialize();
 	const client = new Client({ name: "contract-client", version: "0.1.0" });
-	const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${server.httpPort()}/mcp`));
+	const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${server.httpPort()}/mcp`), {
+		requestInit: { headers: { Authorization: `Bearer ${token}` } },
+	});
 	await client.connect(transport);
 	return {
 		client,

@@ -1,5 +1,10 @@
 # Running and deploying Geologist
 
+Geowiz HTTP now requires configured identity/scopes and dedicated credentials.
+Use [backend access setup](../../../servers/geowiz/docs/HTTP_ACCESS.md).
+The current copied Python wrapper needs #679's credential/destination integration
+before live connection; package checks remain available independently.
+
 Geologist is a Python ADK employee that calls a separate Geowiz-compatible MCP
 (Model Context Protocol) tool server. Its current mode is **Stand-alone Agent
 with Progressive Disclosure (Skills)**. Local checks are verified; durable
@@ -27,7 +32,7 @@ With a private development Geowiz at port 3001 and the chosen model credentials
 loaded into the environment:
 
 ```bash
-GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 

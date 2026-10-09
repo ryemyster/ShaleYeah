@@ -63,7 +63,7 @@ The fallback uses domain constants (typical GR ranges, porosity rules for known 
 ### Transport modes
 
 - **stdio** (default): pipe-based, used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT` is set): `StreamableHTTPServerTransport` on the given port — used by the agent fleet
+- **HTTP** (when `PORT` is set with explicit access policy): independent `StreamableHTTPServerTransport` sessions on the configured bind. [HTTP access setup](HTTP_ACCESS.md) supplies identity/scopes/audit; the employee client adopts credentials in #679.
 
 The transport is selected at startup in `MCPServer` (from `@shaleyeah/sdk`) based on whether `process.env.PORT` is set. No code change is needed in the server itself.
 

@@ -37,7 +37,7 @@ Platform features do not turn an untested SHALE YEAH deployment into a verified 
 
 | Target | Repository status | State and ingress requirements | Evidence required before a support claim |
 | --- | --- | --- | --- |
-| Current checkout, local processes | **Verified, bounded:** locked Geologist install/import, 11 existing shape tests, SDK/Geowiz builds and no-key Geowiz HTTP startup/health | Test data only; current agent sessions are in memory and MCP entry has no authenticated gate | Live employee/tool task, failures, review/restart and professional cases remain unqualified |
+| Current checkout, local processes | **Verified, bounded:** locked Geologist install/import, SDK/Geowiz checks, session/schema/identity/scope fixtures and private local HTTP launcher | Test data only; employee sessions remain in memory and current copied client needs #679 credentials; actual IAM/TLS/source/review remain separate | Live employee/tool task, failures, review/restart and professional cases remain unqualified |
 | Extracted local packages | **Planned**, #674 and each role PR | Declared installed dependencies, package-local checks and local durable state; no root source/test-runner lookup | Clean install/run/check outside checkout, independent agent/MCP, compatible external client/tool, exact supported inputs |
 | Portable containers | **Planned**, #674 | Separate employee/tool images; external config/secrets; persistent state/artifacts; restricted ingress and authenticated tool entry | Reproducible image build/digests, locked dependencies, mounts/ownership, restart/restore and all reference acceptance cases |
 | VM | **Untested** optional host | Supervised processes/containers, durable disk, TLS/private network, backup/restore | VM recipe and observed install/restart/permissions/resource checks on a named revision |
@@ -55,12 +55,13 @@ infer qualification beyond this matrix.
 ## Run the current reference locally
 
 These steps use a **checkout**, not an extracted package. Use synthetic fixtures
-on a trusted development host. Current Geowiz HTTP startup binds without an
-explicit host restriction and has no authenticated MCP entry; keep it off public
-or shared ingress. #668 supplies independent session lifecycle checks and
+on a trusted development host. Geowiz HTTP requires explicit identity/scopes,
+a dedicated access credential or verifier and an audit sink. The local example
+binds to loopback with exact host/origin policy. #668 supplies session lifecycle and
 [finite HTTP settings](../sdk/docs/DEPLOYMENT.md#environment-variables);
-#678 still implements executing identity/scopes. A health response does not
-prove authenticated access or extraction/hosted qualification.
+#678 supplies the configured ingress boundary. Actual issuer/TLS, source rights,
+protected review and extraction/hosted qualification remain separate. The current
+copied employee client adopts credentials in #679; its offline checks work now.
 
 1. From the repository root, install locked TypeScript dependencies and build
    the shared SDK, then the tool. Node 22 is the CI baseline; use the repository's
@@ -82,17 +83,20 @@ prove authenticated access or extraction/hosted qualification.
    agents-cli info
    ```
 
-   The package has eleven project/tool/eval **shape** checks, not eleven
-   professional workflow evaluations. `agents-cli info` should identify this
+   Package checks include project/eval shapes and MCP contract regressions;
+   they are not professional workflow evaluations. `agents-cli info` should identify this
    directory and show deployment target `none`. Current CLI 1.3.1 reports the
    manifest's scaffold version 0.5.1 mismatch; an upgrade is a reviewed adapter
    change, not permission to scaffold the repository root or deploy a service.
 
-3. In terminal A, from `servers/geowiz`, start the tool on an unused private
-   development port. Startup and health do not need a model key.
+3. Complete [private HTTP access setup](../servers/geowiz/docs/HTTP_ACCESS.md)
+   to create the local operator policy and dedicated credential outside the
+   repository. In terminal A, from the repository root, start the configured tool
+   on an unused port. Startup/health and the ingress fixture need no model key.
 
    ```bash
-   PORT=3001 pnpm start
+   PORT=3001 GEOWIZ_HTTP_CONFIG_FILE="$HOME/.config/shaleyeah/geowiz/access.json" \
+     pnpm --dir servers/geowiz start:http
    ```
 
    In another terminal, check the same port:
@@ -114,10 +118,11 @@ prove authenticated access or extraction/hosted qualification.
    model-assisted tools separately use `ANTHROPIC_API_KEY`. A credential-free
    import/health check does not validate either provider.
 
-   From `agents/geologist`, with the backend still running:
+   After #679 supplies the credential-aware client, from `agents/geologist`
+   with the backend and configured identity/model credentials ready:
 
    ```bash
-   GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+   GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
      "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
    ```
 
@@ -142,7 +147,7 @@ prove authenticated access or extraction/hosted qualification.
 | Unit | Actual settings / paths | What must survive deployment |
 | --- | --- | --- |
 | Geologist | `GEOLOGIST_ADK_MODEL` defaults to `gemini-flash-latest`; `GEOWIZ_MCP_URL` defaults to `http://localhost:3001`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #669/#672/#673 |
-| Geowiz | `PORT` selects HTTP; unset selects stdio; Anthropic key for model-assisted tools | Tool identity/scopes, source access, review enforcement, redacted durable audit; #678/#673/#574 |
+| Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; unset PORT selects stdio; model key is separate | #678 supplies ingress; source access, review enforcement, redacted operational audit and actual remote issuer/TLS remain #670/#673/#574/#674 |
 | Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; some tools also write caller `outputPath` | Mount the actual configured working-directory paths, restrict source/output roots and preserve ownership; #670/#678/#674 |
 | Current sessions | Geologist manifest `session_type: in_memory`; no package-configured persistent context/review store | Restart-safe scoped context, approval/revision invalidation and export/delete/restore; #672/#673 |
 
