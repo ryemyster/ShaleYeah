@@ -1,105 +1,64 @@
-# Integration — @shaleyeah/server-geowiz
+# Integrating Geowiz
 
-## Who calls geowiz?
+Geowiz is a separate MCP tool backend. The Geologist is an ADK/Python employee;
+a generic compatible MCP client can also call granted tools. The reference
+profile is MCP 2025-11-25 with TypeScript SDK 1.29.0.
 
-The `geologist` agent (`agents/geologist/`) is the primary consumer. It calls geowiz over HTTP using `StreamableHTTPClientTransport` from `@shaleyeah/sdk`.
+## HTTP client boundary
 
-## Connection pattern (agent side)
+Configure [HTTP identity/scopes](HTTP_ACCESS.md) first. The endpoint is `/mcp`.
+Clients send a dedicated MCP bearer credential on every request, including
+initialization, SSE GET and DELETE. Provider keys grant no MCP authority.
+
+A TypeScript client declares the official MCP dependency:
 
 ```typescript
-// agents/geologist/src/agent/geowiz-client.ts
-import { StreamableHTTPClientTransport } from "@shaleyeah/sdk";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
-export async function callGeowizTool(
-    serverUrl: string,
-    toolName: string,
-    args: Record<string, unknown>,
-): Promise<unknown> {
-    const transport = new StreamableHTTPClientTransport(new URL(serverUrl));
-    const client = new Client({ name: "geologist-agent", version: "0.1.0" }, { capabilities: {} });
-    await client.connect(transport);
-    const result = await client.callTool({ name: toolName, arguments: args });
-    await client.close();
-    return result;
+const transport = new StreamableHTTPClientTransport(endpoint, {
+  requestInit: { headers: { Authorization: `Bearer ${resolvedMcpCredential}` } },
+});
+const client = new Client({ name: "external-geology-client", version: "0.1.0" });
+await client.connect(transport);
+try {
+  const result = await client.callTool({
+    name: "assess_quality", arguments: { filePath: permittedPath, dataType: "las" },
+  });
+  consumeValidatedResult(result);
+} finally {
+  await transport.terminateSession();
+  await client.close();
 }
 ```
 
-The agent resolves the URL from `AgentRuntimeConfig.mcpServers.geowiz.url` — defaulting to `http://localhost:3001`.
+Endpoint selection, credential resolution, permitted path and result consumption
+are trusted client responsibilities. The official transport is imported from
+its declared package; the ShaleYeah SDK does not re-export it. See the actual
+[generic-client test](../tests/http-access.test.ts).
 
-## Calling a tool
+Discovery advertises actual schemas. Preserve `isError`, structured evidence,
+matching text and partial domain status; protocol completion does not accept
+employee work. The shared [result contract](../../../sdk/docs/ARCHITECTURE.md#tool-contracts-and-result-compatibility)
+and [confidence semantics](../../../sdk/docs/confidence-metadata.md) apply.
 
-```typescript
-import { callGeowizTool } from "./geowiz-client.js";
+## Employee, source and review boundaries
 
-const result = await callGeowizTool(
-    "http://localhost:3001",
-    "analyze_formation",
-    {
-        filePath: "/data/well-logs/JONES_1H.las",
-        formations: ["wolfcamp", "bone spring"],
-        depth: { top: 8500, base: 11200 },
-    },
-);
-```
+The Geologist currently calls through `app/geowiz_mcp.py`. #679 replaces that
+copied client with credential/destination handling before protected connection.
+It does not use the retired TypeScript LocalAgentRuntime or a fixed employee port.
 
-## Tool call reference
+Files resolve on the tool host. Source/workspace controls remain #670; advertised
+formats and geological evidence remain #671/#674. `assess_quality` currently
+returns fixed metrics without opening the file; it qualifies ingress rather
+than observed data quality. Model-assisted tools use shared `callLLM`; BYO
+provider support remains #669.
 
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `analyze_formation` | `filePath`, `formations` | `GeologicalAnalysis` |
-| `process_gis` | `filePath` | `GISAnalysis` |
-| `process_well_logs` | `filePath` | `WellLogData` |
-| `assess_quality` | `filePath` | `QualityAssessment` |
-| `process_access_database` | `filePath` | `DatabaseAnalysis` |
-| `process_document` | `filePath` | `DocumentAnalysis` |
-| `process_seismic_data` | `filePath` | `SeismicAnalysis` |
-| `process_aries_database` | `filePath` | `AriesAnalysis` |
+The local example leaves `save_finding` ungranted. Authenticated exact-revision
+backend review/resume remains #673. Agent confirmation or approval prose cannot
+replace that gate.
 
-## Upstream dependencies
-
-Geowiz has no upstream MCP servers — it reads files from the filesystem and calls the Anthropic API directly.
-
-```
-Filesystem (LAS, GeoJSON, etc.)
-  ↓
-geowiz (port 3001)
-  ↓ callLLM()
-Anthropic API
-```
-
-## Downstream consumers
-
-```
-geowiz (port 3001)
-  ↑ MCP over HTTP
-geologist agent (port 4001)
-  ↑ LocalAgentRuntime
-Orchestrator / Claude Desktop / API client
-```
-
-## Error types
-
-Geowiz returns structured errors following the `error_type` contract:
-
-```json
-{ "error_type": "retryable", "message": "LLM timeout — retry in 5s" }
-{ "error_type": "permanent", "message": "Unsupported file format: .tiff" }
-```
-
-The agent layer reads `error_type` to decide whether to retry or escalate.
-
-## MCP protocol version
-
-Geowiz declares `mcp: "2025-03"` in its SDK compatibility block. Agents must connect with a compatible MCP client version.
-
----
-
-## See also
-
-- [README](../README.md) — quick start, Claude Desktop config, tool table
-- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
-- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
-- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
-- [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly
-- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist
+STDIO is managed by a trusted local launcher. Remote deployments inject identity
+and audit adapters through the [SDK API](../../../sdk/docs/http-access.md), then
+qualify actual IAM/TLS, source/review and hosting. See [deployment](DEPLOYMENT.md)
+and [local tests](LOCAL_TESTING.md).

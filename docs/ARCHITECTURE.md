@@ -28,7 +28,9 @@ Geologist does not import Geowiz TypeScript source. Its wrapper initializes a
 client session and calls named tools at the configured URL. #668 supplies tested
 independent HTTP protocol/transport lifecycles. #677 supplies declared-schema,
 structured-result and genuine-failure boundary checks in the SDK/Geologist;
-the shared installed client remains #679 and HTTP access enforcement is #678.
+the shared installed credential/destination client remains #679. #678 requires
+configured identity/scopes/audit at HTTP entry, including direct external clients
+and session ownership. See [HTTP access migration](../sdk/docs/http-access.md).
 Session IDs are not authority; actual role result schemas/domain qualification
 remain owned by #671/#674 and their role peers.
 
@@ -93,8 +95,8 @@ These records are ready for adoption; current employees do not yet emit them.
 The package verifies structure and declared references, not reviewer identity,
 real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
-specifies trusted identity and exact-revision review; #678/#672/#673 implement
-the entry/context/review boundaries. Eval profiles/results are #666/#667.
+specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
+#672/#673 implement durable context/review. Eval profiles/results are #666/#667.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
@@ -112,12 +114,15 @@ evidence.
 ADR 0003 requires the executing backend to enforce identity, scopes, exact
 input/product/action review, source rights and redacted durable audit. Its
 reference cases validate current contract comparisons and specify future
-execution failures; they do not install that enforcement. #678/#673/#574 and
-connector/provider/context owners implement it. Namespace strings, prompts,
+execution failures; they do not install that enforcement. #678 supplies ingress,
+while #673/#574 and connector/provider/context owners implement the remaining
+operation-specific policy. Namespace strings, prompts,
 caller approval booleans and transport session IDs cannot grant authority.
 Legacy runtime checks do not establish protection on every current ADK-to-MCP
-path: scopes are optional caller data, approval trusts a boolean, and HTTP tool
-dispatch has no authenticated gate today.
+path: its scopes are optional caller data and approval trusts a boolean. The
+shared MCP HTTP boundary now requires explicit verified identity/scopes/audit;
+source rights, domain-review grants and actual issuer/TLS deployment still need
+their qualification owners. The copied Python clients adopt credentials in #679.
 
 ## Optional coordination
 

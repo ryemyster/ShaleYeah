@@ -1,0 +1,20 @@
+{
+	"accessTokenFile": "/absolute/private/geowiz-token",
+	"auditFile": "/absolute/private/geowiz-audit.jsonl",
+	"bindHost": "127.0.0.1",
+	"allowedHosts": ["127.0.0.1"],
+	"allowedOrigins": [],
+	"principal": {
+		"subjectId": "local-geologist",
+		"customerId": "local-workspace",
+		"employeeId": "geologist",
+		"scopes": ["mcp:connect", "geowiz:quality"]
+	},
+	"policy": {
+		"id": "local-geowiz",
+		"version": "r1",
+		"connectionScopes": ["mcp:connect"],
+		"toolScopes": { "assess_quality": ["geowiz:quality"] },
+		"resourceScopes": {}
+	}
+}

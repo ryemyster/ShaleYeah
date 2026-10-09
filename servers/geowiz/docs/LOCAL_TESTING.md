@@ -1,92 +1,45 @@
-# Local Testing — @shaleyeah/server-geowiz
+# Testing Geowiz locally
 
-## Quick start (stdio mode)
-
-```bash
-cd servers/geowiz
-pnpm build
-npx tsx tests/server.test.ts   # run all tests
-```
-
-## Quick start (HTTP mode)
+Geowiz is the TypeScript MCP backend; the Geologist employee is a separate
+ADK/Python package. Build from the repository root:
 
 ```bash
-# Terminal 1: start geowiz on port 3001
-cd servers/geowiz
-PORT=3001 ANTHROPIC_API_KEY=sk-... pnpm start
-
-# Terminal 2: confirm it's up
-curl http://localhost:3001/health
-
-# Terminal 3: run agent tests against live server
-cd agents/geologist
-GEOWIZ_MCP_URL=http://localhost:3001 npx tsx tests/mcp-client.test.ts
+pnpm install --frozen-lockfile
+pnpm --dir sdk build
+pnpm --dir servers/geowiz build
 ```
 
-## Unit tests only (no server required)
+From `servers/geowiz`:
 
 ```bash
-cd servers/geowiz
-npx tsx tests/server.test.ts    # MCP integration tests (stdio)
-npx tsx tests/tools.test.ts     # parser unit tests
+pnpm type-check
+pnpm lint
+pnpm test
 ```
 
-## Anti-stub test (LLM wiring verification)
+Existing server/tool checks use declared fixtures. `tests/http-access.test.ts`
+runs real loopback HTTP, the private local launcher and an external MCP client
+with an ephemeral dedicated credential. It checks granted read, anonymous/
+ungranted save denial and redacted ingress audit. No model key or live source is
+required; the existing quality tool's fixed metrics do not certify observed data.
 
-```bash
-# Expects an auth error — proves callLLM() was actually invoked
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-```
+For a manual listener, follow [HTTP access setup](HTTP_ACCESS.md). PORT alone
+fails before listening. Health establishes startup; `/mcp` requires configured
+identity/scopes. SDK tests separately cover sessions, schemas, remote identity
+and concurrent users.
 
-A test pass here means the tool called the Anthropic API (and got rejected for the fake key). If no auth error: the LLM path was never reached.
+The current copied Geologist client needs #679 before live pair execution. Run
+[employee Python checks](../../../agents/geologist/docs/LOCAL_TESTING.md)
+independently. Actual professional/source/provider behavior remains
+#669/#670/#671/#674. Protected backend review/resume is #673; agent confirmation
+alone does not authorize persistence.
 
-## Live tool call via MCP CLI
+| Symptom | Next step |
+| --- | --- |
+| Explicit trust/config error | Follow HTTP access setup or use managed STDIO with PORT unset |
+| HTTP 401 | Resolve the dedicated credential or valid identity for this resource |
+| HTTP 403 | Check trusted ownership, tool/resource scopes and host/origin policy |
+| HTTP 503 before dispatch | Check required audit availability and configured capacity/timeouts |
+| Build/import error | Build SDK, then Geowiz, using declared dependencies |
 
-```bash
-# Install MCP CLI once
-npm install -g @modelcontextprotocol/cli
-
-# Start server in HTTP mode, then call a tool
-PORT=3001 pnpm start &
-mcp call http://localhost:3001 analyze_formation \
-  '{"filePath":"tests/fixtures/sample.las","formations":["wolfcamp"]}'
-```
-
-## HITL testing
-
-HITL gates live in the `geologist` agent, not in geowiz. To test HITL behavior:
-
-```bash
-cd agents/geologist
-GEOWIZ_MCP_URL=http://localhost:3001 npx tsx tests/agent.test.ts
-```
-
-## Error classification testing
-
-```bash
-# Test retryable error path (bad URL → network error)
-cd agents/geologist
-GEOWIZ_MCP_URL=http://localhost:19999 npx tsx tests/mcp-client.test.ts
-# Expect: error_type "retryable" in output
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3001` | Server not running in HTTP mode | `PORT=3001 pnpm start` |
-| `No API key` warning | Missing `ANTHROPIC_API_KEY` | Set env var; fallback still works |
-| LAS parse errors | File encoding or version mismatch | Check LAS 2.0 format; DLIS needs `process_well_logs` |
-| `Cannot find module` | Build needed | `pnpm build` first |
-| Tests hang | stdio mode conflict | Tests use stdio mock — don't set `PORT` when running unit tests |
-
----
-
-## See also
-
-- [README](../README.md) — quick start, Claude Desktop config, tool table
-- [ARCHITECTURE.md](ARCHITECTURE.md) — tool inventory, data flow, LLM call locations
-- [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — plain-language + technical lifecycle
-- [INTEGRATION.md](INTEGRATION.md) — calling geowiz tools from an agent or MCP client
-- [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
-- [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist
+See [integration](INTEGRATION.md) and [deployment](DEPLOYMENT.md).

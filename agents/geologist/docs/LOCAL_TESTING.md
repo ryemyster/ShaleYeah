@@ -18,19 +18,17 @@ agents-cli info
 ## Run With A Live Geowiz Backend
 
 First complete the [ordered build/config setup](../../../docs/deployment-support.md#run-the-current-reference-locally).
-Use synthetic fixtures on a private development host; current HTTP entry has no
-authenticated tool gate. Start the MCP server in one terminal:
+Geowiz now requires configured MCP credentials/scopes. Start its
+[private HTTP launcher](../../../servers/geowiz/docs/HTTP_ACCESS.md) and run the
+generic-client boundary test there. The current copied Python wrapper needs
+#679's shared credential/destination client before the live pair can connect.
+The package checks above remain available independently.
 
-```bash
-cd servers/geowiz
-PORT=3001 pnpm start
-```
-
-Run the ADK agent in another terminal:
+After that client integration and model configuration, run the ADK agent:
 
 ```bash
 cd agents/geologist
-GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
@@ -78,7 +76,8 @@ enforcement remain separate from model scores and ADK confirmation.
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| `ECONNREFUSED localhost:3001` | Geowiz is not running | `cd servers/geowiz && PORT=3001 pnpm start` |
+| `ECONNREFUSED localhost:3001` | Geowiz is not running | Use the configured HTTP launcher linked above |
+| HTTP 401/403 from Geowiz | Missing identity or ingress permission | Adopt #679's credential-aware client and configured operator scopes |
 | `agents-cli info` cannot find the project | Command was run from the wrong directory | `cd agents/geologist` |
 | Python import error for `mcp` or `google.adk` | Dependencies are not installed | From this package, `uv sync --frozen --extra eval` |
 | CLI cannot find default eval dataset | Generic scaffold filename differs from this package | Pass the explicit `--dataset` and `--config` shown above |

@@ -8,6 +8,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/index.ts",
+		"start:http": "node examples/local-http.mjs",
 		"test": "bash ../../scripts/run-tests.sh",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
@@ -21,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
+		"@modelcontextprotocol/sdk": "1.29.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/node": "^25.9.3",
 		"@types/xml2js": "^0.4.14",

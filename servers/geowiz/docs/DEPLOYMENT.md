@@ -14,16 +14,12 @@ pnpm --dir sdk build
 pnpm --dir servers/geowiz build
 ```
 
-Then from `servers/geowiz`, on a trusted private development host:
-
-```bash
-PORT=3001 pnpm start
-```
-
-Startup and health need no model key. The current HTTP server has no
-authenticated tool-entry gate and binds without a host restriction; keep it off
-public/shared ingress until #678's identity/scopes and #668's session lifecycle
-are qualified.
+Then complete [private HTTP access setup](HTTP_ACCESS.md). Its configured local
+launcher supplies a dedicated credential, scoped operator principal and audit
+file, then binds to loopback. PORT alone fails before listening. Startup and
+health need no model key; protected `/mcp` requests need the access credential.
+Remote deployments inject verified identity and audit adapters through the SDK
+and independently qualify TLS/issuer/hosting behavior.
 
 ```bash
 curl --fail http://127.0.0.1:3001/health
@@ -45,7 +41,8 @@ process with Ctrl-C.
 | Setting | Actual behavior |
 | --- | --- |
 | `PORT` unset | stdio transport, managed as a child process by an MCP client |
-| `PORT=3001` | HTTP transport on that port; use a positive unused port |
+| `PORT=3001` | HTTP transport only with explicit access configuration |
+| `GEOWIZ_HTTP_CONFIG_FILE` | Private local-launch policy with credential/audit file references; see HTTP access setup |
 | `ANTHROPIC_API_KEY` | Required for real model-assisted analysis; not for startup/health or deterministic quality checks |
 | Storage | SDK defaults to `./data/geowiz`; findings go to `./data/geowiz/findings` relative to working directory |
 | Input / output paths | Resolved on the Geowiz host; some tools write caller-supplied `outputPath` |
@@ -60,17 +57,11 @@ Anthropic credential; #669 implements the reference's BYO provider contract.
 
 ## Use with the employee
 
-With this tool running privately and the selected employee model configured,
-run from `agents/geologist`:
-
-```bash
-GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
-  "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
-```
-
-That path points to this package's synthetic fixture. For a remote/container
-tool, make the approved inputs accessible on the tool host. A natural-language
-task and every advertised format remain subject to #669/#671/#674 qualification.
+The current Geologist Python wrapper needs #679's credential/destination client
+before using this protected endpoint. Its imports/tests work independently;
+the [generic-client test](HTTP_ACCESS.md#test-the-real-boundary-without-model-keys)
+checks ingress now. Live providers, permitted sources and employee/task behavior
+remain #669/#670/#671/#674; no model key grants tool authority.
 
 ## Persistence, containers and scaling
 
@@ -97,8 +88,9 @@ durable employee state and exact-revision continuation; #674 verifies the pair.
 
 ## Verification
 
-Current no-key evidence covers build/start/health. Generic-client tool
-handshake/results, source/professional cases, identity/review denial, client
-isolation, cancellation and restart/restore must pass before changing support.
+Current no-key evidence includes the real generic-client ingress test and private
+local launcher, plus shared session/schema/identity/scope regressions. Actual
+source/professional cases, issuer/TLS deployment, protected review and employee
+restart/restore still must pass before release support changes.
 Record package and server versions separately, plus the actual runtime/model/
 profile/image versions and limits. Follow [the MVP plan](../../../docs/mvp-release-plan.md).

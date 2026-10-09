@@ -28,10 +28,16 @@ At runtime:
 
 **ADK path — MCP-backed tools**
 
+Geowiz now requires configured MCP access credentials and scopes. The current
+copied Python wrapper needs #679's shared-client integration before a live tool
+task. Package imports/tests remain available; [backend HTTP access setup and its
+generic-client test](../../servers/geowiz/docs/HTTP_ACCESS.md) verify ingress now.
+The command below is for the pair after that client integration is ready.
+
 ```bash
 cd agents/geologist
 uv sync --frozen --extra eval
-GEOWIZ_MCP_URL=http://127.0.0.1:3001 agents-cli run \
+GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
@@ -41,12 +47,7 @@ The fixture path resolves on the Geowiz host. This path uses `app/agent.py` and
 the Python MCP client in `app/geowiz_mcp.py`; it remains subject to provider,
 source and composition qualification.
 
-Start the Geowiz MCP server separately when you want live backend execution:
-
-```bash
-cd servers/geowiz
-PORT=3001 pnpm start
-```
+Start Geowiz separately through its [configured local HTTP launcher](../../servers/geowiz/docs/HTTP_ACCESS.md).
 
 ---
 

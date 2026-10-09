@@ -88,6 +88,8 @@ Develop-only — not yet released to main.
 
 ### Fixed
 
+- **MCP HTTP identity and scopes** (#678) — replaced unauthenticated entry with explicit trusted local/remote configuration, per-request identity/ownership/session checks and exact tool/resource scopes. Required safe pre-dispatch audit and isolated credential-free execution context. Added a private-file Geowiz local launcher and real external-client checks; removed displaced anonymous/legacy connection instructions. Professional/source/review and live issuer/TLS qualification remain with their owners.
+
 - **Truthful confidence metadata** (#710) — removed the shared invented-confidence fallback; preserved zero, added explicit missing/invalid/undeclared status and nullable scale, and validated optional trusted scale configuration. Recorded compatibility and all 47 MCP callers without converting mixed role scores or rewriting calculations. Shared-wrapper/real-HTTP checks do not certify domain calibration or professional acceptance.
 
 - **MCP schema/error boundary** (#677) — preserved complete declared schemas and metadata, matching structured/JSON results, native failure classifications and existing analysis/file/XOR error records; removed factory/transport success masking. Geologist validates discovery/arguments/results and preserves structured-only evidence with bounded legacy compatibility. Deterministic protocol/fake-client evidence does not certify actual role calculations, source rights, authenticated review or fleet adoption.

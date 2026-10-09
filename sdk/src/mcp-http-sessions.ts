@@ -3,14 +3,17 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { isInitializeRequest, isJSONRPCRequest } from "@modelcontextprotocol/sdk/types.js";
+import type { MCPHttpAccess, MCPHttpAccessConfig } from "./mcp-http-access.js";
 
 export interface MCPHttpOptions {
+	access?: MCPHttpAccessConfig;
 	sessionIdleTimeoutMs?: number;
 	requestTimeoutMs?: number;
 	maxSessions?: number;
 }
 
 interface Session {
+	owner: string;
 	server: McpServer;
 	transport: StreamableHTTPServerTransport;
 	id?: string;
@@ -49,6 +52,7 @@ export class MCPHttpSessions {
 	constructor(
 		private readonly createServer: () => McpServer,
 		options: MCPHttpOptions = {},
+		private readonly access: MCPHttpAccess,
 	) {
 		this.idleTimeoutMs = positiveLimit(options.sessionIdleTimeoutMs, "MCP_HTTP_SESSION_IDLE_TIMEOUT_MS", 900_000);
 		this.requestTimeoutMs = positiveLimit(options.requestTimeoutMs, "MCP_HTTP_REQUEST_TIMEOUT_MS", 120_000);
@@ -140,6 +144,8 @@ export class MCPHttpSessions {
 	}
 
 	async handleRequest(req: IncomingMessage, res: ServerResponse): Promise<void> {
+		const authorized = await this.access.authenticate(req, res);
+		if (!authorized) return;
 		if (!this.accepting) {
 			this.error(res, 503, -32000, "MCP server is stopping");
 			return;
@@ -152,11 +158,16 @@ export class MCPHttpSessions {
 			if (sessionId !== undefined) {
 				entry = typeof sessionId === "string" ? this.sessions.get(sessionId) : undefined;
 				if (!entry) {
-					this.error(res, 404, -32001, "Session not found");
+					await this.access.deny(res, authorized.context.requestId, 404, "session_unknown", authorized);
+					return;
+				}
+				if (entry.owner !== authorized.owner) {
+					await this.access.deny(res, authorized.context.requestId, 403, "session_owner_denied", authorized);
 					return;
 				}
 			}
 			if (req.method === "POST") body = await this.readBody(req);
+			if (!(await this.access.authorize(req, res, authorized, body))) return;
 			if (!this.accepting) {
 				this.error(res, 503, -32000, "MCP server is stopping");
 				return;
@@ -179,7 +190,7 @@ export class MCPHttpSessions {
 						this.sessions.set(id, entry);
 					},
 				});
-				entry = { server, transport, activePosts: 0, disposed: false };
+				entry = { server, transport, owner: authorized.owner, activePosts: 0, disposed: false };
 				const session = entry;
 				transport.onclose = () => this.forget(session);
 				this.entries.add(entry);
@@ -226,7 +237,7 @@ export class MCPHttpSessions {
 				res.once("finish", finish);
 				res.once("close", finish);
 			} else this.refreshIdle(session);
-			await session.transport.handleRequest(req, res, body);
+			await this.access.run(authorized, () => session.transport.handleRequest(req, res, body));
 		} catch (error) {
 			if (created && entry) await this.dispose(entry).catch(() => {});
 			if (error instanceof RequestFailure) {

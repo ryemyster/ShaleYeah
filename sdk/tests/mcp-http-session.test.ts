@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 import fs from "node:fs/promises";
 import http from "node:http";
 import os from "node:os";
@@ -8,6 +9,8 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { z } from "zod";
 import { MCPServer, type MCPServerConfig } from "../src/mcp-server.js";
+
+const fixtureToken = randomUUID();
 
 class FixtureServer extends MCPServer {
 	protected setupCapabilities(): void {
@@ -48,7 +51,28 @@ async function fixture(httpOptions: HttpFixtureOptions = {}) {
 			description: "Session lifecycle fixture",
 			persona: { name: "Fixture", role: "fixture", expertise: [] },
 			dataPath,
-			http: httpOptions,
+			http: {
+				...httpOptions,
+				access: {
+					mode: "local",
+					accessToken: fixtureToken,
+					allowedHosts: ["127.0.0.1"],
+					principal: {
+						subjectId: "fixture",
+						customerId: "fixture",
+						employeeId: "fixture",
+						scopes: ["fixture:connect", "fixture:tool", "fixture:resource"],
+					},
+					policy: {
+						id: "session-fixture",
+						version: "r1",
+						connectionScopes: ["fixture:connect"],
+						toolScopes: { echo: ["fixture:tool"], late: ["fixture:tool"] },
+						resourceScopes: { "fixture://reference": ["fixture:resource"], "fixture://late": ["fixture:resource"] },
+					},
+					audit: () => {},
+				},
+			},
 		};
 		server = new FixtureServer(config);
 	} finally {
@@ -63,7 +87,9 @@ async function fixture(httpOptions: HttpFixtureOptions = {}) {
 		url,
 		peer(name: string) {
 			const client = new Client({ name, version: "0.1.0" }, { capabilities: { roots: { listChanged: true } } });
-			const transport = new StreamableHTTPClientTransport(url);
+			const transport = new StreamableHTTPClientTransport(url, {
+				requestInit: { headers: { Authorization: `Bearer ${fixtureToken}` } },
+			});
 			const peer = { client, transport };
 			peers.push(peer);
 			return peer;
@@ -123,6 +149,7 @@ async function rpc(url: URL, sessionId: string | undefined, body: unknown, metho
 	return fetch(url, {
 		method,
 		headers: {
+			Authorization: `Bearer ${fixtureToken}`,
 			Accept: "application/json, text/event-stream",
 			"Content-Type": "application/json",
 			"MCP-Protocol-Version": "2025-11-25",
@@ -296,7 +323,28 @@ test("HTTP lifecycle limits reject invalid configuration before opening a listen
 						version: "0.1.0",
 						description: "invalid limits",
 						persona: { name: "Fixture", role: "fixture", expertise: [] },
-						http,
+						http: {
+							...http,
+							access: {
+								mode: "local",
+								accessToken: fixtureToken,
+								allowedHosts: ["127.0.0.1"],
+								principal: {
+									subjectId: "fixture",
+									customerId: "fixture",
+									employeeId: "fixture",
+									scopes: ["fixture:connect"],
+								},
+								policy: {
+									id: "invalid-limit-fixture",
+									version: "r1",
+									connectionScopes: ["fixture:connect"],
+									toolScopes: {},
+									resourceScopes: {},
+								},
+								audit: () => {},
+							},
+						},
 					} as MCPServerConfig & { http: HttpFixtureOptions }),
 				/positive|finite|integer/i,
 			);
@@ -320,7 +368,7 @@ test("malformed, oversized, interrupted and slow bodies cannot leak sessions or 
 		] as const) {
 			const response = await fetch(app.url, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: { "Content-Type": "application/json", Authorization: `Bearer ${fixtureToken}` },
 				body,
 				signal: AbortSignal.timeout(1500),
 			});
@@ -330,7 +378,14 @@ test("malformed, oversized, interrupted and slow bodies cannot leak sessions or 
 		const slowStatus = await new Promise<number>((resolve, reject) => {
 			const request = http.request(
 				app.url,
-				{ method: "POST", headers: { "Content-Type": "application/json", "Content-Length": "100" } },
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						"Content-Length": "100",
+						Authorization: `Bearer ${fixtureToken}`,
+					},
+				},
 				(response) => {
 					response.resume();
 					resolve(response.statusCode!);
@@ -343,7 +398,11 @@ test("malformed, oversized, interrupted and slow bodies cannot leak sessions or 
 		await new Promise<void>((resolve) => {
 			const request = http.request(app.url, {
 				method: "POST",
-				headers: { "Content-Type": "application/json", "Content-Length": "100" },
+				headers: {
+					"Content-Type": "application/json",
+					"Content-Length": "100",
+					Authorization: `Bearer ${fixtureToken}`,
+				},
 			});
 			request.on("error", () => resolve());
 			request.write("{");
