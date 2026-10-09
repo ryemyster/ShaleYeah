@@ -102,3 +102,9 @@ structured success and genuine tool failures are covered by #677's SDK and
 Geologist boundary checks; see [tool result compatibility](docs/ARCHITECTURE.md#tool-contracts-and-result-compatibility).
 Current HTTP remains a trusted development path pending access and reference
 qualification.
+
+Analysis tools preserve zero confidence and report missing/invalid scores as
+null with an explicit status. Existing four-argument factory calls retain raw
+numbers with an undeclared scale; an optional fifth argument declares validated
+units. Consumers must check status/scale before using a score. See
+[confidence metadata and role compatibility](docs/confidence-metadata.md).

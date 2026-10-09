@@ -23,6 +23,7 @@ sdk/src/
 ├── mcp-server.ts          MCPServer base class — all servers extend this
 ├── mcp-http-sessions.ts   Internal per-client protocol/transport lifecycle
 ├── server-factory.ts      ServerFactory — bootstraps an MCPServer from config
+├── confidence-metadata.ts Internal score availability/range/declared-scale validation
 ├── llm-client.ts          callLLM() — sole source of truth for all LLM calls
 ├── contracts.ts           AgentManifest, AgentRuntimeConfig, HumanApproval Zod schemas
 ├── agent-loop.ts          Existing task loop; raw/outer-fenced JSON parser using string operations
@@ -137,6 +138,14 @@ check schemas, strict input, discovery metadata, typed/raw success, partial
 output, thrown/returned/XOR errors and file helper outcomes. Synthetic output
 schemas prove boundary support, not the accuracy or completeness of every
 Geowiz domain schema; #671/#674 qualify the actual reference tools and employee.
+
+Analysis confidence metadata distinguishes `available`, `unavailable`, `invalid`
+and `unscaled` values. Zero is preserved; missing/invalid values are null, with
+no score fabrication or inferred scale conversion. The optional trusted factory
+declaration supplies `unit_interval` or `percentage`; legacy callers retain
+raw supported numbers with a null scale. See
+[confidence compatibility and the 47-call inventory](confidence-metadata.md).
+These fields do not provide professional qualification or action authority.
 
 ## Error classification
 
