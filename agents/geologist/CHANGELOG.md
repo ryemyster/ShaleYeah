@@ -1,0 +1,38 @@
+# Changelog — Geologist ADK Agent
+
+## [Unreleased]
+
+### Changed
+- #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
+
+### Added
+
+- **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.
+- **Geologist ADK tool parity** (#597) — added package-local Python MCP execution for every current Geowiz tool: `analyze_formation`, `assess_quality`, `process_well_logs`, `process_gis`, `process_access_database`, `process_document`, `process_seismic_data`, `process_aries_database`, and `save_finding`.
+- **ADK eval coverage** (#596/#597) — added package-local eval dataset/config coverage for control, edge, capability-boundary, and tool-selection cases.
+- **ADK project shape** (#587/#589) — added `agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`, and `app/geowiz_mcp.py` under `agents/geologist`.
+- **Python regression tests** (#597) — added pytest coverage for ADK project shape, Geowiz MCP wrapper parity, eval harness shape, and the absence of dangling npm/TypeScript agent surfaces.
+
+### Changed
+
+- **Installed MCP client** (#679) — declared `shaleyeah-mcp-client==0.1.0`, replaced private session/discovery/schema/result logic with a thin role adapter, added dedicated private credential references and validated `/mcp` destinations/limits. Kept nine mappings, model/instructions and ADK confirmation. Moved protocol tests into the helper; role/failure, credential and isolated-wheel controls plus actual protected Geowiz interoperability pass. Backend source/review/professional qualification remains separate.
+
+- **MCP schema and result boundary** (#677) — added bounded discovery/input/output validation, retained structured-only evidence and native errors, rejected conflicting representations and incompatible role capabilities, and recognized legacy success-masked failures. Declared JSON Schema as a direct dependency; added real behavioral fake-session controls. Existing ADK confirmation/role deferral remains; live domain, shared-client and access qualification remain separate.
+
+- **Contributor commands** (#498) — frozen setup and shape checks, fixture paths, explicit eval dataset/config and artifact/prerequisite guidance, tests-first tool workflow and optional lint extra. Removed inline fake-key config and generic eval defaults; no runtime or metric behavior changed.
+
+- **Deployment documentation** (#578) — linked ordered reference setup and the support matrix, separated provider credentials and actual CLI ports, and documented in-memory session, backend authority and durable context/review qualification limits. No employee runtime change.
+
+- **Agent runtime surface** (#597) — Geologist is now an ADK/Python agent package. New Geologist reasoning/runtime work belongs in `app/agent.py` and `app/geowiz_mcp.py`.
+- **Documentation** (#597) — updated README and docs to use ADK/Python commands for the agent while preserving TypeScript/pnpm only for the `servers/geowiz` MCP backend.
+
+### Removed
+
+- **TypeScript agent adapter** (#597) — removed `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, and TypeScript-only agent tests from `agents/geologist`.
+
+## [0.1.0] — 2026-06-04
+
+### Added
+
+- Initial package extraction from monorepo conversion (#385).
+- Standalone Geologist agent package boundary before the ADK migration.

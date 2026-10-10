@@ -1,0 +1,54 @@
+[project]
+name = "shaleyeah-geologist-adk"
+version = "0.1.0"
+description = "Package-local ADK project for the Shale Yeah Geologist agent"
+authors = [
+  { name = "Ryan McDonald" },
+]
+dependencies = [
+  "anthropic==1.13.0",
+  "google-adk[gcp]==2.4.0",
+  "google-genai==2.11.0",
+  "httpx==0.28.1",
+  "httpx2==2.13.1",
+  "shaleyeah-mcp-client==0.1.0",
+]
+requires-python = ">=3.11,<3.14"
+
+[dependency-groups]
+dev = [
+  "pytest>=9.0.2,<10.0.0",
+  "pytest-asyncio>=1.0.0,<2.0.0",
+  "pytest-cov>=7.0.0,<8.0.0",
+]
+
+[project.optional-dependencies]
+eval = [
+  "google-adk[eval]>=2.0.0,<3.0.0",
+]
+lint = [
+  "ruff>=0.4.6,<1.0.0",
+  "ty>=0.0.1a0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+pythonpath = "."
+asyncio_default_fixture_loop_scope = "function"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]

@@ -1,734 +1,154 @@
-# SHALE YEAH Architecture
+# SHALE YEAH architecture
 
-This document explains the technical architecture of SHALE YEAH for developers and contributors.
+SHALE YEAH augments an oil-and-gas evaluation team with 14 specialist employees.
+Each agent has a job and human owner; it prepares evidence and work products for
+review. A tool server supplies bounded domain tools and data hooks. Either unit
+can be used independently through its supported interface.
 
-## High-Level Architecture
+[ADR 0001](adr/0001-durable-employee-contracts.md) defines target boundaries and
+migration rules. [topology.md](topology.md) describes the target topology;
+[mvp-release-plan.md](mvp-release-plan.md) gives issue order and acceptance gates.
+This page describes current implementation and gaps.
 
-SHALE YEAH is an **Agent OS** for oil and gas investment analysis. At its core is a **kernel** that routes all execution through **14 MCP domain servers**, providing tool discovery, parallel scatter-gather execution, session management, and a middleware pipeline (auth, audit, resilience, output shaping).
+## Current building block
 
-Both modes share the same kernel layer (registry, executor, sessions, middleware), but diverge at server execution:
-
-- **Demo** (`npm run demo`) — `mcp-client.ts` returns fixture data immediately without calling server processes; deterministic, no API keys, ~6s
-- **Production** (`npm run prod`) — Kernel spawns real MCP server processes via stdio, calls actual tool handlers with real data and Anthropic API
+The Geologist is an ADK (Agent Development Kit) Python package. Its configured
+MCP (Model Context Protocol) wrapper calls independently runnable Geowiz over
+HTTP. Geowiz processes domain inputs; the agent selects tools and prepares work.
 
 ```mermaid
-graph TB
-    Agent[Agent / Client] --> Kernel[Kernel]
-
-    subgraph "Kernel Layer"
-        Kernel --> Registry[Registry<br/>14 servers, capability matching]
-        Kernel --> Executor[Executor<br/>single, scatter-gather, bundles]
-        Kernel --> Sessions[Session Manager<br/>identity, context injection]
-        Kernel --> MW[Middleware Pipeline<br/>auth, audit, resilience, output]
-    end
-
-    Executor --> S1[geowiz]
-    Executor --> S2[econobot]
-    Executor --> S3[curve-smith]
-    Executor --> S4[decision]
-    Executor --> S5[reporter]
-    Executor --> S6[risk-analysis]
-    Executor --> S7[research]
-    Executor --> S8[legal]
-    Executor --> S9[market]
-    Executor --> S10[title]
-    Executor --> S11[development]
-    Executor --> S12[drilling]
-    Executor --> S13[infrastructure]
-    Executor --> S14[test]
-
-    S1 --> FM[FileIntegrationManager]
-    S2 --> FM
-    S3 --> FM
-
-    FM --> LAS[LAS Parser]
-    FM --> Excel[Excel Parser]
-    FM --> GIS[GIS Parser]
-    FM --> SEGY[SEGY Parser]
+flowchart LR
+    Human[Human operator] --> Agent[Geologist: ADK / Python]
+    Agent --> Client[Installed Python MCP client]
+    Client --> Server[Geowiz: MCP / TypeScript]
+    Server --> Logic[Domain tools / parsers / configured sources]
 ```
 
-## Kernel Architecture
-
-**Location**: `src/kernel/`
-
-The kernel is the single entry point between agents and the 14 MCP domain servers. It wraps discovery, routing, execution, context, and middleware into a unified runtime based on [Arcade.dev's agentic tool patterns](https://www.arcade.dev/patterns).
-
-### Key Components
-
-| File | Responsibility |
-|---|---|
-| `index.ts` | Kernel class — entry point, middleware pipeline, high-level methods |
-| `registry.ts` | Tool registry — 14 servers, capability matching, type classification |
-| `executor.ts` | Execution engine — single, parallel scatter-gather, bundle execution |
-| `context.ts` | Session manager — identity anchoring, context injection, result storage |
-| `bundles.ts` | Pre-built task bundles (QUICK_SCREEN, FULL_DUE_DILIGENCE, GEO_DEEP_DIVE, FINANCIAL_REVIEW) |
-| `types.ts` | All kernel type definitions |
-| `middleware/auth.ts` | RBAC (analyst, engineer, executive, admin) |
-| `middleware/audit.ts` | JSONL audit trail with sensitive value redaction |
-| `middleware/resilience.ts` | Error classification + recovery guides |
-| `middleware/output.ts` | Progressive detail levels (summary/standard/full) |
-
-### Tool Classification
-
-Every tool is classified as `query` (read-only, cacheable), `command` (side effects), or `discovery` (meta). This enables agents to safely parallelize queries, confirm commands, and explore capabilities dynamically.
-
-### Execution Engine (Scatter-Gather)
-
-The executor supports three execution modes:
-
-1. **Single execution** — route a request to one server, return `ToolResponse`
-2. **Parallel (scatter-gather)** — run N requests via `Promise.allSettled`, collect all results even if some fail. Respects `maxParallel` concurrency limit.
-3. **Bundle execution** — resolve a dependency graph into ordered phases, execute each phase (parallel or sequential), track per-phase and overall completeness.
-
-```
-Quick Screen (1 phase, ~20ms):
-  ┌─────────┐ ┌─────────┐ ┌────────────┐ ┌───────────────┐
-  │ GeoWiz  │ │Econobot │ │Curve-Smith │ │Risk-Analysis  │
-  └────┬────┘ └────┬────┘ └─────┬──────┘ └──────┬────────┘
-       └──────────┬┘            │               │
-              Promise.allSettled ────────────────┘
-                    │
-              GatheredResponse (completeness %)
-
-Full Due Diligence (4+ phases):
-  Phase 1:  geowiz, econobot, curve-smith, market, research  (parallel)
-  Phase 2:  risk, legal, title, drilling, infra, development  (parallel, depends on P1)
-  Phase 3:  test                                               (depends on P2)
-  Phase 4:  reporter → decision                                (sequential, depends on P3)
-```
-
-### Agent OS Data Flow — Phase-to-Phase Result Forwarding
-
-Each bundle phase is both a **consumer and producer**. After a step succeeds, its `ToolResponse` is stored in the session via `storeResult(toolName, response)`. Downstream steps receive a fresh context snapshot via `getInjectedContext()`, which includes `availableResults: string[]` — the names of all results stored so far. This snapshot is injected into every step's args as `_context`.
-
-**Sequential phases** recompute context per step so each step sees everything stored by prior steps in the same phase. **Parallel phases** compute context once before scatter-gather (all steps launch simultaneously, so they share the same snapshot).
-
-```
-Phase 1 (parallel): geowiz, econobot, curve-smith  →  storeResult() × 3
-                                                              │
-                                              session.availableResults:
-                                                ["geowiz.analyze",
-                                                 "econobot.analyze",
-                                                 "curve-smith.analyze"]
-                                                              │
-Phase 2 (sequential, each step gets fresh snapshot):
-  risk-analysis  ← _context.availableResults = ["geowiz.analyze", "econobot.analyze", "curve-smith.analyze"]
-  reporter       ← _context.availableResults = [..., "risk-analysis.analyze"]
-  decision       ← _context.availableResults = [..., "reporter.analyze"]
-```
-
-### Conditional Execution (`BundleStep.condition`)
-
-Steps can declare an optional `condition` predicate that receives all prior completed results:
-
-```typescript
-condition?: (priorResults: Map<string, ToolResponse>) => boolean;
-```
-
-If `condition` returns `false`, the step is skipped and **excluded from the completeness calculation** — skipping a required step does not penalize the bundle score. This enables branching workflows where later steps only run if earlier steps produced usable results.
-
-```typescript
-// Example: only run econobot if geowiz succeeded
-{
-  toolName: "econobot.analyze",
-  condition: (prior) => prior.get("geowiz.analyze")?.success === true,
-}
-```
-
-### `shouldWeInvest()` — Confirmation Gate Split
-
-`shouldWeInvest()` runs the 13 non-decision steps as a standard bundle, then routes `decision.analyze` through the confirmation gate separately. This prevents double-execution: the confirmation gate returns `requires_confirmation: true` without calling the tool — the agent must explicitly call `confirmAction(actionId)` to proceed. The pending decision result is added to `result.results` immediately so callers can inspect it and act on the confirmation ID.
-
-### Pre-Built Bundles
-
-| Bundle | Servers | Phases | Strategy | Detail Level |
-|--------|---------|--------|----------|-------------|
-| `quick_screen` | 4 (core) | 1 | all required | summary |
-| `full_due_diligence` | 14 (all) | 4+ | majority | standard/full |
-| `geological_deep_dive` | geowiz(full), curve-smith(standard), research(summary) | 1 | all | mixed |
-| `financial_review` | econobot(full), risk-analysis(standard), market(summary) | 1 | all | mixed |
-
-### Composition — Abstraction Ladder
-
-The kernel provides tools at three abstraction levels, implementing the [Arcade.dev Abstraction Ladder](https://www.arcade.dev/patterns/abstraction-ladder) pattern:
-
-```
-High   ┌─────────────────────────────────────┐
-       │  shouldWeInvest()                   │  Full pipeline + confirmation gate
-       │  quickScreen() / fullAnalysis()     │  Pre-built bundles
-       ├─────────────────────────────────────┤
-Mid    │  geologicalDeepDive()               │  Domain-focused bundles (3 servers)
-       │  financialReview()                  │  Domain-focused bundles (3 servers)
-       │  executeParallel([...requests])     │  Ad-hoc scatter-gather
-       ├─────────────────────────────────────┤
-Low    │  execute(request)                   │  Single tool call
-       │  callTool(request, sessionId)       │  Single tool + auth/audit pipeline
-       └─────────────────────────────────────┘
-```
-
-### Confirmation Gate
-
-Decision tools (`decision.make_recommendation`, `decision.analyze`) return `requires_confirmation: true` with a pending action. The agent must call `confirmAction(actionId)` or `cancelAction(actionId)` before the action executes. This implements the [Arcade.dev Confirmation Request](https://www.arcade.dev/patterns/confirmation-request) pattern for high-impact tools.
-
-## Context and Sessions
-
-The kernel manages user sessions with identity anchoring and context injection, implementing the Arcade patterns: **Identity Anchor**, **Context Injection**, **Context Boundary**, and **Resource Referencing**.
-
-### Session Lifecycle
-
-```
-createSession(identity?, prefs?)  →  Session { id, identity, preferences }
-        │
-        ├─ storeResult("geo", response)   // Resource Referencing
-        ├─ storeResult("econ", response)
-        │
-        ├─ getResult("geo")               // Retrieve stored analysis
-        │
-        ├─ getInjectedContext()            // Context Injection
-        │       → { userId, role, sessionId, timestamp, timezone,
-        │          defaultBasin, riskTolerance, availableResults[] }
-        │
-        ├─ whoAmI(sessionId)               // Identity Anchor
-        │       → { identity, context }
-        │
-        └─ destroySession(sessionId)       // Cleanup
-```
-
-### Context Boundary (Session Isolation)
-
-Each session is an isolated context boundary. Results stored in one session are never visible to another:
-
-```
-Session A: storeResult("geo", ...)  →  availableResults: ["geo"]
-Session B: storeResult("econ", ...) →  availableResults: ["econ"]
-                                        // No cross-contamination
-```
-
-### Default Identity
-
-Demo mode uses a built-in identity:
-```typescript
-DEMO_IDENTITY = {
-  userId: "demo", role: "analyst",
-  permissions: ["read:analysis"],
-  organization: "SHALE YEAH Demo"
-}
-```
-
-## Middleware Pipeline
-
-### Request Flow
-
-```
-callTool(request, sessionId)
-    │
-    ├─ 1. AuthMiddleware.check(tool, identity)
-    │       ├─ allowed → continue
-    │       └─ denied → audit.logDenial() → return error
-    │
-    ├─ 2. AuditMiddleware.logRequest(entry)
-    │
-    ├─ 3. Executor.execute(request)
-    │
-    └─ 4. AuditMiddleware.logResponse(entry)  — or logError(entry)
-```
-
-### Role-Based Access Control
-
-| Role | Permissions | Can Call |
-|---|---|---|
-| analyst | read:analysis | All query tools (12 servers) |
-| engineer | +write:reports | + reporter tools |
-| executive | +execute:decisions | + decision tools |
-| admin | +admin:servers, admin:users | Everything |
-
-### Audit Trail
-
-- Append-only JSONL at `data/audit/YYYY-MM-DD.jsonl`
-- Sensitive values (keys matching `/key|token|secret|password|credential|auth|bearer/`) automatically redacted as `[REDACTED]`
-- Logs requests, responses, errors, and denials with who/what/when
-
-### Error Intelligence and Resilience
-
-The kernel's `ResilienceMiddleware` classifies errors and generates recovery guides. Full graceful degradation, circuit breakers, and retry with backoff are planned — see [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) (Production Hardening).
-
-```
-Raw Error → Pattern Matching → ErrorType Classification → RecoveryGuide
-                                    │
-                    ┌───────────────┼───────────────┐
-                    │               │               │
-               retryable      permanent      auth_required    user_action
-              (retry w/       (fix request)   (re-auth)      (need input)
-               backoff)
-```
-
-Priority order: auth > user_action > retryable > permanent. Unknown errors default to retryable.
-
-When scatter-gather execution encounters partial failures, the resilience middleware assesses whether the degraded result is still useful:
-
-```
-14 servers requested → 12 succeed, 2 fail
-                         │
-                    completeness: 86%  (>50% threshold)
-                    missingAnalyses: ["reporter", "decision"]
-                    suggestions: ["Partial results sufficient...",
-                                  "decision failed — try reporter.analyze"]
-```
-
-Each server has fallback suggestions based on capability overlap (e.g., geowiz to research, econobot to market).
-
-### Configuration
-
-Both auth and audit are controlled by environment variables:
-
-```
-KERNEL_AUTH_ENABLED=true|false   (default: false)
-KERNEL_AUDIT_ENABLED=true|false  (default: true)
-```
-
-## Core Components
-
-### MCPServer Base Class
-
-**Location**: `src/shared/mcp-server.ts`
-
-The foundation for all 14 domain servers. Provides:
-
-```typescript
-export abstract class MCPServer {
-  public config: MCPServerConfig;
-  public dataPath: string;
-  public fileManager: FileIntegrationManager;
-
-  // Standard MCP lifecycle
-  abstract setupCapabilities(): void;
-  abstract setupDataDirectories(): Promise<void>;
-
-  // Tool and resource registration
-  public registerTool(tool: MCPTool): void;
-  public registerResource(resource: MCPResource): void;
-}
-```
-
-**Key Features:**
-- **MCP Protocol Compliance**: Full support for MCP 1.17.3 standard
-- **Persona System**: Each server has a Roman Imperial persona with expertise
-- **File Processing**: Integrated file parsing for 20+ industry formats
-- **Error Handling**: Structured error responses with detailed logging
-- **Resource Management**: Automatic data directory setup and file management
-
-### Domain Expert Servers
-
-Each server inherits from `MCPServer` and specializes in a specific domain:
-
-#### Geological Analysis (`geowiz.ts`)
-```typescript
-class GeowizServer extends MCPServer {
-  // Tools: analyze_formation, process_gis, assess_quality
-  // Expertise: Formation analysis, well log interpretation, GIS processing
-  // Persona: Marcus Aurelius Geologicus - Master Geological Analyst
-}
-```
-
-#### Economic Analysis (`econobot.ts`)
-```typescript
-class EconobotServer extends MCPServer {
-  // Tools: dcf_analysis, analyze_economics, sensitivity_analysis
-  // Expertise: DCF modeling, NPV/IRR calculations, financial forecasting
-  // Persona: Caesar Augustus Economicus - Master Financial Strategist
-}
-```
-
-#### Investment Decision (`decision.ts`)
-```typescript
-class DecisionServer extends MCPServer {
-  // Tools: make_investment_decision, calculate_bid_strategy, analyze_portfolio_fit
-  // Expertise: Final investment logic, bid recommendations, portfolio optimization
-  // Persona: Augustus Decidius Maximus - Supreme Investment Strategist
-}
-```
-
-*...and 11 more specialized servers (curve-smith, reporter, risk-analysis, research, legal, market, title, development, drilling, infrastructure, test)*
-
-### File Processing System
-
-**Location**: `src/shared/file-integration.ts`
-
-Handles industry-standard file formats:
-
-```typescript
-class FileIntegrationManager {
-  async parseFile(filePath: string): Promise<ParseResult> {
-    // Auto-detects format and routes to appropriate parser
-    // Supports: LAS, Excel, CSV, Shapefiles, GeoJSON, KML, SEGY, PDF, etc.
-  }
-}
-```
-
-**Supported Formats:**
-- **Well Logs**: LAS 2.0+, ASCII logs
-- **Economic Data**: Excel (XLSX, XLSM), CSV
-- **GIS/Spatial**: Shapefiles, GeoJSON, KML
-- **Seismic**: SEGY/SGY files
-- **Documents**: PDF, Word (architecture ready)
-
-### Client and Demo Orchestration
-
-**`ShaleYeahMCPClient`** (`src/mcp-client.ts`) coordinates the 14 servers. It wraps a `Kernel` instance internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()`.
-
-**`ShaleYeahMCPDemo`** (`src/demo-runner.ts`) creates a kernel session and runs the full investment analysis workflow through the kernel. All 14 servers execute in parallel phases via the kernel's scatter-gather executor, completing in ~6 seconds with mock data.
-
-```typescript
-class ShaleYeahMCPDemo {
-  async runCompleteDemo(): Promise<void> {
-    // 1. Create kernel session with demo identity
-    // 2. Execute all 14 servers in parallel phases via kernel
-    // 3. Generate professional reports
-    // 4. Provide investment recommendation
-  }
-}
-```
-
-## MCP Protocol Implementation
-
-### Tools (Analysis Functions)
-
-Each server exposes tools via the MCP protocol:
-
-```typescript
-this.registerTool({
-  name: 'analyze_formation',
-  description: 'Analyze geological formations from well log data',
-  inputSchema: z.object({
-    filePath: z.string().describe('Path to LAS well log file'),
-    formations: z.array(z.string()).optional(),
-    analysisType: z.enum(['basic', 'standard', 'comprehensive']).default('standard')
-  }),
-  handler: async (args) => this.analyzeFormation(args)
-});
-```
-
-### Resources (Data Access)
-
-Servers also expose data resources:
-
-```typescript
-this.registerResource({
-  name: 'formation_analysis',
-  uri: 'geowiz://analyses/{id}',
-  description: 'Geological formation analysis results',
-  handler: async (uri) => this.getFormationAnalysis(uri)
-});
-```
-
-### Server Lifecycle
-
-```typescript
-// 1. Initialize server with persona and config
-const server = new GeowizServer();
-
-// 2. Setup capabilities (tools and resources)
-server.setupCapabilities();
-
-// 3. Create data directories
-await server.setupDataDirectories();
-
-// 4. Start MCP server
-await runMCPServer(server);
-```
-
-## Data Flow
-
-### Analysis Flow (Demo and Production)
-
-Both modes flow through the kernel. The kernel's executor runs servers in parallel phases via scatter-gather, not sequentially:
-
-```
-Client / Demo Runner
-    ↓
-Kernel.createSession(identity)
-    ↓
-Kernel.fullAnalysis(request, sessionId)
-    ↓
-Executor: scatter-gather in dependency-ordered phases
-    Phase 1:  geowiz, econobot, curve-smith, market, research  (parallel)
-    Phase 2:  risk, legal, title, drilling, infra, development  (parallel)
-    Phase 3:  test                                               (parallel)
-    Phase 4:  reporter → decision                                (sequential)
-    ↓
-Results stored in session (Resource Referencing)
-    ↓
-Final Recommendation + Reports
-```
-
-In production mode, file processing occurs before execution:
-
-```
-Input Files → FileIntegrationManager → Detect Format → LAS/Excel/GIS/SEGY Parser
-    ↓
-Parsed data injected into analysis request
-    ↓
-(Same kernel execution flow as above)
-```
-
-### Data Storage
-
-```
-data/
-├── outputs/              # Analysis results
-│   └── demo-{timestamp}/ # Demo run outputs
-│       ├── INVESTMENT_DECISION.md
-│       ├── DETAILED_ANALYSIS.md
-│       └── FINANCIAL_MODEL.json
-├── audit/                # Audit trail (JSONL)
-│   └── YYYY-MM-DD.jsonl
-└── {server-name}/        # Server-specific data
-    ├── analyses/         # Analysis results
-    ├── reports/          # Generated reports
-    └── temp/            # Temporary files
-```
-
-## Design Patterns
-
-### 1. Template Method Pattern
-
-Base `MCPServer` class defines the template:
-
-```typescript
-abstract class MCPServer {
-  // Template method
-  async initialize(): Promise<void> {
-    await this.setupDataDirectories();  // Concrete implementation
-    await this.setupCapabilities();     // Concrete implementation
-    await this.server.connect();        // Framework method
-  }
-}
-```
-
-### 2. Strategy Pattern
-
-File parsing uses strategy pattern:
-
-```typescript
-class FileIntegrationManager {
-  private parsers = {
-    '.las': new LASParser(),
-    '.xlsx': new ExcelParser(),
-    '.shp': new GISParser(),
-    '.segy': new SEGYParser()
-  };
-}
-```
-
-### 3. Factory Pattern
-
-Server creation uses factory pattern:
-
-```typescript
-function createServer(type: string): MCPServer {
-  switch (type) {
-    case 'geowiz': return new GeowizServer();
-    case 'econobot': return new EconobotServer();
-    // ...
-  }
-}
-```
-
-## Configuration
-
-### Server Configuration
-
-```typescript
-interface MCPServerConfig {
-  name: string;           // Server identifier
-  version: string;        // Server version
-  description: string;    // Human-readable description
-  persona: {              // Roman Imperial persona
-    name: string;         // e.g., "Marcus Aurelius Geologicus"
-    role: string;         // e.g., "Master Geological Analyst"
-    expertise: string[];  // Areas of specialization
-  };
-  dataPath?: string;      // Optional custom data directory
-}
-```
-
-### Tool Configuration
-
-```typescript
-interface MCPTool {
-  name: string;                    // Tool identifier
-  description: string;             // Human-readable description
-  inputSchema: z.ZodSchema<any>;   // Zod schema for validation
-  handler: (args: any) => Promise<any>; // Implementation function
-}
-```
-
-## Error Handling
-
-### Structured Error Responses
-
-```typescript
-protected formatError(operation: string, error: any): any {
-  return {
-    success: false,
-    error: {
-      operation,
-      message: String(error),
-      server: this.config.name,
-      persona: this.config.persona.name,
-      timestamp: new Date().toISOString()
-    }
-  };
-}
-```
-
-### File Processing Errors
-
-```typescript
-interface ParseResult {
-  success: boolean;
-  data?: any;
-  errors?: string[];
-  warnings?: string[];
-  metadata?: {
-    format: string;
-    size: number;
-    processingTime: number;
-  };
-}
-```
-
-## Performance Considerations
-
-### 1. Async Processing
-- All analysis operations are fully asynchronous
-- Supports concurrent server execution via scatter-gather
-- Memory-efficient file streaming for large files
-
-### 2. Caching (Planned)
-- Result caching with idempotency keys is planned — see [GitHub milestones](https://github.com/ryemyster/ShaleYeah/milestones) (Production Hardening)
-- Currently, results are stored per-session but not cached across runs
-
-### 3. Resource Management
-- Automatic cleanup of temporary files
-- Graceful server shutdown handling
-
-## Testing Strategy
-
-Tests use a simple assert pattern (not jest/vitest), run via `npx tsx tests/<name>.test.ts`. There are 16 test suites (700+ tests total): 8 kernel suites, anti-stub server tests, and integration tests.
-
-### Anti-Stub Test Pattern
-
-Every server that calls the LLM must have an anti-stub test file (`tests/<server>-anti-stub.test.ts`) that proves three things:
-
-1. **The LLM is actually called** — pass an invalid API key and confirm the SDK throws an auth error. If the server was returning a hardcoded stub, it would never reach the SDK and this test would fail.
-2. **Different inputs produce different outputs** — pass two very different requests (e.g., rich formation data vs. sparse data) and confirm the LLM prompt text differs. This catches servers that ignore their inputs.
-3. **Demo mode works without an API key** — when `ANTHROPIC_API_KEY` is absent, the server must fall back gracefully instead of crashing.
-
-```typescript
-// Example: confirm the LLM is reached (not a stub)
-// We use a bad API key so the Anthropic SDK throws an auth error.
-// If this test passes (auth error thrown), we know callLLM was reached.
-// If the server was hardcoded, it would return data without ever calling the SDK.
-process.env.ANTHROPIC_API_KEY = "sk-ant-bad-key-for-testing";
-try {
-  await server.runTool("analyze", args);
-  assert(false, "Expected auth error — server appears to be returning a stub");
-} catch (err) {
-  const msg = String(err);
-  assert(
-    msg.includes("auth") || msg.includes("401") || msg.includes("invalid"),
-    "Auth error thrown — confirms callLLM was reached"
-  );
-}
-```
-
-### Kernel Tests
-
-```typescript
-// tests/kernel-registry.test.ts
-import { Kernel } from "../src/kernel/index.js";
-import { ShaleYeahMCPClient } from "../src/mcp-client.js";
-
-let passed = 0;
-let failed = 0;
-
-function assert(condition: boolean, message: string): void {
-  if (condition) {
-    console.log(`  ✅ ${message}`);
-    passed++;
-  } else {
-    console.error(`  ❌ ${message}`);
-    failed++;
-  }
-}
-
-const client = new ShaleYeahMCPClient();
-const kernel = new Kernel();
-kernel.initialize(client.serverConfigs);
-
-assert(kernel.initialized, "Kernel is initialized");
-assert(kernel.registry.serverCount === 14, "Registry has 14 servers");
-assert(kernel.registry.toolCount === 14, "Registry has 14 tools");
-```
-
-### Test Suites
-
-All test files live in `tests/` and are auto-discovered by `scripts/run-tests.sh`. There are 41 suites total — 8 kernel suites, 14 anti-stub server tests, and the rest covering integration, file formats, MCP protocol, and the canonical model.
-
-Key suites:
-
-| Suite | File | What it checks |
+Geologist does not import Geowiz TypeScript source. Its thin role adapter calls
+the versioned [Python MCP client](../sdk/python/README.md) at a validated endpoint.
+#679 supplies installed-wheel isolation, dedicated credential references,
+safe typed failures and bounded setup retries without post-dispatch replay.
+#668 supplies tested
+independent HTTP protocol/transport lifecycles. #677 supplies declared-schema,
+structured-result and genuine-failure boundary checks in the SDK/Geologist;
+the shared client preserves those result checks. #678 requires
+configured identity/scopes/audit at HTTP entry, including direct external clients
+and session ownership. See [HTTP access migration](../sdk/docs/http-access.md).
+Session IDs are not authority; actual role result schemas/domain qualification
+remain owned by #671/#674 and their role peers.
+
+[ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
+specifies our/third-party employee and MCP combinations, standalone use and optional
+coordination. The selected reference profile is MCP 2025-11-25, with stdio and
+Streamable HTTP qualification still required in #674. Geologist's lock resolves
+ADK 2.4.0 and Python MCP 1.28.1; the TypeScript workspace resolves MCP SDK 1.29.0.
+A2A remains unconfigured and unqualified. Executed external employee record cases
+prove structure/binding; future adapter scenarios define discovery, error, scope,
+review, cancellation and credential acceptance checks.
+
+The agent requests ADK confirmation for `save_geowiz_finding`. That flag does
+not prove authenticated revision-bound professional review or restart recovery.
+Its manifest declares in-memory sessions. Durable context and review/revision/
+resume are #672/#673. The reference reasoning/synthesis path now uses explicit
+Gemini/Anthropic profiles with independent judge configuration;
+[provider setup](model-providers.md) states its fixture qualification and limits.
+
+## Packages and dependency boundaries
+
+| Area | Current responsibility | Target boundary |
 | --- | --- | --- |
-| Registry | `tests/kernel-registry.test.ts` | 14 servers registered, capability matching, tool classification |
-| Executor | `tests/kernel-executor.test.ts` | Single execution, scatter-gather, bundle phases |
-| Context | `tests/kernel-context.test.ts` | Session isolation, context injection, result storage |
-| Resilience | `tests/kernel-resilience.test.ts` | Error classification, graceful degradation, partial success |
-| Auth | `tests/kernel-auth.test.ts` | RBAC role tiers, permission enforcement |
-| Audit | `tests/kernel-audit.test.ts` | JSONL trail, sensitive value redaction |
-| Bundles | `tests/kernel-bundles.test.ts` | Pre-built bundle phases and dependency ordering |
-| Canonical model | `tests/canonical-model.test.ts` | Zod schema validation, session accumulation |
-| Anti-stub (each server) | `tests/*-anti-stub.test.ts` | Proves Claude is actually called, not stubbed |
+| `contracts/` | Canonical JSON Schema 0.1.0, generated TypeScript types and Python/TypeScript validators for employee records | Extractable business contracts independent of agent, tool, model and storage adapters |
+| `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
+| `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
+| `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
+| `sdk/python/` | Independently buildable `shaleyeah-mcp-client`; Geologist first consumer | Installed protocol adapter with no ADK/domain/root source imports |
+| `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
-### Running Tests
+Ten agents have ADK manifests: Geologist, Risk Analyst, Legal Analyst, Market
+Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
+Infrastructure Planner and Investment Chair. Economist, Reservoir Engineer,
+Reporter and Quality Assurance retain TypeScript implementations.
+See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
 
-```bash
-npm run test                            # All 41 suites via scripts/run-tests.sh
-npx tsx tests/kernel-registry.test.ts  # One suite at a time — same command, no npm alias needed
-npm run demo                            # 14-server smoke test (separate from unit tests)
-```
+Those TypeScript agents use `LocalAgentRuntime` and copied task loops.
+`sdk/src/service.ts` supplies an endpoint facade, not an implemented universal
+HTTP employee service. `sdk/src/agent-loop.ts` exports a shared loop with tests
+but no internal production caller. #576 verifies caller/public API implications;
+migrations and #692 remove displaced runtime after replacement acceptance.
+The [legacy migration ledger](legacy-migration-ledger.md) records the verified
+four-employee callers, public exports, ten Python wrappers, numerical/fallback
+repairs and cleanup gates. Its inventory does not change runtime behavior.
+Preserve useful trust behavior and regression cases at the replacement boundary.
 
-## Security Considerations
+Every unit needs install/run/check docs and declared dependencies. #674 and role
+PRs verify extraction; moving a folder alone does not prove independent operation.
+The [deployment support guide](deployment-support.md) records current no-key
+reference checks, actual ports/config/data paths, durable-state/review gaps and
+optional-host qualification. Geowiz maintains transport sessions and writes
+findings; process separation does not make it stateless or prove replica safety.
 
-### 1. Input Validation
-- All inputs validated with Zod schemas
-- File type verification before processing
-- Path traversal protection
+## Context, evaluations and trust
 
-### 2. Data Privacy
-- No sensitive data logged
-- Temporary files cleaned up automatically
-- Audit trail redacts sensitive values automatically
+[`contracts/`](../contracts/README.md) defines employee charters, task assignments,
+work products with evidence/assumptions, bounded context manifests, review requests
+and review decisions. Both language bindings validate the same fixtures; exact
+version checks reject unsupported records. Expected scope/revision comparisons
+and a separately supplied policy check support callers without granting authority.
+Roman display names are separate from employee, role and capability IDs.
 
-### 3. Access Control
-- Role-based access control via AuthMiddleware
-- Server-level permission management
-- Append-only audit logging for all operations
+These records are ready for adoption; current employees do not yet emit them.
+The package verifies structure and declared references, not reviewer identity,
+real source content/rights or execution permission.
+[ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
+specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
+#672/#673 implement durable context/review. Eval profiles/results are #666/#667.
 
-## Running the System
+Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
+sessions are distinct from retained employee context and reviewed shared
+knowledge. [ADR 0002](../contracts/docs/0002-context-lifecycle.md), delivered by
+#571, defines private ownership, reviewed handoffs, bounded retrieval, compaction,
+invalidation and export/deletion. #672 implements durable storage and retrieval;
+the policy/reference fixtures do not enforce it today. Warehouses, vectors and
+hosted memory are optional adapters selected through measured qualification.
 
-### Development
-```bash
-npm run server:geowiz    # Individual server testing
-npm run demo             # Full 14-server demonstration through kernel
-```
+Existing shape tests/eval assets are foundational. Configurable job scorecards,
+portable results and promotion gates are #666/#667/#577/#691. Each role needs
+professional cases and human acceptance; importing an agent is not job-quality
+evidence.
 
-### Production
-```bash
-npm run prod                          # Production analysis via kernel
-npm run prod -- --files="*.las,*.xlsx" # Production with file inputs
-```
+ADR 0003 requires the executing backend to enforce identity, scopes, exact
+input/product/action review, source rights and redacted durable audit. Its
+reference cases validate current contract comparisons and specify future
+execution failures; they do not install that enforcement. #678 supplies ingress,
+while #673/#574 and connector/provider/context owners implement the remaining
+operation-specific policy. Namespace strings, prompts,
+caller approval booleans and transport session IDs cannot grant authority.
+Legacy runtime checks do not establish protection on every current ADK-to-MCP
+path: its scopes are optional caller data and approval trusts a boolean. The
+shared MCP HTTP boundary now requires explicit verified identity/scopes/audit;
+source rights, domain-review grants and actual issuer/TLS deployment still need
+their qualification owners. Geologist uses the installed credential-aware client;
+the other nine Python roles adopt it through their migration issues.
 
----
+## Optional coordination
 
-*Generated with SHALE YEAH 2025 Ryan McDonald - Apache-2.0*
+`orchestrator/src/index.ts` has no Temporal workflow or fleet-wide deal pipeline.
+Employees run without it. Chief of Staff initially coordinates Geologist and
+Research Analyst within declared authority. The [#675 charter](chief-of-staff-role.md)
+keeps Investment Chair separate for advisory investment synthesis and the human
+owner accountable. #676 implements that pilot; no coordinator runtime exists yet.
+
+Framework/model/protocol upgrades are reviewed adapter changes. Business contracts
+stay language-neutral and versioned; accepted releases pin tested dependencies
+and model/profile versions. ADR 0001 defines compatibility, deprecation and
+upgrade checks. Automatic latest-model promotion and mandatory provider/cloud
+dependencies are outside the target architecture.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](model-providers.md).

@@ -1,30 +1,65 @@
 name: CI
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
 
 jobs:
-  ci:
+  pr-checks:
+    name: PR checks
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+    - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093  # v6.0.8
 
     - name: Setup Node.js
       uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
       with:
         node-version: '22.x'
-        cache: 'npm'
+        cache: 'pnpm'
 
-    - run: npm ci --legacy-peer-deps
-    - run: npm run type-check
-    - run: npm run lint
-    - run: npm run test
-    - run: npm run build
-    - run: npm run demo
+    - run: pnpm install --frozen-lockfile
+    - name: Setup uv for contract parity checks
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+      with:
+        version: '0.12.21'
+        python-version: '3.12'
+    - run: pnpm check:issue-template
+    - run: pnpm test:sdlc
+    - name: Sequential develop delivery
+      if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SDLC_PR: ${{ github.event.pull_request.number }}
+      run: node scripts/sdlc.mjs ci "$SDLC_PR"
+    - run: pnpm turbo type-check
+    - run: pnpm turbo lint
+    - run: pnpm turbo build
+    - run: pnpm turbo test
+    - run: pnpm --dir contracts check:isolation
+    - name: Python MCP client lint and conformance
+      working-directory: sdk/python
+      run: |
+        uv run --locked ruff check .
+        uv run --locked pytest -q --cov=shaleyeah_mcp --cov-fail-under=90
+    - name: Geologist first-consumer checks
+      working-directory: agents/geologist
+      run: uv run --locked pytest -q --cov=app --cov-fail-under=90
+    - name: Native model adapter coverage
+      working-directory: sdk
+      run: pnpm exec tsx --test --experimental-test-coverage --test-coverage-include=src/model-provider.ts --test-coverage-lines=90 tests/model-provider.test.ts
+    - name: Installed Python client and Geologist wheel isolation
+      run: bash sdk/python/scripts/check-isolation.sh
+    - name: Actual protected Geowiz interoperability
+      run: uv run --project agents/geologist --locked python sdk/python/scripts/check_geowiz.py

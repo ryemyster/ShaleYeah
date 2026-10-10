@@ -1,0 +1,1075 @@
+{
+  "fixtureVersion": "1",
+  "purpose": "Synthetic authority/review reference. Validation cases execute only existing 0.1.0 validator comparisons; runtime scenarios are acceptance specifications, not an authorization engine.",
+  "baseRecords": "records.json",
+  "records": {
+    "saveRequest": {
+      "contractVersion": "0.1.0",
+      "kind": "review-request",
+      "id": "review.geology-save-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "productRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      },
+      "requestedDecision": "Approve findings.save for product.geology-1 revision r1 at urn:example:findings:well-demo-1 using the listed inputs and assumptions.",
+      "reviewerPolicy": {
+        "id": "policy.geologist.review",
+        "version": "r1"
+      },
+      "createdAt": "2026-10-07T12:30:00Z"
+    },
+    "saveDecision": {
+      "contractVersion": "0.1.0",
+      "kind": "review-decision",
+      "id": "decision.geology-save-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "requestRef": {
+        "id": "review.geology-save-1",
+        "revision": "r1"
+      },
+      "productRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      },
+      "decision": "approve",
+      "reviewer": {
+        "principalId": "reviewer.geologist",
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      },
+      "reason": "Approve the exact save action described by this synthetic review request.",
+      "decidedAt": "2026-10-07T13:00:00Z",
+      "auditRef": {
+        "id": "audit.geology-save-review-1",
+        "revision": "r1"
+      }
+    }
+  },
+  "control": {
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "productRef": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "requestRef": {
+      "id": "review.geology-save-1",
+      "revision": "r1"
+    },
+    "decisionRef": {
+      "id": "decision.geology-save-1",
+      "revision": "r1"
+    },
+    "reviewer": {
+      "principalId": "reviewer.geologist",
+      "authorityPolicy": {
+        "id": "policy.geologist.review",
+        "version": "r1"
+      }
+    },
+    "inputs": [
+      {
+        "id": "artifact.log-1",
+        "revision": "r1",
+        "uri": "urn:example:well-log:1"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "evidence.log-1",
+        "uri": "urn:example:well-log:1",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "revision": "r1",
+        "asOf": "2026-10-07T12:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "assumption.datum",
+        "statement": "Use the supplied operator datum pending geologist review",
+        "evidenceIds": [
+          "evidence.log-1"
+        ]
+      }
+    ],
+    "auditRef": {
+      "id": "audit.geology-save-review-1",
+      "revision": "r1"
+    },
+    "operation": {
+      "id": "operation.save-geology-1",
+      "name": "findings.save",
+      "target": "urn:example:findings:well-demo-1",
+      "requiredScopes": [
+        "findings:write"
+      ]
+    },
+    "clock": "2026-10-07T13:02:00Z",
+    "expiresAt": "2026-10-07T13:05:00Z"
+  },
+  "validationCases": [
+    {
+      "name": "authority: charter matches separately supplied policy",
+      "record": "charter",
+      "valid": true,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      }
+    },
+    {
+      "name": "authority: replacement employee has its own separately supplied policy",
+      "record": "externalCharter",
+      "valid": true,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "external.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      }
+    },
+    {
+      "name": "authority: extra claimed capability is rejected",
+      "record": "charter",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "capabilities"
+          ],
+          "value": [
+            "geology.interpret",
+            "capital.commit"
+          ]
+        }
+      ],
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: mismatched trusted employeeId is rejected",
+      "record": "charter",
+      "valid": false,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.other",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: mismatched trusted customerId is rejected",
+      "record": "charter",
+      "valid": false,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "other-customer",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: mismatched trusted policy id is rejected",
+      "record": "charter",
+      "valid": false,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.untrusted",
+            "version": "r1"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: mismatched trusted policy version is rejected",
+      "record": "charter",
+      "valid": false,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [
+            "geology.interpret"
+          ],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r2"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: mismatched trusted capabilities is rejected",
+      "record": "charter",
+      "valid": false,
+      "options": {
+        "trustedAuthority": {
+          "employeeId": "employee.geologist",
+          "customerId": "operator-demo",
+          "capabilities": [],
+          "authorityPolicy": {
+            "id": "policy.geologist.review",
+            "version": "r1"
+          }
+        }
+      },
+      "code": "authority_denied"
+    },
+    {
+      "name": "authority: request matches current scope and revisions",
+      "record": "reviewRequest",
+      "valid": true,
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: decision matches current scope and revisions",
+      "record": "approveDecision",
+      "valid": true,
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: decision for different customerId is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "scope",
+            "customerId"
+          ],
+          "value": "other-scope"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "authority: decision for different assetId is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "scope",
+            "assetId"
+          ],
+          "value": "other-scope"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "authority: decision for different taskId is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "scope",
+            "taskId"
+          ],
+          "value": "other-scope"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "authority: decision for different employeeId is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "scope",
+            "employeeId"
+          ],
+          "value": "other-scope"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "authority: decision for changed task revision is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "taskRevision"
+          ],
+          "value": "r2"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "authority: decision for changed product id is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "productRef",
+            "id"
+          ],
+          "value": "product.other"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "authority: decision for changed product revision is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "productRef",
+            "revision"
+          ],
+          "value": "r2"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "authority: decision for changed product uri is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "productRef",
+            "uri"
+          ],
+          "value": "urn:example:interpretation:other"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "authority: changed review request product is rejected",
+      "record": "reviewRequest",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "productRef",
+            "revision"
+          ],
+          "value": "r2"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      },
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "authority: decision missing reviewer is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "reviewer"
+          ],
+          "remove": true
+        }
+      ],
+      "code": "invalid_contract"
+    },
+    {
+      "name": "authority: decision missing auditRef is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "auditRef"
+          ],
+          "remove": true
+        }
+      ],
+      "code": "invalid_contract"
+    },
+    {
+      "name": "authority: decision missing requestRef is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "requestRef"
+          ],
+          "remove": true
+        }
+      ],
+      "code": "invalid_contract"
+    },
+    {
+      "name": "authority: model boolean is not a declared decision field",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "approved"
+          ],
+          "value": true
+        }
+      ],
+      "code": "invalid_contract"
+    },
+    {
+      "name": "authority: undeclared approval enum is rejected",
+      "record": "approveDecision",
+      "valid": false,
+      "patches": [
+        {
+          "path": [
+            "decision"
+          ],
+          "value": "auto_approved"
+        }
+      ],
+      "code": "invalid_contract"
+    },
+    {
+      "name": "authority: reject is a valid record without permission to execute",
+      "record": "approveDecision",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "decision"
+          ],
+          "value": "reject"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: request_changes is a valid record without permission to execute",
+      "record": "approveDecision",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "decision"
+          ],
+          "value": "request_changes"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: shape validation cannot authenticate a claimed reviewer",
+      "record": "approveDecision",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "reviewer",
+            "principalId"
+          ],
+          "value": "untrusted.claimed-reviewer"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: shape validation cannot verify a declared source hash",
+      "record": "work",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "evidence",
+            0,
+            "hash",
+            "value"
+          ],
+          "value": "2222222222222222222222222222222222222222222222222222222222222222"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: shape validation cannot prove referenced audit receipt exists",
+      "record": "approveDecision",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "auditRef",
+            "id"
+          ],
+          "value": "audit.nonexistent"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: shape validation does not redact free text",
+      "record": "approveDecision",
+      "valid": true,
+      "patches": [
+        {
+          "path": [
+            "reason"
+          ],
+          "value": "example-secret-sentinel"
+        }
+      ],
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: explicit save request matches current scope and revisions",
+      "record": "saveRequest",
+      "valid": true,
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    },
+    {
+      "name": "authority: explicit save decision matches current scope and revisions",
+      "record": "saveDecision",
+      "valid": true,
+      "options": {
+        "expectedScope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-geology-1",
+          "employeeId": "employee.geologist"
+        },
+        "expectedTaskRevision": "r1",
+        "expectedProductRef": {
+          "id": "product.geology-1",
+          "revision": "r1",
+          "uri": "urn:example:interpretation:1"
+        }
+      }
+    }
+  ],
+  "runtimeScenarios": [
+    {
+      "id": "approved-current-operation",
+      "given": "Trusted identity, rights, exact bindings and durable audit preparation are valid.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "permit_one_action",
+      "owner": "#673"
+    },
+    {
+      "id": "missing-identity",
+      "given": "Remote request has no verified principal.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678"
+    },
+    {
+      "id": "missing-scope",
+      "given": "Authenticated principal lacks findings:write.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678"
+    },
+    {
+      "id": "spoofed-session",
+      "given": "An MCP session ID or supplied userId is used as proof of identity.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#668/#678"
+    },
+    {
+      "id": "direct-mcp-bypass",
+      "given": "Client invokes save directly without the executing-boundary grant.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678/#673"
+    },
+    {
+      "id": "model-approval",
+      "given": "Model or retrieved text supplies approved=true, reviewer identity or policy claims.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678/#673"
+    },
+    {
+      "id": "wrong-scope",
+      "given": "Customer, asset, task or employee differs from the approved operation.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678/#673"
+    },
+    {
+      "id": "reviewer-not-authorized",
+      "given": "Validly authenticated human is not enrolled for this operation and scope.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#673"
+    },
+    {
+      "id": "changed-product",
+      "given": "Artifact revision or actual content differs while retaining a claimed identifier.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "fresh_review_required",
+      "owner": "#673"
+    },
+    {
+      "id": "changed-input-or-assumption",
+      "given": "Actual input/source hash, access revision or an assumption changes.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "fresh_review_required",
+      "owner": "#670/#672/#673"
+    },
+    {
+      "id": "changed-operation-or-destination",
+      "given": "Operation, arguments, target or export recipient changes.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "fresh_review_required",
+      "owner": "#670/#673"
+    },
+    {
+      "id": "changed-policy",
+      "given": "Grant or reviewer/source policy version changes.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "fresh_review_required",
+      "owner": "#678/#673"
+    },
+    {
+      "id": "expired-or-revoked",
+      "given": "Grant expired or identity/consent/source access was revoked.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#678/#670/#673"
+    },
+    {
+      "id": "reject-or-request-changes",
+      "given": "Human decision rejects work or requests changes.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "no_execution_grant",
+      "owner": "#673"
+    },
+    {
+      "id": "exact-retry",
+      "given": "Same consumed grant, idempotency key and immutable operation are retried.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "return_recorded_result_without_reexecution",
+      "owner": "#673"
+    },
+    {
+      "id": "conflicting-replay",
+      "given": "Consumed grant or idempotency key is reused for different arguments or target.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#673"
+    },
+    {
+      "id": "audit-unavailable-before-effect",
+      "given": "Durable preparation/audit sink is unavailable before a protected action.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#574/#673"
+    },
+    {
+      "id": "outcome-write-failure",
+      "given": "External effect may have occurred but durable outcome write fails.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "uncertain_reconcile_no_blind_retry",
+      "owner": "#574/#673"
+    },
+    {
+      "id": "secret-in-denial-or-error",
+      "given": "Sensitive text appears in an early denial, error or model response.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "redact_before_emit_or_block_export",
+      "owner": "#574/#669"
+    },
+    {
+      "id": "cross-employee-secret",
+      "given": "Employee or coordinator requests another employee credential without a grant.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_lookup",
+      "owner": "#669/#678"
+    },
+    {
+      "id": "source-export-denied",
+      "given": "Analysis access exists but source policy forbids promotion/export.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#670/#672/#673"
+    },
+    {
+      "id": "workspace-escape",
+      "given": "Path traversal, symlink/race, or unapproved workspace root is requested.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_read_or_write",
+      "owner": "#670"
+    },
+    {
+      "id": "oversize-source",
+      "given": "File, decompressed payload or response exceeds configured limits.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "stop_before_exceeding_limit",
+      "owner": "#670"
+    },
+    {
+      "id": "private-destination",
+      "given": "Untrusted URL resolves to loopback/private/link-local/metadata networks.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_connection",
+      "owner": "#670/#679"
+    },
+    {
+      "id": "redirect-or-dns-rebinding",
+      "given": "Redirect, DNS change, retry or fallback reaches an unapproved address.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_connection",
+      "owner": "#670/#679"
+    },
+    {
+      "id": "approved-internal-connector",
+      "given": "Trusted policy explicitly permits this internal source and resolved network.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "permit_only_scoped_connector",
+      "owner": "#670/#679"
+    },
+    {
+      "id": "restart-stale-state",
+      "given": "Restart loads a pending or consumed operation with outdated bindings/rights.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "revalidate_or_reconcile_without_new_effect",
+      "owner": "#672/#673"
+    },
+    {
+      "id": "byo-authority-escalation",
+      "given": "Replacement employee or Chief of Staff attempts to widen its received grant.",
+      "when": "The executing boundary receives the protected operation.",
+      "then": "deny_before_effect",
+      "owner": "#572/#678/#673"
+    }
+  ]
+}

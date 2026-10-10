@@ -16,11 +16,17 @@
 # continue running remaining suites, not abort.
 set -uo pipefail
 
-TESTS_DIR="$(cd "$(dirname "$0")/../tests" && pwd)"
+# Run from the calling package's directory (supports monorepo workspace packages)
+TESTS_DIR="$(cd "${PWD}/tests" && pwd 2>/dev/null)" || {
+  echo "No tests/ directory found in $(pwd)"
+  exit 0
+}
 
 EXCLUDED=(
   "mcp-integration.test.ts"
   "mcp-server-infrastructure.test.ts"
+  # Renamed in monorepo — same signal-handling test, excluded for same reason
+  "server-signal.test.ts"
 )
 
 passed=0

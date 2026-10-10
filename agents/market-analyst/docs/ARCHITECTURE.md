@@ -1,0 +1,51 @@
+# Architecture - Market Analyst ADK Agent
+
+Market Analyst is a Tier 2 ADK/Python package. It owns agent reasoning, tool-selection policy, eval coverage, and human-review boundaries for market diligence.
+
+The Tier 1 execution backend is [`servers/market`](../../../servers/market), an independently runnable MCP service for market data and analysis tools.
+
+## Package Boundary
+
+```text
+agents/market-analyst/
+  agents-cli-manifest.yaml   ADK project marker
+  .agents-cli-spec.md        reference-pair spec and package constraints
+  pyproject.toml             Python package and test dependencies
+  app/agent.py               ADK root agent
+  app/market_mcp.py          Python MCP client wrappers
+  tests/                     pytest shape tests and eval references
+```
+
+## Architecture Mode
+
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
+
+Market Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Market MCP tools when market diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #530.
+
+Graph-based workflow is reserved for a later issue if market review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+
+## Execution Flow
+
+1. ADK receives a market analysis task through `app/agent.py`.
+2. The agent plans the correct Market backend tool and checks review boundaries.
+3. `app/market_mcp.py` calls the Market MCP server through streamable HTTP.
+4. `servers/market` performs the domain operation and returns MCP content.
+5. The ADK agent summarizes the result without approving final bid or investment decisions.
+
+## Current Tool Parity
+
+| ADK tool | Backend MCP tool | Purpose |
+|----------|------------------|---------|
+| `analyze_market_conditions` | `analyze_market_conditions` | Commodity market, pricing, and supply-demand context |
+| `competitive_market_analysis` | `competitive_analysis` | Competitive landscape and operator comparison |
+
+## Runtime Configuration
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `MARKET_MCP_URL` | `http://localhost:3007` | Market MCP backend URL |
+| `MARKET_ANALYST_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
+
+## Safety Boundary
+
+Market Analyst may analyze market conditions, competitor context, pricing signals, and uncertainty. It must not present final bid approval, investment approval, or acquisition authorization without human review.
