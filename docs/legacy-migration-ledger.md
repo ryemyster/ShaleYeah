@@ -123,7 +123,7 @@ unknown downstream use cannot be waved away by a repository search.
 | [compensation.ts](../sdk/src/compensation.ts) | Four loops + shared loop call registry; registration observed in tests, not production handler setup | Adapter → delete #692 after reviewed write/failure recovery is preserved at executing backend; remove unsupported rollback claims |
 | [contracts.ts](../sdk/src/contracts.ts) | Four employee imports, runtime/service/loop; public legacy runtime/transport interfaces, distinct from `contracts/` business records | Adapter → retire displaced interfaces in #692 after last supported caller/public API disposition. Move any still-supported interfaces with declared compatibility; do not delete by filename alone |
 | [errors.ts](../sdk/src/errors.ts) | Runtime, four private clients and `sdk/tests/errors.test.ts` | Refactor error boundary #677/#679; #692 deletes only obsolete runtime-specific exports after last caller and public disposition |
-| [llm-client.ts](../sdk/src/llm-client.ts) | `callLLM` in all 14 server packages and four TS employees; LLM client tests | Keep utility, refactor provider coupling in [#669](https://github.com/ryemyster/ShaleYeah/issues/669); reference slice first, declare unsupported providers in other units until tested |
+| [llm-client.ts](../sdk/src/llm-client.ts) | `callLLM` in 13 server packages and four TS employees; Geowiz uses configured native synthesis; LLM client tests | Temporary compatibility for unmigrated consumers; deletion owned by #692/#576. Geowiz uses `model-provider.ts`; other units need their own provider conformance |
 | [mcp-server.ts](../sdk/src/mcp-server.ts) | `ServerFactory` constructs base used by all 14 MCPs; owns dispatch and transport | Keep: #668/#677/#678 supply sessions, schemas/errors and configured HTTP identity/scopes; [access migration](../sdk/docs/http-access.md) requires explicit launchers/client credentials. #670/#673/#674 still own source/review/extraction qualification |
 | [server-factory.ts](../sdk/src/server-factory.ts) | All 14 MCP entrypoints; `createAnalysisTool` wraps domain results | Keep/refactor metadata in [#710](https://github.com/ryemyster/ShaleYeah/issues/710); preserve zero/absence. Schema/error work remains #677 |
 | [canonical-model.ts](../sdk/src/canonical-model.ts) | Geowiz `FormationSchema`, Econobot `EconomicsSchema`, Risk `RiskProfileSchema`, Decision `DecisionSchema` | Keep/refactor role-owned mappings; tests must distinguish units, observed/assumed fields and old 0–100 scores from declared new scales |
@@ -276,3 +276,13 @@ package, for example `uv run pytest tests/test_adk_project_shape.py`. #576 also
 verified the existing absence guards against temporary forbidden-file controls;
 it did not change those tests. Negative controls use temporary copies, not real
 employee package files. Re-run after each migration and update the affected row.
+
+## Provider replacement in #669
+
+Deleted Geowiz’s hardcoded Anthropic call, missing-key/model-error demo synthesis,
+TOC/recommendation replacement helpers and obsolete live-key anti-stub tests.
+The retained `deriveDefaultFormationProperties` export has legacy utility tests
+and is no longer called by formation synthesis; #671 owns remaining geological
+estimates/source repair. SDK `callLLM` remains an explicit compatibility entry
+point for 13 unmigrated servers and four TypeScript employees, with removal
+owned by #692/#576. Native reference adapters and dependencies are pinned.

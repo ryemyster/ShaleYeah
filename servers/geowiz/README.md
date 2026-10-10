@@ -2,7 +2,7 @@
 
 **Marcus Aurelius Geologicus** — Tier 1 geological analysis MCP server.
 
-Tool server exposing 9 geological analysis tools over the Model Context Protocol. It maintains HTTP transport sessions and writes findings/artifacts. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
+Tool server exposing 9 domain tools and one model-profile discovery tool over the Model Context Protocol. It maintains HTTP transport sessions and writes findings/artifacts. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
 
 ---
 
@@ -17,13 +17,13 @@ Add to your Claude Desktop MCP config:
       "command": "pnpm",
       "args": ["--filter", "@shaleyeah/server-geowiz", "start"],
       "cwd": "/path/to/ShaleYeah",
-      "env": { "ANTHROPIC_API_KEY": "sk-ant-..." }
+      "env": { "GEOWIZ_MODEL_CONFIG_FILE": "/absolute/private/models.json" }
     }
   }
 }
 ```
 
-Restart Claude Desktop. You'll see 9 geology tools available. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
+Restart Claude Desktop. You'll see 9 domain tools and model-profile discovery. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
 
 ---
 
@@ -45,7 +45,7 @@ curl http://127.0.0.1:3001/health
 Tool calls go through the MCP protocol (used by the geologist agent or any MCP client). To send a real task in natural language, use the geologist Tier 2 agent — see [`agents/geologist`](../../agents/geologist).
 
 Startup/health need no model key. Real model-assisted tools need a separately
-loaded provider credential. HTTP tool access requires configured credentials
+resolved provider credential from the [private profile](../../docs/model-providers.md). HTTP tool access requires configured credentials
 and scopes; remote deployments inject their verified identity/audit adapters.
 A healthy port does not prove source access, professional results or reviewed persistence.
 Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) for build/state and qualification steps.
@@ -68,15 +68,16 @@ performance qualification remains #674 and its dependencies.
 
 | Tool | Input formats | LLM call |
 |------|--------------|----------|
-| `analyze_formation` | LAS 2.0 | Yes — synthesis + fallback |
-| `process_gis` | GeoJSON, Shapefile (.shp), KML | Yes |
-| `process_well_logs` | LAS, DLIS, WITSML | Yes |
+| `analyze_formation` | LAS 2.0 | Configured Gemini or Anthropic; explicit errors |
+| `process_gis` | GeoJSON, Shapefile (.shp), KML | No — source/format qualification remains |
+| `process_well_logs` | LAS, DLIS, WITSML | No — source/format qualification remains |
 | `assess_quality` | Advertised file path; current fixed metrics do not inspect it | No — input-derived repair is #671 |
-| `process_access_database` | .mdb, .accdb, CSV | Yes |
-| `process_document` | PDF, DOCX, TXT | Yes |
-| `process_seismic_data` | SEG-Y (.segy, .sgy) | Yes |
-| `process_aries_database` | ARIES export files | Yes |
+| `process_access_database` | .mdb, .accdb, CSV | No — source/format qualification remains |
+| `process_document` | PDF, DOCX, TXT | No — source/format qualification remains |
+| `process_seismic_data` | SEG-Y (.segy, .sgy) | No — source/format qualification remains |
+| `process_aries_database` | ARIES export files | No — source/format qualification remains |
 | `save_finding` | JSON payload | No — fs write to `./data/geowiz/findings/` |
+| `get_model_profile` | Empty object | No — authenticated discovery without keys/references |
 
 ---
 
@@ -84,7 +85,7 @@ performance qualification remains #674 and its dependencies.
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis calls (all tools except `assess_quality`, `save_finding`) |
+| `GEOWIZ_MODEL_CONFIG_FILE` | Model-backed stdio calls | None | Private model profile; [setup](../../docs/model-providers.md) |
 | `PORT` | No | — | HTTP requires configured access; omit for stdio (Claude Desktop) |
 | `GEOWIZ_HTTP_CONFIG_FILE` | Local HTTP example | — | Private operator policy with credential/audit file references |
 

@@ -38,12 +38,15 @@ Model credentials are separate; the default local policy permits only
 ```bash
 cd agents/geologist
 uv sync --frozen --extra eval
+GEOLOGIST_MODEL_CONFIG_FILE=/absolute/private/models.json \
 GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
   GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
 ```
 
-Start Geowiz and load the chosen model credentials before this live command;
+Complete [model provider setup](../../docs/model-providers.md) before this live command;
+Gemini and Anthropic are configured across both reasoning and formation synthesis.
+Start Geowiz with the same production provider profile;
 follow the [ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally).
 The fixture path resolves on the Geowiz host. This path uses `app/agent.py` and
 the role adapter in `app/geowiz_mcp.py` and its installed MCP client; it remains subject to provider,

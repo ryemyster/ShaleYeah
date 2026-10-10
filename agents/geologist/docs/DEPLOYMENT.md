@@ -30,9 +30,10 @@ These checks verify package/import/project shape, not geological correctness.
 The manifest currently reports deployment target `none` and in-memory sessions.
 
 With a private development Geowiz at port 3001 and the chosen model credentials
-loaded into the environment:
+resolved from the private [model profile](../../../docs/model-providers.md):
 
 ```bash
+GEOLOGIST_MODEL_CONFIG_FILE=/absolute/private/models.json \
 GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
   GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
   "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
@@ -40,7 +41,7 @@ GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
 
 The file path is read by Geowiz, relative to the Geowiz working directory. A
 different host needs an approved file/connector path there. Provider/task
-qualification remains #669/#670/#671/#674.
+qualification remains #670/#671/#674.
 
 ## Configuration and ports
 
@@ -49,14 +50,13 @@ qualification remains #669/#670/#671/#674.
 | `GEOWIZ_MCP_URL` | Defaults to `http://127.0.0.1:3001/mcp`; HTTPS for remote compatible endpoints |
 | `GEOWIZ_MCP_ACCESS_TOKEN_FILE` | Required private dedicated credential reference; the server's policy supplies scopes |
 | Transport limits | `GEOWIZ_MCP_TIMEOUT_SECONDS=30`, `GEOWIZ_MCP_REQUEST_TIMEOUT_SECONDS=10`, `GEOWIZ_MCP_PREFLIGHT_ATTEMPTS=2`; see [client bounds](../../../sdk/python/README.md) |
-| `GEOLOGIST_ADK_MODEL` | Defaults to moving alias `gemini-flash-latest`; accepted runs must record a qualified model/profile version |
-| Gemini credentials | `GOOGLE_API_KEY` or `GEMINI_API_KEY` for the default API path; selected cloud backends need their own identity |
-| Geowiz model credential | `ANTHROPIC_API_KEY` belongs in the separate tool process for its model-assisted tools |
+| `GEOLOGIST_MODEL_CONFIG_FILE` | Required for model execution; owned private Gemini/Anthropic production profiles and optional separate judge |
+| Geowiz synthesis profile | Same production provider and owner; Geowiz HTTP `modelConfigFile` references that profile |
 | Employee port | No fixed production port; CLI run manages its local server |
 | Optional playground | `agents-cli playground --host 127.0.0.1 --port 8000` explicitly binds a development UI |
 
 Resolve real credentials outside commands, prompts, logs and saved context.
-Model/provider configuration across the full path is #669; selecting ADK or a
+The reference [provider contract](../../../docs/model-providers.md) is implemented; selecting ADK or a
 host does not certify BYO providers or another employee runtime.
 
 ## State and human review

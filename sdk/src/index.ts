@@ -11,6 +11,7 @@ export * from "./file-utils.js";
 export * from "./identifier.js";
 export * from "./llm-client.js";
 export * from "./mcp-server.js";
+export * from "./model-provider.js";
 export * from "./mutual-exclusivity.js";
 export * from "./runtime.js";
 export * from "./server-factory.js";

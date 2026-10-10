@@ -18,7 +18,7 @@ format. Follow the [MVP plan](mvp-release-plan.md) for implementation order.
 | Choice | Current reference | Replacement boundary |
 | --- | --- | --- |
 | Employee authoring framework | Python ADK (Google Agent Development Kit) | Job/task/evidence/context/review records in [contracts/](../contracts/README.md) do not depend on ADK |
-| Model provider | Geologist selects a Gemini model; Geowiz model-assisted tools use the shared Anthropic client | #669 implements reference provider configuration across both processes; a key switch alone is not BYO-agent support |
+| Model provider | Explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis | Native offline conformance and role/HITL fixtures pass; real-model/domain quality and hosted execution remain separate gates |
 | Context and review storage | Geologist manifest declares in-memory sessions; Geowiz writes JSON findings to disk | #672/#673 implement scoped durable context and exact-revision review/resume; session storage alone is insufficient |
 | Protocol adapter | Python MCP (Model Context Protocol) client and TypeScript MCP server using Streamable HTTP; server also has a stdio launch mode | #668/#677/#678/#679 repair lifecycle, schemas/errors, identity and shared client handling; #674 tests composition |
 | Hosting | Development workstation today | Local package/container minimum is the target; VM/Fly.io/Cloud Run/GKE/Agent Runtime remain optional adapters |
@@ -112,17 +112,17 @@ checks results and bounds setup retries without replaying dispatched tools.
    Stop your own server with Ctrl-C when done; do not stop another user's process
    to free a port. Omit `PORT` only when an MCP client manages a stdio child.
 
-4. For a natural-language task, configure the chosen model's credentials in
-   the process environment through a secret reference or local secret loader.
-   Current default Gemini runs use `GOOGLE_API_KEY` or `GEMINI_API_KEY`; a selected
-   Vertex backend requires its own configured project/identity. Geowiz's
-   model-assisted tools separately use `ANTHROPIC_API_KEY`. A credential-free
-   import/health check does not validate either provider.
+4. Complete [model provider configuration](model-providers.md) with owned private
+   profiles and dedicated key references. Geologist reasoning and Geowiz formation
+   synthesis support Gemini and Anthropic and require the same production provider.
+   Geowiz's HTTP policy uses `modelConfigFile`; Geologist uses
+   `GEOLOGIST_MODEL_CONFIG_FILE`. A no-key import/health check does not qualify a model.
 
    From `agents/geologist`, use the same private credential file as the backend,
    with its permitted scopes and the separate model credentials ready:
 
    ```bash
+   GEOLOGIST_MODEL_CONFIG_FILE=/absolute/private/models.json \
    GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
   GEOWIZ_MCP_ACCESS_TOKEN_FILE="$HOME/.config/shaleyeah/geowiz/credential" agents-cli run \
      "Use assess_geowiz_quality on tests/sample-files/sample.las as LAS data"
@@ -131,7 +131,7 @@ checks results and bounds setup retries without replaying dispatched tools.
    That fixture path resolves on the **Geowiz** host relative to its working
    directory, not on the employee host. This command is a live-task example,
    unqualified by #578; actual provider, MCP/tool and source checks belong to
-   #669/#670/#671/#674. Never embed a real key in a command, prompt or JSON example.
+   #670/#671/#674. Never embed a real key in a command, prompt or JSON example.
 
 5. Optional manual playground, still from `agents/geologist`:
 
@@ -148,7 +148,7 @@ checks results and bounds setup retries without replaying dispatched tools.
 
 | Unit | Actual settings / paths | What must survive deployment |
 | --- | --- | --- |
-| Geologist | `GEOLOGIST_ADK_MODEL` defaults to `gemini-flash-latest`; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #669/#672/#673 |
+| Geologist | `GEOLOGIST_MODEL_CONFIG_FILE` requires a fixed trusted profile; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #672/#673 |
 | Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; unset PORT selects stdio; model key is separate | #678 supplies ingress; source access, review enforcement, redacted operational audit and actual remote issuer/TLS remain #670/#673/#574/#674 |
 | Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; some tools also write caller `outputPath` | Mount the actual configured working-directory paths, restrict source/output roots and preserve ownership; #670/#678/#674 |
 | Current sessions | Geologist manifest `session_type: in_memory`; no package-configured persistent context/review store | Restart-safe scoped context, approval/revision invalidation and export/delete/restore; #672/#673 |

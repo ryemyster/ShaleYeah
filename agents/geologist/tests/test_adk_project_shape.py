@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 REPO_ROOT = PACKAGE_ROOT.parents[1]
 
@@ -16,7 +15,14 @@ def test_adk_manifest_exists_inside_geologist_package() -> None:
 def test_adk_python_entrypoint_exists_inside_geologist_package() -> None:
     agent = (PACKAGE_ROOT / "app" / "agent.py").read_text()
 
-    assert "root_agent = Agent(" in agent
+    from google.adk.agents import Agent
+
+    from app.agent import root_agent
+    from app.model_provider import ConfiguredModel
+
+    assert isinstance(root_agent, Agent)
+    assert isinstance(root_agent.model, ConfiguredModel)
+    assert root_agent.model.model == "unconfigured"
     assert 'app = App(root_agent=root_agent, name="app")' in agent
     assert "GEOWIZ_MCP_URL" in agent
     assert "servers/geowiz remains independently runnable" in agent

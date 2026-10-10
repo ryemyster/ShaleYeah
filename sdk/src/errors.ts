@@ -4,6 +4,8 @@
  * Implements Arcade pattern #40: Error Classification.
  */
 
+import { ModelProviderError } from "./model-provider.js";
+
 export class RetryableToolError extends Error {
 	readonly retryable = true as const;
 
@@ -26,6 +28,11 @@ export class PermanentToolError extends Error {
 
 /** Preserve native error intent before using legacy message classification. */
 export function classifyToolError(error: unknown): "auth_required" | "user_action" | "retryable" | "permanent" {
+	if (error instanceof ModelProviderError) {
+		if (error.code === "owner" || error.code === "credential") return "auth_required";
+		if (error.code === "provider" || error.code === "timeout") return "retryable";
+		return "permanent";
+	}
 	if (error instanceof PermanentToolError) return "permanent";
 	if (error instanceof RetryableToolError) return "retryable";
 	const message = String(error);

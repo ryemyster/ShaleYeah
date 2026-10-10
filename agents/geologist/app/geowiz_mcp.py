@@ -1,12 +1,37 @@
 from __future__ import annotations
 
+import inspect
 import os
+from contextvars import ContextVar
+from functools import wraps
 from pathlib import Path
 from typing import Any
 
 from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, MCPClientError, call_tool
 
 GEOWIZ_DEFAULT_URL = "http://127.0.0.1:3001/mcp"
+_BINDING: ContextVar[tuple[MCPClientConfig, dict[str, Any] | None] | None] = ContextVar("geologist_backend_binding", default=None)
+
+
+def bind_backend(function, config: MCPClientConfig, expected_profile: dict[str, Any] | None):
+    """Keep each employee's backend settings out of model arguments and global key state."""
+    if inspect.iscoroutinefunction(function):
+        @wraps(function)
+        async def bound(*args, **kwargs):
+            token = _BINDING.set((config, expected_profile))
+            try:
+                return await function(*args, **kwargs)
+            finally:
+                _BINDING.reset(token)
+    else:
+        @wraps(function)
+        def bound(*args, **kwargs):
+            token = _BINDING.set((config, expected_profile))
+            try:
+                return function(*args, **kwargs)
+            finally:
+                _BINDING.reset(token)
+    return bound
 
 
 async def _missing_credential() -> str:
@@ -14,6 +39,9 @@ async def _missing_credential() -> str:
 
 
 def _backend_config() -> MCPClientConfig:
+    binding = _BINDING.get()
+    if binding:
+        return binding[0]
     reference = os.getenv("GEOWIZ_MCP_ACCESS_TOKEN_FILE")
     try:
         total_timeout = float(os.getenv("GEOWIZ_MCP_TIMEOUT_SECONDS", "30"))
@@ -39,6 +67,14 @@ def geowiz_backend_url() -> str:
 async def call_geowiz_tool(tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     """Call the installed MCP client; geology mappings and configuration stay here."""
     config = _backend_config()
+    if tool_name == "analyze_formation":
+        binding = _BINDING.get()
+        if not binding or not binding[1]:
+            raise MCPClientError("invalid_configuration", "user_action")
+        discovery = await call_tool(config, "get_model_profile", {})
+        payload = discovery.get("structuredContent") or {}
+        if discovery.get("isError") or payload.get("success") is not True or payload.get("analysis") != binding[1]:
+            raise MCPClientError("model_binding_mismatch", "user_action")
     return {
         "backendUrl": config.endpoint,
         "mcpServer": "geowiz",

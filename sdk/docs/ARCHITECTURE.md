@@ -197,3 +197,12 @@ Results are typed `ParsedFileResult` — consumers never need to import individu
 ## Orchestrator connection
 
 The sdk has no knowledge of the orchestrator (`@shaleyeah/orchestrator`). When Temporal workflows are introduced (#362), the orchestrator will depend on sdk contracts, not the reverse.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](../../docs/model-providers.md).

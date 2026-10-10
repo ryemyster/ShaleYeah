@@ -56,6 +56,9 @@ jobs:
     - name: Geologist first-consumer checks
       working-directory: agents/geologist
       run: uv run --locked pytest -q --cov=app --cov-fail-under=90
+    - name: Native model adapter coverage
+      working-directory: sdk
+      run: pnpm exec tsx --test --experimental-test-coverage --test-coverage-include=src/model-provider.ts --test-coverage-lines=90 tests/model-provider.test.ts
     - name: Installed Python client and Geologist wheel isolation
       run: bash sdk/python/scripts/check-isolation.sh
     - name: Actual protected Geowiz interoperability

@@ -119,3 +119,12 @@ safe typed failures and bounded setup retries without repeating dispatched tools
 It does not import ADK, domain logic or this TypeScript SDK. Geologist is the first
 declared consumer; remaining role owners adopt it and delete their copied clients.
 See its package-local checks, wheel-isolation and actual-Geowiz controls.
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](../docs/model-providers.md).

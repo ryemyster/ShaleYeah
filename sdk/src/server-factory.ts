@@ -85,7 +85,7 @@ export class ServerFactory {
 		description: string,
 		inputSchema: z.ZodObject<z.ZodRawShape>,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		analyzeFunction: (args: any, context?: MCPExecutionContext) => Promise<any>,
+		analyzeFunction: (args: any, context?: MCPExecutionContext, signal?: AbortSignal) => Promise<any>,
 		options: AnalysisToolOptions = {},
 	): ServerToolTemplate {
 		const scale = options.confidenceScale;
@@ -95,10 +95,10 @@ export class ServerFactory {
 			description,
 			inputSchema,
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			handler: async (args: any, context?: MCPExecutionContext) => {
+			handler: async (args: any, context?: MCPExecutionContext, signal?: AbortSignal) => {
 				try {
 					const startTime = Date.now();
-					const analysis = await analyzeFunction(args, context);
+					const analysis = await analyzeFunction(args, context, signal);
 					const executionTime = Date.now() - startTime;
 					if (isToolFailure(analysis)) return analysis;
 

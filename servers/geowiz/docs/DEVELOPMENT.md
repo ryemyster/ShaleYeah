@@ -21,50 +21,26 @@ pnpm turbo test --filter=@shaleyeah/server-geowiz
 
 ## TDD workflow
 
-All new tools follow test-first. The pattern:
+1. Write an offline failing behavior test in `tests/` before changing source.
+2. Add a typed MCP operation to the per-instance template. Keep credentials and
+   trusted configuration out of tool arguments.
+3. Implement the behavior and explicit failures. Use an injected SDK model runtime
+   if the tool needs model synthesis; never substitute a vendor or fabricated answer.
+4. Run package build/type/lint/tests and provider conformance. Delete displaced
+   paths and update docs/changelog before a PR into develop.
 
-1. Write a failing test in `tests/server.test.ts` that calls the tool via MCP
-2. Add the tool to `src/index.ts` in the `tools:` array using `ServerFactory.createAnalysisTool()`
-3. Implement the handler + LLM synthesis function + deterministic fallback
-4. Confirm tests pass, then run the anti-stub test
+[Provider qualification](../../../docs/model-providers.md) covers native SDK fixtures,
+real protected transport controls and ADK role/HITL regressions. These fixtures
+are not evidence of professional geological quality. Domain repairs stay in #671.
 
-## LLM wiring checklist
+## Constraints
 
-Every tool that calls `callLLM()` needs:
-
-- [ ] `synthesize<Domain>WithLLM(input)` — calls `callLLM()` from `@shaleyeah/sdk`, returns typed result
-- [ ] `deriveDefault<Domain>()` — rule-based fallback, deterministic, no `Math.random()`
-- [ ] Handler wraps with try/catch and falls back on any error
-- [ ] `tests/server-anti-stub.test.ts` entry — proves `messages.create` is actually called (use a fake API key to get an auth error; no auth error = LLM was never wired)
-
-## Adding a new tool
-
-```typescript
-// In src/index.ts, add to the tools: array:
-ServerFactory.createAnalysisTool(
-    "my_new_tool",
-    "Description shown to agents",
-    z.object({
-        filePath: z.string(),
-        // ...
-    }),
-    async (args) => {
-        try {
-            return await synthesizeMyToolWithLLM(args);
-        } catch (_err) {
-            return deriveDefaultMyTool(args);
-        }
-    },
-),
-```
-
-## Key constraints
-
-- No `Math.random()` in any fallback function — use domain constants
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- No governance logic (HITL, audit trail) — that lives in the `geologist` agent
-- Dynamic imports for large format parsers — keep startup time fast
-- Tools return structured objects, not strings — the agent layer synthesizes prose
+- Import maintained provider adapters through the shared TypeScript SDK.
+- Enforce auth/scopes/ownership at the executing boundary; keep human confirmation
+  distinct from backend authorization and professional acceptance.
+- Do not put keys in prompts, files of findings, logs or tool discovery.
+- Keep large format parsers dynamically loaded and results structured.
+- Classify failures and preserve missing data. A missing provider is not a success.
 
 ## File structure
 

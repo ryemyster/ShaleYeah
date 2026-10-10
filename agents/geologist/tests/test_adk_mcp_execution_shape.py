@@ -69,12 +69,19 @@ def test_adk_root_agent_exposes_migrated_geowiz_execution_tools() -> None:
     assert '"process_seismic_data": "process_geowiz_seismic_data"' in agent
     assert '"process_well_logs": "process_geowiz_well_logs"' in agent
     assert '"process_gis": "process_geowiz_gis"' in agent
-    assert "FunctionTool(save_geowiz_finding, require_confirmation=True)" in agent
+    from google.adk.tools import FunctionTool
+
+    from app.agent import root_agent
+
+    writes = [tool for tool in root_agent.tools if isinstance(tool, FunctionTool)]
+    assert len(writes) == 1
+    assert writes[0].name == "save_geowiz_finding"
+    assert writes[0]._require_confirmation is True
 
 
 def test_python_project_declares_adk_and_mcp_dependencies() -> None:
     pyproject = (PACKAGE_ROOT / "pyproject.toml").read_text()
 
     assert '"shaleyeah-mcp-client==0.1.0"' in pyproject
-    assert '"google-adk[gcp]>=' in pyproject
+    assert '"google-adk[gcp]==2.4.0"' in pyproject
     assert '"pytest>=' in pyproject

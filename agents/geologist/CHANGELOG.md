@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
+
 ### Added
 
 - **Architecture audit backfill** — documented the Stand-alone Agent with Progressive Disclosure (Skills) architecture mode, non-selected architecture boundaries, HITL deferral expectations, and added eval/test coverage that prevents misclassification.

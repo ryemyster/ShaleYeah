@@ -9,13 +9,21 @@ import fs from "node:fs/promises";
 import type { LASCurve } from "@shaleyeah/sdk";
 import {
 	buildMutualExclusivityError,
-	callLLM,
 	checkMutualExclusivity,
+	createFileModelCredentialResolver,
+	createModelRuntime,
 	FormationSchema,
+	type MCPExecutionContext,
+	type MCPServer,
+	type ModelMetadata,
+	ModelProviderError,
+	type ModelRuntime,
 	normalizeIdentifier,
 	paginateArray,
+	readPrivateReferenceModelConfig,
 	runMCPServer,
 	ServerFactory,
+	type ServerRuntimeOptions,
 	type ServerTemplate,
 	ServerUtils,
 	wrapWithGuiUrl,
@@ -35,321 +43,299 @@ interface GeologicalAnalysis {
 	confidence: number;
 	recommendation: string;
 	canonicalOutput?: Record<string, unknown>;
+	modelMetadata: ModelMetadata;
 }
 
-const geowizTemplate: ServerTemplate = {
-	name: "geowiz",
-	description: "Geological Analysis MCP Server",
-	persona: {
-		name: "Marcus Aurelius Geologicus",
-		role: "Master Geological Analyst",
-		expertise: [
-			"Formation analysis and characterization",
-			"Well log interpretation",
-			"GIS data processing and spatial analysis",
-			"Geological quality assessment",
-			"Petroleum geology and reservoir characterization",
+function createGeowizTemplate(runtime?: ModelRuntime): ServerTemplate {
+	return {
+		name: "geowiz",
+		description: "Geological Analysis MCP Server",
+		persona: {
+			name: "Marcus Aurelius Geologicus",
+			role: "Master Geological Analyst",
+			expertise: [
+				"Formation analysis and characterization",
+				"Well log interpretation",
+				"GIS data processing and spatial analysis",
+				"Geological quality assessment",
+				"Petroleum geology and reservoir characterization",
+			],
+		},
+		directories: ["analyses", "gis", "logs", "formations", "reports"],
+		tools: [
+			ServerFactory.createAnalysisTool(
+				"analyze_formation",
+				"Analyze geological formations from well log data (LAS, DLIS, WITSML)",
+				z.object({
+					filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
+					formations: z.array(z.string()).optional().describe("Target formations"),
+					analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
+					outputPath: z.string().optional(),
+					// Arcade #9: Mutual Exclusivity — identify a single formation by name OR id, not both.
+					formationName: z.string().optional().describe("Target formation by name (XOR with formationId)"),
+					formationId: z.string().optional().describe("Target formation by database id (XOR with formationName)"),
+					// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+					matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
+				}),
+				async (args, context, signal) => {
+					const xorViolation = checkMutualExclusivity(args, [["formationName", "formationId"]]);
+					if (xorViolation) {
+						return buildMutualExclusivityError(
+							["formationName", "formationId"],
+							["formationName", "formationId"].filter((k) => args[k] != null),
+						);
+					}
+
+					const rawFormationName = args.formationName;
+					const normalizedFormationName = rawFormationName ? normalizeIdentifier(rawFormationName) : rawFormationName;
+					const matchInfo =
+						rawFormationName && normalizedFormationName !== rawFormationName
+							? { matchedAs: normalizedFormationName, matchScore: 1.0 }
+							: {};
+
+					verifyModelOwner(runtime, context);
+					const analysis = await performFormationAnalysis(
+						{ ...args, formationName: normalizedFormationName },
+						runtime?.fork?.() ?? runtime,
+						signal,
+					);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
+					}
+
+					return wrapWithGuiUrl({ ...analysis, ...matchInfo }, "formations");
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_gis",
+				"Process GIS files with enhanced oil & gas spatial analysis (.shp, .geojson, .kml)",
+				z.object({
+					filePath: z.string().describe("Path to GIS file (.shp, .geojson, .kml)"),
+					analysisType: z
+						.enum(["basic", "standard", "comprehensive", "oilgas"])
+						.default("standard")
+						.describe("Level of analysis detail"),
+					qualityAssessment: z.boolean().default(true),
+					oilGasAnalysis: z.boolean().default(true),
+					outputPath: z.string().optional(),
+				}),
+				async (args) => {
+					const analysis = await processEnhancedGIS(args);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
+					}
+
+					return analysis;
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_well_logs",
+				"Process multi-format well logs (LAS/DLIS/WITSML) with unified interface",
+				z.object({
+					filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
+					format: z
+						.enum(["auto", "las", "dlis", "witsml"])
+						.default("auto")
+						.describe("Force specific format or auto-detect"),
+					qualityAssessment: z.boolean().default(true),
+					outputPath: z.string().optional(),
+					// Arcade #9: Mutual Exclusivity — identify the well by name OR id, not both.
+					wellName: z.string().optional().describe("Filter by well name (XOR with wellId)"),
+					wellId: z.string().optional().describe("Filter by well identifier (XOR with wellName)"),
+					// Arcade #31: Paginated Result — cursor and pageSize for large curve datasets.
+					cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+					pageSize: z.number().int().min(1).max(100).optional().describe("Curves per page (1–100, default 25)"),
+					// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+					matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
+				}),
+				async (args) => {
+					const xorViolation = checkMutualExclusivity(args, [["wellName", "wellId"]]);
+					if (xorViolation) {
+						return buildMutualExclusivityError(
+							["wellName", "wellId"],
+							["wellName", "wellId"].filter((k) => args[k] != null),
+						);
+					}
+
+					const rawWellName = args.wellName;
+					const normalizedWellName = rawWellName ? normalizeIdentifier(rawWellName) : rawWellName;
+					const matchInfo =
+						rawWellName && normalizedWellName !== rawWellName ? { matchedAs: normalizedWellName, matchScore: 1.0 } : {};
+
+					const result = await processMultiFormatWellLog({ ...args, wellName: normalizedWellName });
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
+					}
+
+					// Arcade #31: return curves as a PaginatedResult so large well logs don't
+					// flood the LLM context. The rest of the analysis (wellData, qualityMetrics,
+					// etc.) is always returned in full — only the potentially huge curves list is paged.
+					const { curves, ...analysisRest } = result as Record<string, unknown> & {
+						curves: unknown[];
+					};
+					return {
+						...analysisRest,
+						...matchInfo,
+						curves: paginateArray(curves ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
+					};
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"assess_quality",
+				"Assess geological data quality",
+				z.object({
+					filePath: z.string(),
+					dataType: z.enum(["las", "gis", "seismic"]),
+					thresholds: z
+						.object({
+							completeness: z.number().min(0).max(1).default(0.8),
+							accuracy: z.number().min(0).max(1).default(0.85),
+						})
+						.optional(),
+				}),
+				async (args) => {
+					return assessDataQuality(args);
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_access_database",
+				"Process Microsoft Access database files (.accdb, .mdb) for production data",
+				z.object({
+					filePath: z.string().describe("Path to Access database file (.accdb or .mdb)"),
+					extractTables: z.array(z.string()).optional().describe("Specific tables to extract (default: all)"),
+					outputFormat: z.enum(["json", "csv", "summary"]).default("summary"),
+					outputPath: z.string().optional(),
+					// Arcade #31: Paginated Result — cursor and pageSize for large table sets.
+					cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
+					pageSize: z.number().int().min(1).max(100).optional().describe("Tables per page (1–100, default 25)"),
+				}),
+				async (args) => {
+					const result = await processAccessDatabaseData(args);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
+					}
+
+					// Arcade #31: paginate the tables list so databases with many tables
+					// don't overwhelm the LLM context window in a single response.
+					const { tables, ...dbRest } = result as Record<string, unknown> & {
+						tables: unknown[];
+					};
+					return {
+						...dbRest,
+						tables: paginateArray(tables ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
+					};
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_document",
+				"Process PDF, DOCX, and PPTX documents for oil & gas data extraction",
+				z.object({
+					filePath: z.string().describe("Path to document file (.pdf, .docx, .pptx)"),
+					extractionType: z.enum(["summary", "technical", "financial", "all"]).default("all"),
+					outputPath: z.string().optional(),
+				}),
+				async (args) => {
+					const result = await processDocumentData(args);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
+					}
+
+					return result;
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_seismic_data",
+				"Process seismic data files (SEGY, SGY, seismic3d) for structural interpretation",
+				z.object({
+					filePath: z.string().describe("Path to seismic file (.segy, .sgy, .seismic3d)"),
+					analysisType: z.enum(["structural", "amplitude", "reservoir", "all"]).default("all"),
+					outputPath: z.string().optional(),
+				}),
+				async (args) => {
+					const result = await processSeismicAnalysis(args);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
+					}
+
+					return result;
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"process_aries_database",
+				"Process ARIES petroleum economics and reserves database (.adb)",
+				z.object({
+					filePath: z.string().describe("Path to ARIES database file (.adb)"),
+					analysisType: z.enum(["reserves", "economics", "forecasting", "all"]).default("all"),
+					outputPath: z.string().optional(),
+				}),
+				async (args) => {
+					const result = await processAriesAnalysis(args);
+
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
+					}
+
+					return result;
+				},
+			),
+			ServerFactory.createAnalysisTool(
+				"save_finding",
+				"Persist a key geological finding to the agent memory store for recall in future tasks. Closes the Observe→Think→Act→Learn loop.",
+				z.object({
+					findingType: z
+						.enum(["formation", "well-log", "quality-assessment", "seismic", "document", "general"])
+						.describe("Category of geological finding"),
+					title: z.string().min(1).describe("Short human-readable title"),
+					summary: z.string().min(1).describe("Detailed summary of the finding"),
+					confidence: z.number().min(0).max(1).describe("Confidence score 0–1"),
+					dataSource: z.string().min(1).describe("File path or reference that produced this finding"),
+					metadata: z.record(z.string(), z.unknown()).optional().describe("Optional structured metadata"),
+				}),
+				async (args) => {
+					return saveFinding(args);
+				},
+			),
 		],
-	},
-	directories: ["analyses", "gis", "logs", "formations", "reports"],
-	tools: [
-		ServerFactory.createAnalysisTool(
-			"analyze_formation",
-			"Analyze geological formations from well log data (LAS, DLIS, WITSML)",
-			z.object({
-				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
-				formations: z.array(z.string()).optional().describe("Target formations"),
-				analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
-				outputPath: z.string().optional(),
-				// Arcade #9: Mutual Exclusivity — identify a single formation by name OR id, not both.
-				formationName: z.string().optional().describe("Target formation by name (XOR with formationId)"),
-				formationId: z.string().optional().describe("Target formation by database id (XOR with formationName)"),
-				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
-				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
-			}),
-			async (args) => {
-				const xorViolation = checkMutualExclusivity(args, [["formationName", "formationId"]]);
-				if (xorViolation) {
-					return buildMutualExclusivityError(
-						["formationName", "formationId"],
-						["formationName", "formationId"].filter((k) => args[k] != null),
-					);
-				}
-
-				const rawFormationName = args.formationName;
-				const normalizedFormationName = rawFormationName ? normalizeIdentifier(rawFormationName) : rawFormationName;
-				const matchInfo =
-					rawFormationName && normalizedFormationName !== rawFormationName
-						? { matchedAs: normalizedFormationName, matchScore: 1.0 }
-						: {};
-
-				const analysis = await performFormationAnalysis({ ...args, formationName: normalizedFormationName });
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
-				}
-
-				return wrapWithGuiUrl({ ...analysis, ...matchInfo }, "formations");
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_gis",
-			"Process GIS files with enhanced oil & gas spatial analysis (.shp, .geojson, .kml)",
-			z.object({
-				filePath: z.string().describe("Path to GIS file (.shp, .geojson, .kml)"),
-				analysisType: z
-					.enum(["basic", "standard", "comprehensive", "oilgas"])
-					.default("standard")
-					.describe("Level of analysis detail"),
-				qualityAssessment: z.boolean().default(true),
-				oilGasAnalysis: z.boolean().default(true),
-				outputPath: z.string().optional(),
-			}),
-			async (args) => {
-				const analysis = await processEnhancedGIS(args);
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(analysis, null, 2));
-				}
-
-				return analysis;
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_well_logs",
-			"Process multi-format well logs (LAS/DLIS/WITSML) with unified interface",
-			z.object({
-				filePath: z.string().describe("Path to well log file (.las, .dlis, .xml)"),
-				format: z
-					.enum(["auto", "las", "dlis", "witsml"])
-					.default("auto")
-					.describe("Force specific format or auto-detect"),
-				qualityAssessment: z.boolean().default(true),
-				outputPath: z.string().optional(),
-				// Arcade #9: Mutual Exclusivity — identify the well by name OR id, not both.
-				wellName: z.string().optional().describe("Filter by well name (XOR with wellId)"),
-				wellId: z.string().optional().describe("Filter by well identifier (XOR with wellName)"),
-				// Arcade #31: Paginated Result — cursor and pageSize for large curve datasets.
-				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
-				pageSize: z.number().int().min(1).max(100).optional().describe("Curves per page (1–100, default 25)"),
-				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
-				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
-			}),
-			async (args) => {
-				const xorViolation = checkMutualExclusivity(args, [["wellName", "wellId"]]);
-				if (xorViolation) {
-					return buildMutualExclusivityError(
-						["wellName", "wellId"],
-						["wellName", "wellId"].filter((k) => args[k] != null),
-					);
-				}
-
-				const rawWellName = args.wellName;
-				const normalizedWellName = rawWellName ? normalizeIdentifier(rawWellName) : rawWellName;
-				const matchInfo =
-					rawWellName && normalizedWellName !== rawWellName ? { matchedAs: normalizedWellName, matchScore: 1.0 } : {};
-
-				const result = await processMultiFormatWellLog({ ...args, wellName: normalizedWellName });
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-				}
-
-				// Arcade #31: return curves as a PaginatedResult so large well logs don't
-				// flood the LLM context. The rest of the analysis (wellData, qualityMetrics,
-				// etc.) is always returned in full — only the potentially huge curves list is paged.
-				const { curves, ...analysisRest } = result as Record<string, unknown> & {
-					curves: unknown[];
-				};
-				return {
-					...analysisRest,
-					...matchInfo,
-					curves: paginateArray(curves ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
-				};
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"assess_quality",
-			"Assess geological data quality",
-			z.object({
-				filePath: z.string(),
-				dataType: z.enum(["las", "gis", "seismic"]),
-				thresholds: z
-					.object({
-						completeness: z.number().min(0).max(1).default(0.8),
-						accuracy: z.number().min(0).max(1).default(0.85),
-					})
-					.optional(),
-			}),
-			async (args) => {
-				return assessDataQuality(args);
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_access_database",
-			"Process Microsoft Access database files (.accdb, .mdb) for production data",
-			z.object({
-				filePath: z.string().describe("Path to Access database file (.accdb or .mdb)"),
-				extractTables: z.array(z.string()).optional().describe("Specific tables to extract (default: all)"),
-				outputFormat: z.enum(["json", "csv", "summary"]).default("summary"),
-				outputPath: z.string().optional(),
-				// Arcade #31: Paginated Result — cursor and pageSize for large table sets.
-				cursor: z.string().optional().describe("Opaque cursor from a previous response to fetch the next page"),
-				pageSize: z.number().int().min(1).max(100).optional().describe("Tables per page (1–100, default 25)"),
-			}),
-			async (args) => {
-				const result = await processAccessDatabaseData(args);
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-				}
-
-				// Arcade #31: paginate the tables list so databases with many tables
-				// don't overwhelm the LLM context window in a single response.
-				const { tables, ...dbRest } = result as Record<string, unknown> & {
-					tables: unknown[];
-				};
-				return {
-					...dbRest,
-					tables: paginateArray(tables ?? [], { cursor: args.cursor, pageSize: args.pageSize }),
-				};
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_document",
-			"Process PDF, DOCX, and PPTX documents for oil & gas data extraction",
-			z.object({
-				filePath: z.string().describe("Path to document file (.pdf, .docx, .pptx)"),
-				extractionType: z.enum(["summary", "technical", "financial", "all"]).default("all"),
-				outputPath: z.string().optional(),
-			}),
-			async (args) => {
-				const result = await processDocumentData(args);
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-				}
-
-				return result;
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_seismic_data",
-			"Process seismic data files (SEGY, SGY, seismic3d) for structural interpretation",
-			z.object({
-				filePath: z.string().describe("Path to seismic file (.segy, .sgy, .seismic3d)"),
-				analysisType: z.enum(["structural", "amplitude", "reservoir", "all"]).default("all"),
-				outputPath: z.string().optional(),
-			}),
-			async (args) => {
-				const result = await processSeismicAnalysis(args);
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-				}
-
-				return result;
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"process_aries_database",
-			"Process ARIES petroleum economics and reserves database (.adb)",
-			z.object({
-				filePath: z.string().describe("Path to ARIES database file (.adb)"),
-				analysisType: z.enum(["reserves", "economics", "forecasting", "all"]).default("all"),
-				outputPath: z.string().optional(),
-			}),
-			async (args) => {
-				const result = await processAriesAnalysis(args);
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify(result, null, 2));
-				}
-
-				return result;
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"save_finding",
-			"Persist a key geological finding to the agent memory store for recall in future tasks. Closes the Observe→Think→Act→Learn loop.",
-			z.object({
-				findingType: z
-					.enum(["formation", "well-log", "quality-assessment", "seismic", "document", "general"])
-					.describe("Category of geological finding"),
-				title: z.string().min(1).describe("Short human-readable title"),
-				summary: z.string().min(1).describe("Detailed summary of the finding"),
-				confidence: z.number().min(0).max(1).describe("Confidence score 0–1"),
-				dataSource: z.string().min(1).describe("File path or reference that produced this finding"),
-				metadata: z.record(z.string(), z.unknown()).optional().describe("Optional structured metadata"),
-			}),
-			async (args) => {
-				return saveFinding(args);
-			},
-		),
-	],
-};
+	};
+}
 
 // Domain-specific geological analysis functions
-export async function performFormationAnalysis(args: {
-	filePath: string;
-	formations?: string[];
-	analysisType?: string;
-}): Promise<GeologicalAnalysis> {
-	try {
-		const lasData: LASData = parseLASFile(args.filePath);
-		const keyQCResults = await performCurveQC(args.filePath, lasData);
-
-		const analysis = await analyzeGeologicalData(
-			lasData,
-			keyQCResults,
-			args.analysisType || "standard",
-			args.formations,
-		);
-		return {
-			...analysis,
-			canonicalOutput: {
-				formation: FormationSchema.parse({
-					netPay: analysis.netPay,
-					porosity: analysis.porosity / 100, // geowiz returns % — canonical wants fraction 0–1
-					saturation: undefined,
-				}),
-			},
-		};
-	} catch (_error) {
-		// LAS parsing failed — derive formation-aware estimates from whatever context is available,
-		// then ask the LLM to refine TOC and recommendation using those estimates.
-		const formations = args.formations ?? ["Unidentified Formation"];
-		const formationContext = formations.join(", ");
-		// Use LLM's default depth (7000 ft) as the depth hint when no real data is available —
-		// consistent with the avgDepth default in synthesizeAnalysisWithLLM().
-		const fallbackProps = deriveDefaultFormationProperties(formations, 7000);
-		const llmResult = await synthesizeAnalysisWithLLM({
-			filePath: args.filePath,
-			formations: formationContext,
-			analysisType: args.analysisType ?? "standard",
-			avgPorosity: fallbackProps.porosity,
-			netPay: fallbackProps.netPay,
-			fallback: true,
-		});
-		return {
-			formations,
-			netPay: fallbackProps.netPay,
-			porosity: fallbackProps.porosity,
-			permeability: estimatePermeability(fallbackProps.porosity),
-			toc: llmResult.toc,
-			maturity: fallbackProps.maturity,
-			targets: Math.max(1, formations.filter((f) => f !== "Unidentified Formation").length),
-			confidence: ServerUtils.calculateConfidence(0.6, 0.7),
-			recommendation: llmResult.recommendation,
-			canonicalOutput: {
-				formation: FormationSchema.parse({
-					name: formations[0],
-					netPay: fallbackProps.netPay,
-					porosity: fallbackProps.porosity / 100, // deriveDefault returns % — canonical wants fraction
-				}),
-			},
-		};
-	}
+export async function performFormationAnalysis(
+	args: {
+		filePath: string;
+		formations?: string[];
+		analysisType?: string;
+	},
+	runtime?: ModelRuntime,
+	signal?: AbortSignal,
+): Promise<GeologicalAnalysis> {
+	if (!runtime) throw new ModelProviderError("configuration");
+	const lasData: LASData = parseLASFile(args.filePath);
+	const keyQCResults = await performCurveQC(args.filePath, lasData);
+	const analysis = await analyzeGeologicalData(
+		lasData,
+		keyQCResults,
+		args.analysisType || "standard",
+		args.formations,
+		runtime,
+		signal,
+	);
+	return {
+		...analysis,
+		canonicalOutput: {
+			formation: FormationSchema.parse({
+				netPay: analysis.netPay,
+				porosity: analysis.porosity / 100,
+				saturation: undefined,
+			}),
+		},
+	};
 }
 
 async function performCurveQC(filePath: string, lasData: LASData): Promise<Array<CurveAnalysis>> {
@@ -375,7 +361,9 @@ async function analyzeGeologicalData(
 	lasData: LASData,
 	qcResults: Array<CurveAnalysis>,
 	analysisType: string,
-	targetFormations?: string[],
+	targetFormations: string[] | undefined,
+	runtime: ModelRuntime,
+	signal?: AbortSignal,
 ): Promise<GeologicalAnalysis> {
 	// Calculate petrophysical properties from real log curves
 	const grCurve = lasData.curves.find((c) => c.name.toUpperCase() === "GR");
@@ -415,16 +403,19 @@ async function analyzeGeologicalData(
 	const depth = (lasData.depth_start + lasData.depth_stop) / 2;
 
 	// LLM synthesis — derive TOC and investment recommendation from real log data
-	const llmResult = await synthesizeAnalysisWithLLM({
-		filePath: lasData.well_name || "unknown well",
-		formations: formationsForPrompt,
-		analysisType,
-		avgPorosity,
-		avgDepth: depth,
-		netPay,
-		avgQCConfidence,
-		fallback: false,
-	});
+	const llmResult = await synthesizeAnalysisWithLLM(
+		{
+			filePath: lasData.well_name || "unknown well",
+			formations: formationsForPrompt,
+			analysisType,
+			avgPorosity,
+			avgDepth: depth,
+			netPay,
+			avgQCConfidence,
+		},
+		runtime,
+		signal,
+	);
 
 	const analysis: GeologicalAnalysis = {
 		formations: detectedFormations,
@@ -436,6 +427,7 @@ async function analyzeGeologicalData(
 		targets: identifyTargets(lasData),
 		confidence: Math.round(avgQCConfidence),
 		recommendation: llmResult.recommendation,
+		modelMetadata: llmResult.modelMetadata,
 	};
 
 	// Enhance analysis based on type
@@ -687,24 +679,28 @@ function estimatePermeability(porosity: number): number {
 }
 
 interface LLMGeologicalResult {
+	modelMetadata: ModelMetadata;
 	toc: number;
 	recommendation: string;
 }
 
 /**
  * Synthesize geological analysis via LLM using computed petrophysical context.
- * Falls back to data-derived defaults when LLM is unavailable (demo mode, no API key).
+ * Provider or schema failures propagate instead of producing substitute analysis.
  */
-async function synthesizeAnalysisWithLLM(context: {
-	filePath: string;
-	formations: string;
-	analysisType: string;
-	avgPorosity?: number;
-	avgDepth?: number;
-	netPay?: number;
-	avgQCConfidence?: number;
-	fallback: boolean;
-}): Promise<LLMGeologicalResult> {
+async function synthesizeAnalysisWithLLM(
+	context: {
+		filePath: string;
+		formations: string;
+		analysisType: string;
+		avgPorosity?: number;
+		avgDepth?: number;
+		netPay?: number;
+		avgQCConfidence?: number;
+	},
+	runtime: ModelRuntime,
+	signal?: AbortSignal,
+): Promise<LLMGeologicalResult> {
 	const { formations, analysisType, avgPorosity = 12, avgDepth = 7000, netPay = 150, avgQCConfidence = 75 } = context;
 
 	const prompt = `You are Marcus Aurelius Geologicus, a master petroleum geologist.
@@ -726,41 +722,25 @@ Return ONLY valid JSON (no markdown, no explanation) in this exact format:
 Base toc on: depth (deeper = higher maturity, estimate 2-8% for shale at 5000-12000ft), porosity, and formation type.
 Base recommendation on: porosity threshold >8% = good, netPay >100ft = good, confidence >75% = reliable.`;
 
-	try {
-		const raw = await callLLM({
-			prompt,
-			system: "You are a petroleum geologist. Respond only with valid JSON. No markdown, no explanation.",
-			maxTokens: 256,
-		});
-
-		// Parse JSON response — strip any accidental markdown fences
-		const cleaned = raw.replace(/```(?:json)?/g, "").trim();
-		const parsed = JSON.parse(cleaned) as { toc?: unknown; recommendation?: unknown };
-
-		const toc =
-			typeof parsed.toc === "number" && parsed.toc >= 0 && parsed.toc <= 15 ? parsed.toc : deriveDefaultTOC(avgDepth);
-		const recommendation =
-			typeof parsed.recommendation === "string" && parsed.recommendation.length > 0
-				? parsed.recommendation
-				: generateRecommendation(avgPorosity, netPay, avgQCConfidence);
-
-		return { toc, recommendation };
-	} catch (_err) {
-		// LLM unavailable (no API key, network error) — fall back to computed defaults
-		return {
-			toc: deriveDefaultTOC(avgDepth),
-			recommendation: generateRecommendation(avgPorosity, netPay, avgQCConfidence),
-		};
-	}
-}
-
-/** Depth-derived TOC estimate (Lopatin-style: deeper = higher maturity, higher early TOC) */
-function deriveDefaultTOC(avgDepth: number): number {
-	if (avgDepth > 10000) return 5.8;
-	if (avgDepth > 8000) return 5.2;
-	if (avgDepth > 6000) return 4.5;
-	if (avgDepth > 4000) return 3.8;
-	return 2.5;
+	const result = await runtime.generate({
+		signal,
+		prompt,
+		system: "You are a petroleum geologist. Respond only with the requested structured result.",
+		schema: {
+			type: "object",
+			properties: {
+				toc: { type: "number", minimum: 0, maximum: 15 },
+				recommendation: { type: "string", minLength: 1 },
+			},
+			required: ["toc", "recommendation"],
+			additionalProperties: false,
+		},
+	});
+	const output = z
+		.object({ toc: z.number().min(0).max(15), recommendation: z.string().min(1) })
+		.strict()
+		.parse(result.output);
+	return { ...output, modelMetadata: result.metadata };
 }
 
 export interface FormationProperties {
@@ -820,16 +800,6 @@ function identifyTargets(lasData: LASData): number {
 
 function identifyAdditionalFormations(_lasData: LASData): string[] {
 	return ["Atoka", "Strawn", "Canyon"];
-}
-
-function generateRecommendation(porosity: number, netPay: number, confidence: number): string {
-	if (porosity > 8 && netPay > 100 && confidence > 80) {
-		return "Proceed with horizontal drilling program";
-	} else if (porosity > 6 && netPay > 75 && confidence > 70) {
-		return "Consider drilling with enhanced completion";
-	} else {
-		return "Additional data required for drilling decision";
-	}
 }
 
 // Multi-format well log processing function
@@ -1721,11 +1691,48 @@ async function saveFinding(args: {
 }
 
 // Create the server using factory
-export const GeowizServer = ServerFactory.createServer(geowizTemplate);
+function verifyModelOwner(runtime: ModelRuntime | undefined, context?: MCPExecutionContext): void {
+	if (!runtime) throw new ModelProviderError("configuration");
+	const owner = runtime.publicProfile().owner;
+	if (
+		context &&
+		(owner.customerId !== context.principal.customerId || owner.employeeId !== context.principal.employeeId)
+	)
+		throw new ModelProviderError("owner");
+}
+
+export const GeowizServer = function (options: ServerRuntimeOptions & { modelRuntime?: ModelRuntime } = {}) {
+	if (!new.target) throw new Error("Use the GeowizServer constructor");
+	// The factory registers capabilities during construction; capture this instance's binding in the template first.
+	const template = createGeowizTemplate(options.modelRuntime);
+	template.tools.push(
+		ServerFactory.createAnalysisTool(
+			"get_model_profile",
+			"Discover the effective synthesis profile; credentials and secret references are excluded",
+			z.object({}).strict(),
+			async (_args, context) => {
+				verifyModelOwner(options.modelRuntime, context);
+				return options.modelRuntime?.publicProfile();
+			},
+		),
+	);
+	return new (ServerFactory.createServer(template))({ http: options.http, dataPath: options.dataPath });
+} as unknown as { new (options?: ServerRuntimeOptions & { modelRuntime?: ModelRuntime }): MCPServer };
 export default GeowizServer;
 
 // Run server if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-	const server = new GeowizServer();
-	runMCPServer(server);
+	try {
+		const file = process.env.GEOWIZ_MODEL_CONFIG_FILE;
+		const config = file ? await readPrivateReferenceModelConfig(file) : undefined;
+		const modelRuntime = config
+			? createModelRuntime(config.synthesis, {
+					resolveCredential: createFileModelCredentialResolver(config.synthesis.owner),
+				})
+			: undefined;
+		runMCPServer(new GeowizServer({ modelRuntime }));
+	} catch {
+		console.error("Geowiz model setup failed. Check the private model configuration.");
+		process.exitCode = 1;
+	}
 }
