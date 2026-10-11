@@ -111,7 +111,8 @@ The package verifies structure and declared references, not reviewer identity,
 real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
 specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
-#672/#673 implement durable context/review. Eval profiles/results are #666/#667.
+#672/#673 implement durable context/review. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
+by #666; ADK run results are #667.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
@@ -121,8 +122,9 @@ invalidation and export/deletion. #672 implements durable storage and retrieval;
 the policy/reference fixtures do not enforce it today. Warehouses, vectors and
 hosted memory are optional adapters selected through measured qualification.
 
-Existing shape tests/eval assets are foundational. Configurable job scorecards,
-portable results and promotion gates are #666/#667/#577/#691. Each role needs
+Existing shape tests/eval assets are foundational. Configurable job scorecards are implemented in the independent
+[evaluation package](../evaluations/README.md); portable run results and promotion
+gates are #667/#577/#691. Each role needs
 professional cases and human acceptance; importing an agent is not job-quality
 evidence.
 

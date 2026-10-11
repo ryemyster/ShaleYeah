@@ -74,12 +74,12 @@ The manifest currently has deployment target `none` and in-memory sessions.
 Its eval cases live in
 [tests/eval/datasets/geologist-adk-reference.json](../agents/geologist/tests/eval/datasets/geologist-adk-reference.json);
 its metric selection/rubrics live in
-[tests/eval/eval_config.yaml](../agents/geologist/tests/eval/eval_config.yaml).
+[tests/eval/eval_config.json](../agents/geologist/tests/eval/eval_config.json).
 Follow [the package's eval steps](../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals)
 for live inference/grading prerequisites and artifact locations. Keep
 deterministic policy checks, model-based scores and human professional review
-distinct. Portable config-driven evaluation and promotion gates remain
-#666/#667/#577; a file's presence does not prove the employee passes it.
+distinct. Portable profiles/trusted metrics are delivered in [evaluations/](../evaluations/README.md);
+the ADK runner and promotion gates remain #667/#577; a file's presence does not prove the employee passes it.
 
 ## Check an MCP tool
 

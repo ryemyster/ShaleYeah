@@ -21,6 +21,7 @@ This repo is a monorepo workspace for independently buildable project units:
 - MCP-compatible tool servers
 - an optional orchestrator
 - shared contracts, schemas, and runtime helpers
+- [configurable employee evaluations](evaluations/README.md) with trusted metrics and mandatory review boundaries
 
 Each agent, MCP server, and orchestrator is intended to stand alone. The monorepo is the contributor workspace; it is not meant to force a single deployment shape. A user should be able to run one MCP server, one agent, an agent with a third-party MCP, a third-party agent with one of these MCPs, or the full reference system.
 

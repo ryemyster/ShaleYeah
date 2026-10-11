@@ -128,16 +128,16 @@ Build SDK and Geowiz, then run from `agents/geologist`:
 ```bash
 GEOLOGIST_PROVIDER_TRACE_DIR=/tmp/geologist-provider-traces \
 uv run --locked pytest -q --cov=app --cov-fail-under=90
-agents-cli eval grade --traces /tmp/geologist-provider-traces \
-  --output /tmp/geologist-provider-grades --config tests/eval/eval_config.yaml \
-  --metrics geologist_tool_boundary,geologist_architecture_boundary,geologist_no_unapproved_persistence
+uv run --locked python -m shaleyeah_evaluations tests/eval/eval_config.json \
+  --role geologist \
+  --dataset geologist.reference=tests/eval/datasets/geologist-adk-reference.json
 ```
 
 Native SDK/ADK calls run against explicit offline transports. Formation controls
 use actual protected Geowiz. Other role controls use a fixture MCP client to
 check mappings and save confirmation. Traces contain generated runtime events;
-grading checks plumbing and policy, including a proposed save paused before
-dispatch. These fixtures do not qualify real model choices, geological accuracy,
-source rights, durable review or investment decisions. The LLM final-response
-judge is excluded from this offline command. Its configured live runner and
-promotion rules are #666/#667/#577; live runs require explicit opt-in.
+pytest checks plumbing and policy, including a proposed save paused before
+dispatch. Profile validation checks reviewed dataset bytes and installed metric
+selection without executing a judge. These fixtures do not qualify real model choices, geological accuracy,
+source rights, durable review or investment decisions. The portable profile is not a stock agents-cli grading config. Its
+ADK run/grading adapter and promotion rules are #667/#577; live runs require explicit opt-in.
