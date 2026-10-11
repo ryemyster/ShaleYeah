@@ -125,3 +125,8 @@ pnpm lint         # Biome
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local transport/setup, storage and qualified deployment limits |
 | [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Running locally, testing tools directly |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Adding tools, LLM wiring pattern, TDD checklist |
+
+Launcher credential checks test shared files and symbolic links separately. Each
+process has a ten-second startup limit and must exit with refusal, keep the token
+out of logs, and open no HTTP listener. The startup limit bounds the fixture;
+production credential/access policy is unchanged.

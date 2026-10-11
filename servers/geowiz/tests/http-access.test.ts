@@ -196,10 +196,11 @@ test("local reference launcher loads private credential references and records r
 	}
 });
 
-test("local launcher refuses shared or symlinked credential files without printing secrets", {
-	timeout: 10000,
-}, async () => {
-	for (const kind of ["shared", "symlink"] as const) {
+// Each cold launcher gets its own deadline; one combined budget cancels valid controls under workspace load.
+for (const kind of ["shared", "symlink"] as const) {
+	test(`local launcher refuses ${kind} credential files without printing secrets`, {
+		timeout: 10000,
+	}, async () => {
 		const dir = await fs.mkdtemp(path.join(os.tmpdir(), "shale-geowiz-private-"));
 		const token = randomUUID();
 		const target = path.join(dir, "target");
@@ -234,5 +235,5 @@ test("local launcher refuses shared or symlinked credential files without printi
 			child.kill("SIGTERM");
 			await fs.rm(dir, { recursive: true, force: true });
 		}
-	}
-});
+	});
+}
