@@ -4,6 +4,11 @@ import { compile } from "json-schema-to-typescript";
 const schema = JSON.parse(
 	readFileSync(new URL("../shaleyeah_contracts/schemas/employee-0.1.0.schema.json", import.meta.url), "utf8"),
 );
+const sourceSchema = JSON.parse(
+	readFileSync(new URL("../shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json", import.meta.url), "utf8"),
+);
+// Resolve shared definitions mechanically for generation; the two published profiles retain their own roots/IDs.
+const sourceDefs = JSON.parse(JSON.stringify(sourceSchema.$defs).split(`${schema.$id}#/$defs/`).join("#/$defs/"));
 const target = new URL("../src/generated.ts", import.meta.url);
 // A mechanical object root makes the generator emit even unreferenced $defs.
 const { oneOf, ...base } = schema;
@@ -13,13 +18,18 @@ const output = await compile(
 		title: "ContractBindings",
 		type: "object",
 		additionalProperties: false,
-		properties: { record: { $ref: "#/$defs/EmployeeContract" } },
+		properties: { record: { $ref: "#/$defs/EmployeeContract" }, sourceRecord: { $ref: "#/$defs/SourceContract" } },
 		required: ["record"],
-		$defs: { ...schema.$defs, EmployeeContract: { oneOf } },
+		$defs: {
+			...schema.$defs,
+			...sourceDefs,
+			EmployeeContract: { oneOf },
+			SourceContract: { oneOf: sourceSchema.oneOf },
+		},
 	},
 	"ContractBindings",
 	{
-		bannerComment: "/* Generated from employee-0.1.0.schema.json. Run pnpm generate; do not edit. */",
+		bannerComment: "/* Generated from employee and data-connectors 0.1.0 schemas. Run pnpm generate; do not edit. */",
 		unreachableDefinitions: true,
 		ignoreMinAndMaxItems: true,
 		style: { useTabs: true, printWidth: 120 },

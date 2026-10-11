@@ -41,7 +41,8 @@ GEOWIZ_MCP_URL=http://127.0.0.1:3001/mcp \
 
 The file path is read by Geowiz, relative to the Geowiz working directory. A
 different host needs an approved file/connector path there. Provider/task
-qualification remains #670/#671/#674.
+qualification remains #671/#674. Complete [private source setup](../../../servers/geowiz/docs/DATA_SOURCES.md)
+before file-based tool calls; the backend enforces source grants independently.
 
 ## Configuration and ports
 

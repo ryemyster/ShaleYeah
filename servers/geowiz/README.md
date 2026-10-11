@@ -2,7 +2,7 @@
 
 **Marcus Aurelius Geologicus** — Tier 1 geological analysis MCP server.
 
-Tool server exposing 9 domain tools and one model-profile discovery tool over the Model Context Protocol. It maintains HTTP transport sessions and writes findings/artifacts. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
+Tool server exposing 9 domain tools and model-profile discovery and two source query/status tools over the Model Context Protocol. It maintains HTTP transport sessions and supports independently authorized finding persistence. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
 
 ---
 
@@ -17,13 +17,18 @@ Add to your Claude Desktop MCP config:
       "command": "pnpm",
       "args": ["--filter", "@shaleyeah/server-geowiz", "start"],
       "cwd": "/path/to/ShaleYeah",
-      "env": { "GEOWIZ_MODEL_CONFIG_FILE": "/absolute/private/models.json" }
+      "env": {
+        "GEOWIZ_MODEL_CONFIG_FILE": "/absolute/private/models.json",
+        "GEOWIZ_SOURCE_CONFIG_FILE": "/absolute/private/sources.json",
+        "GEOWIZ_SOURCE_AUDIT_FILE": "/absolute/private/source-audit.jsonl"
+      }
     }
   }
 }
 ```
 
-Restart Claude Desktop. You'll see 9 domain tools and model-profile discovery. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
+Complete [private source setup](docs/DATA_SOURCES.md) before asking the tools to read data.
+Restart Claude Desktop. You'll see 9 domain tools, model discovery and source fetch/status. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
 
 ---
 
@@ -69,15 +74,22 @@ performance qualification remains #674 and its dependencies.
 | Tool | Input formats | LLM call |
 |------|--------------|----------|
 | `analyze_formation` | LAS 2.0 | Configured Gemini or Anthropic; explicit errors |
-| `process_gis` | GeoJSON, Shapefile (.shp), KML | No — source/format qualification remains |
-| `process_well_logs` | LAS, DLIS, WITSML | No — source/format qualification remains |
-| `assess_quality` | Advertised file path; current fixed metrics do not inspect it | No — input-derived repair is #671 |
-| `process_access_database` | .mdb, .accdb, CSV | No — source/format qualification remains |
-| `process_document` | PDF, DOCX, TXT | No — source/format qualification remains |
-| `process_seismic_data` | SEG-Y (.segy, .sgy) | No — source/format qualification remains |
-| `process_aries_database` | ARIES export files | No — source/format qualification remains |
+| `process_gis` | Unsupported at current source boundary | No — source/format qualification remains |
+| `process_well_logs` | Approved LAS snapshot; other formats declined | No — source/format qualification remains |
+| `assess_quality` | Approved LAS bytes verified; domain metrics still fixed | No — input-derived repair is #671 |
+| `process_access_database` | Unsupported at current source boundary | No — source/format qualification remains |
+| `process_document` | Unsupported at current source boundary | No — source/format qualification remains |
+| `process_seismic_data` | Unsupported at current source boundary | No — source/format qualification remains |
+| `process_aries_database` | Unsupported at current source boundary | No — source/format qualification remains |
 | `save_finding` | JSON payload | No — fs write to `./data/geowiz/findings/` |
 | `get_model_profile` | Empty object | No — authenticated discovery without keys/references |
+| `fetch_source` | Approved source ID | No — verified canonical provenance, no private paths |
+| `get_source_status` | Approved source ID | No — real permission/byte/revision/freshness checks |
+
+File reads need a separate server-owned source grant and audit; see
+[DATA_SOURCES.md](docs/DATA_SOURCES.md). Caller-supplied `outputPath` writes are
+disabled. Model credentials, source-read permission and finding approval are
+independent boundaries. Input-derived geological quality remains #671.
 
 ---
 

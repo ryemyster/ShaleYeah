@@ -126,7 +126,9 @@ with temporary private credentials and checks authorized read, denied save,
 anonymous denial and redacted audit. No model/IAM keys are used.
 
 Shared CI runs these controls, helper lint/coverage and the first consumer's
-package tests. Fleet clients, real identity issuers/TLS, professional source
+package tests. The control now uses a permitted LAS fixture, canonical source
+provenance and distinct source-access audit; [source setup](../../servers/geowiz/docs/DATA_SOURCES.md)
+remains a separate executing-backend requirement. Fleet clients, real identity issuers/TLS, professional source
 acceptance, backend human-review grants and full release qualification remain
 with their owning issues. Ingress credentials do not approve geological work.
 

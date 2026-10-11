@@ -4,8 +4,10 @@ import json
 import math
 from datetime import datetime
 from importlib.resources import files
+from urllib.parse import urlsplit
 
 from jsonschema import Draft202012Validator, FormatChecker
+from referencing import Registry, Resource
 
 _SCHEMA = json.loads(
     files(__package__).joinpath("schemas/employee-0.1.0.schema.json").read_text()
@@ -18,6 +20,12 @@ _OPTIONS = Draft202012Validator(
     {"$defs": _SCHEMA["$defs"], "$ref": "#/$defs/ValidationOptions"},
     format_checker=_FORMAT_CHECKER,
 )
+_SOURCE_SCHEMA = json.loads(files(__package__).joinpath("schemas/data-connectors-0.1.0.schema.json").read_text())
+Draft202012Validator.check_schema(_SOURCE_SCHEMA)
+_REGISTRY = Registry().with_resources([(_SCHEMA["$id"], Resource.from_contents(_SCHEMA)), (_SOURCE_SCHEMA["$id"], Resource.from_contents(_SOURCE_SCHEMA))])
+_SOURCE_VALIDATOR = Draft202012Validator(_SOURCE_SCHEMA, format_checker=_FORMAT_CHECKER, registry=_REGISTRY)
+_CONNECTOR = Draft202012Validator({"$ref": _SOURCE_SCHEMA["$id"] + "#/$defs/ConnectorConfiguration"}, format_checker=_FORMAT_CHECKER, registry=_REGISTRY)
+
 
 
 class ContractValidationError(ValueError):
@@ -137,5 +145,68 @@ def validate_contract(value, options=None):
     if not _OPTIONS.is_valid(options):
         _fail("invalid_contract", "/options", "validationOptions")
     _check_semantics(value)
+    _check_expectations(value, options)
+    return value
+
+
+def _check_source_semantics(record):
+    if record["kind"] == "source-artifact":
+        evidence = record["evidence"]
+        if record["artifact"] != {"id": evidence["id"], "revision": evidence["hash"]["value"], "uri": "urn:sha256:" + evidence["hash"]["value"]}:
+            _fail("invalid_contract", "/artifact", "sourceHashBinding")
+        retrieved = datetime.fromisoformat(record["retrievedAt"].upper().replace("Z", "+00:00"))
+        as_of = datetime.fromisoformat(evidence["asOf"].upper().replace("Z", "+00:00"))
+        if retrieved < as_of:
+            _fail("invalid_contract", "/retrievedAt", "chronology")
+        _check_source_uri(evidence["uri"])
+        _check_units(record["units"])
+    if record["kind"] == "connector-status" and (record["status"] == "ready") != (record["errorCode"] is None):
+        _fail("invalid_contract", "/status", "healthErrorBinding")
+
+
+def _check_source_uri(uri):
+    parsed = urlsplit(uri)
+    if parsed.scheme not in ("urn", "https") or parsed.username or parsed.password or parsed.query or parsed.fragment:
+        _fail("invalid_contract", "/evidence/uri", "publicSourceIdentifier")
+
+
+def _check_units(units):
+    if len({unit["field"] for unit in units}) != len(units):
+        _fail("invalid_contract", "/units", "uniqueFields")
+
+
+def validate_connector_configuration(value):
+    """Validate private connector configuration; credentials and paths are not wire records."""
+    if not _is_json(value):
+        _fail("invalid_contract", "", "jsonValue")
+    if type(value) is dict and "contractVersion" in value and value["contractVersion"] != CONTRACT_VERSION:
+        _fail("unsupported_version", "/contractVersion", "supportedVersion")
+    if not _CONNECTOR.is_valid(value):
+        _fail("invalid_contract", "", "connectorConfiguration")
+    owner, scope, grant = value["manifest"]["owner"], value["scope"], value["grant"]
+    if owner != {"customerId": scope["customerId"], "employeeId": scope["employeeId"]} or grant["scope"] != scope or grant["taskRevision"] != value["taskRevision"] or grant["connectorId"] != value["manifest"]["id"]:
+        _fail("scope_mismatch", "/scope", "connectorOwner")
+    _unique_ids([source["evidence"] for source in value["sources"]], "/sources")
+    for source in value["sources"]:
+        _check_source_uri(source["evidence"]["uri"])
+        _check_units(source["units"])
+        if source["format"] not in value["manifest"]["formats"] or source["sourceKind"] not in value["manifest"]["sourceKinds"]:
+            _fail("unsupported_capability", "/sources", "connectorCapability")
+    return value
+
+
+def validate_source_contract(value, options=None):
+    """Explicit source profile 0.1.0; does not change the employee profile."""
+    options = {} if options is None else options
+    if not _is_json(value) or not _is_json(options):
+        _fail("invalid_contract", "", "jsonValue")
+    if type(value) is dict and type(value.get("contractVersion")) is str and value["contractVersion"] != CONTRACT_VERSION:
+        _fail("unsupported_version", "/contractVersion", "supportedVersion")
+    errors = list(_SOURCE_VALIDATOR.iter_errors(value))
+    if errors:
+        raise ContractValidationError("invalid_contract", [{"path": "/" + "/".join(map(str, error.path)), "keyword": error.validator} for error in errors])
+    if not _OPTIONS.is_valid(options):
+        _fail("invalid_contract", "/options", "validationOptions")
+    _check_source_semantics(value)
     _check_expectations(value, options)
     return value

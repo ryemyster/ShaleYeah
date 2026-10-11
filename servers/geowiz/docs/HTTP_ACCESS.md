@@ -12,6 +12,8 @@ From the repository root:
 
 ```bash
 pnpm install --frozen-lockfile
+pnpm --dir contracts build
+pnpm --dir connectors build
 pnpm --dir sdk build
 pnpm --dir servers/geowiz build
 ```
@@ -38,9 +40,11 @@ await fs.writeFile(path.join(dir, "access.json"), JSON.stringify(policy, null, 2
 JS
 ```
 
-The sample grants connection and only `assess_quality`. That existing tool
-returns fixed quality metrics without opening the given file; it is a transport
-control, not observed LAS quality. #671 supplies input-derived evidence. Other
+The sample grants connection and only `assess_quality` at ingress. Complete
+[source setup](DATA_SOURCES.md), configure `sourceConfigFile` and grant `source:read`
+to permit actual LAS reads. Missing source configuration denies file tools. The
+source is verified, while domain quality metrics remain fixed; #671 supplies
+input-derived professional checks. Other
 tools, including `save_finding`, are ungranted. Extending ingress scopes does not
 replace source checks or exact-revision human review.
 
@@ -83,9 +87,8 @@ pnpm exec tsx --test tests/http-access.test.ts
 
 The test runs the real backend and launcher with ephemeral private files and a
 generic client outside the ShaleYeah employee: granted read succeeds, anonymous/
-ungranted save requests fail, and audit excludes the token. It does not inspect
-a real source, call a model, validate the tool's fixed quality scores or accept
-a geological interpretation. The SDK suite separately covers verified remote
+ungranted save requests fail, and audit excludes the token. It verifies permitted fixture bytes/provenance, but does not call a live model,
+validate the tool's fixed domain scores or accept a geological interpretation. The SDK suite separately covers verified remote
 identity, scope failures, stolen sessions, revocation and concurrent users.
 
 The local audit file serializes allowlisted events with fsync before successful
@@ -102,7 +105,7 @@ The actual pair's ingress controls and isolated installed-wheel checks pass;
 see [employee testing](../../../agents/geologist/docs/LOCAL_TESTING.md).
 These controls and the generic-client backend test supply bounded connection
 evidence. BYO providers, sources, durable
-context/review and real professional cases remain #670/#671/#672/#673/#674.
+context/review and real professional cases remain #671/#672/#673/#674.
 
 Remote verifiers and private policies are operator services, separate from model
 keys and agent prompts. The public SDK context preserves verified customer/

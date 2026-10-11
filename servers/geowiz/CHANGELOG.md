@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #670: routed file-based MCP calls through installed source adapters, server-owned current grants, durable audit and private exact-byte snapshots. Emit canonical sourceArtifact provenance; remove displaced MCP outputPath writes/ad hoc file metadata. Add source fetch/health, private bootstrap, revocation and actual protected-consumer controls. Non-LAS handlers now explicitly decline unsupported formats; domain helper repairs remain #671.
+
 ### Changed
 - #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
 

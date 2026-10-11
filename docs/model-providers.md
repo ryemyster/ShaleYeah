@@ -7,6 +7,10 @@ Model Context Protocol (MCP) tool server. The production bindings must select
 the same provider; they can use different fixed models and dedicated keys.
 An optional evaluation judge has a separate profile and credential reference.
 
+Geowiz file tools also need [private source setup](../servers/geowiz/docs/DATA_SOURCES.md).
+The connector grant is separate from reasoning/synthesis credentials and human
+review. Missing source configuration denies reads even with a valid model key.
+
 ## Supported capabilities
 
 | Binding | Gemini | Anthropic |

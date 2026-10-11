@@ -8,6 +8,7 @@ import asyncio
 import json
 import os
 import re
+import runpy
 from pathlib import Path
 from secrets import token_urlsafe
 from tempfile import TemporaryDirectory
@@ -22,7 +23,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 async def main():
     with TemporaryDirectory(prefix="shale-python-geowiz-") as temporary:
-        private = Path(temporary)
+        private = Path(temporary).resolve()
         token = token_urlsafe(32)
         token_file, config_file, audit = (
             private / "token",
@@ -31,18 +32,19 @@ async def main():
         )
         token_file.write_text(token)
         token_file.chmod(0o600)
+        source = private / "transport-control.las"
+        source.write_bytes((REPO / "servers/geowiz/tests/sample-files/sample.las").read_bytes())
+        principal = {"subjectId": "reference-operator", "customerId": "fixture", "employeeId": "geologist", "scopes": ["mcp:connect", "geowiz:quality", "source:read"]}
+        source_file = private / "sources.json"
+        source_file.write_text(json.dumps(runpy.run_path(str(REPO / "contracts/fixtures/source_fixture.py"))["source_config"](source, principal)))
+        source_file.chmod(0o600)
         config_file.write_text(
             json.dumps(
                 {
                     "bindHost": "127.0.0.1",
                     "allowedHosts": ["127.0.0.1"],
                     "allowedOrigins": [],
-                    "principal": {
-                        "subjectId": "reference-operator",
-                        "customerId": "fixture",
-                        "employeeId": "geologist",
-                        "scopes": ["mcp:connect", "geowiz:quality"],
-                    },
+                    "principal": principal,
                     "policy": {
                         "id": "reference-ingress",
                         "version": "r1",
@@ -51,6 +53,7 @@ async def main():
                         "resourceScopes": {},
                     },
                     "accessTokenFile": str(token_file),
+                    "sourceConfigFile": str(source_file),
                     "auditFile": str(audit),
                     "dataPath": str(private / "data"),
                 }
@@ -90,7 +93,7 @@ async def main():
             }
             settings = {name: os.environ.get(name) for name in updates}
             os.environ.update(updates)
-            result = await assess_geowiz_quality("transport-control.las")
+            result = await assess_geowiz_quality(str(source))
             assert result["isError"] is False
             assert result["structuredContent"]["analysis"]["dataType"] == "las"
             assert token not in repr(result)
@@ -124,10 +127,11 @@ async def main():
                 assert response.status_code == 401
             events = [json.loads(line) for line in audit.read_text().splitlines()]
             assert any(
-                event["decision"] == "allow" and event["operation"] == "tools/call"
+                event.get("decision") == "allow" and event["operation"] == "tools/call"
                 for event in events
             )
-            assert any(event["decision"] == "deny" for event in events)
+            assert any(event.get("decision") == "deny" for event in events)
+            assert any(event.get("kind") == "source-access" and event["stage"] == "retrieved" for event in events)
             assert token not in audit.read_text()
             assert not list((private / "data/findings").glob("**/*"))
         finally:

@@ -66,6 +66,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Choose a package, set it up and deliver one issue | [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) |
 | Architecture details | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) |
 | Durable employee contracts and technology boundaries | [ADR 0001](docs/adr/0001-durable-employee-contracts.md) |
+| Permitted role data sources, exact-byte provenance and installed adapter hooks | [connectors/README.md](connectors/README.md) |
 | Employee record schemas, Python/TypeScript validation and compatibility | [contracts/README.md](contracts/README.md) |
 | Employee workflows, data, context, evaluations and human review | [Employee role matrix](docs/employee-role-matrix.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |

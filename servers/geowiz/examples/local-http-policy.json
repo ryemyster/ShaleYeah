@@ -8,7 +8,7 @@
 		"subjectId": "local-geologist",
 		"customerId": "local-workspace",
 		"employeeId": "geologist",
-		"scopes": ["mcp:connect", "geowiz:quality"]
+		"scopes": ["mcp:connect", "geowiz:quality", "source:read"]
 	},
 	"policy": {
 		"id": "local-geowiz",

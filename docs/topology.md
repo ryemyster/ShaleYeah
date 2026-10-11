@@ -292,6 +292,15 @@ Its validators depend only on schema-validation libraries and do not import the
 SDK or an agent runtime. Policy/authentication, storage and evaluation execution
 remain separate consumers.
 
+The separately selected [connector profile](../contracts/shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json)
+keeps employee 0.1.0 unchanged. Its manifest, request, artifact and health records
+compose the existing scope/evidence definitions. The independently installable
+[`connectors/`](../connectors/README.md) adapter runtime enforces current source
+grants, byte/revision/freshness/unit checks and audit outside prompts. Geowiz
+consumes private LAS snapshots and emits canonical provenance. Public/internal/
+licensed adapter hooks are reviewed installed code; no vendor API, cloud,
+warehouse, coordinator or runtime plugin download is mandatory.
+
 Small shared business contracts define:
 
 - schemas and types
