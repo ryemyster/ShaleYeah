@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #670: actual native Gemini/Anthropic ADK-to-Geowiz fixtures now require explicit source grants, verify canonical byte-hash provenance and preserve role mappings/save confirmation. This qualifies source-boundary plumbing, not geological interpretation.
+
 ### Changed
 - #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
 

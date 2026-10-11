@@ -106,6 +106,28 @@ importers:
         specifier: ^6.0.2
         version: 6.0.3
 
+  connectors:
+    dependencies:
+      '@shaleyeah/contracts':
+        specifier: workspace:*
+        version: link:../contracts
+      csv-parse:
+        specifier: 7.0.3
+        version: 7.0.3
+    devDependencies:
+      '@biomejs/biome':
+        specifier: 2.5.0
+        version: 2.5.0
+      '@types/node':
+        specifier: 25.9.3
+        version: 25.9.3
+      tsx:
+        specifier: 4.21.0
+        version: 4.21.0
+      typescript:
+        specifier: 6.0.2
+        version: 6.0.2
+
   contracts:
     dependencies:
       ajv:
@@ -305,6 +327,12 @@ importers:
 
   servers/geowiz:
     dependencies:
+      '@shaleyeah/connectors':
+        specifier: workspace:*
+        version: link:../../connectors
+      '@shaleyeah/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
       '@shaleyeah/sdk':
         specifier: workspace:*
         version: link:../../sdk
@@ -1536,6 +1564,9 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csv-parse@7.0.3:
+    resolution: {integrity: sha512-YFd3QM/yo17vH91L1IOZuvl09zM0zEEtdfTcOCKWcMdM++MNaQSyp09slXyFCLaPXvHstQFx/xC8myiFHSMUvw==}
 
   d3-array@1.2.4:
     resolution: {integrity: sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==}
@@ -3962,6 +3993,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csv-parse@7.0.3: {}
 
   d3-array@1.2.4: {}
 

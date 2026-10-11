@@ -1,5 +1,6 @@
 packages:
   - 'contracts'
+  - 'connectors'
   - 'sdk'
   - 'agents/*'
   - 'servers/*'

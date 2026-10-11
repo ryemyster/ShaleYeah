@@ -53,11 +53,21 @@ resume are #672/#673. The reference reasoning/synthesis path now uses explicit
 Gemini/Anthropic profiles with independent judge configuration;
 [provider setup](model-providers.md) states its fixture qualification and limits.
 
+Geowiz now separates source authority from model/tool authority through the
+[connector runtime](../connectors/README.md). Server-owned grants bind the
+customer, asset, task/revision, employee and operator. Actual LAS/CSV bytes,
+source revision, age and units are checked before publishing canonical provenance;
+Geowiz's LAS handlers parse private snapshots. Audit persistence is required.
+Other file formats and domain correctness remain unqualified; non-LAS MCP
+handlers explicitly decline until their adapters are reviewed. Existing
+source-independent helper APIs are not an access boundary.
+
 ## Packages and dependency boundaries
 
 | Area | Current responsibility | Target boundary |
 | --- | --- | --- |
 | `contracts/` | Canonical JSON Schema 0.1.0, generated TypeScript types and Python/TypeScript validators for employee records | Extractable business contracts independent of agent, tool, model and storage adapters |
+| `connectors/` | Installed read-only adapters, scoped current grants, verified source artifacts and private parser snapshots; Geowiz first consumer | Extractable source runtime independent of agent, model, warehouse and orchestration |
 | `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |

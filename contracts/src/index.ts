@@ -1,7 +1,14 @@
 import { readFileSync } from "node:fs";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import type { ContractErrorCode, ContractVersion, EmployeeContract, ValidationOptions } from "./generated.js";
+import type {
+	ConnectorConfiguration,
+	ContractErrorCode,
+	ContractVersion,
+	EmployeeContract,
+	SourceContract,
+	ValidationOptions,
+} from "./generated.js";
 
 export type * from "./generated.js";
 
@@ -13,6 +20,13 @@ const ajv = new Ajv2020({ allErrors: true, strictRequired: false, allowUnionType
 addFormats(ajv);
 const check = ajv.compile<EmployeeContract>(schema);
 const checkOptions = ajv.compile<ValidationOptions>({ $ref: `${schema.$id}#/$defs/ValidationOptions` });
+const sourceSchema = JSON.parse(
+	readFileSync(new URL("../shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json", import.meta.url), "utf8"),
+);
+const checkSource = ajv.compile<SourceContract>(sourceSchema);
+const checkConnector = ajv.compile<ConnectorConfiguration>({
+	$ref: `${sourceSchema.$id}#/$defs/ConnectorConfiguration`,
+});
 
 export class ContractValidationError extends Error {
 	constructor(
@@ -80,7 +94,67 @@ function checkSemantics(record: EmployeeContract): void {
 	}
 }
 
-function checkExpectations(record: EmployeeContract, options: ValidationOptions): void {
+function checkSourceSemantics(record: SourceContract): void {
+	if (record.kind === "source-artifact") {
+		if (
+			record.artifact.id !== record.evidence.id ||
+			record.artifact.revision !== record.evidence.hash.value ||
+			record.artifact.uri !== `urn:sha256:${record.evidence.hash.value}`
+		)
+			fail("invalid_contract", "/artifact", "sourceHashBinding");
+		if (Date.parse(record.retrievedAt) < Date.parse(record.evidence.asOf))
+			fail("invalid_contract", "/retrievedAt", "chronology");
+		checkSourceUri(record.evidence.uri);
+		if (new Set(record.units.map((unit) => unit.field)).size !== record.units.length)
+			fail("invalid_contract", "/units", "uniqueFields");
+	}
+	if (record.kind === "connector-status" && (record.status === "ready") !== (record.errorCode === null))
+		fail("invalid_contract", "/status", "healthErrorBinding");
+}
+
+function checkSourceUri(uri: string): void {
+	const parsed = new URL(uri);
+	// Only credential-free logical identifiers leave the private connector configuration.
+	if (
+		!["urn:", "https:"].includes(parsed.protocol) ||
+		parsed.username ||
+		parsed.password ||
+		parsed.search ||
+		parsed.hash
+	)
+		fail("invalid_contract", "/evidence/uri", "publicSourceIdentifier");
+}
+
+export function validateConnectorConfiguration(value: unknown): ConnectorConfiguration {
+	if (!isJson(value)) fail("invalid_contract", "", "jsonValue");
+	if (value && typeof value === "object" && "contractVersion" in value && value.contractVersion !== CONTRACT_VERSION)
+		fail("unsupported_version", "/contractVersion", "supportedVersion");
+	if (!checkConnector(value)) fail("invalid_contract", "", "connectorConfiguration");
+	if (
+		value.manifest.owner.customerId !== value.scope.customerId ||
+		value.manifest.owner.employeeId !== value.scope.employeeId ||
+		Object.entries(value.scope).some(
+			([key, expected]) => value.grant.scope[key as keyof typeof value.scope] !== expected,
+		) ||
+		value.grant.taskRevision !== value.taskRevision ||
+		value.grant.connectorId !== value.manifest.id
+	)
+		fail("scope_mismatch", "/scope", "connectorOwner");
+	uniqueIds(
+		value.sources.map((source) => source.evidence),
+		"/sources",
+	);
+	for (const source of value.sources) {
+		checkSourceUri(source.evidence.uri);
+		if (!value.manifest.formats.includes(source.format) || !value.manifest.sourceKinds.includes(source.sourceKind))
+			fail("unsupported_capability", "/sources", "connectorCapability");
+		if (new Set(source.units.map((unit) => unit.field)).size !== source.units.length)
+			fail("invalid_contract", "/sources/units", "uniqueFields");
+	}
+	return value;
+}
+
+function checkExpectations(record: EmployeeContract | SourceContract, options: ValidationOptions): void {
 	if (options.expectedScope) {
 		if (
 			!("scope" in record) ||
@@ -136,6 +210,27 @@ export function validateContract(value: unknown, options: ValidationOptions = {}
 		);
 	if (!checkOptions(options)) fail("invalid_contract", "/options", "validationOptions");
 	checkSemantics(value);
+	checkExpectations(value, options);
+	return value;
+}
+
+export function validateSourceContract(value: unknown, options: ValidationOptions = {}): SourceContract {
+	if (!isJson(value) || !isJson(options)) fail("invalid_contract", "", "jsonValue");
+	if (
+		value &&
+		typeof value === "object" &&
+		"contractVersion" in value &&
+		typeof value.contractVersion === "string" &&
+		value.contractVersion !== CONTRACT_VERSION
+	)
+		fail("unsupported_version", "/contractVersion", "supportedVersion");
+	if (!checkSource(value))
+		throw new ContractValidationError(
+			"invalid_contract",
+			(checkSource.errors ?? []).map((error) => ({ path: error.instancePath, keyword: error.keyword })),
+		);
+	if (!checkOptions(options)) fail("invalid_contract", "/options", "validationOptions");
+	checkSourceSemantics(value);
 	checkExpectations(value, options);
 	return value;
 }

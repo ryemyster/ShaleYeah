@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #670: added separate connector profile 0.1.0, explicit Python/TypeScript source/private-configuration validators, offline shared-schema resolution, generated bindings and isolated npm/wheel controls. Existing employee schema 0.1.0 remains unchanged. Public package API advances to 0.2.0; structural validation does not authorize reads.
+
 - Added ADR 0004 for #572: mandatory/conditional employee/tool compositions,
   pinned MCP 2025-11-25 profile, deferred A2A, discovery/schema/state mapping,
   context/review/credential boundaries, cancellation/deadline requirements and

@@ -48,6 +48,10 @@ jobs:
     - run: pnpm turbo build
     - run: pnpm turbo test
     - run: pnpm --dir contracts check:isolation
+    - run: pnpm --dir connectors check:isolation
+    - name: Geowiz source boundary coverage
+      working-directory: servers/geowiz
+      run: pnpm exec tsx --test --experimental-test-coverage '--test-coverage-include=src/source-*.ts' --test-coverage-lines=90 tests/source-*.test.ts tests/model-provider-boundary.test.ts
     - name: Python MCP client lint and conformance
       working-directory: sdk/python
       run: |

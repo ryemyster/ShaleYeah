@@ -36,6 +36,22 @@ record comparisons and 28 future adapter scenarios, including a generic MCP
 transcript and fake external employee record chain. The transcript/scenarios are
 acceptance targets; this package does not implement or certify those transports.
 
+Connector records use a separate [data-connectors profile 0.1.0](shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json):
+`data-connector-manifest`, `source-fetch-request`, `source-artifact` and
+`connector-status`. Contracts package 0.2.0 adds `validateSourceContract` /
+`validate_source_contract` and private `validateConnectorConfiguration` /
+`validate_connector_configuration`. Existing employee 0.1.0 schema and validator
+acceptance remain unchanged; employee validators reject source records. Explicit
+source validators reuse the pinned employee profile's scope/evidence definitions
+through an offline schema registry. The generator combines definitions mechanically
+for declarations; it does not create another wire profile.
+
+Source artifact validation binds content-hash/reference identity, time order,
+credential-free logical URI and unique unit fields. Private configuration is
+validated independently and is never an employee/source wire record. The
+[connector runtime](../connectors/README.md) verifies actual bytes, rights grants,
+freshness, units and audit at execution; schema validation alone cannot do that.
+
 ## Install and use
 
 Installation metadata permits Node 22 or newer for TypeScript and Python
@@ -134,7 +150,8 @@ required fields fail rather than gaining silent defaults.
 ## Versions and compatibility
 
 Every record declares exactly `contractVersion: "0.1.0"`. Package versions track
-schema releases. Artifact/task revisions, policy versions and eval-profile
+public API releases; each schema profile has its own version. Package 0.2.0
+supports employee 0.1.0 and the new, separately selected connector 0.1.0 profile. Artifact/task revisions, policy versions and eval-profile
 versions are separate; changing an input or work product is not a schema upgrade.
 
 | Change | Rule |
@@ -166,7 +183,7 @@ byte/token use, redact secrets embedded in free text, or implement durable
 context/review/resume. Do not treat a valid `approved` field as permission to act.
 The authenticated trust design is [ADR 0003](docs/0003-authority-and-review.md),
 delivered by #573; HTTP entry enforcement is #678. Context policy/storage is #571/#672;
-review binding and continuation are #673; connector behavior is #670. Evaluation
+review binding and continuation are #673; connector behavior is implemented by [connectors/](../connectors/README.md) under #670. Evaluation
 profiles/results are #666/#667. These contracts currently reference eval profiles.
 
 Existing `sdk/src/contracts.ts` describes TypeScript runtime/tool configuration;

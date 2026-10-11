@@ -7,6 +7,7 @@ import asyncio
 import json
 import os
 import re
+import runpy
 from contextlib import asynccontextmanager
 from pathlib import Path
 from secrets import token_urlsafe
@@ -25,6 +26,11 @@ from app.agent import create_geologist_agent
 from app.model_provider import native_adapter, parse_reference_config
 
 REPO = Path(__file__).resolve().parents[3]
+
+
+def source_hash():
+    import hashlib
+    return hashlib.sha256((REPO / "servers/geowiz/tests/sample-files/sample.las").read_bytes()).hexdigest()
 
 
 def reference(provider, directory):
@@ -50,12 +56,17 @@ async def protected_geowiz(directory, config_value):
     model_file.write_text(json.dumps(config_value))
     model_file.chmod(0o600)
     audit_file, receipt_file = directory / "audit.jsonl", directory / "provider-receipt.jsonl"
+    principal = {"subjectId": "fixture-operator", "customerId": "fixture", "employeeId": "geologist", "scopes": ["mcp:connect", "geowiz:analyze", "source:read"]}
+    source_file = directory / "sources.json"
+    source = runpy.run_path(str(REPO / "contracts/fixtures/source_fixture.py"))["source_config"](REPO / "servers/geowiz/tests/sample-files/sample.las", principal)
+    source_file.write_text(json.dumps(source))
+    source_file.chmod(0o600)
     config_file = directory / "http.json"
     config_file.write_text(json.dumps({
         "bindHost": "127.0.0.1", "allowedHosts": ["127.0.0.1"], "allowedOrigins": [],
-        "principal": {"subjectId": "fixture-operator", "customerId": "fixture", "employeeId": "geologist", "scopes": ["mcp:connect", "geowiz:analyze"]},
+        "principal": principal,
         "policy": {"id": "provider-reference", "version": "r1", "connectionScopes": ["mcp:connect"], "toolScopes": {"get_model_profile": ["geowiz:analyze"], "analyze_formation": ["geowiz:analyze"]}, "resourceScopes": {}},
-        "accessTokenFile": str(token_file), "auditFile": str(audit_file), "modelConfigFile": str(model_file), "dataPath": str(directory / "data"),
+        "accessTokenFile": str(token_file), "auditFile": str(audit_file), "modelConfigFile": str(model_file), "sourceConfigFile": str(source_file), "dataPath": str(directory / "data"),
     }))
     config_file.chmod(0o600)
     process = await asyncio.create_subprocess_exec("node", "--import", str(REPO / "servers/geowiz/tests/fixtures/provider-fetch.mjs"), str(REPO / "servers/geowiz/examples/local-http.mjs"),
@@ -141,6 +152,10 @@ async def test_adk_to_actual_protected_geowiz_observes_both_model_boundaries(pro
         metadata = responses[0]["structuredContent"]["analysis"]["modelMetadata"]
         assert metadata["provider"] == provider and metadata["model"] == config.synthesis["model"]
         assert metadata["reportedModelRevision"] == "fixture-native-001"
+        provenance = responses[0]["structuredContent"]["analysis"]["sourceArtifact"]
+        assert provenance["scope"]["employeeId"] == "geologist"
+        assert provenance["evidence"]["hash"]["value"] == source_hash()
+        assert provenance["revisionOrigin"] == "operator-declared"
         assert len(calls) == 2
         receipts = [json.loads(line) for line in receipt.read_text().splitlines()]
         assert len(receipts) == 1 and receipts[0]["provider"] == provider

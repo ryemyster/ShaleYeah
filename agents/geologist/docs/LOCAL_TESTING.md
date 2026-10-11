@@ -83,6 +83,14 @@ declarative profiles/trusted metrics, the ADK adapter and promotion gates are
 #666/#667/#577. Professional geological review and backend review/resume
 enforcement remain separate from model scores and ADK confirmation.
 
+The actual provider-journey fixture declares a permitted LAS source through the
+[connector contract](../../../connectors/README.md), verifies its exact hash in
+Geowiz output and checks source audit without exposing credentials. It does not
+qualify professional geological metrics. The production operator must complete
+[private source setup](../../../servers/geowiz/docs/DATA_SOURCES.md); model access
+or an authenticated connection alone cannot read files. Non-LAS backend handlers
+currently decline unsupported formats while all nine employee mappings remain.
+
 ## Common Issues
 
 | Symptom | Cause | Fix |

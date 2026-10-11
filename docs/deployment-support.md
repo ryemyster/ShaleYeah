@@ -70,6 +70,8 @@ checks results and bounds setup retries without replaying dispatched tools.
 
    ```bash
    pnpm install --frozen-lockfile
+   pnpm --dir contracts build
+   pnpm --dir connectors build
    pnpm --dir sdk build
    pnpm --dir servers/geowiz build
    ```
@@ -131,7 +133,8 @@ checks results and bounds setup retries without replaying dispatched tools.
    That fixture path resolves on the **Geowiz** host relative to its working
    directory, not on the employee host. This command is a live-task example,
    unqualified by #578; actual provider, MCP/tool and source checks belong to
-   #670/#671/#674. Never embed a real key in a command, prompt or JSON example.
+   #671/#674. Complete [private source setup](../servers/geowiz/docs/DATA_SOURCES.md).
+   Never embed a real key in a command, prompt or JSON example.
 
 5. Optional manual playground, still from `agents/geologist`:
 
@@ -149,8 +152,8 @@ checks results and bounds setup retries without replaying dispatched tools.
 | Unit | Actual settings / paths | What must survive deployment |
 | --- | --- | --- |
 | Geologist | `GEOLOGIST_MODEL_CONFIG_FILE` requires a fixed trusted profile; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #672/#673 |
-| Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; unset PORT selects stdio; model key is separate | #678 supplies ingress; source access, review enforcement, redacted operational audit and actual remote issuer/TLS remain #670/#673/#574/#674 |
-| Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; some tools also write caller `outputPath` | Mount the actual configured working-directory paths, restrict source/output roots and preserve ownership; #670/#678/#674 |
+| Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; unset PORT selects stdio; model key is separate | #678 supplies ingress; source grants/byte provenance now use [connectors/](../connectors/README.md); review, operational tracing and actual remote issuer/TLS remain #673/#574/#674 |
+| Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; file-tool caller `outputPath` writes are denied | Mount the actual configured working-directory paths; use a canonical owned approved source root and private source configuration; see [source setup](../servers/geowiz/docs/DATA_SOURCES.md) and #674 |
 | Current sessions | Geologist manifest `session_type: in_memory`; no package-configured persistent context/review store | Restart-safe scoped context, approval/revision invalidation and export/delete/restore; #672/#673 |
 
 `DATA_PATH` and `LOG_LEVEL` are not read by this reference implementation.

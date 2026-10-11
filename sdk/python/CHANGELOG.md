@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #670: actual protected-Geowiz interoperability control now supplies a reviewed fixture source grant and checks distinct source-access audit evidence instead of relying on a nonexistent file. Client transport API is unchanged.
+
 - #679: added independently buildable Python MCP HTTP client with pinned SDK,
   configured credential references/destinations, bounded preflight retries,
   cancellation/cleanup and safe typed failures without post-dispatch replay.

@@ -1,6 +1,6 @@
 {
 	"name": "@shaleyeah/contracts",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Portable employee business contracts, JSON Schema and validators",
 	"type": "module",
 	"private": false,
@@ -12,7 +12,8 @@
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
 		},
-		"./schema": "./shaleyeah_contracts/schemas/employee-0.1.0.schema.json"
+		"./schema": "./shaleyeah_contracts/schemas/employee-0.1.0.schema.json",
+		"./connector-schema": "./shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json"
 	},
 	"files": [
 		"dist",

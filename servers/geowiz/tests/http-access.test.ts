@@ -7,8 +7,12 @@ import path from "node:path";
 import { test } from "node:test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { createConnectorRuntime, operatorFileAdapter } from "@shaleyeah/connectors";
 import type { MCPHttpAccessConfig, MCPHttpSecurityEvent } from "@shaleyeah/sdk";
 import { GeowizServer } from "../src/index.js";
+import { sourceConfig } from "./fixtures/source-config.mjs";
+
+const sample = new URL("sample-files/sample.las", import.meta.url).pathname;
 
 function localPolicy(token: string, audit: (event: MCPHttpSecurityEvent) => void | Promise<void>): MCPHttpAccessConfig {
 	return {
@@ -19,7 +23,7 @@ function localPolicy(token: string, audit: (event: MCPHttpSecurityEvent) => void
 			subjectId: "geologist-fixture",
 			customerId: "fixture",
 			employeeId: "geologist",
-			scopes: ["mcp:connect", "geowiz:quality"],
+			scopes: ["mcp:connect", "geowiz:quality", "source:read"],
 		},
 		policy: {
 			id: "geowiz-fixture",
@@ -41,7 +45,7 @@ async function control(url: URL, token: string) {
 		await client.connect(transport);
 		const result = await client.callTool({
 			name: "assess_quality",
-			arguments: { filePath: "not-opened-by-this-existing-stub.las", dataType: "las" },
+			arguments: { filePath: sample, dataType: "las" },
 		});
 		assert.equal(result.isError, false);
 		assert.equal((result.structuredContent?.analysis as Record<string, unknown>).dataType, "las");
@@ -86,8 +90,14 @@ test("real Geowiz enforces configured ingress for an external MCP client", async
 	process.env.PORT = "0";
 	let server: InstanceType<typeof GeowizServer>;
 	try {
+		const source = await sourceConfig(sample, localPolicy(token, () => {}).principal);
 		server = new GeowizServer({
 			dataPath,
+			sourceRuntime: createConnectorRuntime(source, {
+				audit: async () => {},
+				installedAdapters: [operatorFileAdapter],
+				currentGrant: async () => source.grant,
+			}),
 			http: {
 				access: localPolicy(token, (event) => {
 					events.push(event);
@@ -124,9 +134,17 @@ test("local reference launcher loads private credential references and records r
 	await fs.writeFile(tokenFile, token, { mode: 0o600 });
 	const { accessToken: _token, audit: _audit, mode: _mode, ...settings } = localPolicy(token, () => {});
 	const configFile = path.join(dir, "access.json");
+	const sourceConfigFile = path.join(dir, "sources.json");
+	await fs.writeFile(sourceConfigFile, JSON.stringify(await sourceConfig(sample, settings.principal)), { mode: 0o600 });
 	await fs.writeFile(
 		configFile,
-		JSON.stringify({ ...settings, accessTokenFile: tokenFile, auditFile, dataPath: path.join(dir, "data") }),
+		JSON.stringify({
+			...settings,
+			accessTokenFile: tokenFile,
+			auditFile,
+			sourceConfigFile,
+			dataPath: path.join(dir, "data"),
+		}),
 		{ mode: 0o600 },
 	);
 	const child = spawn(process.execPath, ["examples/local-http.mjs"], {
