@@ -137,3 +137,8 @@ with their owning issues. Ingress credentials do not approve geological work.
 See [SDK HTTP access](../docs/http-access.md) and the
 [migration ledger](../../docs/legacy-migration-ledger.md) for boundaries and
 remaining employee adoption owners.
+
+Installed-consumer isolation also installs the declared evaluation 0.2.0 wheel
+and exercises Geologist's native trace adapter, private host-input reader and
+independent qualitative judge controls. See [evaluation grading](../../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals).
+The MCP client API and transport boundary are unchanged.

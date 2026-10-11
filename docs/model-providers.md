@@ -140,4 +140,7 @@ pytest checks plumbing and policy, including a proposed save paused before
 dispatch. Profile validation checks reviewed dataset bytes and installed metric
 selection without executing a judge. These fixtures do not qualify real model choices, geological accuracy,
 source rights, durable review or investment decisions. The portable profile is not a stock agents-cli grading config. Its
-ADK run/grading adapter and promotion rules are #667/#577; live runs require explicit opt-in.
+ADK trace adapter grades frozen work and supports the separately configured
+BYO judge. It records the judge/model revision and treats missing or failed
+judges as infrastructure errors. See [grading steps](../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals).
+Promotion rules remain #577; these fixtures make no paid request.

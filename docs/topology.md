@@ -305,8 +305,11 @@ warehouse, coordinator or runtime plugin download is mandatory.
 scorecard schema, fixed installed metric registry and Python loader. It depends
 on portable contracts and schema/canonicalization libraries, not ADK/providers,
 MCP, warehouses or the coordinator. Geologist tunes its profile in JSON; trusted
-host context and mandatory gates stay outside model prose. #667 adapts ADK
-execution and portable reports; evaluations do not approve employee actions.
+host context and mandatory gates stay outside model prose. Its portable runner
+grades frozen work and emits version/hash-bound reports. The Geologist-local ADK
+adapter consumes native traces and privately configured qualitative judges.
+Provider/framework imports stay in the agent package. Evaluations do not approve
+employee actions; promotion gates remain #577.
 
 Small shared business contracts define:
 

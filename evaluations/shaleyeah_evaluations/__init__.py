@@ -18,6 +18,14 @@ SCHEMA = json.loads(
 )
 Draft202012Validator.check_schema(SCHEMA)
 _VALIDATOR = Draft202012Validator(SCHEMA, format_checker=FormatChecker())
+_PERFORMANCE_SCHEMA = json.loads(
+    files(__package__).joinpath("schemas/eval-profile-0.2.0.schema.json").read_text()
+)
+Draft202012Validator.check_schema(_PERFORMANCE_SCHEMA)
+_VALIDATORS = {
+    "0.1.0": _VALIDATOR,
+    "0.2.0": Draft202012Validator(_PERFORMANCE_SCHEMA, format_checker=FormatChecker()),
+}
 _MANDATORY = frozenset(
     {
         "contract.schema",
@@ -113,6 +121,7 @@ class LoadedProfile:
     _json: str
     config_hash: str
     dataset_hashes: tuple
+    case_ids: tuple = ()
 
     def configuration(self):
         return json.loads(self._json)
@@ -124,11 +133,12 @@ def load_profile(text, *, datasets, policy):
         raise EvaluationError("invalid_policy")
     value = _json(text)
     if type(value) is dict and (
-        value.get("schemaVersion") != SCHEMA_VERSION
-        or value.get("registryVersion") != REGISTRY_VERSION
+        value.get("schemaVersion") not in _VALIDATORS
+        or value.get("registryVersion") != value.get("schemaVersion")
     ):
         raise EvaluationError("unsupported_version")
-    if not _VALIDATOR.is_valid(value):
+    validator = _VALIDATORS.get(value.get("schemaVersion")) if type(value) is dict else None
+    if validator is None or not validator.is_valid(value):
         raise EvaluationError("invalid_profile")
     if value["roleId"] != policy.role_id:
         raise EvaluationError("policy_denied")
@@ -136,7 +146,12 @@ def load_profile(text, *, datasets, policy):
     ids = [metric["id"] for metric in metrics]
     if len(set(ids)) != len(ids):
         raise EvaluationError("duplicate_metric")
-    if not policy.required_metrics.issubset(ids):
+    required = policy.required_metrics | (
+        {"numerical.measurements"}
+        if value["schemaVersion"] == "0.2.0" and policy.role_id == "geologist"
+        else set()
+    )
+    if not required.issubset(ids):
         raise EvaluationError("policy_denied")
     case_ids, dataset_hashes = set(), []
     for dataset in value["datasets"]:
@@ -169,11 +184,21 @@ def load_profile(text, *, datasets, policy):
         dataset_hashes.append((dataset["id"], dataset["sha256"]))
     for metric in metrics:
         definition = registered_metric(metric["id"], metric["version"])
+        if value["schemaVersion"] == "0.1.0" and (
+            definition.version != "1" or metric["id"] == "numerical.measurements"
+        ):
+            raise EvaluationError("unsupported_version")
+        if (
+            value["schemaVersion"] == "0.2.0"
+            and metric["id"] == "geologist.architecture_boundary"
+            and metric["version"] != "2"
+        ):
+            raise EvaluationError("policy_denied")
         if not definition.parameter_validator.is_valid(metric["parameters"]):
             raise EvaluationError("invalid_parameters")
         if metric["id"].startswith("geologist.") and policy.role_id != "geologist":
             raise EvaluationError("policy_denied")
-        if metric["id"] in policy.required_metrics and (
+        if metric["id"] in required and (
             not metric["hardGate"] or metric["threshold"] != 1 or metric["onFailure"] != "block"
         ):
             raise EvaluationError("policy_denied")
@@ -198,7 +223,9 @@ def load_profile(text, *, datasets, policy):
         elif metric["judgeRef"] is not None or metric["rubric"] is not None:
             raise EvaluationError("invalid_profile")
     canonical = _canonical(value)
-    return LoadedProfile(canonical, _hash(canonical), tuple(dataset_hashes))
+    return LoadedProfile(
+        canonical, _hash(canonical), tuple(dataset_hashes), tuple(sorted(case_ids))
+    )
 
 
 @dataclass(frozen=True)
@@ -296,6 +323,8 @@ def evaluate_metric(profile, metric_id, trace, context):
         "judge_required" if value is None else "passed" if value == 1 else "check_failed",
         _canonical(metric["judgeRef"]),
         _canonical(profile.configuration()["profileRef"]),
+        profile.configuration()["schemaVersion"],
+        profile.configuration()["registryVersion"],
     )
 
 
@@ -312,8 +341,8 @@ def summarize_scores(profile, scores):
             or result.metric_id not in selected
             or result.metric_version != selected[result.metric_id]["version"]
             or result.profile_ref != config["profileRef"]
-            or result.schema_version != SCHEMA_VERSION
-            or result.registry_version != REGISTRY_VERSION
+            or result.schema_version != config["schemaVersion"]
+            or result.registry_version != config["registryVersion"]
             or (
                 result.score is not None
                 and (
@@ -364,8 +393,8 @@ def summarize_scores(profile, scores):
         "status": status,
         "configHash": profile.config_hash,
         "profileRef": config["profileRef"],
-        "schemaVersion": SCHEMA_VERSION,
-        "registryVersion": REGISTRY_VERSION,
+        "schemaVersion": config["schemaVersion"],
+        "registryVersion": config["registryVersion"],
         "score": weighted,
         "failedMetrics": failed,
         "missingMetrics": missing,

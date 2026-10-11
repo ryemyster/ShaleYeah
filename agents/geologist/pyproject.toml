@@ -9,15 +9,17 @@ dependencies = [
   "anthropic==1.13.0",
   "google-adk[gcp]==2.4.0",
   "google-genai==2.11.0",
+  "google-cloud-aiplatform==1.160.0",
   "httpx==0.28.1",
   "httpx2==2.13.1",
   "shaleyeah-mcp-client==0.1.0",
-  "shaleyeah-evaluations==0.1.0",
+  "shaleyeah-evaluations==0.2.0",
 ]
 requires-python = ">=3.11,<3.14"
 
 [dependency-groups]
 dev = [
+  "google-cloud-aiplatform[evaluation]==1.160.0",
   "pytest>=9.0.2,<10.0.0",
   "pytest-asyncio>=1.0.0,<2.0.0",
   "pytest-cov>=7.0.0,<8.0.0",
@@ -25,7 +27,7 @@ dev = [
 
 [project.optional-dependencies]
 eval = [
-  "google-adk[eval]>=2.0.0,<3.0.0",
+  "google-adk[eval]==2.4.0",
 ]
 lint = [
   "ruff>=0.4.6,<1.0.0",

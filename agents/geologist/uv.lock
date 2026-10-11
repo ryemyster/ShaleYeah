@@ -2957,7 +2957,7 @@ dev = [
 
 [[package]]
 name = "shaleyeah-evaluations"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "../../evaluations" }
 dependencies = [
     { name = "jsonschema" },
@@ -2986,6 +2986,7 @@ source = { editable = "." }
 dependencies = [
     { name = "anthropic" },
     { name = "google-adk", extra = ["gcp"] },
+    { name = "google-cloud-aiplatform" },
     { name = "google-genai" },
     { name = "httpx" },
     { name = "httpx2" },
@@ -3004,6 +3005,7 @@ lint = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "google-cloud-aiplatform", extra = ["evaluation"] },
     { name = "pytest" },
     { name = "pytest-asyncio" },
     { name = "pytest-cov" },
@@ -3012,8 +3014,9 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "anthropic", specifier = "==1.13.0" },
-    { name = "google-adk", extras = ["eval"], marker = "extra == 'eval'", specifier = ">=2.0.0,<3.0.0" },
+    { name = "google-adk", extras = ["eval"], marker = "extra == 'eval'", specifier = "==2.4.0" },
     { name = "google-adk", extras = ["gcp"], specifier = "==2.4.0" },
+    { name = "google-cloud-aiplatform", specifier = "==1.160.0" },
     { name = "google-genai", specifier = "==2.11.0" },
     { name = "httpx", specifier = "==0.28.1" },
     { name = "httpx2", specifier = "==2.13.1" },
@@ -3026,6 +3029,7 @@ provides-extras = ["eval", "lint"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "google-cloud-aiplatform", extras = ["evaluation"], specifier = "==1.160.0" },
     { name = "pytest", specifier = ">=9.0.2,<10.0.0" },
     { name = "pytest-asyncio", specifier = ">=1.0.0,<2.0.0" },
     { name = "pytest-cov", specifier = ">=7.0.0,<8.0.0" },
