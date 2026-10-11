@@ -123,7 +123,7 @@ Run these from `agents/geologist`.
 | Syntax check | `uv run --frozen python -m py_compile app/agent.py app/geowiz_mcp.py` |
 | Inspect ADK project | `agents-cli info` |
 | Run a live local task | Follow [the ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally) with backend and provider configured |
-| Run configured live evals | `agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json --config tests/eval/eval_config.yaml` |
+| Validate the evaluation profile | `uv run --locked python -m shaleyeah_evaluations tests/eval/eval_config.json --role geologist --dataset geologist.reference=tests/eval/datasets/geologist-adk-reference.json` |
 
 Pytest includes project/eval shape, role mapping/failure and credential controls.
 Shared discovery/schema/result, retry/cancel and error checks live in the

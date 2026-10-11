@@ -5,6 +5,8 @@ packages. It uses the maintained Python MCP SDK for protocol/session handling.
 It has no ADK, model-provider, business-role, warehouse or monorepo-source import.
 
 The first consumer is [Geologist](../../agents/geologist/README.md).
+Its installed-wheel isolation check also installs the consumer's declared portable
+evaluation/contract wheels; these do not become client runtime dependencies.
 The role keeps its tool names, inputs, prompts and review responsibilities;
 this package owns credential handling, bounded connection setup, discovery,
 schema checks and result preservation.

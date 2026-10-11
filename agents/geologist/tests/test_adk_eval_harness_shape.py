@@ -26,16 +26,25 @@ def test_adk_eval_dataset_contains_control_edge_and_boundary_cases() -> None:
     }.issubset(case_ids)
 
 
-def test_adk_eval_config_separates_deterministic_checks_from_llm_judge() -> None:
-    config = (PACKAGE_ROOT / "tests" / "eval" / "eval_config.yaml").read_text()
+def test_geologist_eval_configuration_cannot_embed_executable_metrics() -> None:
+    configs = list((PACKAGE_ROOT / "tests" / "eval").glob("eval_config.*"))
+    assert configs
+    for path in configs:
+        assert "custom_function" not in path.read_text(), "Profiles must select trusted metric IDs"
 
-    assert "metrics_to_run:" in config
-    assert "geologist_tool_boundary" in config
-    assert "geologist_architecture_boundary" in config
-    assert "geologist_no_unapproved_persistence" in config
-    assert "custom_function:" in config
-    assert "geologist_final_response_quality" in config
-    assert "prompt_template:" in config
+
+def test_geologist_loads_its_registered_profile_and_exact_dataset() -> None:
+    from shaleyeah_evaluations import TrustedEvalPolicy, load_profile
+
+    root = PACKAGE_ROOT / "tests/eval"
+    loaded = load_profile(
+        (root / "eval_config.json").read_bytes(),
+        datasets={"geologist.reference": (root / "datasets/geologist-adk-reference.json").read_bytes()},
+        policy=TrustedEvalPolicy("geologist"),
+    )
+    assert loaded.configuration()["roleId"] == "geologist"
+    assert len(loaded.configuration()["metrics"]) == 9
+    assert len(loaded.config_hash) == 64
 
 
 def test_adk_app_name_matches_app_directory_for_eval_sessions() -> None:

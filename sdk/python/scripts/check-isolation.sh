@@ -8,6 +8,8 @@ trap 'rm -rf "$isolation_dir"' EXIT
 
 uv build --wheel --out-dir "$isolation_dir/wheels"
 uv build --project "$geologist_root" --wheel --out-dir "$isolation_dir/wheels"
+uv build --project "$client_root/../../contracts" --wheel --out-dir "$isolation_dir/wheels"
+uv build --project "$client_root/../../evaluations" --wheel --out-dir "$isolation_dir/wheels"
 uv export --project "$geologist_root" --locked --no-emit-local --no-hashes \
   --output-file "$isolation_dir/requirements.txt" > /dev/null
 uv venv --python 3.12 "$isolation_dir/.venv"
@@ -15,6 +17,8 @@ uv pip install --python "$isolation_dir/.venv/bin/python" \
   -r "$isolation_dir/requirements.txt"
 uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
   "$isolation_dir/wheels/shaleyeah_mcp_client-0.1.0-py3-none-any.whl" \
+  "$isolation_dir/wheels/shaleyeah_contracts-0.2.0-py3-none-any.whl" \
+  "$isolation_dir/wheels/shaleyeah_evaluations-0.1.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_geologist_adk-0.1.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/tests/eval"
@@ -22,7 +26,6 @@ cp tests/test_result_contract.py tests/test_transport_boundary.py "$isolation_di
 cp "$geologist_root/tests/test_mcp_access_boundary.py" "$isolation_dir/tests/test_geologist_access.py"
 cp "$geologist_root/tests/test_mcp_result_contract.py" "$isolation_dir/tests/test_geologist_mapping.py"
 cp "$geologist_root/tests/test_model_provider.py" "$geologist_root/tests/test_native_model_adapters.py" "$geologist_root/tests/test_model_configuration_boundary.py" "$isolation_dir/tests/"
-cp "$geologist_root/tests/eval/eval_config.yaml" "$isolation_dir/tests/eval/"
 (
   cd "$isolation_dir"
   # Isolated wheels only: discard inherited source/Python launcher paths.

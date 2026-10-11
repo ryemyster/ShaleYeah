@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #666: replaced executable eval YAML and test exec with a versioned JSON profile and installed trusted registry; preserve all role expectations and observed confirmation. Explicit evaluation dependency and wheel isolation; runner adaptation remains #667.
+
 - #670: actual native Gemini/Anthropic ADK-to-Geowiz fixtures now require explicit source grants, verify canonical byte-hash provenance and preserve role mappings/save confirmation. This qualifies source-boundary plumbing, not geological interpretation.
 
 ### Changed

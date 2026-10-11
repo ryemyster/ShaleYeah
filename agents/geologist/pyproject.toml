@@ -12,6 +12,7 @@ dependencies = [
   "httpx==0.28.1",
   "httpx2==2.13.1",
   "shaleyeah-mcp-client==0.1.0",
+  "shaleyeah-evaluations==0.1.0",
 ]
 requires-python = ">=3.11,<3.14"
 
@@ -49,6 +50,8 @@ build-backend = "hatchling.build"
 
 [tool.uv.sources]
 shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
+shaleyeah-evaluations = { path = "../../evaluations", editable = true }
+shaleyeah-contracts = { path = "../../contracts", editable = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]

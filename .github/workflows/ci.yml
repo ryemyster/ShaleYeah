@@ -49,6 +49,12 @@ jobs:
     - run: pnpm turbo test
     - run: pnpm --dir contracts check:isolation
     - run: pnpm --dir connectors check:isolation
+    - name: Evaluation profile conformance and isolation
+      working-directory: evaluations
+      run: |
+        uv run --locked ruff check .
+        uv run --locked pytest -q --cov=shaleyeah_evaluations --cov-fail-under=90
+        bash scripts/check-isolation.sh
     - name: Geowiz source boundary coverage
       working-directory: servers/geowiz
       run: pnpm exec tsx --test --experimental-test-coverage '--test-coverage-include=src/source-*.ts' --test-coverage-lines=90 tests/source-*.test.ts tests/model-provider-boundary.test.ts

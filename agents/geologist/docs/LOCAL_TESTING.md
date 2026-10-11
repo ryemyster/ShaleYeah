@@ -49,61 +49,30 @@ directory, not on the employee host. Import/health alone does not execute it.
 
 ## Run ADK Evals
 
-The dataset is [geologist-adk-reference.json](../tests/eval/datasets/geologist-adk-reference.json);
-metric selection/rubrics are [eval_config.yaml](../tests/eval/eval_config.yaml).
-The files define intended control, sparse-context edge and unapproved-persistence
-cases. Existing pytest checks inspect their shape; they do not execute or grade
-the employee. Several advertised format cases still need source qualification.
+The [reference dataset](../tests/eval/datasets/geologist-adk-reference.json)
+contains control, sparse-context and unapproved-persistence cases. The
+[data-only profile](../tests/eval/eval_config.json) selects installed metrics,
+reviewed dataset hashes, thresholds, weights and a versioned judge reference.
+Validate it from `agents/geologist`:
 
-From `agents/geologist`, inspect installed flags before a live run:
-
-```bash
-agents-cli eval run --help
+```sh
+uv run --locked python -m shaleyeah_evaluations tests/eval/eval_config.json \
+  --role geologist \
+  --dataset geologist.reference=tests/eval/datasets/geologist-adk-reference.json
 ```
 
-When Geowiz, model credentials, approved inputs and the configured grading
-service are ready, select the actual package files explicitly:
+This validates configuration and exact dataset bytes; it runs no employee or
+judge. [The evaluation package](../../../evaluations/README.md) has frozen-trace
+conformance tests for schema/scope, provenance, freshness, assumptions, authority,
+role tool/architecture and observed confirmation checks. Missing runtime evidence
+or an unexecuted judge cannot PASS. These checks cannot approve geological work.
 
-```bash
-agents-cli eval run --dataset tests/eval/datasets/geologist-adk-reference.json \
-  --config tests/eval/eval_config.yaml
-```
-
-For the inspected CLI 1.3.1, `run` chains inference and grading. Inference traces
-go to `artifacts/traces/`; default timestamped JSON/HTML grade results go to
-`artifacts/grade_results/`. This config includes a model-based judge; configure
-its service identity/project separately from the agent/tool's model keys.
-Live runs may incur cost and are not a credential-free CI step. Run only trusted
-eval configuration; current custom metric functions execute code. Record source
-commit, dataset/config/provider/model/judge versions, per-case scores and limits;
-retain redacted artifacts and inspect failures instead of lowering thresholds.
-
-No successful live eval is claimed by these setup instructions. Portable
-declarative profiles/trusted metrics, the ADK adapter and promotion gates are
-#666/#667/#577. Professional geological review and backend review/resume
-enforcement remain separate from model scores and ADK confirmation.
-
-The actual provider-journey fixture declares a permitted LAS source through the
-[connector contract](../../../connectors/README.md), verifies its exact hash in
-Geowiz output and checks source audit without exposing credentials. It does not
-qualify professional geological metrics. The production operator must complete
-[private source setup](../../../servers/geowiz/docs/DATA_SOURCES.md); model access
-or an authenticated connection alone cannot read files. Non-LAS backend handlers
-currently decline unsupported formats while all nine employee mappings remain.
-
-## Common Issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED localhost:3001` | Geowiz is not running | Use the configured HTTP launcher linked above |
-| HTTP 401/403 from Geowiz | Missing identity or ingress permission | Check the dedicated private credential file, endpoint and configured operator scopes |
-| `agents-cli info` cannot find the project | Command was run from the wrong directory | `cd agents/geologist` |
-| Python import error for `mcp` or `google.adk` | Dependencies are not installed | From this package, `uv sync --frozen --extra eval` |
-| CLI cannot find default eval dataset | Generic scaffold filename differs from this package | Pass the explicit `--dataset` and `--config` shown above |
-| Live inference/grading needs credentials | Model or selected grading service is not configured | Run no-key shape checks separately; configure the required identities before a live eval |
-
-## See Also
-
-- [README](../README.md)
-- [ARCHITECTURE.md](ARCHITECTURE.md)
-- [DEVELOPMENT.md](DEVELOPMENT.md)
+The profile is the portable interchange format, not a stock `agents-cli` grading
+config. [Issue #667](https://github.com/ryemyster/ShaleYeah/issues/667) connects the
+profile and trusted registry to ADK generation/grading and run reports. Until
+that adapter lands, keep native provider/tool fixture tests as plumbing evidence;
+do not pass this profile directly to `agents-cli eval grade` or imply live
+scores. Promotion gates follow in #577. Several advertised source formats still
+require #671 qualification. Actual model/domain evaluation needs approved
+sources, private provider/judge credentials, versioned runtime evidence and
+professional review; it remains separate from pytest and ADK confirmation.

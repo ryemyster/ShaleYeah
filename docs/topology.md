@@ -301,6 +301,13 @@ consumes private LAS snapshots and emits canonical provenance. Public/internal/
 licensed adapter hooks are reviewed installed code; no vendor API, cloud,
 warehouse, coordinator or runtime plugin download is mandatory.
 
+[`evaluations/`](../evaluations/README.md) adds a separately versioned JSON
+scorecard schema, fixed installed metric registry and Python loader. It depends
+on portable contracts and schema/canonicalization libraries, not ADK/providers,
+MCP, warehouses or the coordinator. Geologist tunes its profile in JSON; trusted
+host context and mandatory gates stay outside model prose. #667 adapts ADK
+execution and portable reports; evaluations do not approve employee actions.
+
 Small shared business contracts define:
 
 - schemas and types

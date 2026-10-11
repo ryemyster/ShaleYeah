@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #666: added the independently installable evaluation-profile schema/Python loader, fixed metric registry, exact dataset and RFC 8785 configuration hashes, mandatory trust gates and frozen-observation score receipts. Geologist now selects registered evaluators from JSON; deleted embedded executable YAML. ADK run/judge/report adaptation remains #667.
+
 - #670: added separately selected connector profile 0.1.0 and extractable installed-adapter runtime, scoped current data grants, private credential/audit hooks, exact-hash LAS/CSV provenance and temporary parser snapshots. Geowiz now denies unapproved/changed/stale/revoked inputs and caller output-file writes; non-LAS processors decline until adapter qualification. Preserve employee schema 0.1.0; contracts package API advances to 0.2.0. No live vendor or professional acceptance is claimed.
 
 ### Changed

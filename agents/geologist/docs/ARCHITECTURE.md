@@ -107,15 +107,18 @@ Behavior evals live under `tests/eval/`.
 | File | Purpose |
 |------|---------|
 | `tests/eval/datasets/geologist-adk-reference.json` | Control, edge, and capability-boundary cases for ADK tool selection |
-| `tests/eval/eval_config.yaml` | Deterministic hard-boundary checks plus LLM-judged response quality |
+| `tests/eval/eval_config.json` | Registered deterministic trust/role metrics, config tuning and optional judge rubric |
 
-Run from `agents/geologist`:
-
-```bash
-agents-cli eval run
-```
-
-Use deterministic grading for hard rules such as tool-call expectations and "do not save without approval." Use an LLM judge only for subjective final-response quality.
+The installed [evaluation package](../../../evaluations/README.md) validates
+this profile and exact dataset bytes. It grades frozen observations with a
+trusted registry; config contains no executable evaluator. The host supplies
+scope, source artifacts and runtime observations separately from model output.
+Missing evidence cannot pass, and mandatory gates cannot be weakened or averaged
+away. Geologist remains a Stand-alone Agent with Progressive Disclosure (Skills).
+ADK generation/grading adaptation and real judge execution are #667; human
+approval and geological correctness remain independent review boundaries.
+See [local testing](LOCAL_TESTING.md#run-adk-evals) for the current validation
+command and what its result proves.
 
 ## Runtime Configuration
 
