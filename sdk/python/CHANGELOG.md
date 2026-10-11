@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #667: installed-consumer isolation now includes the declared evaluation 0.2.0 wheel and Geologist native trace/qualitative-judge adapter controls. Client transport API is unchanged.
+
 - #666: installed-consumer isolation now builds the Geologist's declared evaluation/contract wheels and tests the registered confirmation evaluator; client transport API is unchanged.
 
 - #670: actual protected-Geowiz interoperability control now supplies a reviewed fixture source grant and checks distinct source-access audit evidence instead of relying on a nonexistent file. Client transport API is unchanged.

@@ -79,7 +79,10 @@ Follow [the package's eval steps](../agents/geologist/docs/LOCAL_TESTING.md#run-
 for live inference/grading prerequisites and artifact locations. Keep
 deterministic policy checks, model-based scores and human professional review
 distinct. Portable profiles/trusted metrics are delivered in [evaluations/](../evaluations/README.md);
-the ADK runner and promotion gates remain #667/#577; a file's presence does not prove the employee passes it.
+the Geologist adapter emits portable reports from native frozen traces. Its
+[source-linked fixture profile](../agents/geologist/tests/eval/performance_profile.json)
+uses runtime-observed boundaries and literal LAS measurements. Promotion gates
+remain #577; a file's presence does not prove the employee passes it.
 
 ## Check an MCP tool
 

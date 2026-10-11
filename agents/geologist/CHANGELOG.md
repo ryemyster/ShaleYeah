@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #667: added portable frozen-run reports, hard-failure/infrastructure states, versioned runtime-observed architecture and source-bound numeric gates, candidate comparison and the pinned Geologist ADK/agents-cli adapter with an independent BYO qualitative judge. Source-linked LAS/policy fixtures and installed SDK controls require no paid key; professional acceptance, durable review and promotion remain separate.
+
 - #666: replaced executable eval YAML and test exec with a versioned JSON profile and installed trusted registry; preserve all role expectations and observed confirmation. Explicit evaluation dependency and wheel isolation; runner adaptation remains #667.
 
 - #670: actual native Gemini/Anthropic ADK-to-Geowiz fixtures now require explicit source grants, verify canonical byte-hash provenance and preserve role mappings/save confirmation. This qualifies source-boundary plumbing, not geological interpretation.

@@ -112,7 +112,7 @@ real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
 specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
 #672/#673 implement durable context/review. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
-by #666; ADK run results are #667.
+by #666; #667 adds portable reports and the Geologist-local ADK trace adapter.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
@@ -123,8 +123,8 @@ the policy/reference fixtures do not enforce it today. Warehouses, vectors and
 hosted memory are optional adapters selected through measured qualification.
 
 Existing shape tests/eval assets are foundational. Configurable job scorecards are implemented in the independent
-[evaluation package](../evaluations/README.md); portable run results and promotion
-gates are #667/#577/#691. Each role needs
+[evaluation package](../evaluations/README.md); portable run results are implemented; promotion and fleet qualification
+gates remain #577/#691. Each role needs
 professional cases and human acceptance; importing an agent is not job-quality
 evidence.
 

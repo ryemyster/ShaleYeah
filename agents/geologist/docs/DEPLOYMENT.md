@@ -98,3 +98,10 @@ restart/change-of-input, export/restore and composition with a compatible
 external tool. Configured evaluations and professional acceptance are separate
 from package shape checks. The [MVP delivery plan](../../../docs/mvp-release-plan.md)
 names the implementation and release gates.
+
+Frozen evaluation reports run locally through `app.eval_adapter`; see
+[local grading](LOCAL_TESTING.md#run-adk-evals). Install runtime dependencies with
+`uv sync --locked --no-dev` for the deployed employee. Google's heavier local
+evaluation tooling is in the development group. Supply authenticated host
+evidence and an explicit independent private judge for real scoring. Reports
+do not persist context, grant approval or qualify a deployment.

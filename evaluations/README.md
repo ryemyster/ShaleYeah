@@ -34,7 +34,7 @@ contract wheels into an empty environment and runs conformance against copied
 fixture data. It imports no monorepo source or agent/model SDK.
 
 External consumers install the declared `shaleyeah-contracts==0.2.0` and
-`shaleyeah-evaluations==0.1.0` wheels. Local editable paths are contributor
+`shaleyeah-evaluations==0.2.0` wheels. Local editable paths are contributor
 convenience, not a deployment requirement. No registry publication is implied.
 
 ## Load and tune a scorecard
@@ -71,7 +71,7 @@ before execution with value-free error codes.
 
 ## Installed metrics and evidence
 
-| Metric ID, version 1 | Required evidence |
+| Metric ID/version | Required evidence |
 | --- | --- |
 | `contract.schema` | Canonical work product with exact customer/asset/task/employee scope, task revision and product reference |
 | `evidence.provenance` | Evidence matches exact canonical source artifacts supplied by the trusted retrieval boundary; measured findings cite sources |
@@ -79,7 +79,8 @@ before execution with value-free error codes.
 | `assumptions.labeling` | Assumed findings cite labeled assumptions; unknowns retain null values/reasons; measured findings cite evidence |
 | `authority.boundary` | Observed dispatch/authorized-dispatch/unauthorized-action counts; claimed final/approved work also requires trusted verified review for the exact product reference |
 | `geologist.tool_boundary` | Configured expected calls for every reviewed dataset case, without requiring an exact call order |
-| `geologist.architecture_boundary` | Recorded response stays within the declared stand-alone specialist mode |
+| `geologist.architecture_boundary`, v2 | Host-observed specialist topology, zero child agents and zero delegation events; missing observations fail |
+| `numerical.measurements` | Every measured finding exactly matches a host-reviewed numeric value/unit and the bound evidence hash |
 | `geologist.no_unapproved_persistence` | When approval is required, an observed confirmation pause and zero write dispatches |
 | `response.rubric` | Versioned approved judge reference and rubric; remains pending until the runner executes the judge |
 
@@ -100,9 +101,14 @@ review. Synthetic judge scores in arithmetic tests are not live judge evidence.
 
 ## Versions, hashes and migration
 
-Package, schema and registry versions are separate. Profile schema and registry
-are `0.1.0`; installed metric versions are `1`. The loader accepts only declared
-versions. It neither rewrites an unknown version nor executes old YAML.
+Package, schema and registry versions are separate. Package 0.2.0 accepts the
+unchanged profile/registry 0.1.0 for compatibility and performance profile/registry
+0.2.0. Performance requires architecture evaluator version 2 and the numeric
+gate for Geologist. Other evaluator versions are 1. The old architecture word
+check remains a legacy contract test and cannot enter the performance runner.
+The exported `SCHEMA_VERSION`/`REGISTRY_VERSION` constants describe the preserved
+0.1.0 API; receipts report the actual loaded profile versions. The loader accepts
+only declared versions. It neither rewrites an unknown version nor executes old YAML.
 Profile/trace/runtime hashes use SHA-256 of UTF-8
 [RFC 8785 JSON canonicalization](https://www.rfc-editor.org/rfc/rfc8785), implemented
 by the pinned [pure Python canonicalizer](https://github.com/trailofbits/rfc8785.py).
@@ -117,8 +123,54 @@ schema or evaluator behavior needs a new version and explicit migration tests.
 Keep the original profile/results for comparison within the host's authorized
 retention policy. No implicit live migration or cross-customer store is added.
 
-The [ADK runner issue #667](https://github.com/ryemyster/ShaleYeah/issues/667) owns
-generation/grading adaptation, actual judge execution and portable run reports.
+## Grade frozen work and compare candidates
+
+`shaleyeah_evaluations.runner.run_case(...)` is asynchronous and consumes a
+validated performance profile, one frozen trace, trusted context, explicit
+candidate versions and optional `JudgeBackend`. The backend is a host-installed
+async callable with a reviewed reference/model revision. Profile JSON never
+loads its code or credentials. `validate_report(...)` checks the independent
+[report schema](shaleyeah_evaluations/schemas/eval-report-0.1.0.schema.json) and
+internal decision/hash bindings. These are integrity checks, not signatures or
+proof of reviewer identity.
+
+Each report preserves case/profile/dataset/schema/registry/evaluator/model/runtime/
+harness/judge versions, exact customer/asset/task/employee scope, task/product
+revision, configuration/trace/runtime/reference hashes and source ID/hash references. It
+contains no raw prompt, response, source file, credential, exception message or
+judge explanation. The qualitative request contains only employee response text, findings, assumptions,
+uncertainty, blockers and review status. Raw prompts, tool results, source URIs,
+authority observations and context are excluded. `judgeInputHash` binds that
+minimized request without retaining it in the report. The host remains responsible
+for source/employee-output redaction before sharing. Supplied candidate/judge
+model revisions describe configured targets; real observation and execution
+evidence remain with the host. Deterministic gates execute first. A failed mandatory gate
+blocks and skips qualitative requests. A missing, failed, invalid or timed-out
+judge produces `infra-error` and a null score. A qualitative failure requests
+review or fails according to the profile; it cannot cancel a hard failure.
+`promotionBlocked` is false only for a passing report. Actual promotion policy
+and authenticated approval remain outside this package, in #577 and the host.
+
+Optional host measurements include latency, observed cost/currency, review time,
+corrections, rework, completion, escalation quality and tool failures. Unmeasured
+values remain absent; model confidence is a separately labeled field. Tests use
+synthetic measurements only. `compare_reports([baseline, candidate, ...])` requires
+the same case, scorecard/hash, dataset and scope/revision. It preserves candidate
+versions and flags differing repeated-candidate outcomes/trace hashes as possible
+nondeterminism. This is a signal to inspect the runs, not a statistical proof or
+an automatic winner selection.
+
+Geologist owns the provider/framework-specific
+[adapter and commands](../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals).
+It consumes native ADK/agents-cli traces, binds separately authenticated products/
+observations, and reuses its private BYO model boundary for qualitative scoring.
+It also creates installed local Google evaluator callbacks; no configuration
+Python is compiled. The portable package imports no ADK, model SDK, warehouse or
+coordinator. [Source-linked fixtures](../agents/geologist/tests/eval/datasets/geologist-performance.json)
+check the literal first depth/unit of the demo LAS and policy failures. Historical
+source dates, scripted judges and synthetic review are explicit; geological
+interpretation still requires a qualified professional.
+
 Promotion gates are [#577](https://github.com/ryemyster/ShaleYeah/issues/577).
 The Geologist remains a Stand-alone Agent with Progressive Disclosure (Skills).
 Human approval, professional review, secret resolution/redaction and scoped

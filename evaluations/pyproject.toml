@@ -1,6 +1,6 @@
 [project]
 name = "shaleyeah-evaluations"
-version = "0.1.0"
+version = "0.2.0"
 description = "Portable employee evaluation profiles and trusted deterministic metrics"
 requires-python = ">=3.11,<3.15"
 license = "Apache-2.0"

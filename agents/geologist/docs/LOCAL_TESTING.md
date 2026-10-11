@@ -67,12 +67,64 @@ conformance tests for schema/scope, provenance, freshness, assumptions, authorit
 role tool/architecture and observed confirmation checks. Missing runtime evidence
 or an unexecuted judge cannot PASS. These checks cannot approve geological work.
 
-The profile is the portable interchange format, not a stock `agents-cli` grading
-config. [Issue #667](https://github.com/ryemyster/ShaleYeah/issues/667) connects the
-profile and trusted registry to ADK generation/grading and run reports. Until
-that adapter lands, keep native provider/tool fixture tests as plumbing evidence;
-do not pass this profile directly to `agents-cli eval grade` or imply live
-scores. Promotion gates follow in #577. Several advertised source formats still
-require #671 qualification. Actual model/domain evaluation needs approved
-sources, private provider/judge credentials, versioned runtime evidence and
-professional review; it remains separate from pytest and ADK confirmation.
+The portable profile is not a stock `agents-cli` grading configuration. The
+[performance profile](../tests/eval/performance_profile.json), version 0.2.0,
+selects observed architecture checks and literal numeric/unit comparisons against
+[the demo LAS](../tests/eval/fixtures/sample.las). Its log date is 2024-01-15.
+The historical clock in the control is intentional; the stale-source case uses
+2026-10-11 and blocks. These fixtures qualify literal data and policy behavior,
+not professional geological interpretation or current customer data.
+
+From `agents/geologist`, grade the authored fixture dataset:
+
+```sh
+uv run --locked python tests/eval/run_fixture_evals.py \
+  --output artifacts/evals/fixture-results.json
+```
+
+The command writes portable reports and prints each case outcome. Two controls
+pass; missing/stale evidence, wrong units, invented depth and unauthorized writes
+block. The qualitative judge is scripted, review is synthetic, and absent human
+measurements remain absent. The reports identify this as fixture evidence. Native
+provider journey tests separately run real ADK and its save-confirmation pause
+against explicit offline Gemini/Anthropic transports.
+
+For actual frozen native traces, an authenticated host supplies a private JSON
+file with `candidate`, `contexts`, `workProducts` and optional per-case
+`measurements`. `contexts` maps every dataset case ID to the separately observed
+scope, task/product revision, clock, source artifacts and runtime observations
+accepted by `EvaluationContext.from_trusted_runtime`. `workProducts` maps case IDs
+to canonical products. Keep this host file owner-only (mode 0600); copying model
+`runtime_evidence` into it would defeat the trust boundary. Capture verified source
+references and literal/expert-reviewed answers in `reference_findings`; the model
+cannot define its own expected values. Dataset and profile hashes must match.
+
+```sh
+uv run --locked python -m app.eval_adapter \
+  --profile tests/eval/performance_profile.json \
+  --dataset geologist.performance=tests/eval/datasets/geologist-performance.json \
+  --traces /absolute/path/native-traces.json \
+  --host-evidence /absolute/path/private-host-evidence.json
+```
+
+This prints JSON reports. Exit 0 means grading completed; inspect report status
+and `promotionBlocked` for the outcome. Without a configured judge, otherwise
+valid cases report `infra-error`, never PASS. `--models` explicitly selects the
+private [BYO configuration](../../../docs/model-providers.md), including a separate
+`purpose: judge` credential reference. Match the profile judge reference to that
+reviewed private judge revision. The adapter checks customer/employee ownership,
+records model/judge versions and uses the existing bounded native model client.
+This option makes a provider request; CI does not use a live key.
+
+Native traces may come from pinned `agents-cli` 1.3.1 generation or ADK Runner
+2.4.0. Record the actual generating harness in `candidate.harness`, and the exact
+model/runtime version in the candidate. Each trace must contain exactly one
+`responses` candidate; split multi-candidate files explicitly. Google local SDK
+callbacks use an installed callable from `vertex_metrics(...)`, not profile Python
+or `custom_function` compilation. Google SDK 1.160.0 is pinned; the evaluation
+extra is a development dependency. Generated traces alone do not supply trusted
+work products, source or authority observations. The host must bind those inputs.
+
+Promotion gates follow in #577. Actual source/employee/context/restartable review
+qualification remains #671/#672/#673. No fixture or judge score can approve geology,
+persist employee memory or decide an investment.

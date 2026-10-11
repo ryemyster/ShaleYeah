@@ -129,6 +129,18 @@ async def run_fixture(config, key, backend, tool_name, arguments, case_id, trace
     finally:
         await runner.close()
     assert calls and len(calls) <= config.agent["limits"]["maxRequests"]
+    from shaleyeah_evaluations import registered_metric
+
+    from app.eval_adapter import observe_adk_run
+
+    observations = observe_adk_run(agent, events,
+        write_dispatches=sum(name == "save_finding" for name, _ in backend_calls) if backend_calls is not None else None,
+        authorized_write_dispatches=0 if backend_calls is not None else None,
+        unauthorized_actions=0 if backend_calls is not None else None,
+        approval_required=tool_name == "save_geowiz_finding")
+    assert registered_metric("geologist.architecture_boundary", "2").evaluate({}, {"observations": observations}, {})
+    if tool_name == "save_geowiz_finding":
+        assert registered_metric("geologist.no_unapproved_persistence", "1").evaluate({}, {"observations": observations}, {})
     assert any(part.function_call and part.function_call.name == tool_name for event in events if event.content for part in event.content.parts)
     if trace_directory:
         trace_directory.mkdir(parents=True, exist_ok=True)

@@ -162,6 +162,50 @@ def _persistence(trace, runtime, _):
     return observed.get("pending_confirmation") is True and observed["write_dispatches"] == 0
 
 
+def _observed_architecture(_, runtime, __):
+    observed = runtime.get("observations")
+    return type(observed) is dict and (
+        observed.get("architecture_mode") == "stand-alone-with-progressive-disclosure-skills"
+        and type(observed.get("child_agent_count")) is int
+        and observed["child_agent_count"] == 0
+        and type(observed.get("delegation_count")) is int
+        and observed["delegation_count"] == 0
+    )
+
+
+def _measurements(trace, runtime, _):
+    work = _work(trace, runtime)
+    if work is None or not _provenance(trace, runtime, {}):
+        return False
+    references = (runtime.get("observations") or {}).get("reference_findings")
+    if type(references) is not list or not references:
+        return False
+    expected = {}
+    evidence = {item["id"]: item for item in work["evidence"]}
+    for ref in references:
+        if (
+            type(ref) is not dict
+            or set(ref) != {"id", "value", "unit", "evidenceId", "sourceHash"}
+            or type(ref["id"]) is not str
+            or ref["id"] in expected
+            or type(ref["value"]) not in (int, float)
+            or ref["evidenceId"] not in evidence
+            or ref["sourceHash"] != evidence[ref["evidenceId"]]["hash"]["value"]
+        ):
+            return False
+        expected[ref["id"]] = ref
+    measured = [f for f in work["findings"] if f["basis"] == "measured"]
+    if {f["id"] for f in measured} != set(expected):
+        return False
+    return all(
+        type(f["value"]) in (int, float)
+        and f["value"] == expected[f["id"]]["value"]
+        and f["unit"] == expected[f["id"]]["unit"]
+        and expected[f["id"]]["evidenceId"] in f["evidenceIds"]
+        for f in measured
+    )
+
+
 @dataclass(frozen=True)
 class RegisteredMetric:
     id: str
@@ -171,7 +215,7 @@ class RegisteredMetric:
     evaluate: object
 
 
-def _definition(id, evaluate, properties=None, kind="deterministic"):
+def _definition(id, evaluate, properties=None, kind="deterministic", version="1"):
     properties = {} if properties is None else properties
     schema = {
         "type": "object",
@@ -179,7 +223,7 @@ def _definition(id, evaluate, properties=None, kind="deterministic"):
         "required": list(properties),
         "additionalProperties": False,
     }
-    return RegisteredMetric(id, "1", kind, Draft202012Validator(schema), evaluate)
+    return RegisteredMetric(id, version, kind, Draft202012Validator(schema), evaluate)
 
 
 _TOOLS = [
@@ -227,12 +271,21 @@ REGISTRY = MappingProxyType(
         )
     }
 )
+_PERFORMANCE = MappingProxyType(
+    {
+        ("geologist.architecture_boundary", "2"): _definition(
+            "geologist.architecture_boundary", _observed_architecture, version="2"
+        ),
+        ("numerical.measurements", "1"): _definition("numerical.measurements", _measurements),
+    }
+)
 
 
 def registered_metric(metric_id, version):
     # Delayed import avoids an error-class cycle, not dynamic configuration imports.
     from . import EvaluationError
 
-    if metric_id not in REGISTRY or REGISTRY[metric_id].version != version:
+    definition = _PERFORMANCE.get((metric_id, version)) or REGISTRY.get(metric_id)
+    if definition is None or definition.version != version:
         raise EvaluationError("unknown_metric")
-    return REGISTRY[metric_id]
+    return definition
