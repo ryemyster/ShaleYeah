@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #673: add prepare/status tools and a deterministic ReviewSupervisor for one exact Geowiz-reviewed save after restart. Replace inline finding save arguments with backend packet/grant references; preserve native ADK confirmation as additional UI only. Native pinned SQLite pause/resume and rejected/changed/missing-grant controls supplement backend MCP/CLI authorization. Primary standalone mode, model profiles and canonical schemas remain.
+
 - #672: added scoped durable SQLite context and native ADK session/runner bindings, current source/review and transitive dependency checks, metadata revisions separate from source-byte identity, retained pending/conflicting work, actual invocation byte/provider-token gates and sealed dispatch. Added original-expiry export/restore, durable deletion markers, native history purge, writer/ownership guards and isolated-wheel controls. Default CLI remains the development entrypoint; authenticated protected review/continuation stays #673. Blocked context emits blocked employee status instead of model/agent success.
 
 - #671: forward explicitly supplied density assumptions and reviewer confidence with basis, preserving zero and rejecting invalid scenarios before transport. Correct the shared synthetic LAS fixture's stop/column comment, source hash/byte count and performance dataset reference. Native provider/source/event/confirmation controls remain independent of professional qualification; research-based initial review is documented with Geowiz.

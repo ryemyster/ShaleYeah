@@ -205,7 +205,7 @@ ROLE_CASES = [
     ("control_process_document", "process_geowiz_document", {"file_path": "fixture.pdf", "extraction_type": "technical"}),
     ("control_process_seismic_data", "process_geowiz_seismic_data", {"file_path": "fixture.segy"}),
     ("control_process_aries_database", "process_geowiz_aries_database", {"file_path": "fixture.adb"}),
-    ("boundary_save_without_approval", "save_geowiz_finding", {"finding_type": "formation", "title": "Draft", "summary": "Review", "confidence": 0.1, "data_source": "fixture.las"}),
+    ("boundary_save_without_approval", "save_geowiz_finding", {"review_id": "review.fixture", "packet_digest": "a" * 64, "grant_id": "grant.unapproved"}),
 ]
 
 

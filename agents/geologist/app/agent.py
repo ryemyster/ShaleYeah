@@ -15,6 +15,8 @@ from app.geowiz_mcp import (
     assess_geowiz_quality,
     bind_backend,
     geowiz_backend_url,
+    get_geowiz_review_status,
+    prepare_geowiz_review,
     process_geowiz_access_database,
     process_geowiz_aries_database,
     process_geowiz_document,
@@ -41,6 +43,8 @@ def geowiz_backend_status() -> dict[str, Any]:
         "transport": "mcp-http",
         "independentBackend": True,
         "architectureMode": "stand-alone-with-progressive-disclosure-skills",
+        "supervisionMode": "deterministic-business-state-adapter",
+        "approvalAuthority": "geowiz-executing-backend",
         "reviewBoundary": {
             "privateDrafts": "current-grants-required",
             "sharedKnowledge": "authenticated-human-review-required",
@@ -49,7 +53,7 @@ def geowiz_backend_status() -> dict[str, Any]:
         "notes": [
             "servers/geowiz remains independently runnable.",
             "Set GEOWIZ_MCP_URL to use a compatible internal or proprietary MCP backend.",
-            "This agent is not hierarchical, graph-based, ambient, or capability-first in #597.",
+            "Review uses a deterministic durable business-state adapter; the brain remains a stand-alone specialist.",
         ],
     }
 
@@ -163,6 +167,8 @@ def create_geologist_agent(
             bind(process_geowiz_document, backend, expected),
             bind(process_geowiz_seismic_data, backend, expected),
             bind(process_geowiz_aries_database, backend, expected),
+            bind(prepare_geowiz_review, backend, expected),
+            bind(get_geowiz_review_status, backend, expected),
             FunctionTool(bind(save_geowiz_finding, backend, expected), require_confirmation=True),
         ],
     )

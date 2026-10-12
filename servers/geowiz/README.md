@@ -2,7 +2,7 @@
 
 **Marcus Aurelius Geologicus** — Tier 1 geological analysis MCP server.
 
-Tool server exposing 9 domain tools and model-profile discovery and two source query/status tools over the Model Context Protocol. It maintains HTTP transport sessions and supports independently authorized finding persistence. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
+Tool server exposing nine domain operations, model-profile discovery, two source queries and two review preparation/status operations over the Model Context Protocol. It maintains HTTP transport sessions and enforces exact human grants for private finding saves. Used directly by an MCP client (stdio launch mode) or called by the Geologist ADK employee over HTTP. Advertised input formats require their own source/format qualification; see the [support guide](../../docs/deployment-support.md) for current evidence and limits.
 
 ---
 
@@ -28,7 +28,7 @@ Add to your Claude Desktop MCP config:
 ```
 
 Complete [private source setup](docs/DATA_SOURCES.md) before asking the tools to read data.
-Restart Claude Desktop. You'll see 9 domain tools, model discovery and source fetch/status. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
+Restart Claude Desktop. You'll see domain tools, model discovery, source fetch/status and review preparation/status. Ask Claude: *"Use geowiz to assess the quality of this LAS file: /path/to/your.las"*
 
 ---
 
@@ -81,7 +81,8 @@ performance qualification remains #674 and its dependencies.
 | `process_document` | Unsupported at current source boundary | No — source/format qualification remains |
 | `process_seismic_data` | Unsupported at current source boundary | No — source/format qualification remains |
 | `process_aries_database` | Unsupported at current source boundary | No — source/format qualification remains |
-| `save_finding` | JSON payload | No — fs write to `./data/geowiz/findings/` |
+| `prepare_review`, `get_review_status` | Exact private review packet / scoped checkpoint | No model; human decision uses a separate operator interface |
+| `save_finding` | Current exact packet/grant references | No model; authenticated human grant and transactional SQLite save |
 | `get_model_profile` | Empty object | No — authenticated discovery without keys/references |
 | `fetch_source` | Approved source ID | No — verified canonical provenance, no private paths |
 | `get_source_status` | Approved source ID | No — real permission/byte/revision/freshness checks |

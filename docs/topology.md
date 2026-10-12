@@ -289,8 +289,10 @@ The [Geologist reference adapter](../agents/geologist/docs/WORKING_CONTEXT.md)
 implements a scoped local catalog and native ADK/SQLite sessions with current
 source/review checks, transitive invalidation, reference-preserving compaction,
 actual byte/token limits and scoped original-expiry export/deletion. Its default
-CLI remains a development entrypoint; protected review/continuation and the full
-independent pair journey remain separate qualification gates. Other roles adopt
+CLI remains a development entrypoint. The [review adapter](../servers/geowiz/docs/HUMAN_REVIEW.md)
+supplies a separate enrolled human boundary and transactional exact-revision
+private save/resume. The full independent pair journey remains a separate
+qualification gate. Other roles adopt
 the same business ownership rules through their own qualified adapters.
 
 [`contracts/`](../contracts/README.md) implements the initial language-neutral

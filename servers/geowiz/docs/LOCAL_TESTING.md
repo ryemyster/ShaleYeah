@@ -32,8 +32,9 @@ The installed Geologist client passes protected connection controls. Run
 [employee Python checks](../../../agents/geologist/docs/LOCAL_TESTING.md)
 independently. Actual professional/source/provider behavior remains
 #674. The initial LAS input/review checks are documented [here](LAS_REVIEW.md).
-Protected backend review/resume is #673; agent confirmation
-alone does not authorize persistence.
+Run `pnpm test:review` after building Geowiz to exercise the real generic MCP
+client, enrolled human CLI and protected save/restart controls at 90% coverage.
+Agent confirmation alone does not authorize persistence.
 
 | Symptom | Next step |
 | --- | --- |

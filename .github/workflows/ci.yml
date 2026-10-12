@@ -58,6 +58,9 @@ jobs:
     - name: Geowiz LAS input and source boundary coverage
       working-directory: servers/geowiz
       run: pnpm test:las
+    - name: Geowiz human review and protected save coverage
+      working-directory: servers/geowiz
+      run: pnpm test:review
     - name: Python MCP client lint and conformance
       working-directory: sdk/python
       run: |

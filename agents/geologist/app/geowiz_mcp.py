@@ -297,24 +297,47 @@ async def process_geowiz_aries_database(
 
 
 async def save_geowiz_finding(
-    finding_type: str,
-    title: str,
-    summary: str,
-    confidence: float,
-    data_source: str,
-    metadata: dict[str, Any] | None = None,
+    review_id: str,
+    packet_digest: str,
+    grant_id: str,
 ) -> dict[str, Any]:
-    """Persist a reviewed geological finding through Geowiz save_finding."""
+    """Save the exact backend-reviewed finding under its current bound grant.
 
-    arguments: dict[str, Any] = {
-        "findingType": finding_type,
-        "title": title,
-        "summary": summary,
-        "confidence": confidence,
-        "dataSource": data_source,
-    }
+    Obtain these references from get_geowiz_review_status after the enrolled human
+    reviews the private packet. Confirmation alone cannot create a grant.
+    """
+    return await call_geowiz_tool("save_finding", {
+        "reviewId": review_id, "packetDigest": packet_digest, "grantId": grant_id,
+    })
 
-    if metadata is not None:
-        arguments["metadata"] = metadata
 
-    return await call_geowiz_tool("save_finding", arguments)
+async def prepare_geowiz_review(candidate_json: str, expected_head: str | None = None) -> dict[str, Any]:
+    """Prepare exact canonical work, context, reported eval evidence and proposed finding.
+
+    Returns a durable review reference only. Human inspection/decision is separate.
+    expected_head is the previous packetDigest, or omitted for the first candidate.
+    """
+    try:
+        if len(candidate_json.encode("utf8")) > 2_000_000:
+            raise ValueError
+        def pairs(items):
+            values = {}
+            for key, value in items:
+                if key in values:
+                    raise ValueError
+                values[key] = value
+            return values
+        def reject_constant(_value):
+            raise ValueError
+        candidate = json.loads(candidate_json, object_pairs_hook=pairs,
+                               parse_constant=reject_constant)
+        if type(candidate) is not dict:
+            raise ValueError
+    except (ValueError, TypeError, RecursionError):
+        raise MCPClientError("invalid_review_packet", "user_action") from None
+    return await call_geowiz_tool("prepare_review", {"candidate": candidate, "expectedHead": expected_head})
+
+
+async def get_geowiz_review_status(review_id: str | None = None) -> dict[str, Any]:
+    """Read scoped restart-safe state; cannot inspect human-only evidence or decide."""
+    return await call_geowiz_tool("get_review_status", {"reviewId": review_id} if review_id else {})

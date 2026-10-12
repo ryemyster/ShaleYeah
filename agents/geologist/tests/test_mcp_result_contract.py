@@ -49,12 +49,9 @@ from app import geowiz_mcp
         (
             geowiz_mcp.save_geowiz_finding,
             {
-                "finding_type": "formation",
-                "title": "Draft",
-                "summary": "Unaccepted",
-                "confidence": 0.1,
-                "data_source": "licensed.las",
-                "metadata": {"reviewStatus": "draft"},
+                "review_id": "review.fixture",
+                "packet_digest": "a" * 64,
+                "grant_id": "grant.fixture",
             },
         ),
     ],

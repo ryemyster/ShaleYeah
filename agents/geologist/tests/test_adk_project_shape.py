@@ -34,7 +34,10 @@ def test_architecture_mode_is_explicit_and_not_misclassified() -> None:
 
     assert "Stand-alone Agent with Progressive Disclosure (Skills)" in spec
     assert "stand-alone-with-progressive-disclosure-skills" in agent
-    assert "not hierarchical, graph-based, ambient, or capability-first" in agent
+    from app.agent import geowiz_backend_status
+    status = geowiz_backend_status()
+    assert status["supervisionMode"] == "deterministic-business-state-adapter"
+    assert status["approvalAuthority"] == "geowiz-executing-backend"
 
 
 def test_repo_root_does_not_become_an_adk_project() -> None:

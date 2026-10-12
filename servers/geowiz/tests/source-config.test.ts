@@ -17,6 +17,9 @@ test("private source bootstrap rejects missing, shared, linked, malformed and ov
 		await fs.chmod(file, 0o600);
 		await fs.symlink(file, path.join(directory, "linked"));
 		await assert.rejects(readPrivateSourceConfig(path.join(directory, "linked")));
+		await fs.link(file, path.join(directory, "hardlinked"));
+		await assert.rejects(readPrivateSourceConfig(file));
+		await fs.unlink(path.join(directory, "hardlinked"));
 		await fs.writeFile(file, "invalid-json");
 		await assert.rejects(readPrivateSourceConfig(file), SourceAccessError);
 		await fs.writeFile(file, " ".repeat(65537));
@@ -45,6 +48,12 @@ test("private source binding reloads revocations and audit failures stop publica
 		assert.equal(events.at(-1).stage, "retrieved");
 		assert.equal(events.at(-1).contentHash, config.sources[0].evidence.hash.value);
 		assert.equal((await fs.stat(auditFile)).mode & 0o777, 0o600);
+		const asOf = config.sources[0].evidence.asOf;
+		config.sources[0].evidence.asOf = new Date(Date.parse(asOf) - 1000).toISOString();
+		await fs.writeFile(file, JSON.stringify(config));
+		await assert.rejects(runtime.fetch(request, principal), { code: "revision_mismatch" });
+		config.sources[0].evidence.asOf = asOf;
+		await fs.writeFile(file, JSON.stringify(config));
 		config.grant.revoked = true;
 		await fs.writeFile(file, JSON.stringify(config));
 		await assert.rejects(runtime.fetch(request, principal), SourceAccessError);

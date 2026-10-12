@@ -1,5 +1,6 @@
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
+import { isDeepStrictEqual } from "node:util";
 import {
 	createConnectorRuntime,
 	operatorFileAdapter,
@@ -16,6 +17,7 @@ export async function readPrivateSourceConfig(file: string): Promise<unknown> {
 		const before = await handle.stat();
 		if (
 			!before.isFile() ||
+			before.nlink !== 1 ||
 			before.mode & 0o077 ||
 			(process.getuid && before.uid !== process.getuid()) ||
 			before.size > 65536
@@ -46,11 +48,7 @@ export async function loadSourceBinding(file: string, audit: (event: SourceAudit
 		audit,
 		currentGrant: async () => {
 			const current = validateConnectorConfiguration(await readPrivateSourceConfig(file));
-			if (
-				current.manifest.id !== config.manifest.id ||
-				current.manifest.revision !== config.manifest.revision ||
-				current.taskRevision !== config.taskRevision
-			)
+			if (!isDeepStrictEqual({ ...current, grant: null }, { ...config, grant: null }))
 				throw new SourceAccessError("revision_mismatch");
 			return current.grant;
 		},
@@ -75,7 +73,7 @@ export function createFileSourceAudit(file: string) {
 		);
 		try {
 			const stat = await handle.stat();
-			if (!stat.isFile() || stat.mode & 0o077 || (process.getuid && stat.uid !== process.getuid()))
+			if (!stat.isFile() || stat.nlink !== 1 || stat.mode & 0o077 || (process.getuid && stat.uid !== process.getuid()))
 				throw new SourceAccessError("access_denied");
 			await handle.writeFile(`${JSON.stringify(event)}\n`);
 			await handle.sync();

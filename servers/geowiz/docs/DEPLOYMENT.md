@@ -46,7 +46,7 @@ process with Ctrl-C.
 | `PORT=3001` | HTTP transport only with explicit access configuration |
 | `GEOWIZ_HTTP_CONFIG_FILE` | Private local-launch policy with credential/audit file references; see HTTP access setup |
 | `GEOWIZ_MODEL_CONFIG_FILE` | Private model profile for stdio synthesis; HTTP uses `modelConfigFile` in its private access JSON |
-| Storage | SDK defaults to `./data/geowiz`; findings go to `./data/geowiz/findings` relative to working directory |
+| Storage | SDK defaults to `./data/geowiz`; approved findings use the explicitly configured private `review.sqlite` |
 | `GEOWIZ_SOURCE_CONFIG_FILE` / `GEOWIZ_SOURCE_AUDIT_FILE` | Required private source/audit paths for stdio file reads; HTTP uses `sourceConfigFile` and its audit file |
 | Input / output paths | Only configured approved sources are read; file-tool `outputPath` writes are denied |
 
@@ -88,8 +88,11 @@ floating-image, fixed 256MB budget or Kong/cloud recipe as certified support
 without those results. See the [host matrix](../../../docs/deployment-support.md#support-matrix)
 for optional VM/Fly.io/Cloud Run/GKE/Agent Runtime status.
 
-JSON findings are not employee review/context backups. #672/#673 implement
-durable employee state and exact-revision continuation; #674 verifies the pair.
+Use the configured private [review SQLite store](HUMAN_REVIEW.md) for exact
+human review and protected saves. Native employee context remains its separate
+owned SQLite directory. Keep both current stores and source audit on persistent
+volumes; old database rollback and replicated execution remain unsupported.
+#674 verifies the independently installed/container pair.
 
 ## Verification
 

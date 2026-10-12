@@ -96,7 +96,8 @@ dispatch and bounds queued writes at 128. Full/failed/timed-out audit prevents
 execution. Events record authorization attempts, not domain completion. This
 single-process example does not certify multi-process durability, backup/replay,
 SIEM integration or protected-action transactionality. Correlated local employee
-events are configured separately below; exact-revision review/continuation remains #673.
+events are configured separately below. [Human review](HUMAN_REVIEW.md) adds a
+separate owned `reviewConfigFile` and exact-grant enforcement at the local save.
 
 ## Employee client and qualification
 

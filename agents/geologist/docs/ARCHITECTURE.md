@@ -22,7 +22,11 @@ Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
 
 Geologist is a stand-alone specialist that equips package-local instructions, eval criteria, and Geowiz MCP tools when geological diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #597.
 
-Graph-based workflow is reserved for a later issue if geology review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
+The bounded review component uses an equivalent deterministic business-state
+adapter supported alongside pinned ADK 2.4.0. It routes pending, changes-requested,
+rejected, approved and completed state outside model reasoning. Geowiz SQLite
+owns authenticated review and the protected save transaction; the employee's
+`ReviewSupervisor` reads that checkpoint and resumes only one permitted action.
 
 ## Execution Path
 
@@ -100,7 +104,8 @@ replayed. Cancellation propagates, and later calls use a fresh session.
 CI checks client/role behavior, wheel isolation and actual protected Geowiz
 interoperability. These do not prove geological accuracy or real ADK review.
 Actual reference tool schemas/formats and the full employee journey remain
-#671/#674; durable review/restart remains #673.
+#674. [Human review](../../../servers/geowiz/docs/HUMAN_REVIEW.md) qualifies the
+local exact-revision save/restart boundary separately from professional results.
 
 ## Eval Harness
 

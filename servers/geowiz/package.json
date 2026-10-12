@@ -4,12 +4,16 @@
 	"description": "Geowiz MCP server \u2014 geological analysis, LAS/GIS/seismic file processing",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=22.13.0"
+	},
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/index.ts",
 		"start:http": "node examples/local-http.mjs",
 		"test": "bash ../../scripts/run-tests.sh",
+		"test:review": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/review-workflow.ts --test-coverage-include=src/review-config.ts tests/review-workflow.test.ts",
 		"test:las": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/formation-synthesis.ts --test-coverage-include=src/source-tools.ts --test-coverage-include=src/source-config.ts --test-coverage-include=src/tools/las-parse.ts --test-coverage-include=src/tools/las-review.ts --test-coverage-include=src/tools/curve-qc.ts tests/las*.test.ts tests/curve-qc.test.ts tests/model-provider-boundary.test.ts tests/source*.test.ts tests/http-access.test.ts",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
