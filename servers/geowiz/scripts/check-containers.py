@@ -14,13 +14,19 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 
-def invoke(*args, expected=0, timeout=600):
+def invoke(*args, expected=0, timeout=600, combine_output=False):
     result = subprocess.run(
-        list(map(str, args)), capture_output=True, text=True, timeout=timeout, check=False
+        list(map(str, args)),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT if combine_output else subprocess.PIPE,
+        text=True,
+        timeout=timeout,
+        check=False,
     )
     if result.returncode != expected:
         raise RuntimeError(
-            f"{args[0]} failed ({result.returncode}): " + (result.stdout + result.stderr)[-12000:]
+            f"{args[0]} failed ({result.returncode}): "
+            + (result.stdout + (result.stderr or ""))[-12000:]
         )
     return result.stdout.strip()
 
@@ -225,7 +231,8 @@ def main():
                 started = True
                 for _ in range(60):
                     match = re.search(
-                        r"HTTP transport listening on port (\d+)", invoke("docker", "logs", name)
+                        r"HTTP transport listening on port (\d+)",
+                        invoke("docker", "logs", name, combine_output=True),
                     )
                     if match:
                         return int(match.group(1))

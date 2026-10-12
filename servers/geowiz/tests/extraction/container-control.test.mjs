@@ -5,6 +5,31 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 
+test("container readiness observes diagnostics written to stderr", () => {
+	const result = spawnSync(
+		"uv",
+		[
+			"run",
+			"--project",
+			"../../evaluations",
+			"--locked",
+			"python",
+			"-I",
+			"-c",
+			[
+				"import runpy, sys",
+				"invoke = runpy.run_path('scripts/check-containers.py')['invoke']",
+				"message = 'MCP HTTP transport listening on port 3456'",
+				"output = invoke(sys.executable, '-c', 'import sys; sys.stderr.write(' + repr(message) + ')', combine_output=True)",
+				"assert output == message, repr(output)",
+				"assert invoke(sys.executable, '-c', 'import sys; print(123); sys.stderr.write(\"diagnostic\")') == '123'",
+			].join("\n"),
+		],
+		{ encoding: "utf8" },
+	);
+	assert.equal(result.status, 0, result.stderr);
+});
+
 test("unavailable container runtime blocks with a decision instead of skipping", () => {
 	const temporary = mkdtempSync(path.join(os.tmpdir(), "shale-container-denied-"));
 	try {

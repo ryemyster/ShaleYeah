@@ -78,6 +78,9 @@ package, successful import or provider key does not grant source or save rights.
 
 ## Verify separate containers
 
+The controller reads both container log streams for startup readiness; MCP
+diagnostics use stderr. Structured Docker command results remain stdout-only.
+
 On a Linux host with Docker, run from the checkout after the export succeeds:
 
 ```sh
