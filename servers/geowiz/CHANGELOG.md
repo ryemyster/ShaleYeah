@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #574: the protected local launcher's fixture gets a separate ten-second cold-start budget within a twenty-second test deadline. CI exceeded its old five-second startup limit under parallel workspace load; access/secret assertions and runtime request/audit policy are preserved.
+
 - #574: forwards trusted event bindings and loads optional private eventConfigFile in the HTTP launcher. Actual native two-provider tests join client/backend event IDs and verified source hashes. Access/source audit remains separate; reference MCP operational stdout/raw exception logging is displaced by shared SDK behavior.
 
 
