@@ -4,7 +4,7 @@ import path from "node:path";
 
 // Explicit offline source declarations for real protected-server controls.
 export async function sourceConfig(file, principal) {
-	const records = JSON.parse(await fs.readFile(new URL("../../../../contracts/fixtures/data-connectors.json", import.meta.url), "utf8"));
+	const records = JSON.parse(await fs.readFile(new URL("connector-records.json", import.meta.url), "utf8"));
 	const config = records.configuration;
 	const now = new Date();
 	config.workspaceRoot = await fs.realpath(path.dirname(file));

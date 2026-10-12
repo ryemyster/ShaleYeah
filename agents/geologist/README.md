@@ -142,6 +142,7 @@ Run these from `agents/geologist`.
 | Run a live local task | Follow [the ordered setup](../../docs/deployment-support.md#run-the-current-reference-locally) with backend and provider configured |
 | Grade source/policy fixtures | `uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/fixture-results.json` |
 | Qualify against frozen baseline | See the [reference qualification command](docs/LOCAL_TESTING.md#reference-qualification) for policy, baseline and tested SHA |
+| Extract and verify independently | Follow [reference package/container proof](../../docs/reference-packages.md) for clean source builds, installed interfaces and required image receipts |
 | Validate the legacy tool profile | `uv run --locked python -m shaleyeah_evaluations tests/eval/eval_config.json --role geologist --dataset geologist.reference=tests/eval/datasets/geologist-adk-reference.json` |
 
 Pytest includes project/eval shape, role mapping/failure and credential controls.

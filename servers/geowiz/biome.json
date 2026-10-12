@@ -16,5 +16,15 @@
 			"complexity": { "noStaticOnlyClass": "off", "noUselessLoneBlockStatements": "off" }
 		}
 	},
-	"files": { "includes": ["src/**", "tests/**/*.ts", "examples/**", "*.json", "*.ts"] }
+	"files": {
+		"includes": [
+			"src/**",
+			"tests/**/*.ts",
+			"tests/extraction/**/*.mjs",
+			"scripts/**/*.mjs",
+			"examples/**",
+			"*.json",
+			"*.ts"
+		]
+	}
 }

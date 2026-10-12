@@ -19,7 +19,7 @@ format. Follow the [MVP plan](mvp-release-plan.md) for implementation order.
 | --- | --- | --- |
 | Employee authoring framework | Python ADK (Google Agent Development Kit) | Job/task/evidence/context/review records in [contracts/](../contracts/README.md) do not depend on ADK |
 | Model provider | Explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis | Native offline conformance and role/HITL fixtures pass; real-model/domain quality and hosted execution remain separate gates |
-| Context and review storage | Geologist development CLI uses in-memory sessions; its embedding runtime uses scoped SQLite catalog/native sessions; Geowiz writes JSON findings | #672 supplies bounded retained context and recovery; #673 supplies authenticated exact-revision review/resume |
+| Context and review storage | Geologist embedding runtime uses scoped SQLite catalog/native sessions; Geowiz uses a separate transactional review/finding store | Current grants, exact qualified human decisions, original expiry and durable state are required; development CLI sessions remain in memory |
 | Protocol adapter | Python MCP (Model Context Protocol) client and TypeScript MCP server using Streamable HTTP; server also has a stdio launch mode | #668/#677/#678/#679 repair lifecycle, schemas/errors, identity and shared client handling; #674 tests composition |
 | Hosting | Development workstation today | Local package/container minimum is the target; VM/Fly.io/Cloud Run/GKE/Agent Runtime remain optional adapters |
 
@@ -38,19 +38,18 @@ Platform features do not turn an untested SHALE YEAH deployment into a verified 
 | Target | Repository status | State and ingress requirements | Evidence required before a support claim |
 | --- | --- | --- | --- |
 | Current checkout, local processes | **Verified, bounded:** locked packages, protected Geowiz connection and native ADK/SQLite restart/selection/recovery controls | Offline provider fixtures; trusted host/source callbacks and private persistent directory required; CLI development sessions remain in memory | Live complete employee/tool/review task and professional acceptance remain unqualified |
-| Extracted local packages | **Verified, bounded:** client/Geologist wheels install and pass behavior controls outside checkout; full journey planned in #674 and role PRs | Declared installed dependencies; complete tool extraction, durable state and source/review policy still need qualification | Clean complete journey, independent agent/MCP, compatible external client/tool, exact supported inputs |
-| Portable containers | **Planned**, #674 | Separate employee/tool images; external config/secrets; persistent state/artifacts; restricted ingress and authenticated tool entry | Reproducible image build/digests, locked dependencies, mounts/ownership, restart/restore and all reference acceptance cases |
+| Extracted local packages | **Verified, bounded:** exported source builds and installed employee/tool pair with public LAS, native offline providers, context and exact qualified review/resume | Explicit helper archives/wheels, locks and private authority/state; [reproduction](reference-packages.md) | Live/domain acceptance and other employees/formats remain separate |
+| Portable containers | **Required CI qualification:** separate Geologist/Geowiz recipes and protected Linux fixture journey | Private actor-specific mounts, UID ownership, loopback network namespace, credential/audit/qualified review and persistent state | Support is limited to the architecture/image digests in a passing [container report](reference-packages.md); other networks/hosts require evidence |
 | VM | **Untested** optional host | Supervised processes/containers, durable disk, TLS/private network, backup/restore | VM recipe and observed install/restart/permissions/resource checks on a named revision |
 | Fly.io | **Untested** optional host | Declared app/image, mounted volume or external state, private connectivity; replication/backup explicit | Actual image/Machine/volume configuration and restart/restore/access tests; no tracked `fly.toml` today |
 | Cloud Run | **Untested** optional host | Correct `PORT`/bind address; durable external state, authenticated ingress/service identity | Actual container/service/config, model/tool/source identity and revision/restart/export checks |
 | GKE (Google Kubernetes Engine) | **Untested** optional host | Kubernetes manifests, persistent storage/claims, service identity, secret and network policy | Deployment/storage manifests and observed rolling restart/restore/isolation checks; no manifests today |
 | Agent Runtime | **Untested** optional Google managed host | Target-specific deployment/identity and explicit session/context/review storage wiring | Supported adapter/SDK/image configuration and observed task/review/restart/export checks; manifest currently says `none` |
 
-There are no tracked Dockerfiles, Compose recipes, hosting manifests or built
-reference-image evidence at this snapshot. Old inline Docker/Compose snippets
-were examples, not buildable packages. #674 supplies the actual first recipes;
-later role PRs prove their own units. Other deployment pages must not be used to
-infer qualification beyond this matrix.
+The [reference export and container guide](reference-packages.md) supplies tracked
+separate unit recipes and required image/journey checks. No hosted manifests or
+public image releases are supplied. Later role PRs prove their own units; source
+shape, health or an unexecuted recipe cannot expand this matrix's support claims.
 
 ## Run the current reference locally
 
@@ -154,7 +153,7 @@ checks results and bounds setup retries without replaying dispatched tools.
 | --- | --- | --- |
 | Geologist | `GEOLOGIST_MODEL_CONFIG_FILE` requires a fixed trusted profile; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #672/#673 |
 | Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; optional `eventConfigFile` adds [correlated local metadata](employee-events.md); unset PORT selects stdio; model key is separate | #678 supplies ingress; source grants/byte provenance use [connectors/](../connectors/README.md); review and actual remote issuer/TLS remain #673/#674 |
-| Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; file-tool caller `outputPath` writes are denied | Mount the actual configured working-directory paths; use a canonical owned approved source root and private source configuration; see [source setup](../servers/geowiz/docs/DATA_SOURCES.md) and #674 |
+| Geowiz files | Approved findings/review/audit/outcomes use the private configured `review.sqlite`; file-tool caller `outputPath` writes are denied | Keep current owned review/source state and original retention on explicit mounts; [source setup](../servers/geowiz/docs/DATA_SOURCES.md) and [container proof](reference-packages.md) |
 | Current sessions | Development manifest `session_type: in_memory`; [embedding runtime](../agents/geologist/docs/WORKING_CONTEXT.md) provides scoped native ADK/SQLite context | One native writer, fresh authority callbacks, private persistent directory and original-expiry recovery; protected review remains #673 |
 
 `DATA_PATH` and `LOG_LEVEL` are not read by this reference implementation.
@@ -165,9 +164,10 @@ prose and a host identity cannot approve geological work or promote memory.
 
 For containers, a file path belongs to the tool container. Mount approved inputs
 read-only there and retained output/state on explicit writable volumes. Use a
-reachable service URL such as `http://geowiz:3001` on a private container network,
-not `localhost` for another container. Those mounts/network names are the
-**acceptance contract**, not a shipped Compose file.
+reachable, qualified service URL for your network. The shipped local fixture
+shares the tool's private network namespace, so loopback addresses refer to that
+same namespace. It publishes no host port. A separate network/remote host needs
+its own qualified listener/ingress setup. See [exact mounts and proof](reference-packages.md).
 
 ## Durable state, recovery and resource qualification
 

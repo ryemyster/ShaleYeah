@@ -295,6 +295,12 @@ private save/resume. The full independent pair journey remains a separate
 qualification gate. Other roles adopt
 the same business ownership rules through their own qualified adapters.
 
+The [reference packaging proof](reference-packages.md) builds source and installs
+explicit helper archives/wheels outside the checkout. Required CI checks separate
+employee/tool images with actor-specific mounts, native context restart, exact
+qualified review/resume and source revocation. Image/architecture receipts limit
+support; this introduces no orchestration or mandatory cloud deployment.
+
 [`contracts/`](../contracts/README.md) implements the initial language-neutral
 employee/task/work-product/context/review schemas. Python and TypeScript validate
 the same cases against JSON Schema; TypeScript declarations are generated.

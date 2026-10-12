@@ -9,6 +9,11 @@ pnpm build   # emits ESM JavaScript + .d.ts to dist/
 ```
 
 Packages in this workspace reference it as `"@shaleyeah/sdk": "workspace:*"`, resolved by pnpm to the local `dist/`.
+Packed archives replace that authoring reference with declared versions. The SDK
+owns its compiler settings and ships built modules/types/license, so an installed
+consumer needs no parent configuration or SDK source link. Follow
+[reference export/install proof](../../docs/reference-packages.md) for locked
+helper artifacts and the independently built tool.
 
 ## Environment variables
 

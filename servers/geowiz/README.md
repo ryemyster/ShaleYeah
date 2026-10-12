@@ -65,8 +65,9 @@ continuation even if employee-reported scores pass.
 Geologist uses the installed [Python MCP client](../../sdk/python/README.md)
 with the launcher's dedicated private credential file. No-key controls prove
 the protected connection and rejected anonymous/ungranted calls. Follow
-[HTTP access setup](docs/HTTP_ACCESS.md); full source, review and employee
-performance qualification remains #674 and its dependencies.
+[HTTP access setup](docs/HTTP_ACCESS.md) and the [independent reference proof](../../docs/reference-packages.md)
+for clean builds, native offline providers, context and exact qualified review/resume.
+Live/domain performance and other formats remain separate acceptance work.
 
 → See [`agents/geologist/README.md`](../../agents/geologist/README.md) for the full agent quick start.
 

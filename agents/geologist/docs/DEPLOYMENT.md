@@ -92,9 +92,10 @@ for persistent volumes, export/restore, stale approval and access tests.
 ## Containers, scaling and hosted targets
 
 The [support matrix](../../../docs/deployment-support.md#support-matrix) is the
-source of current qualification. #674 supplies independent packages/images and
-the local/container journey; no reference container recipe or hosted deployment
-is shipped by this page. VM, Fly.io, Cloud Run, GKE and Agent Runtime are optional,
+source of current qualification. The [reference package/container guide](../../../docs/reference-packages.md)
+supplies the independently built wheel, packaged scorecard/baseline and separate
+Python image, with actor-specific mounts and required fixture receipts. Hosted
+deployment is separate. VM, Fly.io, Cloud Run, GKE and Agent Runtime are optional,
 untested targets until their own receipts pass.
 
 Scaling needs verified shared state, review/audit behavior and MCP session

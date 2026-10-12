@@ -1,5 +1,11 @@
 # Architecture — @shaleyeah/sdk
 
+The package owns its TypeScript build settings. Its runtime archive contains
+built modules/types and license, with declared portable contract dependencies.
+The [reference extraction proof](../../docs/reference-packages.md) compiles the
+tool against packed helpers and tests installed consumers outside the checkout;
+it uses no SDK source links. Existing public APIs stay until caller-owned cleanup.
+
 ## Role in the two-tier system
 
 ```

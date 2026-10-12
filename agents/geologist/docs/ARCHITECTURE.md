@@ -109,6 +109,14 @@ local exact-revision save/restart boundary separately from professional results.
 
 ## Eval Harness
 
+The [independent reference proof](../../../docs/reference-packages.md) builds and
+installs this employee without workspace source links. Its wheel includes reviewed
+reference assets under `app/reference`; portable helper dependencies stay declared
+packages. The separate image owns its context volume and receives only its task,
+MCP credential and reasoning key. Reviewer policy, synthesis key and review store
+remain at the executing tool/operator boundary. Container fixtures exercise the
+same native runtime and deterministic supervisor, with no new reasoning loop.
+
 Behavior evals live under `tests/eval/`.
 
 | File | Purpose |

@@ -15,6 +15,7 @@ From `servers/geowiz`:
 pnpm type-check
 pnpm lint
 pnpm test
+pnpm test:extraction
 ```
 
 Existing server/tool checks use declared fixtures. `tests/http-access.test.ts`
@@ -35,6 +36,11 @@ independently. Actual professional/source/provider behavior remains
 Run `pnpm test:review` after building Geowiz to exercise the real generic MCP
 client, enrolled human CLI and protected save/restart controls at 90% coverage.
 Agent confirmation alone does not authorize persistence.
+`test:extraction` builds exported source and installs the declared unit/helper
+archives and wheels into clean temporary directories. It runs the actual pair,
+compatible external MCP, context/qualified-review recovery and archive checks.
+It needs Python 3.12/uv plus Node/npm; it runs no paid model calls. For the separate
+container gate and reproducible reports, see [reference proof](../../../docs/reference-packages.md).
 
 | Symptom | Next step |
 | --- | --- |

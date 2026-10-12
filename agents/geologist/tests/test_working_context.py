@@ -15,6 +15,17 @@ from app.working_context import ContextCatalog, ContextError
 
 ROOT = Path(__file__).resolve().parents[1]
 NOW = datetime(2026, 10, 12, 17, 0, tzinfo=UTC)
+
+
+@pytest.mark.asyncio
+async def test_real_clock_precision_produces_portable_context_timestamps(tmp_path):
+    catalog, *_ = await seeded(tmp_path / "context", clock=lambda: NOW.replace(microsecond=123456))
+    try:
+        packet = await catalog.assemble(request(), FixtureCounter())
+        assert packet["status"] == "ready"
+        assert packet["manifest"]["assembledAt"].endswith(".123+00:00")
+    finally:
+        await catalog.close()
 SCOPE = {
     "customerId": "operator-demo",
     "assetId": "well-demo-1",
