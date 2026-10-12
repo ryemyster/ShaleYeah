@@ -10,7 +10,7 @@ uv venv --python 3.12 "$isolation_dir/.venv"
 uv pip install --python "$isolation_dir/.venv/bin/python" -r "$isolation_dir/requirements.txt"
 uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
   "$isolation_dir/wheels/shaleyeah_contracts-0.3.0-py3-none-any.whl" \
-  "$isolation_dir/wheels/shaleyeah_evaluations-0.2.1-py3-none-any.whl"
+  "$isolation_dir/wheels/shaleyeah_evaluations-0.3.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/evaluations/tests" "$isolation_dir/evaluations/fixtures" "$isolation_dir/agents/geologist/tests/eval/datasets"
 cp tests/*.py "$isolation_dir/evaluations/tests/"

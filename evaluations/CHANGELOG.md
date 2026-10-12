@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #577: package 0.3.0 adds approved qualification policy and metadata-only frozen-evidence verifier, deterministic recomputation, complete-case/negative-control checks, configurable regression limits, fixture/live separation and exact-work promotion bindings. Owned private CLI inputs, bounded execution and installed-wheel controls preserve independence from ADK/providers/MCP. Existing profile/registry/report wire schemas remain unchanged.
+
 - #574: package 0.2.1 consumes contracts 0.3.0; profile/registry/report behavior is unchanged. Correlated export stays in the Geologist host adapter; no MCP/ADK/event-sink dependency is added here.
 
 

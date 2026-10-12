@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #577: mandatory private qualification verifier on human approval and protected continuation, exact packet/work/scope/task/product receipts and expiry, stored receipt hash and fail-closed existing grants. Added bounded installed Python adapter without shell/inherited credentials/model paths, actual CLI/MCP qualification controls and process failure/output/cancellation coverage. Reported eval settings cannot waive this gate.
+
 - #673: update the standalone installed-client interoperability probe to the exact packet/grant save interface, retaining its forbidden-save/anonymous/source-audit assertions. CI exposed its retired six-argument call; the actual new backend/CLI controls remain intact.
 
 - #673: record validated canonical review events in the same decision transaction, preserving zero/absent reported human time and correction counts and computing scoped revision attempts. Optional owned CLI measurement JSON is distinct from authority and professional qualification; fixture provenance is the default. Reject timezone-formatted expired context and source metadata drift without trusting revision bump discipline.

@@ -89,8 +89,11 @@ without those results. See the [host matrix](../../../docs/deployment-support.md
 for optional VM/Fly.io/Cloud Run/GKE/Agent Runtime status.
 
 Use the configured private [review SQLite store](HUMAN_REVIEW.md) for exact
-human review and protected saves. Native employee context remains its separate
-owned SQLite directory. Keep both current stores and source audit on persistent
+human review and protected saves. These saves also require a separately installed
+Python evaluation 0.3.0 wheel and private [qualification settings/evidence](../../../evaluations/docs/qualification.md).
+Missing, expired or changed qualification blocks approval/continuation. Native
+employee context remains its separate owned SQLite directory. Keep both current
+stores and source audit on persistent
 volumes; old database rollback and replicated execution remain unsupported.
 #674 verifies the independently installed/container pair.
 

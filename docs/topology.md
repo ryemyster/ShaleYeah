@@ -319,7 +319,10 @@ host context and mandatory gates stay outside model prose. Its portable runner
 grades frozen work and emits version/hash-bound reports. The Geologist-local ADK
 adapter consumes native traces and privately configured qualitative judges.
 Provider/framework imports stay in the agent package. Evaluations do not approve
-employee actions; promotion gates remain #577.
+employee actions. The [qualification verifier](../evaluations/docs/qualification.md)
+recomputes frozen evidence against approved profiles/baselines and gates Geowiz
+approval and continuation. CI/release share reference checks and record
+fixture-only support; live/domain and fleet acceptance require separate evidence.
 
 The separate [employee event profile](employee-events.md) supplies correlated,
 redacted metadata without changing employee/source wire profiles. SDK exporters,

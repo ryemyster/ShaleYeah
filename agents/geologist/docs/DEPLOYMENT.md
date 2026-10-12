@@ -115,11 +115,15 @@ Frozen evaluation reports run locally through `app.eval_adapter`; see
 `uv sync --locked --no-dev` for the deployed employee. Google's heavier local
 evaluation tooling is in the development group. Supply authenticated host
 evidence and an explicit independent private judge for real scoring. Reports
-do not persist context, grant approval or qualify a deployment.
+do not persist context or grant approval. Deploy the
+[trusted qualification verifier](../../../evaluations/docs/qualification.md)
+with private frozen evidence and approved policy before enabling protected saves.
+Set its deployed code SHA explicitly and renew qualification/review on changes;
+CI's offline qualification does not prove a live deployment.
 
 ## Private event export
 
-Install client 0.2.0, contracts 0.3.0 and evaluations 0.2.1 with the agent wheel.
+Install client 0.2.0, contracts 0.3.0 and evaluations 0.3.0 with the agent wheel.
 Set optional `GEOLOGIST_EVENT_CONFIG_FILE` to the owned private settings file
 matching the approved assignment and backend binding. Keep separate producer
 logs, protected parent directories and operator retention.

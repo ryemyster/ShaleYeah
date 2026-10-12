@@ -18,7 +18,7 @@ uv pip install --python "$isolation_dir/.venv/bin/python" \
 uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
   "$isolation_dir/wheels/shaleyeah_mcp_client-0.2.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_contracts-0.3.0-py3-none-any.whl" \
-  "$isolation_dir/wheels/shaleyeah_evaluations-0.2.1-py3-none-any.whl" \
+  "$isolation_dir/wheels/shaleyeah_evaluations-0.3.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_geologist_adk-0.1.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/tests/eval" "$isolation_dir/agents/geologist/tests/eval" "$isolation_dir/servers/geowiz/tests/sample-files" "$isolation_dir/contracts/fixtures"
@@ -34,6 +34,7 @@ cp "$geologist_root/../../contracts/fixtures/records.json" "$isolation_dir/contr
 cp -R "$geologist_root/tests/eval/fixtures" "$geologist_root/tests/eval/datasets" "$isolation_dir/agents/geologist/tests/eval/"
 cp "$geologist_root/tests/eval/run_fixture_evals.py" "$isolation_dir/agents/geologist/tests/eval/"
 cp "$geologist_root/tests/eval/performance_profile.json" "$isolation_dir/agents/geologist/tests/eval/"
+cp "$geologist_root/tests/eval/qualification_policy.json" "$isolation_dir/agents/geologist/tests/eval/"
 cp "$geologist_root/tests/eval/eval_config.json" "$isolation_dir/agents/geologist/tests/eval/"
 cp "$geologist_root/../../servers/geowiz/tests/sample-files/sample.las" "$isolation_dir/servers/geowiz/tests/sample-files/"
 cp "$geologist_root/tests/test_model_provider.py" "$geologist_root/tests/test_native_model_adapters.py" "$geologist_root/tests/test_model_configuration_boundary.py" "$isolation_dir/tests/"

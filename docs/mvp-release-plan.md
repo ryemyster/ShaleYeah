@@ -289,6 +289,10 @@ unavailable confidence; #711/#712 qualify economics/type-curve outputs. They are
 separate PRs before the affected role/reference qualification. #577/#691 must
 run the existing Python no-npm project-shape guards in shared required checks;
 the current TypeScript CI suite does not supply fleet Python qualification.
+The [reference qualification gate](../evaluations/docs/qualification.md) now
+requires Geologist/Geowiz package/source/review controls and a frozen fixture
+baseline in CI and release packaging. This reference evidence does not qualify
+the other employees or live/domain performance; #691/#693 retain those gates.
 
 Transport-session mechanics stay adapter-local. #572's ADR 0004 selects the pinned
 MCP 2025-11-25 reference profile; #674 supplies actual composition qualification.

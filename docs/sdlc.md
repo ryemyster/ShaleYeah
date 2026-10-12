@@ -117,8 +117,10 @@ schedule their merges between issues because any develop merge invalidates an
 active issue's base. Dependabot PRs still need a current develop ancestor.
 
 Local hooks can be disabled by a user, and separate clones do not share the local
-receipt before a PR is opened. GitHub branch protection should require `PR checks`
-and an up-to-date branch to enforce the CI gate at merge time. Installation does
+receipt before a PR is opened. GitHub branch protection must require `PR checks`,
+`Geologist and Geowiz qualification`, CodeQL and secret detection with an
+up-to-date branch to enforce delivery and reference quality at merge time. Check
+the actual GitHub status names when installing protection. Installation does
 not change repository protection settings. The gate cannot prove that an agent
 understood the issue, verified acceptance correctly or performed useful review.
 

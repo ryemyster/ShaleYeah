@@ -3025,7 +3025,7 @@ dev = [
 
 [[package]]
 name = "shaleyeah-evaluations"
-version = "0.2.1"
+version = "0.3.0"
 source = { editable = "../../evaluations" }
 dependencies = [
     { name = "jsonschema" },

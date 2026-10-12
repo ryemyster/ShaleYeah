@@ -263,6 +263,28 @@ def test_performance_cases_grade_real_source_bad_inputs_and_review_outcomes():
     assert len(reports) >= 7
 
 
+def test_reference_qualification_uses_frozen_baseline_and_blocks_missing_inputs(tmp_path):
+    import subprocess
+    import sys
+
+    command = [
+        sys.executable, "tests/eval/run_fixture_evals.py", "--output", str(tmp_path / "result.json"),
+        "--qualification-policy", "tests/eval/qualification_policy.json",
+        "--baseline", "tests/eval/fixtures/baseline-reports.json", "--code-revision", "a" * 40,
+    ]
+    result = subprocess.run(command, cwd=PACKAGE, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stderr
+    decision = json.loads((tmp_path / "result.json").read_text())
+    assert decision["status"] == "passed" and decision["qualification"] == "fixture"
+    assert decision["codeRevision"] == "a" * 40 and len(decision["cases"]) == 7
+    assert not decision["professionalAcceptance"] and not decision["promotionAllowed"]
+    assert "runtime" not in decision and "trace" not in decision
+    command[command.index("--baseline") + 1] = str(tmp_path / "missing.json")
+    result = subprocess.run(command, cwd=PACKAGE, capture_output=True, text=True, check=False)
+    assert result.returncode == 1
+    assert json.loads((tmp_path / "result.json").read_text())["status"] == "blocked"
+
+
 def test_installed_vertex_callbacks_use_bound_host_context_and_no_exec():
     from app.eval_adapter import vertex_metrics
 
