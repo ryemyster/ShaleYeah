@@ -17,6 +17,12 @@ agents-cli info
 
 ## Run With A Live Geowiz Backend
 
+The initial [LAS review contract](../../../servers/geowiz/docs/LAS_REVIEW.md)
+returns measurements, supplied assumptions and unknown geology. Its parser/QC
+tests run from the server package with `pnpm test:las`; employee argument,
+source/hash, native-provider, event and confirmation checks stay in Python.
+Research-based sample review does not certify field interpretation.
+
 First complete the [ordered build/config setup](../../../docs/deployment-support.md#run-the-current-reference-locally).
 Geowiz now requires configured MCP credentials/scopes. Start its
 [private HTTP launcher](../../../servers/geowiz/docs/HTTP_ACCESS.md) and run the

@@ -133,7 +133,8 @@ checks results and bounds setup retries without replaying dispatched tools.
    That fixture path resolves on the **Geowiz** host relative to its working
    directory, not on the employee host. This command is a live-task example,
    unqualified by #578; actual provider, MCP/tool and source checks belong to
-   #671/#674. Complete [private source setup](../servers/geowiz/docs/DATA_SOURCES.md).
+   #674. The [LAS review baseline](../servers/geowiz/docs/LAS_REVIEW.md) covers
+   deterministic inputs and missing-evidence behavior. Complete [private source setup](../servers/geowiz/docs/DATA_SOURCES.md).
    Never embed a real key in a command, prompt or JSON example.
 
 5. Optional manual playground, still from `agents/geologist`:
@@ -208,7 +209,7 @@ actual model/profile/SDK versions in qualification receipts.
 Geowiz's existing package tests also passed, but some processor checks use
 placeholder structures or mock validation, including a known seismic-parser
 failure. Their printed coverage/production claims are not qualification evidence.
-#671 owns source-specific results and unsupported-format failures; #674 verifies
+#671 replaces the initial LAS guesses with source-linked input review; #674 verifies
 the supported reference journey with actual inputs and outputs.
 
 ## Optional host requirements

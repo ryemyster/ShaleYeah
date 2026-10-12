@@ -73,10 +73,10 @@ performance qualification remains #674 and its dependencies.
 
 | Tool | Input formats | LLM call |
 |------|--------------|----------|
-| `analyze_formation` | LAS 2.0 | Configured Gemini or Anthropic; explicit errors |
+| `analyze_formation` | Approved numeric unwrapped LAS 2.0 | Optional configured Gemini/Anthropic review note; measurements remain deterministic |
 | `process_gis` | Unsupported at current source boundary | No — source/format qualification remains |
 | `process_well_logs` | Approved LAS snapshot; other formats declined | No — source/format qualification remains |
-| `assess_quality` | Approved LAS bytes verified; domain metrics still fixed | No — input-derived repair is #671 |
+| `assess_quality` | Approved LAS snapshot; observed sample completeness, unknown accuracy | No |
 | `process_access_database` | Unsupported at current source boundary | No — source/format qualification remains |
 | `process_document` | Unsupported at current source boundary | No — source/format qualification remains |
 | `process_seismic_data` | Unsupported at current source boundary | No — source/format qualification remains |
@@ -89,7 +89,9 @@ performance qualification remains #674 and its dependencies.
 File reads need a separate server-owned source grant and audit; see
 [DATA_SOURCES.md](docs/DATA_SOURCES.md). Caller-supplied `outputPath` writes are
 disabled. Model credentials, source-read permission and finding approval are
-independent boundaries. Input-derived geological quality remains #671.
+independent boundaries. See [LAS input review](docs/LAS_REVIEW.md) for measured
+observations, supplied assumptions, unknown conclusions and research evidence.
+These checks establish an initial open-source baseline, not field accuracy.
 
 ---
 

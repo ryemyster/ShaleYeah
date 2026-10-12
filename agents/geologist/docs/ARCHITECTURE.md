@@ -136,6 +136,13 @@ The agent does not depend on the orchestrator or any other agent. It can run sta
 
 ## Reference model bindings
 
+The [initial LAS input review](../../../servers/geowiz/docs/LAS_REVIEW.md)
+distinguishes measured curve coverage, explicitly supplied density assumptions
+and unavailable geology. Employee wrappers can forward complete scenario inputs;
+they do not choose missing rock/fluid defaults. Optional backend model notes
+remain unreviewed. Professional interpretation, persistence approval and
+restart-safe human continuation require their separate qualification.
+
 Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
 private owner-scoped credential references, bounded calls and independent judge
 configuration. Geologist remains Stand-alone Agent with Progressive Disclosure

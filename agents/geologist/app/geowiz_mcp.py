@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import inspect
+import json
+import math
 import os
 from contextvars import ContextVar
 from functools import wraps
@@ -113,8 +115,16 @@ async def analyze_geowiz_formation(
     formation_name: str | None = None,
     formation_id: str | None = None,
     match_threshold: float | None = None,
+    density_assumptions_json: str | None = None,
+    review_confidence_json: str | None = None,
 ) -> dict[str, Any]:
-    """Execute Geowiz analyze_formation for LAS/DLIS/WITSML artifacts."""
+    """Review approved LAS 2 observations; geology and model notes remain unreviewed.
+
+    density_assumptions_json: Explicit matrixDensity, fluidDensity, unit (g/cm3
+        or kg/m3), and basis. Omit to use declared LAS density parameters.
+    review_confidence_json: Optional reviewer value (0-1) and basis; not measured
+        model confidence. Never substitute a default for missing calibration.
+    """
 
     arguments: dict[str, Any] = {
         "filePath": file_path,
@@ -129,8 +139,44 @@ async def analyze_geowiz_formation(
         arguments["formationId"] = formation_id
     if match_threshold is not None:
         arguments["matchThreshold"] = match_threshold
+    if density_assumptions_json is not None:
+        arguments["densityAssumptions"] = _review_input(density_assumptions_json, density=True)
+    if review_confidence_json is not None:
+        arguments["reviewConfidence"] = _review_input(review_confidence_json, density=False)
 
     return await call_geowiz_tool("analyze_formation", arguments)
+
+
+def _review_input(text: str, *, density: bool) -> dict[str, Any]:
+    """Validate explicit scenario fields before any credential resolution."""
+    try:
+        if len(text) > 2048:
+            raise ValueError
+        def pairs(items):
+            result = {}
+            for key, value in items:
+                if key in result:
+                    raise ValueError
+                result[key] = value
+            return result
+        value = json.loads(text, object_pairs_hook=pairs)
+        fields = {"matrixDensity", "fluidDensity", "unit", "basis"} if density else {"value", "basis"}
+        if type(value) is not dict or set(value) != fields:
+            raise ValueError
+        if type(value["basis"]) is not str or not 1 <= len(value["basis"].strip()) <= 256:
+            raise ValueError
+        numbers = ("matrixDensity", "fluidDensity") if density else ("value",)
+        for field in numbers:
+            number = value[field]
+            if type(number) not in (int, float) or not math.isfinite(number):
+                raise ValueError
+            if (density and number <= 0) or (not density and not 0 <= number <= 1):
+                raise ValueError
+        if density and value["unit"] not in ("g/cm3", "kg/m3"):
+            raise ValueError
+        return value
+    except (ValueError, TypeError, OverflowError, RecursionError):
+        raise MCPClientError("invalid_assumptions", "user_action") from None
 
 
 async def process_geowiz_well_logs(
@@ -142,7 +188,7 @@ async def process_geowiz_well_logs(
     cursor: str | None = None,
     page_size: int | None = None,
 ) -> dict[str, Any]:
-    """Execute Geowiz process_well_logs for LAS/DLIS/WITSML artifacts."""
+    """Review approved LAS observations without inferring formations or pay."""
 
     arguments: dict[str, Any] = {
         "filePath": file_path,

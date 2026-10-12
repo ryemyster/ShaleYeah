@@ -10,6 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseLASFile } from "./las-parse.js";
+import { type LASReview, reviewLAS, sampleStatistics } from "./las-review.js";
 
 // Unified well log data interface
 export interface WellLogData {
@@ -38,11 +39,12 @@ export interface WellLogData {
 		[key: string]: unknown;
 	};
 	qualityMetrics: {
-		completeness: number; // 0-1 scale
-		continuity: number; // 0-1 scale
-		consistency: number; // 0-1 scale
-		confidence: number; // 0-1 scale
+		completeness: number | null;
+		continuity: number | null;
+		consistency: number | null;
+		confidence: number | null;
 	};
+	inputReview?: LASReview;
 }
 
 export interface WellLogCurve {
@@ -53,14 +55,9 @@ export interface WellLogCurve {
 	mnemonic?: string;
 	validPoints: number;
 	nullPoints: number;
-	minValue?: number;
-	maxValue?: number;
-	statistics?: {
-		mean: number;
-		median: number;
-		stdDev: number;
-		range: number;
-	};
+	minValue?: number | null;
+	maxValue?: number | null;
+	statistics?: ReturnType<typeof sampleStatistics>;
 }
 
 // File format detection
@@ -107,11 +104,12 @@ export async function processWellLogFile(filePath: string): Promise<WellLogData>
 // LAS file processing (enhanced)
 async function processLASFile(filePath: string): Promise<WellLogData> {
 	const lasData = parseLASFile(filePath);
+	const inputReview = reviewLAS(lasData);
 
 	// Convert to unified format with enhanced metrics
 	const curves: WellLogCurve[] = lasData.curves.map((curve) => {
 		const validData = curve.data.filter((v) => !Number.isNaN(v));
-		const statistics = calculateStatistics(validData);
+		const statistics = sampleStatistics(validData);
 
 		return {
 			name: curve.name,
@@ -120,13 +118,18 @@ async function processLASFile(filePath: string): Promise<WellLogData> {
 			data: curve.data,
 			validPoints: validData.length,
 			nullPoints: curve.data.length - validData.length,
-			minValue: Math.min(...validData),
-			maxValue: Math.max(...validData),
+			minValue: statistics?.min ?? null,
+			maxValue: statistics?.max ?? null,
 			statistics,
 		};
 	});
 
-	const qualityMetrics = calculateQualityMetrics(curves, lasData.depth_data);
+	const qualityMetrics = {
+		completeness: inputReview.qc.completeness,
+		continuity: null,
+		consistency: null,
+		confidence: null,
+	};
 
 	return {
 		format: "LAS",
@@ -146,6 +149,7 @@ async function processLASFile(filePath: string): Promise<WellLogData> {
 			location: lasData.location,
 		},
 		qualityMetrics,
+		inputReview,
 	};
 }
 
@@ -265,70 +269,6 @@ function extractXMLValue(xmlContent: string, tagName: string): string | null {
 	const regex = new RegExp(`<${tagName}[^>]*>([^<]+)</${tagName}>`, "i");
 	const match = regex.exec(xmlContent);
 	return match ? match[1].trim() : null;
-}
-
-function calculateStatistics(data: number[]): {
-	mean: number;
-	median: number;
-	stdDev: number;
-	range: number;
-} {
-	if (data.length === 0) {
-		return { mean: 0, median: 0, stdDev: 0, range: 0 };
-	}
-
-	const sorted = [...data].sort((a, b) => a - b);
-	const mean = data.reduce((sum, val) => sum + val, 0) / data.length;
-	const median =
-		sorted.length % 2 === 0
-			? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
-			: sorted[Math.floor(sorted.length / 2)];
-
-	const variance = data.reduce((sum, val) => sum + (val - mean) ** 2, 0) / data.length;
-	const stdDev = Math.sqrt(variance);
-	const range = Math.max(...data) - Math.min(...data);
-
-	return { mean, median, stdDev, range };
-}
-
-function calculateQualityMetrics(
-	curves: WellLogCurve[],
-	depthData: number[],
-): {
-	completeness: number;
-	continuity: number;
-	consistency: number;
-	confidence: number;
-} {
-	if (curves.length === 0) {
-		return { completeness: 0, continuity: 0, consistency: 0, confidence: 0 };
-	}
-
-	// Completeness: percentage of non-null data points
-	const totalPoints = curves.reduce((sum, curve) => sum + curve.data.length, 0);
-	const validPoints = curves.reduce((sum, curve) => sum + curve.validPoints, 0);
-	const completeness = totalPoints > 0 ? validPoints / totalPoints : 0;
-
-	// Continuity: measure of data gaps
-	const depthContinuity =
-		depthData.length > 1
-			? 1 -
-				Math.abs(depthData.length - (depthData[depthData.length - 1] - depthData[0])) / depthData[depthData.length - 1]
-			: 0;
-
-	// Consistency: measure of reasonable value ranges per curve type
-	const consistency =
-		curves.length > 0 ? curves.reduce((sum, curve) => sum + (curve.validPoints > 0 ? 1 : 0), 0) / curves.length : 0;
-
-	// Overall confidence
-	const confidence = (completeness + depthContinuity + consistency) / 3;
-
-	return {
-		completeness: Math.round(completeness * 100) / 100,
-		continuity: Math.round(depthContinuity * 100) / 100,
-		consistency: Math.round(consistency * 100) / 100,
-		confidence: Math.round(confidence * 100) / 100,
-	};
 }
 
 // CLI usage

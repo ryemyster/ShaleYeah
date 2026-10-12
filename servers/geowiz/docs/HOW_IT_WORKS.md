@@ -5,11 +5,11 @@
 Imagine you have a box of geology homework — well logs, maps, seismic files, databases — in a dozen different formats. Geowiz is the expert that opens every format, reads what's inside, and tells you what the rock looks like underground.
 
 You give Geowiz a permitted file and choose an operation. Formation analysis
-reads LAS curves and asks the explicitly configured model provider for a
-structured draft. It returns the actual provider/model receipt with the result.
-Missing keys, unavailable models and invalid output produce errors; it does not
-invent replacement conclusions. Existing processor estimates and source support
-still need professional qualification in #671.
+checks numeric unwrapped LAS 2.0 and returns source-linked observations,
+supplied density assumptions and missing-evidence requests. An explicitly
+configured model may add an unreviewed note with its provider receipt. Model
+outages preserve the measured packet and mark the result partial. Unsupported
+geological conclusions stay unknown. See [LAS input review](LAS_REVIEW.md).
 
 Geowiz exposes nine domain tools and one profile-discovery tool. It maintains
 HTTP session state and can write findings/artifacts. Geologist is a separate ADK
@@ -21,9 +21,9 @@ The backend must independently enforce authority; model prose cannot approve wor
 1. Geologist discovers and checks the public synthesis profile.
 2. Protected MCP ingress verifies identity, scopes and access audit.
 3. Geowiz checks customer/employee ownership, reads LAS and checks curves.
-4. Its private Gemini/Anthropic runtime validates capabilities and bounded limits,
+4. If selected, its private Gemini/Anthropic runtime validates capabilities and bounded limits,
    resolves a dedicated secret reference, and calls the native provider SDK.
-5. It validates structured output and returns the draft plus model metadata.
+5. It validates a cited review note and returns it separately from observations.
 
 See the [tool inventory](ARCHITECTURE.md) and [provider setup](../../../docs/model-providers.md).
 Other current tools use their existing processors without model calls.

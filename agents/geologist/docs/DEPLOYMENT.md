@@ -11,6 +11,12 @@ Geologist is a Python ADK employee that calls a separate Geowiz-compatible MCP
 with Progressive Disclosure (Skills)**. Local checks are verified; durable
 employee operation and cloud deployment need the evidence described below.
 
+The backend's [initial LAS review](../../../servers/geowiz/docs/LAS_REVIEW.md)
+preserves measured inputs when optional annotation is unavailable. The
+configured employee pair still requires its selected provider binding and
+separate source grants. A successful local input review does not grant
+persistence authority or qualify field interpretation.
+
 ## Start locally
 
 Follow the ordered [portable execution guide](../../../docs/deployment-support.md#run-the-current-reference-locally):

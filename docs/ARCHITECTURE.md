@@ -58,6 +58,10 @@ Geowiz now separates source authority from model/tool authority through the
 customer, asset, task/revision, employee and operator. Actual LAS/CSV bytes,
 source revision, age and units are checked before publishing canonical provenance;
 Geowiz's LAS handlers parse private snapshots. Audit persistence is required.
+The [initial LAS review packet](../servers/geowiz/docs/LAS_REVIEW.md) carries
+source hashes, observed curve coverage, explicit density assumptions and unknown
+geological conclusions. The model may add an unreviewed cited annotation;
+it cannot replace deterministic measurements or approve interpretation.
 Other file formats and domain correctness remain unqualified; non-LAS MCP
 handlers explicitly decline until their adapters are reviewed. Existing
 source-independent helper APIs are not an access boundary.
@@ -174,5 +178,6 @@ Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
 private owner-scoped credential references, bounded calls and independent judge
 configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
-Missing/unsupported configuration and synthesis failures are explicit errors.
+Ownership, credential and cancellation failures are explicit errors. Optional
+Geowiz annotation outages preserve the deterministic packet and mark it partial.
 See [configuration and offline qualification](model-providers.md).

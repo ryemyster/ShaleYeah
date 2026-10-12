@@ -1,4 +1,5 @@
 #!/usr/bin/env tsx
+import { createHash } from "node:crypto";
 /**
  * Enhanced LAS file parser for SHALE YEAH geological analysis
  * Extracts curve data, metadata, and validates depth intervals
@@ -26,169 +27,161 @@ interface LASData {
 	company?: string;
 	field?: string;
 	location?: string;
+	parameters: Record<string, LASHeaderItem>;
+	content_hash: string;
 }
 
-function parseLASFile(filePath: string): LASData {
-	const content = fs.readFileSync(filePath, "utf8");
-	const lines = content.split(/\r?\n/);
+interface LASHeaderItem {
+	unit: string;
+	value: string;
+	description: string;
+}
 
-	const result: LASData = {
-		version: "",
-		well_name: "",
-		depth_unit: "ft",
-		depth_start: 0,
-		depth_stop: 0,
-		depth_step: 0,
-		null_value: -999.25,
-		curves: [],
-		depth_data: [],
-		rows: 0,
-	};
+type LASInputCode =
+	| "invalid_header"
+	| "unsupported_version"
+	| "unsupported_layout"
+	| "invalid_units"
+	| "duplicate_curve"
+	| "invalid_data"
+	| "invalid_depth"
+	| "invalid_assumptions";
 
-	let currentSection = "";
-	const curveDefinitions: Array<{
-		name: string;
-		unit: string;
-		description: string;
-	}> = [];
-	let dataStarted = false;
-
-	for (const line of lines) {
-		const trimmed = line.trim();
-
-		// Skip empty lines and comments
-		if (!trimmed || trimmed.startsWith("#")) continue;
-
-		// Section headers
-		if (trimmed.startsWith("~")) {
-			currentSection = trimmed.substring(1, 2).toUpperCase();
-			dataStarted = currentSection === "A";
-			continue;
-		}
-
-		// Parse sections
-		switch (currentSection) {
-			case "V": // Version information
-				if (trimmed.includes("VERS")) {
-					result.version = extractValue(trimmed);
-				}
-				break;
-
-			case "W": // Well information
-				if (trimmed.includes("WELL")) {
-					result.well_name = extractValue(trimmed);
-				} else if (trimmed.includes("STRT")) {
-					result.depth_start = parseFloat(extractValue(trimmed));
-				} else if (trimmed.includes("STOP")) {
-					result.depth_stop = parseFloat(extractValue(trimmed));
-				} else if (trimmed.includes("STEP")) {
-					result.depth_step = parseFloat(extractValue(trimmed));
-				} else if (trimmed.includes("NULL")) {
-					result.null_value = parseFloat(extractValue(trimmed));
-				} else if (trimmed.includes("COMP")) {
-					result.company = extractValue(trimmed);
-				} else if (trimmed.includes("FLD")) {
-					result.field = extractValue(trimmed);
-				} else if (trimmed.includes("LOC")) {
-					result.location = extractValue(trimmed);
-				}
-				break;
-
-			case "C": {
-				// Curve information
-				const curveDef = parseCurveDefinition(trimmed);
-				if (curveDef) {
-					curveDefinitions.push(curveDef);
-				}
-				break;
-			}
-
-			case "A": // ASCII log data
-				if (dataStarted && trimmed && !trimmed.startsWith("~")) {
-					parseDataLine(trimmed, result, curveDefinitions);
-				}
-				break;
-		}
+/** Safe to return over MCP: neither the path nor header/data contents enter diagnostics. */
+export class LASInputError extends Error {
+	constructor(
+		readonly code: LASInputCode,
+		readonly line?: number,
+	) {
+		super(`LAS input: ${code}${line === undefined ? "" : ` at line ${line}`}`);
+		this.name = "LASInputError";
 	}
+}
 
-	// Extract depth unit from first curve (usually DEPT)
-	if (curveDefinitions.length > 0 && curveDefinitions[0].unit) {
-		result.depth_unit = curveDefinitions[0].unit;
-	}
+export function readLASNumber(value: string): number | null {
+	if (!/^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?$/.test(value)) return null;
+	const result = Number(value);
+	return Number.isFinite(result) ? result : null;
+}
 
-	result.rows = result.depth_data.length;
+function numeric(value: string, code: LASInputCode, line?: number): number {
+	const result = readLASNumber(value);
+	if (result === null) throw new LASInputError(code, line);
 	return result;
 }
 
-function extractValue(line: string): string {
-	// Extract value from LAS format line (MNEM.UNIT VALUE :DESCRIPTION)
-	const colonIndex = line.indexOf(":");
-	const beforeColon = colonIndex > -1 ? line.substring(0, colonIndex) : line;
-
-	// Split by whitespace and take everything after the first token
-	const parts = beforeColon.trim().split(/\s+/);
-	if (parts.length >= 2) {
-		return parts.slice(1).join(" ").trim();
-	}
-
-	return "";
+function header(line: string, number: number): { name: string } & LASHeaderItem {
+	const colon = line.indexOf(":");
+	const before = colon < 0 ? line : line.slice(0, colon);
+	const dot = before.indexOf(".");
+	if (dot < 1) throw new LASInputError("invalid_header", number);
+	const name = before.slice(0, dot).trim().toUpperCase();
+	if (!name || /\s/.test(name)) throw new LASInputError("invalid_header", number);
+	const after = before.slice(dot + 1);
+	const space = after.search(/\s/);
+	const unit = space < 0 ? after : after.slice(0, space);
+	const value = space < 0 ? "" : after.slice(space).trim();
+	return { name, unit, value, description: colon < 0 ? "" : line.slice(colon + 1).trim() };
 }
 
-function parseCurveDefinition(line: string): { name: string; unit: string; description: string } | null {
-	if (!line.includes(".")) return null;
-
-	const parts = line.split(":");
-	const beforeColon = parts[0].trim();
-	const description = parts.length > 1 ? parts[1].trim() : "";
-
-	const dotIndex = beforeColon.indexOf(".");
-	if (dotIndex === -1) return null;
-
-	const name = beforeColon.substring(0, dotIndex).trim();
-	const afterDot = beforeColon.substring(dotIndex + 1).trim();
-
-	// Extract unit (everything before first space)
-	const unit = afterDot.split(/\s+/)[0] || "";
-
-	return { name, unit, description };
+function close(a: number, b: number): boolean {
+	return Math.abs(a - b) <= 32 * Number.EPSILON * Math.max(1, Math.abs(a), Math.abs(b));
 }
 
-function parseDataLine(
-	line: string,
-	result: LASData,
-	curveDefinitions: Array<{ name: string; unit: string; description: string }>,
-) {
-	const values = line
-		.trim()
-		.split(/\s+/)
-		.map((v) => parseFloat(v));
-
-	if (values.length !== curveDefinitions.length) {
-		return; // Skip malformed lines
+/** Deliberately bounded LAS 2.0 subset: unwrapped, unique curves, numeric depth index. */
+function parseLASFile(filePath: string): LASData {
+	const sections = new Set<string>();
+	const headers: Record<string, Record<string, LASHeaderItem>> = { V: {}, W: {}, P: {} };
+	const curves: LASCurve[] = [];
+	const rows: Array<{ values: string[]; line: number }> = [];
+	let section = "";
+	const bytes = fs.readFileSync(filePath);
+	let content: string;
+	try {
+		content = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+	} catch {
+		throw new LASInputError("invalid_data");
 	}
-
-	// Initialize curve data arrays if not done
-	if (result.curves.length === 0) {
-		result.curves = curveDefinitions.map((def) => ({
-			name: def.name,
-			unit: def.unit,
-			description: def.description,
-			data: [],
-		}));
-	}
-
-	// Store depth (first column) and curve data
-	if (values.length > 0) {
-		result.depth_data.push(values[0]);
-
-		// Store curve data
-		for (let i = 0; i < result.curves.length && i < values.length; i++) {
-			const value = values[i];
-			// Replace null values with NaN for easier processing
-			const processedValue = Math.abs(value - result.null_value) < 0.01 ? NaN : value;
-			result.curves[i].data.push(processedValue);
+	if (content.includes("\0")) throw new LASInputError("invalid_data");
+	const lines = content.split(/\r?\n/);
+	for (const [index, raw] of lines.entries()) {
+		const line = raw.trim();
+		if (!line || line.startsWith("#")) continue;
+		if (line.startsWith("~")) {
+			section = line.slice(1, 2).toUpperCase();
+			if (sections.has(section)) throw new LASInputError("invalid_header", index + 1);
+			sections.add(section);
+			continue;
 		}
+		if (section === "A") rows.push({ values: line.split(/\s+/), line: index + 1 });
+		else if (section === "C") {
+			const item = header(line, index + 1);
+			if (curves.some((curve) => curve.name === item.name)) throw new LASInputError("duplicate_curve", index + 1);
+			curves.push({ name: item.name, unit: item.unit, description: item.description, data: [] });
+		} else if (headers[section]) {
+			const { name, ...item } = header(line, index + 1);
+			if (Object.hasOwn(headers[section], name)) throw new LASInputError("invalid_header", index + 1);
+			headers[section][name] = item;
+		} else if (section !== "O") throw new LASInputError("invalid_header", index + 1);
 	}
+	const required = (section: string, name: string): LASHeaderItem => {
+		const item = headers[section][name];
+		if (!item?.value) throw new LASInputError("invalid_header");
+		return item;
+	};
+	if (!["V", "W", "C", "A"].every((s) => sections.has(s)) || !curves.length) throw new LASInputError("invalid_header");
+	const version = required("V", "VERS").value;
+	if (numeric(version, "invalid_header") !== 2) throw new LASInputError("unsupported_version");
+	if (required("V", "WRAP").value.toUpperCase() !== "NO") throw new LASInputError("unsupported_layout");
+	const start = required("W", "STRT"),
+		stop = required("W", "STOP"),
+		step = required("W", "STEP");
+	const unit = curves[0].unit.toUpperCase();
+	if (!["M", "F", "FT"].includes(unit) || [start, stop, step].some((item) => item.unit.toUpperCase() !== unit))
+		throw new LASInputError("invalid_units");
+	const depthStart = numeric(start.value, "invalid_header");
+	const depthStop = numeric(stop.value, "invalid_header");
+	const depthStep = numeric(step.value, "invalid_header");
+	const nullValue = numeric(required("W", "NULL").value, "invalid_header");
+	const depthData: number[] = [];
+	if (!rows.length) throw new LASInputError("invalid_data");
+	for (const row of rows) {
+		if (row.values.length !== curves.length) throw new LASInputError("invalid_data", row.line);
+		const values = row.values.map((v) => numeric(v, "invalid_data", row.line));
+		const depth = values[0];
+		const previous = depthData.at(-1);
+		if (depth === nullValue) throw new LASInputError("invalid_depth", row.line);
+		if (previous !== undefined) {
+			const difference = depth - previous;
+			if (
+				difference === 0 ||
+				Math.sign(difference) !== Math.sign(depthStop - depthStart) ||
+				(depthStep !== 0 && !close(difference, depthStep))
+			)
+				throw new LASInputError("invalid_depth", row.line);
+		}
+		depthData.push(depth);
+		values.forEach((v, index) => curves[index].data.push(v === nullValue ? NaN : v));
+	}
+	if (!close(depthData[0], depthStart) || !close(depthData[depthData.length - 1], depthStop))
+		throw new LASInputError("invalid_depth");
+	return {
+		version,
+		well_name: headers.W.WELL?.value ?? "",
+		depth_unit: curves[0].unit,
+		depth_start: depthStart,
+		depth_stop: depthStop,
+		depth_step: depthStep,
+		null_value: nullValue,
+		curves,
+		depth_data: depthData,
+		rows: rows.length,
+		parameters: headers.P,
+		content_hash: createHash("sha256").update(bytes).digest("hex"),
+		company: headers.W.COMP?.value,
+		field: headers.W.FLD?.value,
+		location: headers.W.LOC?.value,
+	};
 }
 
 // CLI usage

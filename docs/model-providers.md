@@ -117,9 +117,13 @@ and keeps the injected runtime private to its server instance.
 
 `GEOLOGIST_ADK_MODEL`, `GOOGLE_API_KEY`, `GEMINI_API_KEY` and
 `ANTHROPIC_API_KEY` do not configure this reference. Missing configuration/key,
-invalid output and provider failures return explicit errors. Geowiz no longer
-invents replacement TOC or drilling recommendations on these failures. Other
-parser estimates and source limitations still need #671.
+ownership, credential and cancellation failures return explicit errors.
+Geowiz LAS analysis is deterministic; optional synthesis adds an unreviewed
+cited note. Model outage or invalid annotation marks the result partial while
+preserving measured inputs. Missing runtime configuration leaves annotation
+unconfigured; the Geologist pair still checks its explicit selected binding.
+See the [LAS review contract](../servers/geowiz/docs/LAS_REVIEW.md). TOC,
+maturity, net pay and drilling targets stay unknown without supporting evidence.
 
 ## Verify without paid requests
 

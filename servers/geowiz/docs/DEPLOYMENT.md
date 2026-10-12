@@ -65,7 +65,8 @@ Geologist uses the installed [Python MCP client](../../../sdk/python/README.md)
 with the same private credential file as the launcher. Its imports/tests work independently;
 the [generic-client test](HTTP_ACCESS.md#test-the-real-boundary-without-model-keys)
 checks ingress now. Live providers, permitted sources and employee/task behavior
-remain #671/#674; no model key grants tool authority.
+remain #674; the [initial LAS review baseline](LAS_REVIEW.md) is independently
+tested without a paid model key. No model key grants tool authority.
 
 ## Persistence, containers and scaling
 

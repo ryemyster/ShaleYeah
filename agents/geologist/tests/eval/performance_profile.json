@@ -10,9 +10,9 @@
   "datasets": [
     {
       "id": "geologist.performance",
-      "revision": "r1",
-      "uri": "urn:sha256:2fbf138470a66eec64d5a1c1860c29e9f84070102143c7e6033172c880b7a3b0",
-      "sha256": "2fbf138470a66eec64d5a1c1860c29e9f84070102143c7e6033172c880b7a3b0"
+      "revision": "r2",
+      "uri": "urn:sha256:e2da926ea137ccf1caa87eaf15638bd28c680b69080a69ab54d21a2c958e5ad7",
+      "sha256": "e2da926ea137ccf1caa87eaf15638bd28c680b69080a69ab54d21a2c958e5ad7"
     }
   ],
   "metrics": [

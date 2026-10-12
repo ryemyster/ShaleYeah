@@ -49,11 +49,13 @@ The Geologist's role adapter in `app/geowiz_mcp.py` calls the installed
 dedicated credential reference. Actual protected connection controls pass.
 It does not use the retired TypeScript LocalAgentRuntime or a fixed employee port.
 
-Files resolve on the tool host. Source/workspace controls remain #670; advertised
-formats and geological evidence remain #671/#674. `assess_quality` currently
-returns fixed metrics without opening the file; it qualifies ingress rather
-than observed data quality. Formation synthesis uses an injected Gemini/Anthropic runtime; see
-[provider setup](../../../docs/model-providers.md). No provider failure becomes a fabricated result.
+Files resolve on the tool host under separately configured source/workspace
+controls. The initial [LAS review contract](LAS_REVIEW.md) returns exact-byte
+provenance, observed completeness and explicit missing evidence. Preserve its
+nullable measurements, assumptions, packet revision and unreviewed status.
+Optional formation annotation uses an injected Gemini/Anthropic runtime; see
+[provider setup](../../../docs/model-providers.md). Outages yield a marked
+partial result; they do not fabricate geological measurements.
 
 The local example leaves `save_finding` ungranted. Authenticated exact-revision
 backend review/resume remains #673. Agent confirmation or approval prose cannot

@@ -23,9 +23,11 @@ async function withoutAmbientProvider<T>(run: () => Promise<T>): Promise<T> {
 	}
 }
 
-test("formation analysis without an explicit model runtime fails instead of inventing synthesis", async () => {
+test("formation analysis without an explicit model runtime returns observations without invented synthesis", async () => {
 	await withoutAmbientProvider(async () => {
-		await assert.rejects(performFormationAnalysis({ filePath: sample }), /config|provider|runtime/i);
+		const result = await performFormationAnalysis({ filePath: sample });
+		assert.equal(result.synthesis.status, "not_configured");
+		assert.equal(result.toc, null);
 	});
 });
 
@@ -37,20 +39,21 @@ test("formation analysis observes the injected Gemini synthesis runtime", async 
 			generate: async (input: unknown) => {
 				calls.push(input);
 				return {
-					output: { toc: 1.25, recommendation: "Fixture requires geological review" },
+					output: { note: "Fixture requires geological review", evidenceIds: ["curve:RHOB"] },
 					metadata: { provider: "gemini", model: "gemini-fixture-001", revision: "fixture-r1" },
 				};
 			},
 		};
 		const result = await Reflect.apply(performFormationAnalysis, undefined, [{ filePath: sample }, runtime]);
 		assert.equal(calls.length, 1, "the selected synthesis runtime must receive the model call");
-		assert.equal(result.toc, 1.25);
+		assert.equal(result.toc, null);
+		assert.equal(result.synthesis.status, "unreviewed");
 		assert.equal(result.modelMetadata.provider, "gemini");
 		assert.equal(result.modelMetadata.model, "gemini-fixture-001");
 	});
 });
 
-test("injected provider failure propagates once without the formation catch fabricating a result", async () => {
+test("injected provider failure is a marked partial result without fabricated interpretation or replay", async () => {
 	await withoutAmbientProvider(async () => {
 		let calls = 0;
 		const runtime = {
@@ -60,10 +63,9 @@ test("injected provider failure propagates once without the formation catch fabr
 				throw new Error("Model provider unavailable");
 			},
 		};
-		await assert.rejects(
-			Reflect.apply(performFormationAnalysis, undefined, [{ filePath: sample }, runtime]),
-			/Model provider unavailable/,
-		);
+		const result = await Reflect.apply(performFormationAnalysis, undefined, [{ filePath: sample }, runtime]);
+		assert.equal(result.synthesis.status, "unavailable");
+		assert.equal(result.toc, null);
 		assert.equal(calls, 1, "a failed model call must not be repeated through a fallback path");
 	});
 });
@@ -82,7 +84,8 @@ test("ambient provider key cannot activate an unconfigured formation synthesis r
 		});
 	};
 	try {
-		await assert.rejects(performFormationAnalysis({ filePath: sample }), /config|provider|runtime/i);
+		const result = await performFormationAnalysis({ filePath: sample });
+		assert.equal(result.synthesis.status, "not_configured");
 		assert.equal(requests, 0, "ambient keys must not authorize a different vendor's call");
 	} finally {
 		globalThis.fetch = originalFetch;

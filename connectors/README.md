@@ -68,6 +68,10 @@ removed afterward. Changed bytes/revisions, missing access, stale dates,
 unsupported adapters, bad format shape or mismatched units produce failures.
 Health performs the same checks rather than trusting cached readiness.
 
+Verified bytes that violate their declared LAS/CSV shape return
+`conflicting_evidence`. Correct the input or declaration; a network retry
+cannot fix that format error. Unavailable transport remains a separate failure.
+
 The artifact separates retrieval time from the source's declared/reported
 as-of time. SHA-256 binds the actual bytes; logical source URI, revision,
 jurisdiction, access class, usage policy, access/license notes and adapter/parser

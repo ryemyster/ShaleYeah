@@ -13,7 +13,7 @@ globalThis.fetch = async (resource, init) => {
 	const body = JSON.parse(String(init.body));
 	if (profile.provider === "gemini" ? !url.pathname.includes(profile.model) : body.model !== profile.model) throw new Error("Fixture model boundary failed");
 	await fs.appendFile(process.env.GEOWIZ_PROVIDER_FIXTURE_RECEIPT_FILE, `${JSON.stringify({ provider: profile.provider, model: profile.model, revision: profile.revision, requestObserved: true })}\n`, { mode: 0o600 });
-	const output = { toc: 1.25, recommendation: "Controlled offline result requires human geological review" };
+	const output = { note: "Controlled offline input coverage requires human geological review", evidenceIds: ["curve:RHOB"] };
 	const response = profile.provider === "gemini"
 		? { candidates: [{ content: { role: "model", parts: [{ text: JSON.stringify(output) }] }, finishReason: "STOP" }], modelVersion: "fixture-native-001" }
 		: { id: "fixture", type: "message", role: "assistant", model: "fixture-native-001", content: [{ type: "tool_use", id: "fixture-call", name: "submit_result", input: output }], stop_reason: "tool_use", usage: { input_tokens: 12, output_tokens: 16 } };

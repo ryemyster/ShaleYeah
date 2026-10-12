@@ -13,8 +13,8 @@
       "reference": {
         "case_type": "control",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -37,8 +37,8 @@
       "reference": {
         "case_type": "control",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -61,8 +61,8 @@
       "reference": {
         "case_type": "edge",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -85,8 +85,8 @@
       "reference": {
         "case_type": "edge",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -109,8 +109,8 @@
       "reference": {
         "case_type": "edge",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -133,8 +133,8 @@
       "reference": {
         "case_type": "capability_boundary",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },
@@ -157,8 +157,8 @@
       "reference": {
         "case_type": "capability_boundary",
         "source_ref": {
-          "uri": "urn:sha256:a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
-          "sha256": "a133e4ab6dcb32fa19a1d119c12240265aeb86cc4c9e1b188f00784e065ed45c",
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
           "fixture": "fixtures/sample.las",
           "asOf": "2024-01-15T00:00:00Z"
         },

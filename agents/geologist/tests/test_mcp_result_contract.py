@@ -1,5 +1,7 @@
 """Geology tool mappings and result passthrough; protocol conformance lives in the helper."""
 
+import json
+
 import pytest
 from shaleyeah_mcp import MCPClientError
 
@@ -98,3 +100,28 @@ async def test_typed_client_failure_propagates_without_fabricating_role_success(
     with pytest.raises(MCPClientError) as error:
         await geowiz_mcp.assess_geowiz_quality("fixture.las")
     assert error.value.code == "forbidden"
+
+
+@pytest.mark.asyncio
+async def test_explicit_density_assumptions_and_zero_review_confidence_are_forwarded(monkeypatch):
+    calls = []
+    async def backend(name, arguments):
+        calls.append((name, arguments))
+        return {"inputReview": {"review": {"status": "unreviewed"}}}
+    monkeypatch.setattr(geowiz_mcp, "call_geowiz_tool", backend)
+    density = {"matrixDensity": 2.65, "fluidDensity": 1, "unit": "g/cm3", "basis": "operator scenario"}
+    confidence = {"value": 0, "basis": "unqualified reviewer assessment"}
+    await geowiz_mcp.analyze_geowiz_formation("approved.las", density_assumptions_json=json.dumps(density), review_confidence_json=json.dumps(confidence))
+    assert calls[0][1]["densityAssumptions"] == density
+    assert calls[0][1]["reviewConfidence"]["value"] == 0
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("text", ['{"matrixDensity":2.65}', "not-json", "[]", '{"matrixDensity":NaN}'])
+async def test_incomplete_or_invalid_assumptions_fail_before_transport(monkeypatch, text):
+    async def forbidden(*args):
+        pytest.fail("invalid assumptions must not enter backend credentials or transport")
+    monkeypatch.setattr(geowiz_mcp, "call_geowiz_tool", forbidden)
+    with pytest.raises(MCPClientError) as error:
+        await geowiz_mcp.analyze_geowiz_formation("approved.las", density_assumptions_json=text)
+    assert error.value.code == "invalid_assumptions"
