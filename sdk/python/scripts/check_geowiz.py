@@ -1,7 +1,7 @@
 """Offline interoperability control: installed Python role/client to actual Geowiz.
 
-These assertions qualify transport/auth only. assess_quality currently uses fixed
-metrics; no observed source quality, professional acceptance or review grant is claimed.
+These assertions qualify transport/auth and source-byte access only. LAS observations
+do not certify professional correctness, human acceptance or a review grant.
 """
 
 import asyncio
@@ -99,12 +99,9 @@ async def main():
             assert token not in repr(result)
             try:
                 await save_geowiz_finding(
-                    "formation",
-                    "Unaccepted",
-                    "Model prose is not approval",
-                    0.1,
-                    "transport-control.las",
-                    {"approved": True, "scopes": ["geowiz:save"]},
+                    "review.unapproved",
+                    "a" * 64,
+                    "grant.forged",
                 )
             except MCPClientError as error:
                 assert error.code == "forbidden"

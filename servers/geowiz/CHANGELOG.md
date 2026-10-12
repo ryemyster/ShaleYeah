@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #673: update the standalone installed-client interoperability probe to the exact packet/grant save interface, retaining its forbidden-save/anonymous/source-audit assertions. CI exposed its retired six-argument call; the actual new backend/CLI controls remain intact.
+
 - #673: record validated canonical review events in the same decision transaction, preserving zero/absent reported human time and correction counts and computing scoped revision attempts. Optional owned CLI measurement JSON is distinct from authority and professional qualification; fixture provenance is the default. Reject timezone-formatted expired context and source metadata drift without trusting revision bump discipline.
 
 - #673: add immutable bounded review packets, separate enrolled local human CLI/API, versioned policy/source/content checks and exact-grant command enforcement. Private SQLite commits finding, prepared/completed audit and consumed outcome together; exact retries are idempotent. Add expiry cleanup, capacity/ownership/revision gates and real generic-MCP/human-CLI controls. Remove unguarded timestamp/confidence JSON save and obsolete vector-promotion comments. Node >=22.13 with built-in SQLite is required; remote reviewer/IAM and full extraction remain separate qualification.
