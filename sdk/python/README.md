@@ -139,7 +139,7 @@ See [SDK HTTP access](../docs/http-access.md) and the
 [migration ledger](../../docs/legacy-migration-ledger.md) for boundaries and
 remaining employee adoption owners.
 
-Installed-consumer isolation also installs the declared evaluation 0.2.1 wheel
+Installed-consumer isolation also installs the declared evaluation 0.3.0 wheel
 and exercises Geologist's native trace adapter, private host-input reader and
 independent qualitative judge controls. See [evaluation grading](../../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals).
 Calls without an event emitter preserve the existing transport API; event-enabled

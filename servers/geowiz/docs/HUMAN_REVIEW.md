@@ -29,6 +29,7 @@ Create a private JSON review configuration outside the repository:
 | `policy` | The operator-controlled policy described below |
 | `localReviewer` | `{ "uid": <your OS user ID>, "subjectId": <enrolled human ID> }` |
 | `sensitiveFiles` | Absolute private files for **every** credential available to this employee/backend, including the MCP credential and selected model keys |
+| `qualificationConfigFile` | Owned verifier settings and frozen-evidence paths; required for approval and continuation; [setup](../../../evaluations/docs/qualification.md) |
 
 The local CLI derives the human from this owned configuration and the current
 OS user ID, never from model arguments. It is a single trusted operator setup,
@@ -52,7 +53,7 @@ The policy is data, so operators can change these limits without editing code:
 | `grantTtlSeconds` | 1–86400; packet/grant expires earlier if policy/context does |
 | `contextPolicy`, `retentionPolicy` | Exact `{id, version}` matching the reviewed context manifest |
 | `allowedUsagePolicies` | Explicit source-use policy versions permitting this scoped private review and retention; read access alone is insufficient |
-| `requiredGates` | Any of `no-blockers`, `evidence-present`, `eval-present`; all selected gates must pass before approval |
+| `requiredGates` | Any of `no-blockers`, `evidence-present`, `eval-present`; all selected gates must pass before approval; removing them cannot waive verified qualification |
 | `maxPacketBytes`, `maxRecords` | Packet limit 1024–8000000 bytes, store limit 1–10000 immutable requests |
 
 The task's inputs must match the fetched canonical source ArtifactRefs, not
@@ -78,6 +79,11 @@ and `unreviewed`; input refs/evidence must match the operator's task and actual
 sources. Evaluation entries contain `id`, `revision`, `result` and `failures`.
 They are **reported evidence**, not an authenticated score or authority grant.
 The human must inspect their limitations; passing a score cannot approve work.
+Approval additionally requires the host-owned qualification verifier to pass for
+this exact work product and packet. Continuation rechecks the same receipt,
+source authority and original expiry. Changed/missing qualification blocks the
+save; obtain fresh evaluation and human review. Pre-upgrade grants without a
+qualification receipt cannot continue. Reject/request-changes remain available.
 
 The proposed finding contains bounded `findingType`, `title`, `summary`,
 `confidence`, `dataSource` (evidence ID) and optional structured `metadata`.

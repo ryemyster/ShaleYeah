@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #577: adopted evaluation 0.3.0 and frozen reference baseline/policy; existing fixture runner now produces code-bound qualification decisions and blocks missing or changed inputs. Required CI/release reference checks preserve standalone Skills, role tools, private context and authenticated human authority. Initial research-reviewed targets need no outside reviewer to start; fixture conformance does not claim live/domain or final human acceptance.
+
 - #673: add prepare/status tools and a deterministic ReviewSupervisor for one exact Geowiz-reviewed save after restart. Replace inline finding save arguments with backend packet/grant references; preserve native ADK confirmation as additional UI only. Native pinned SQLite pause/resume and rejected/changed/missing-grant controls supplement backend MCP/CLI authorization. Primary standalone mode, model profiles and canonical schemas remain.
 
 - #672: added scoped durable SQLite context and native ADK session/runner bindings, current source/review and transitive dependency checks, metadata revisions separate from source-byte identity, retained pending/conflicting work, actual invocation byte/provider-token gates and sealed dispatch. Added original-expiry export/restore, durable deletion markers, native history purge, writer/ownership guards and isolated-wheel controls. Default CLI remains the development entrypoint; authenticated protected review/continuation stays #673. Blocked context emits blocked employee status instead of model/agent success.

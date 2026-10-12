@@ -1,6 +1,7 @@
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
 import { z } from "zod";
+import { createQualificationGuard } from "./qualification-config.js";
 import { parseReviewPolicy, ReviewError, ReviewWorkflow } from "./review-workflow.js";
 import { createFileSourceAudit, loadSourceBinding, readPrivateSourceConfig } from "./source-config.js";
 
@@ -10,6 +11,7 @@ const configSchema = z
 		sourceConfigFile: z.string().min(1),
 		sourceAuditFile: z.string().min(1),
 		policy: z.unknown(),
+		qualificationConfigFile: z.string().min(1).optional(),
 		localReviewer: z.object({ uid: z.number().int().nonnegative(), subjectId: z.string().min(1).max(128) }).strict(),
 		sensitiveFiles: z.array(z.string().min(1)).min(1).max(32),
 	})
@@ -49,13 +51,17 @@ export async function loadReviewBinding(file: string) {
 	const config = await read();
 	const source = await loadSourceBinding(config.sourceConfigFile, createFileSourceAudit(config.sourceAuditFile));
 	const workflow = new ReviewWorkflow(config.directory, {
+		qualificationGuard: config.qualificationConfigFile
+			? createQualificationGuard(config.qualificationConfigFile)
+			: undefined,
 		sources: source.runtime,
 		currentPolicy: async () => {
 			const current = await read();
 			if (
 				current.directory !== config.directory ||
 				current.sourceConfigFile !== config.sourceConfigFile ||
-				current.sourceAuditFile !== config.sourceAuditFile
+				current.sourceAuditFile !== config.sourceAuditFile ||
+				current.qualificationConfigFile !== config.qualificationConfigFile
 			)
 				throw new ReviewError("configuration_changed");
 			return parseReviewPolicy(current.policy);

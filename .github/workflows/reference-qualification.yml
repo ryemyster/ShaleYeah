@@ -1,0 +1,70 @@
+name: Reference qualification
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  reference:
+    name: Geologist and Geowiz qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Build reference tool dependencies
+        run: pnpm turbo build --filter=@shaleyeah/server-geowiz...
+      - name: Evaluation lint, controls and installed isolation
+        working-directory: evaluations
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_evaluations --cov-fail-under=90
+          bash scripts/check-isolation.sh
+      - name: Python client controls
+        working-directory: sdk/python
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_mcp --cov-fail-under=90
+      - name: Geologist package and project-shape controls
+        working-directory: agents/geologist
+        run: |
+          uv run --locked --extra lint ruff check app tests/eval/run_fixture_evals.py
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+      - name: Source access, human approval and protected continuation
+        working-directory: servers/geowiz
+        run: |
+          pnpm test:las
+          pnpm test:review
+      - name: Installed client and Geologist wheels
+        run: bash sdk/python/scripts/check-isolation.sh
+      - name: Actual protected Geowiz interoperability
+        run: uv run --project agents/geologist --locked python sdk/python/scripts/check_geowiz.py
+      - name: Frozen baseline regression qualification
+        working-directory: agents/geologist
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked python tests/eval/run_fixture_evals.py \
+            --output artifacts/evals/reference-qualification.json \
+            --qualification-policy tests/eval/qualification_policy.json \
+            --baseline tests/eval/fixtures/baseline-reports.json \
+            --code-revision "$QUALIFICATION_CODE_REVISION"
+      - name: Publish decision metadata
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: agents/geologist/artifacts/evals/reference-qualification.json
+          if-no-files-found: error
+          retention-days: 14

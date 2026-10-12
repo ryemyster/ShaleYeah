@@ -54,6 +54,9 @@ resolved provider credential from the [private profile](../../docs/model-provide
 and scopes; remote deployments inject their verified identity/audit adapters.
 A healthy port does not prove source access, professional results or reviewed persistence.
 Follow [DEPLOYMENT.md](docs/DEPLOYMENT.md) for build/state and qualification steps.
+Private saves also require [verified qualification](../../evaluations/docs/qualification.md)
+for the exact reviewed work. Missing or changed qualification blocks approval and
+continuation even if employee-reported scores pass.
 
 ---
 

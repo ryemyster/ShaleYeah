@@ -108,8 +108,16 @@ interface Row {
 	decision: string | null;
 	outcome: string | null;
 	expires: string;
+	qualification_hash: string | null;
+}
+export interface QualificationInput {
+	packetDigest: string;
+	workProduct: WorkProduct;
+	qualification: "fixture" | "live";
 }
 interface Options {
+	/** Trusted verifier, never selected from role/model arguments. Required before approve/execute. */
+	qualificationGuard?: (input: QualificationInput, signal?: AbortSignal) => Promise<unknown>;
 	maxAuditRecords?: number;
 	sources: ConnectorRuntime;
 	currentPolicy: () => Promise<unknown>;
@@ -210,6 +218,13 @@ export class ReviewWorkflow {
    CREATE TABLE IF NOT EXISTS artifacts(identity TEXT PRIMARY KEY, digest TEXT NOT NULL);
    CREATE TABLE IF NOT EXISTS findings(id TEXT PRIMARY KEY, review_id TEXT UNIQUE NOT NULL, body TEXT NOT NULL);
    CREATE TABLE IF NOT EXISTS audit(id TEXT PRIMARY KEY, body TEXT NOT NULL);`);
+		if (
+			!this.db
+				.prepare("PRAGMA table_info(reviews)")
+				.all()
+				.some((column) => column.name === "qualification_hash")
+		)
+			this.db.exec("ALTER TABLE reviews ADD COLUMN qualification_hash TEXT");
 		this.storage();
 	}
 	close() {
@@ -466,7 +481,9 @@ export class ReviewWorkflow {
 					.run(namespace);
 				const packetDigest = digest(packet);
 				this.db
-					.prepare("INSERT INTO reviews VALUES (?,?,?,?,?,NULL,NULL,NULL,?)")
+					.prepare(
+						"INSERT INTO reviews(id,digest,namespace,packet,state,grant,decision,outcome,expires) VALUES (?,?,?,?,?,NULL,NULL,NULL,?)",
+					)
 					.run(request.id, packetDigest, namespace, bytes, "awaiting-review", expiresAt);
 				this.db
 					.prepare("INSERT INTO heads VALUES (?,?) ON CONFLICT(namespace) DO UPDATE SET digest=excluded.digest")
@@ -488,6 +505,55 @@ export class ReviewWorkflow {
 			});
 			return { ...this.receipt(row), packet, ...(row.decision ? { decision: JSON.parse(row.decision) } : {}) };
 		});
+	}
+	private async qualify(row: Row, packet: Packet, policy: ReviewPolicy, signal?: AbortSignal) {
+		if (!this.options.qualificationGuard) deny("qualification_required");
+		const value = await this.options.qualificationGuard(
+			{ packetDigest: row.digest, workProduct: packet.work, qualification: policy.qualification },
+			signal,
+		);
+		const receipt = z
+			.object({
+				schemaVersion: z.literal("0.1.0"),
+				kind: z.literal("qualification-decision"),
+				status: z.literal("passed"),
+				promotionAllowed: z.literal(true),
+				qualification: z.enum(["fixture", "live"]),
+				codeRevision: z.string().regex(/^(?:[a-f0-9]{40}|[a-f0-9]{64})$/),
+				profileHash: z.string().regex(/^[a-f0-9]{64}$/),
+				policyHash: z.string().regex(/^[a-f0-9]{64}$/),
+				expiresAt: z.iso.datetime({ offset: true }),
+				promotionBinding: z
+					.object({
+						packetDigest: z.string(),
+						workHash: z.string(),
+						scope: z.unknown(),
+						taskRevision: z.string(),
+						productRef: z.unknown(),
+						reportHash: z.string().regex(/^[a-f0-9]{64}$/),
+					})
+					.strict(),
+			})
+			.passthrough()
+			.safeParse(value);
+		if (!receipt.success) deny("qualification_blocked");
+		const result = receipt.data;
+		if (
+			result.qualification !== policy.qualification ||
+			expired(result.expiresAt, this.now()) ||
+			result.promotionBinding.packetDigest !== row.digest ||
+			result.promotionBinding.workHash !== digest(packet.work) ||
+			!equal(result.promotionBinding.scope, packet.task.scope) ||
+			result.promotionBinding.taskRevision !== packet.task.revision ||
+			!equal(result.promotionBinding.productRef, {
+				id: packet.work.artifact.id,
+				revision: packet.work.artifact.revision,
+			})
+		)
+			deny("qualification_binding_mismatch");
+		if (Buffer.byteLength(reviewJson(result)) > 65536 || !(await this.options.contentGuard(reviewJson(result))))
+			deny("unsafe_content");
+		return { hash: digest(result), expiresAt: new Date(result.expiresAt).toISOString() };
 	}
 	async decide(
 		reviewId: string,
@@ -518,6 +584,8 @@ export class ReviewWorkflow {
 				)
 			)
 				deny("required_gate_failed");
+			const qualification = choice === "approve" ? await this.qualify(row, packet, policy) : undefined;
+			if (qualification) await this.fresh(row, policy);
 			if (!equal(await this.policy(), policy)) deny("revision_mismatch");
 			return this.transaction("decide", () => {
 				if (
@@ -544,8 +612,17 @@ export class ReviewWorkflow {
 				validateContract(decision);
 				const state = choice === "approve" ? "approved" : choice === "reject" ? "rejected" : "changes-requested";
 				this.db
-					.prepare("UPDATE reviews SET state=?,grant=?,decision=? WHERE id=?")
-					.run(state, choice === "approve" ? `grant.${randomUUID()}` : null, reviewJson(decision), reviewId);
+					.prepare("UPDATE reviews SET state=?,grant=?,decision=?,qualification_hash=?,expires=? WHERE id=?")
+					.run(
+						state,
+						choice === "approve" ? `grant.${randomUUID()}` : null,
+						reviewJson(decision),
+						qualification?.hash ?? null,
+						qualification
+							? new Date(Math.min(Date.parse(row.expires), Date.parse(qualification.expiresAt))).toISOString()
+							: row.expires,
+						reviewId,
+					);
 				this.audit("decide", state, reviewer, reviewId);
 				if (
 					Number(this.db.prepare("SELECT COUNT(*) AS count FROM audit").get()?.count) >=
@@ -629,6 +706,9 @@ export class ReviewWorkflow {
 			const decision: ReviewDecision = JSON.parse(row.decision);
 			if (decision.decision !== "approve" || !policy.reviewerIds.includes(decision.reviewer.principalId))
 				deny("authority_denied");
+			const qualification = await this.qualify(row, packet, policy, signal);
+			if (qualification.hash !== row.qualification_hash) deny("qualification_changed");
+			await this.fresh(row, policy, signal);
 			return this.transaction("execute", () => {
 				if (signal?.aborted) deny("cancelled");
 				const current = this.row(row.id);

@@ -34,7 +34,7 @@ contract wheels into an empty environment and runs conformance against copied
 fixture data. It imports no monorepo source or agent/model SDK.
 
 External consumers install the declared `shaleyeah-contracts==0.3.0` and
-`shaleyeah-evaluations==0.2.1` wheels. Local editable paths are contributor
+`shaleyeah-evaluations==0.3.0` wheels. Local editable paths are contributor
 convenience, not a deployment requirement. No registry publication is implied.
 
 ## Load and tune a scorecard
@@ -101,7 +101,7 @@ review. Synthetic judge scores in arithmetic tests are not live judge evidence.
 
 ## Versions, hashes and migration
 
-Package, schema and registry versions are separate. Package 0.2.1 accepts the
+Package, schema and registry versions are separate. Package 0.3.0 accepts the
 unchanged profile/registry 0.1.0 for compatibility and performance profile/registry
 0.2.0. Performance requires architecture evaluator version 2 and the numeric
 gate for Geologist. Other evaluator versions are 1. The old architecture word
@@ -149,7 +149,8 @@ blocks and skips qualitative requests. A missing, failed, invalid or timed-out
 judge produces `infra-error` and a null score. A qualitative failure requests
 review or fails according to the profile; it cannot cancel a hard failure.
 `promotionBlocked` is false only for a passing report. Actual promotion policy
-and authenticated approval remain outside this package, in #577 and the host.
+is consumed by the [qualification verifier](docs/qualification.md); authenticated
+approval remains at the host/backend boundary.
 
 Optional host measurements include latency, observed cost/currency, review time,
 corrections, rework, completion, escalation quality and tool failures. Unmeasured
@@ -171,7 +172,7 @@ check the literal first depth/unit of the demo LAS and policy failures. Historic
 source dates, scripted judges and synthetic review are explicit; geological
 interpretation still requires a qualified professional.
 
-Promotion gates are [#577](https://github.com/ryemyster/ShaleYeah/issues/577).
+Promotion gates use the [approved qualification policy](docs/qualification.md).
 The Geologist remains a Stand-alone Agent with Progressive Disclosure (Skills).
 Human approval, professional review, secret resolution/redaction and scoped
 retention stay with the trusted host/runtime. This package persists no raw trace,
@@ -179,7 +180,7 @@ promotes no memory and requires no secret or paid request for CI.
 
 ## Correlated report export
 
-Evaluation 0.2.1 consumes contracts 0.3.0 while preserving profile/registry and
+Evaluation 0.3.0 consumes contracts 0.3.0 while preserving profile/registry and
 report schemas. Geologist can export report/profile/product hashes through its
 [role-local event adapter](../docs/employee-events.md#record-host-work-evaluations-and-review).
 This core package gains no MCP, ADK or event-sink dependency. A missing judge and

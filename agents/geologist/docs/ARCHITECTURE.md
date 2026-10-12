@@ -129,6 +129,10 @@ replace response-word checks for performance. Independent private BYO judge
 configuration supplies qualitative scores only. Missing judges are infrastructure
 errors; failed authority/provenance gates block before judge calls. Human approval
 and geological correctness remain independent review boundaries.
+The [portable qualification gate](../../../evaluations/docs/qualification.md)
+compares complete frozen runs with an approved baseline, recomputes mandatory
+checks and binds sensitive promotion to the exact work product. Geowiz consumes
+this receipt separately from the employee's reported scores and human decision.
 See [local testing](LOCAL_TESTING.md#run-adk-evals) for the current validation
 command and what its result proves.
 

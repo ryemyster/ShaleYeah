@@ -137,9 +137,29 @@ or `custom_function` compilation. Google SDK 1.160.0 is pinned; the evaluation
 extra is a development dependency. Generated traces alone do not supply trusted
 work products, source or authority observations. The host must bind those inputs.
 
-Promotion gates follow in #577. Actual source/employee/context/restartable review
-qualification remains #671/#672/#673. No fixture or judge score can approve geology,
-persist employee memory or decide an investment.
+The [qualification gate](../../../evaluations/docs/qualification.md) requires
+approved profiles, complete cases and frozen baseline comparisons before a
+protected save can be approved or continued. Source/context/review controls run
+in CI; full independent package/container qualification remains #674. No fixture
+or judge score supplies human authority or decides an investment.
+
+## Reference qualification
+
+From this package, supply the exact tested commit SHA:
+
+```sh
+uv run --locked python tests/eval/run_fixture_evals.py \
+  --output artifacts/evals/reference-qualification.json \
+  --qualification-policy tests/eval/qualification_policy.json \
+  --baseline tests/eval/fixtures/baseline-reports.json --code-revision <tested-sha>
+```
+
+This compares seven public source/policy fixtures with committed baseline
+receipts and writes metadata only. Missing inputs, changed hashes/versions or
+regressions exit with failure. The approved JSON policy controls score-drop
+limits and records review evidence. CI and release packaging use this command;
+it uses authored work and a scripted judge, so a pass proves fixture conformance.
+Paid/live judge runs are opt-in and need their own host-owned execution evidence.
 
 ## Correlated trace controls
 

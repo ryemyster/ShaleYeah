@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { randomUUID } from "node:crypto";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash, randomUUID } from "node:crypto";
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -10,8 +10,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { createConnectorRuntime, operatorFileAdapter } from "@shaleyeah/connectors";
 import { GeowizServer } from "../src/index.js";
+import { createQualificationGuard } from "../src/qualification-config.js";
 import { loadReviewBinding } from "../src/review-config.js";
-import { ReviewError, ReviewWorkflow } from "../src/review-workflow.js";
+import { type QualificationInput, ReviewError, ReviewWorkflow, reviewJson } from "../src/review-workflow.js";
 import { sourceConfig } from "./fixtures/source-config.mjs";
 
 const executeRequest = (receipt: { reviewId: string; packetDigest: string }, grantId: string | undefined) => ({
@@ -92,6 +93,26 @@ export async function reviewFixture() {
 	let now = Date.now();
 	let fail: string | undefined;
 	const options = {
+		// Explicit trusted offline verifier double; real producer/CLI qualification is tested separately.
+		qualificationGuard: async (input: QualificationInput) => ({
+			schemaVersion: "0.1.0",
+			kind: "qualification-decision",
+			status: "passed",
+			promotionAllowed: true,
+			qualification: input.qualification,
+			codeRevision: "a".repeat(40),
+			profileHash: "b".repeat(64),
+			policyHash: "c".repeat(64),
+			expiresAt: policy.expiresAt,
+			promotionBinding: {
+				packetDigest: input.packetDigest,
+				workHash: createHash("sha256").update(reviewJson(input.workProduct)).digest("hex"),
+				scope: input.workProduct.scope,
+				taskRevision: input.workProduct.taskRevision,
+				productRef: { id: input.workProduct.artifact.id, revision: input.workProduct.artifact.revision },
+				reportHash: "d".repeat(64),
+			},
+		}),
 		sources,
 		currentPolicy: async () => structuredClone(policy),
 		contentGuard: async (text: string) => !text.includes("fixture-secret-value"),
@@ -295,6 +316,18 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 	};
 	const sourceFile = privateWrite("sources.json", JSON.stringify(f.config));
 	const tokenFile = privateWrite("worker-token", token);
+	const evidenceDirectory = path.join(f.directory, "qualification");
+	const qualificationConfigFile = privateWrite(
+		"qualification.json",
+		JSON.stringify({
+			schemaVersion: "0.1.0",
+			pythonExecutable: new URL("../../../evaluations/.venv/bin/python", import.meta.url).pathname,
+			evidenceDirectory,
+			policyFile: path.join(evidenceDirectory, "policy.json"),
+			codeRevision: "a".repeat(40),
+			caseId: "control",
+		}),
+	);
 	const configFile = privateWrite(
 		"review.json",
 		JSON.stringify({
@@ -302,14 +335,19 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 			sourceConfigFile: sourceFile,
 			sourceAuditFile: path.join(f.directory, "sources-audit.jsonl"),
 			policy: f.policy,
+			qualificationConfigFile,
 			localReviewer: { uid: process.getuid!(), subjectId: f.reviewer.subjectId },
 			sensitiveFiles: [tokenFile],
 		}),
 	);
 	const previousPort = process.env.PORT;
 	process.env.PORT = "0";
+	const protectedWorkflow = new ReviewWorkflow(f.directory, {
+		...f.options,
+		qualificationGuard: createQualificationGuard(qualificationConfigFile),
+	});
 	const server = new GeowizServer({
-		reviewWorkflow: f.workflow,
+		reviewWorkflow: protectedWorkflow,
 		dataPath: path.join(f.directory, "tools"),
 		http: {
 			access: {
@@ -366,6 +404,17 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 		const preview = JSON.parse(readFileSync(packetFile, "utf8"));
 		assert.equal(preview.packetDigest, pending.packetDigest);
 		assert.ok(preview.packet.sources[0].text.includes("~"));
+		await command("uv", [
+			"run",
+			"--project",
+			new URL("../../../evaluations", import.meta.url).pathname,
+			"--frozen",
+			"python",
+			new URL("fixtures/qualification_fixture.py", import.meta.url).pathname,
+			packetFile,
+			evidenceDirectory,
+			new URL("../../../agents/geologist/tests/eval/performance_profile.json", import.meta.url).pathname,
+		]);
 		const reasonFile = privateWrite(
 			"reason.txt",
 			"I reviewed inputs, assumptions, reported eval limitations and the local save",
@@ -404,6 +453,7 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 		binding?.workflow.close();
 		await client.close();
 		await server.stop();
+		protectedWorkflow.close();
 		f.close();
 	}
 });
@@ -502,6 +552,111 @@ test("a timezone-formatted expired context cannot extend its retention", async (
 		f.candidate.context.retention.expiresAt = new Date(Date.now() + 7 * 3600_000).toISOString().replace("Z", "+08:00");
 		await assert.rejects(f.workflow.prepare(f.candidate, f.requester, null), { code: "unverified_inputs" });
 		assert.equal(f.workflow.findingCount(), 0);
+	} finally {
+		f.close();
+	}
+});
+
+test("approval cannot waive absent qualification through ordinary review settings", async () => {
+	const f = await reviewFixture();
+	let guarded: ReviewWorkflow | undefined;
+	try {
+		f.policy.requiredGates = [];
+		guarded = new ReviewWorkflow(path.join(f.directory, "unqualified"), {
+			...f.options,
+			qualificationGuard: undefined,
+		});
+		const pending = await guarded.prepare(f.candidate, f.requester, null);
+		await assert.rejects(
+			guarded.decide(pending.reviewId, pending.packetDigest, "approve", "reported scores pass", f.reviewer),
+			{ code: "qualification_required" },
+		);
+		assert.equal(guarded.findingCount(), 0);
+	} finally {
+		guarded?.close();
+		f.close();
+	}
+});
+
+test("a changed or foreign qualification cannot continue an approved save", async () => {
+	const f = await reviewFixture();
+	let guarded: ReviewWorkflow | undefined;
+	let changed = false;
+	try {
+		const verifier = async (input: QualificationInput) => {
+			const receipt = await f.options.qualificationGuard(input);
+			return changed ? { ...receipt, profileHash: "e".repeat(64) } : receipt;
+		};
+		guarded = new ReviewWorkflow(path.join(f.directory, "verified"), { ...f.options, qualificationGuard: verifier });
+		const pending = await guarded.prepare(f.candidate, f.requester, null);
+		const approved = await guarded.decide(
+			pending.reviewId,
+			pending.packetDigest,
+			"approve",
+			"Reviewed verified evidence",
+			f.reviewer,
+		);
+		changed = true;
+		await assert.rejects(guarded.execute(executeRequest(pending, approved.grantId), f.requester), {
+			code: "qualification_changed",
+		});
+		assert.equal(guarded.findingCount(), 0);
+	} finally {
+		guarded?.close();
+		f.close();
+	}
+});
+
+test("private qualification process bounds failures, output, configuration and cancellation", async () => {
+	const f = await reviewFixture();
+	try {
+		const executable = path.join(f.directory, "verifier");
+		const configuration = path.join(f.directory, "verifier.json");
+		const settings = {
+			schemaVersion: "0.1.0",
+			pythonExecutable: executable,
+			evidenceDirectory: f.directory,
+			policyFile: path.join(f.directory, "policy.json"),
+			codeRevision: "a".repeat(40),
+			caseId: "control",
+		};
+		const configure = () => writeFileSync(configuration, JSON.stringify(settings), { mode: 0o600 });
+		const script = (body: string) => writeFileSync(executable, `#!${process.execPath}\n${body}`, { mode: 0o700 });
+		configure();
+		const guard = createQualificationGuard(configuration);
+		const input = { packetDigest: "d".repeat(64), workProduct: f.candidate.work, qualification: "fixture" as const };
+		script(
+			'process.stdin.resume(); process.stdin.on("end", () => process.stdout.write(JSON.stringify({status:"passed"})))',
+		);
+		assert.deepEqual(await guard(input), { status: "passed" });
+		script(
+			'process.stdin.resume(); process.stdin.on("end", () => {process.stderr.write("private-detail"); process.exit(1)})',
+		);
+		await assert.rejects(guard(input), /qualification_blocked/);
+		script('process.stdin.resume(); process.stdin.on("end", () => process.stdout.write("bad-json"))');
+		await assert.rejects(guard(input), /qualification_invalid/);
+		script('process.stdout.write("x".repeat(70000)); setInterval(()=>{}, 1000)');
+		await assert.rejects(guard(input), /qualification_limit/);
+		script('process.stderr.write("x".repeat(17000)); setInterval(()=>{}, 1000)');
+		await assert.rejects(guard(input), /qualification_limit/);
+		script("process.stdin.resume(); setInterval(()=>{}, 1000)");
+		const controller = new AbortController();
+		const pending = guard(input, controller.signal);
+		setTimeout(() => controller.abort(), 20);
+		await assert.rejects(pending, /cancelled/);
+		await assert.rejects(guard(input, controller.signal), /cancelled/);
+		settings.pythonExecutable = path.join(f.directory, "absent");
+		configure();
+		await assert.rejects(guard(input), /qualification_unavailable/);
+		settings.pythonExecutable = "relative-python";
+		configure();
+		await assert.rejects(guard(input), /qualification_configuration/);
+		settings.pythonExecutable = executable;
+		configure();
+		await assert.rejects(guard({ ...input, packetDigest: "invalid" }), /qualification_configuration/);
+		chmodSync(f.directory, 0o755);
+		await assert.rejects(guard(input), /qualification_configuration/);
+		chmodSync(f.directory, 0o700);
 	} finally {
 		f.close();
 	}

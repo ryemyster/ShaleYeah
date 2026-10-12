@@ -87,8 +87,12 @@ The [review adapter](HUMAN_REVIEW.md) is deterministic supervision outside model
 reasoning. It verifies actual source snapshots and current operator policy,
 enforces immutable product revisions and binds human decisions to a packet
 digest. Human inspect/decide are host APIs plus a restricted OS operator CLI,
-not employee MCP tools. Direct MCP saves use the same backend gate. Node's
-built-in SQLite (>=22.13, still experimental in Node 22) supplies one local
+not employee MCP tools. Direct MCP saves use the same backend gate. The
+trusted qualification adapter invokes the installed framework-neutral evaluation
+verifier through a bounded, key-free child process, with exact packet/work/receipt
+binding on approval and continuation. Its private settings are operator-owned;
+ordinary review gates or employee-reported scores cannot disable this check.
+Node's built-in SQLite (>=22.13, still experimental in Node 22) supplies one local
 transaction for finding, audit and durable consumed outcome. This adds no
 mandatory cloud/database service and promises no external-write atomicity.
 
