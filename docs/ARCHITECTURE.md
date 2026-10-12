@@ -48,8 +48,10 @@ review, cancellation and credential acceptance checks.
 
 The agent requests ADK confirmation for `save_geowiz_finding`. That flag does
 not prove authenticated revision-bound professional review or restart recovery.
-Its manifest declares in-memory sessions. Durable context and review/revision/
-resume are #672/#673. The reference reasoning/synthesis path now uses explicit
+Its development manifest declares in-memory sessions. The
+[retained embedding runtime](../agents/geologist/docs/WORKING_CONTEXT.md) now
+provides native ADK/SQLite context, current-source checks and scoped recovery;
+authenticated review/revision/protected resume remains #673. The reference reasoning/synthesis path uses explicit
 Gemini/Anthropic profiles with independent judge configuration;
 [provider setup](model-providers.md) states its fixture qualification and limits.
 
@@ -110,21 +112,25 @@ version checks reject unsupported records. Expected scope/revision comparisons
 and a separately supplied policy check support callers without granting authority.
 Roman display names are separate from employee, role and capability IDs.
 
-These records are ready for adoption; Geologist has host-bound metadata hooks
-for their hashes/references. Full context/review runtime adoption remains pending.
+Geologist adopts these records in its scoped durable catalog and host-bound
+metadata hooks. Its native session adapter rechecks original history references;
+current model input comes from bounded selected records and the current turn.
+Full authenticated review/continuation remains pending.
 The package verifies structure and declared references, not reviewer identity,
 real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
 specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
-#672/#673 implement durable context/review. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
+#672 supplies durable context; #673 implements protected review/continuation. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
 by #666; #667 adds portable reports and the Geologist-local ADK trace adapter.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK
 sessions are distinct from retained employee context and reviewed shared
 knowledge. [ADR 0002](../contracts/docs/0002-context-lifecycle.md), delivered by
 #571, defines private ownership, reviewed handoffs, bounded retrieval, compaction,
-invalidation and export/deletion. #672 implements durable storage and retrieval;
-the policy/reference fixtures do not enforce it today. Warehouses, vectors and
+invalidation and export/deletion. Geologist's local adapter enforces fresh
+scope/source/review checks, source metadata revisions separate from byte identity,
+transitive invalidation, original-expiry restore, deletion markers, native history
+purge and sealed full-input byte/token gates. Warehouses, vectors and
 hosted memory are optional adapters selected through measured qualification.
 
 Existing shape tests/eval assets are foundational. Configurable job scorecards are implemented in the independent

@@ -19,7 +19,7 @@ format. Follow the [MVP plan](mvp-release-plan.md) for implementation order.
 | --- | --- | --- |
 | Employee authoring framework | Python ADK (Google Agent Development Kit) | Job/task/evidence/context/review records in [contracts/](../contracts/README.md) do not depend on ADK |
 | Model provider | Explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis | Native offline conformance and role/HITL fixtures pass; real-model/domain quality and hosted execution remain separate gates |
-| Context and review storage | Geologist manifest declares in-memory sessions; Geowiz writes JSON findings to disk | #672/#673 implement scoped durable context and exact-revision review/resume; session storage alone is insufficient |
+| Context and review storage | Geologist development CLI uses in-memory sessions; its embedding runtime uses scoped SQLite catalog/native sessions; Geowiz writes JSON findings | #672 supplies bounded retained context and recovery; #673 supplies authenticated exact-revision review/resume |
 | Protocol adapter | Python MCP (Model Context Protocol) client and TypeScript MCP server using Streamable HTTP; server also has a stdio launch mode | #668/#677/#678/#679 repair lifecycle, schemas/errors, identity and shared client handling; #674 tests composition |
 | Hosting | Development workstation today | Local package/container minimum is the target; VM/Fly.io/Cloud Run/GKE/Agent Runtime remain optional adapters |
 
@@ -37,7 +37,7 @@ Platform features do not turn an untested SHALE YEAH deployment into a verified 
 
 | Target | Repository status | State and ingress requirements | Evidence required before a support claim |
 | --- | --- | --- | --- |
-| Current checkout, local processes | **Verified, bounded:** locked Geologist import/checks, installed client, SDK/Geowiz session/schema/access fixtures and actual protected connection | Test data only; employee sessions remain in memory; actual IAM/TLS/source/review remain separate | Live employee/tool task, failures, review/restart and professional cases remain unqualified |
+| Current checkout, local processes | **Verified, bounded:** locked packages, protected Geowiz connection and native ADK/SQLite restart/selection/recovery controls | Offline provider fixtures; trusted host/source callbacks and private persistent directory required; CLI development sessions remain in memory | Live complete employee/tool/review task and professional acceptance remain unqualified |
 | Extracted local packages | **Verified, bounded:** client/Geologist wheels install and pass behavior controls outside checkout; full journey planned in #674 and role PRs | Declared installed dependencies; complete tool extraction, durable state and source/review policy still need qualification | Clean complete journey, independent agent/MCP, compatible external client/tool, exact supported inputs |
 | Portable containers | **Planned**, #674 | Separate employee/tool images; external config/secrets; persistent state/artifacts; restricted ingress and authenticated tool entry | Reproducible image build/digests, locked dependencies, mounts/ownership, restart/restore and all reference acceptance cases |
 | VM | **Untested** optional host | Supervised processes/containers, durable disk, TLS/private network, backup/restore | VM recipe and observed install/restart/permissions/resource checks on a named revision |
@@ -155,7 +155,7 @@ checks results and bounds setup retries without replaying dispatched tools.
 | Geologist | `GEOLOGIST_MODEL_CONFIG_FILE` requires a fixed trusted profile; `GEOWIZ_MCP_URL` defaults to `http://127.0.0.1:3001/mcp`; provider credentials as above | Qualified provider/model/profile versions, permitted source/task identity, context revisions and human review; #672/#673 |
 | Geowiz | `PORT` plus explicit `http.access` selects protected HTTP; private local example uses `GEOWIZ_HTTP_CONFIG_FILE`; optional `eventConfigFile` adds [correlated local metadata](employee-events.md); unset PORT selects stdio; model key is separate | #678 supplies ingress; source grants/byte provenance use [connectors/](../connectors/README.md); review and actual remote issuer/TLS remain #673/#674 |
 | Geowiz files | SDK default `./data/geowiz`; `save_finding` writes `./data/geowiz/findings/<id>.json`; file-tool caller `outputPath` writes are denied | Mount the actual configured working-directory paths; use a canonical owned approved source root and private source configuration; see [source setup](../servers/geowiz/docs/DATA_SOURCES.md) and #674 |
-| Current sessions | Geologist manifest `session_type: in_memory`; no package-configured persistent context/review store | Restart-safe scoped context, approval/revision invalidation and export/delete/restore; #672/#673 |
+| Current sessions | Development manifest `session_type: in_memory`; [embedding runtime](../agents/geologist/docs/WORKING_CONTEXT.md) provides scoped native ADK/SQLite context | One native writer, fresh authority callbacks, private persistent directory and original-expiry recovery; protected review remains #673 |
 
 `DATA_PATH` and `LOG_LEVEL` are not read by this reference implementation.
 Setting them does not relocate findings or redact logs. ADK confirmation protects
@@ -173,11 +173,13 @@ not `localhost` for another container. Those mounts/network names are the
 
 The required local default is durable, scoped state outside disposable processes
 and images. It must work on modest infrastructure without a warehouse or vector
-database. #672 selects/implements context storage; #673 owns review/resume. ADK
+database. Geologist's [local adapter](../agents/geologist/docs/WORKING_CONTEXT.md)
+implements scoped retained context; #673 owns protected review/resume. ADK
 session storage is a separate adapter: its
 [DatabaseSessionService](https://adk.dev/sessions/session/)
 can persist sessions, but that alone does not implement reviewed context or
-authority. No state-URL flag in this guide claims to enable those missing features.
+authority. Use the embedding API with its trusted callbacks; a state-URL flag
+alone does not enable those checks.
 
 Before qualifying an extracted package/container in #674:
 
@@ -190,8 +192,8 @@ Before qualifying an extracted package/container in #674:
 3. Export scoped context, work products and review/audit records without secrets.
    Back up consistently with the selected store; restore to a fresh runtime and
    verify checksums/revisions/access and prevent replay of already executed actions.
-   The current package has no complete context/review export/restore command;
-   #672/#673 implement it and #674 verifies it. JSON finding copies alone do not
+   Scoped context export/restore is implemented by the embedding API; the
+   complete review/action recovery journey remains #673/#674. JSON finding copies alone do not
    back up an employee workflow.
 4. Record minimum tested CPU/RAM/disk, source sizes and request concurrency from
    real input, restart and load tests. Include cold start, peak resident memory,

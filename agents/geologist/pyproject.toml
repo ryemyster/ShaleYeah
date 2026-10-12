@@ -7,7 +7,7 @@ authors = [
 ]
 dependencies = [
   "anthropic==1.13.0",
-  "google-adk[gcp]==2.4.0",
+  "google-adk[db,gcp]==2.4.0",
   "google-genai==2.11.0",
   "google-cloud-aiplatform==1.160.0",
   "httpx==0.28.1",
@@ -16,6 +16,7 @@ dependencies = [
   "shaleyeah-contracts==0.3.0",
   "shaleyeah-mcp-client==0.2.0",
   "shaleyeah-evaluations==0.2.1",
+  "sqlalchemy[asyncio]==2.1.4",
 ]
 requires-python = ">=3.11,<3.14"
 

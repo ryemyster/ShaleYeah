@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #672: added scoped durable SQLite context and native ADK session/runner bindings, current source/review and transitive dependency checks, metadata revisions separate from source-byte identity, retained pending/conflicting work, actual invocation byte/provider-token gates and sealed dispatch. Added original-expiry export/restore, durable deletion markers, native history purge, writer/ownership guards and isolated-wheel controls. Default CLI remains the development entrypoint; authenticated protected review/continuation stays #673. Blocked context emits blocked employee status instead of model/agent success.
+
 - #671: forward explicitly supplied density assumptions and reviewer confidence with basis, preserving zero and rejecting invalid scenarios before transport. Correct the shared synthetic LAS fixture's stop/column comment, source hash/byte count and performance dataset reference. Native provider/source/event/confirmation controls remain independent of professional qualification; research-based initial review is documented with Geowiz.
 
 - #574: work-event hooks preserve absent optional confidence and zero values, and distinguish a failed work product from a blocked one. Canonical edge fixtures fail before the repair and pass afterward.

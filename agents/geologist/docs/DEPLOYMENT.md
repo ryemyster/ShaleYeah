@@ -68,10 +68,12 @@ host does not certify BYO providers or another employee runtime.
 
 ## State and human review
 
-The current CLI's session is in memory. Keeping a server alive can retain a
-conversation, but a restart does not establish durable employee context or
-review/resume. #672 implements scoped retained context and #673 implements
-revision-bound human review and continuation.
+The CLI development session remains in memory. Embed the
+[retained working-context runtime](WORKING_CONTEXT.md) for native ADK/SQLite
+restart, bounded current context and scoped export/deletion. Supply authenticated
+principal/source callbacks and an owned persistent directory. The runtime
+rejects a second native writer; replication is unqualified. Revision-bound
+human review and protected continuation remain #673.
 
 The agent may prepare analysis for review. Saving a finding goes through ADK
 confirmation; the executing backend must also enforce identity, source access

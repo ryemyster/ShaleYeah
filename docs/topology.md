@@ -285,6 +285,14 @@ retrieval for every role and compatible coordinator. Its reference records use
 the same schema; trusted storage/access/compaction adapters must enforce the
 policy rather than treating a framework session or retrieval index as authority.
 
+The [Geologist reference adapter](../agents/geologist/docs/WORKING_CONTEXT.md)
+implements a scoped local catalog and native ADK/SQLite sessions with current
+source/review checks, transitive invalidation, reference-preserving compaction,
+actual byte/token limits and scoped original-expiry export/deletion. Its default
+CLI remains a development entrypoint; protected review/continuation and the full
+independent pair journey remain separate qualification gates. Other roles adopt
+the same business ownership rules through their own qualified adapters.
+
 [`contracts/`](../contracts/README.md) implements the initial language-neutral
 employee/task/work-product/context/review schemas. Python and TypeScript validate
 the same cases against JSON Schema; TypeScript declarations are generated.

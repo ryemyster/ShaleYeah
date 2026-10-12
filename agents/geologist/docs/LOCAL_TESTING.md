@@ -15,6 +15,12 @@ agents-cli info
 
 `agents-cli info` should detect `agents/geologist` as the project. It should not require or create ADK files at repo root.
 
+The [working-context controls](WORKING_CONTEXT.md#verify-locally) run native
+ADK/SQLite restart, current source/review boundaries, compaction, count/generation
+parity and export/deletion without a live model key. The isolated wheel suite
+includes those controls; use the embedding API for retained state rather than
+the ordinary CLI's in-memory development session.
+
 ## Run With A Live Geowiz Backend
 
 The initial [LAS review contract](../../../servers/geowiz/docs/LAS_REVIEW.md)

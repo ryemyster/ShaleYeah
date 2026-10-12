@@ -146,10 +146,88 @@ def public_profile(profile: dict[str, Any]) -> dict[str, Any]:
 
 
 class _NativeAdapter:
-    def __init__(self, model: BaseLlm, close: Callable, observed: dict[str, str]):
+    def __init__(self, model: BaseLlm, close: Callable, observed: dict[str, str], provider: str):
         self.model = model
         self.close = close
         self.observed = observed
+        self.provider = provider
+
+    async def count_tokens(self, request):
+        """Version-qualified vendor translations; parity tests cover the full wire input."""
+        if self.provider == "gemini":
+            from google.genai import _common, models, types
+
+            await self.model._preprocess_request(request)
+            self.model._maybe_append_user_content(request)
+            client = self.model.api_client
+            wire = models._GenerateContentParameters_to_mldev(
+                client._api_client,
+                types._GenerateContentParameters(
+                    model=request.model, contents=request.contents, config=request.config
+                ),
+            )
+            wire["model"] = wire.pop("_url")["model"]
+            wire.pop("config", None)
+            wire = _common.encode_unserializable_types(_common.convert_to_dict(wire))
+            # 2.11's CountTokensConfig rejects tools/system on Developer API. Its public
+            # extra_body option carries the documented, mutually exclusive full request.
+            result = await client.aio.models.count_tokens(
+                model=request.model,
+                contents=None,
+                config=types.CountTokensConfig(
+                    http_options=types.HttpOptions(extra_body={"generateContentRequest": wire})
+                ),
+            )
+            tokens = result.total_tokens
+        else:
+            from anthropic import NOT_GIVEN
+            from google.adk.models import anthropic_llm as native
+
+            sanitizer = native._ToolUseIdSanitizer()
+            messages = [
+                native._content_to_message_param(content, sanitizer) for content in request.contents
+            ]
+            tools = (
+                [
+                    native.function_declaration_to_tool_param(tool)
+                    for tool in request.config.tools[0].function_declarations
+                ]
+                if request.config.tools and request.config.tools[0].function_declarations
+                else NOT_GIVEN
+            )
+            kwargs = self.model._build_anthropic_kwargs(
+                request,
+                messages,
+                tools,
+                {"type": "auto"} if request.tools_dict else NOT_GIVEN,
+                native._build_anthropic_thinking_param(request.config),
+            )
+            counted = {
+                name: value
+                for name, value in kwargs.items()
+                if name
+                in {
+                    "model",
+                    "system",
+                    "messages",
+                    "tools",
+                    "tool_choice",
+                    "thinking",
+                    "output_config",
+                }
+            }
+            result = await self.model._anthropic_client.messages.count_tokens(**counted)
+            tokens = result.input_tokens
+        return {
+            "tokens": tokens,
+            "model": request.model,
+            "qualification": "provider-count",
+            "counter": {
+                "id": self.provider + ".count-tokens",
+                "version": "adk-2.4.0+"
+                + ("genai-2.11.0" if self.provider == "gemini" else "anthropic-1.13.0"),
+            },
+        }
 
     async def generate_content_async(self, *args, **kwargs):
         async with aclosing(self.model.generate_content_async(*args, **kwargs)) as responses:
@@ -176,6 +254,7 @@ def native_adapter(profile: dict[str, Any], key: str, *, transport=None):
                     observed["model"] = value
             except (ValueError, AttributeError):
                 pass
+
     if profile["provider"] == "gemini":
         from google import genai
         from google.adk.models.google_llm import Gemini
@@ -196,7 +275,7 @@ def native_adapter(profile: dict[str, Any], key: str, *, transport=None):
 
         model = BoundGemini(model=profile["model"])
         model._client = client
-        return _NativeAdapter(model, client.aio.aclose, observed)
+        return _NativeAdapter(model, client.aio.aclose, observed, "gemini")
     import httpx2
     from anthropic import AsyncAnthropic
     from google.adk.models.anthropic_llm import AnthropicLlm
@@ -214,20 +293,29 @@ def native_adapter(profile: dict[str, Any], key: str, *, transport=None):
 
     model = BoundAnthropic(model=profile["model"], max_tokens=limits["maxOutputTokens"])
     model._client = client
-    return _NativeAdapter(model, client.close, observed)
+    return _NativeAdapter(model, client.close, observed, "anthropic")
 
 
 class ConfiguredModel(BaseLlm):
     _profile: dict[str, Any] | None = PrivateAttr(default=None)
     _resolve: Any = PrivateAttr()
     _factory: Any = PrivateAttr()
+    _request_guard: Any = PrivateAttr(default=None)
 
-    def __init__(self, profile=None, *, resolve_credential=resolve_file_credential, adapter_factory=native_adapter):
+    def __init__(
+        self,
+        profile=None,
+        *,
+        resolve_credential=resolve_file_credential,
+        adapter_factory=native_adapter,
+        request_guard=None,
+    ):
         parsed = parse_model_profile(profile) if profile is not None else None
         super().__init__(model=parsed["model"] if parsed else "unconfigured")
         self._profile, self._resolve, self._factory = parsed, resolve_credential, adapter_factory
+        self._request_guard = request_guard
 
-    async def generate_content_async(self, llm_request: LlmRequest, stream=False) -> AsyncGenerator[LlmResponse]:
+    def prepare_request(self, llm_request):
         if self._profile is None:
             raise ModelProviderError("Missing model provider configuration")
         profile, limits = self._profile, self._profile["limits"]
@@ -240,11 +328,68 @@ class ConfiguredModel(BaseLlm):
         # Transport, caching and provider-specific overrides cannot replace this trusted binding.
         request.config.http_options = None
         request.config.cached_content = None
+        # ADK adds telemetry labels after callbacks. Neither selected adapter uses
+        # them as model input; normalize before both counting and sealed dispatch.
+        request.config.labels = None
         request.cache_config = None
         request.cache_metadata = None
         serialized = request.model_dump_json(exclude_none=True)
         if len(serialized) > limits["maxInputChars"]:
             raise ModelProviderError("Model input budget exhausted")
+        return request
+
+    async def count_tokens(self, llm_request):
+        request = self.prepare_request(llm_request)
+        profile, limits = self._profile, self._profile["limits"]
+        serialized = request.model_dump_json(exclude_none=True)
+        adapter, log_token = None, None
+        try:
+            async with asyncio.timeout(limits["timeoutMs"] / 1000):
+                key = await self._resolve(
+                    copy.deepcopy(profile["owner"]), profile["credentialRef"], profile["purpose"]
+                )
+                if not isinstance(key, str) or not 8 <= len(key) <= 4096 or any(character.isspace() for character in key):
+                    raise ModelProviderError("Model credential unavailable")
+                if key in serialized or profile["credentialRef"] in serialized:
+                    raise ModelProviderError("Secret in model input")
+                _install_log_guard()
+                log_token = _SECRETS.set((key, profile["credentialRef"]))
+                adapter = self._factory(copy.deepcopy(profile), key)
+                receipt = await adapter.count_tokens(request)
+                if (
+                    type(receipt.get("tokens")) is not int
+                    or receipt["tokens"] < 0
+                    or receipt.get("model") != profile["model"]
+                    or receipt.get("qualification") != "provider-count"
+                    or key in json.dumps(receipt)
+                    or profile["credentialRef"] in json.dumps(receipt)
+                ):
+                    raise ModelProviderError("Invalid token count")
+                return receipt
+        except TimeoutError:
+            raise ModelProviderError("Token counter timeout") from None
+        except ModelProviderError:
+            raise
+        except Exception:
+            raise ModelProviderError("Token counter unavailable") from None
+        finally:
+            try:
+                if adapter and hasattr(adapter, "aclose"):
+                    await adapter.aclose()
+            except Exception:
+                raise ModelProviderError("Token counter cleanup failed") from None
+            finally:
+                if log_token is not None:
+                    _SECRETS.reset(log_token)
+
+    async def generate_content_async(
+        self, llm_request: LlmRequest, stream=False
+    ) -> AsyncGenerator[LlmResponse]:
+        request = self.prepare_request(llm_request)
+        profile, limits = self._profile, self._profile["limits"]
+        serialized = request.model_dump_json(exclude_none=True)
+        if self._request_guard is not None:
+            await self._request_guard(request)
         adapter = None
         log_token = None
         try:
@@ -296,6 +441,7 @@ class ConfiguredModel(BaseLlm):
 
 def begin_model_budget(callback_context):
     callback_context.state["temp:model_requests"] = 0
+    callback_context.state["temp:context_blocked"] = False
 
 
 def enforce_model_budget(profile, callback_context, llm_request):
