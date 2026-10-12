@@ -9,7 +9,7 @@ pnpm --dir ../contracts build
 pnpm build
 pnpm --dir ../contracts pack --pack-destination "$isolation_dir/packages" --json > "$isolation_dir/contracts-pack.json"
 pnpm pack --pack-destination "$isolation_dir/packages" --json > "$isolation_dir/connectors-pack.json"
-npm install --prefix "$isolation_dir/consumer" "$isolation_dir/packages/shaleyeah-contracts-0.2.0.tgz" "$isolation_dir/packages/shaleyeah-connectors-0.1.0.tgz" --ignore-scripts --no-audit --no-fund
+npm install --prefix "$isolation_dir/consumer" "$isolation_dir/packages/shaleyeah-contracts-0.3.0.tgz" "$isolation_dir/packages/shaleyeah-connectors-0.1.0.tgz" --ignore-scripts --no-audit --no-fund
 cp ../contracts/fixtures/data-connectors.json "$isolation_dir/consumer/records.json"
 cp scripts/isolation-control.mjs "$isolation_dir/consumer/control.mjs"
 (

@@ -9,8 +9,10 @@ plugins or treats a model's proposed URL, path or permission as authority.
 
 The [source schema](../contracts/shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json)
 defines manifest, request, artifact and health records. Their profile version is
-0.1.0; contracts package 0.2.0 adds explicit source validators while preserving
-employee profile 0.1.0. Private configuration contains the approved root, source
+0.1.0; contracts package 0.2.0 added explicit source validators while preserving
+employee profile 0.1.0. Current archive extraction consumes contracts 0.3.0 with
+those same wire profiles; the separate event profile adds no connector authority.
+Private configuration contains the approved root, source
 locators and credential references. Those fields do not leave in public records.
 
 ## Use and verify
