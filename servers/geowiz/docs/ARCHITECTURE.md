@@ -83,6 +83,13 @@ their adapter profile is qualified. See [source setup](DATA_SOURCES.md).
 
 ## Dependencies
 
+The [extraction proof](../../../docs/reference-packages.md) compiles package-owned
+source against explicit helper archives and runs installed consumers. Runtime
+distribution is built code plus launch/review entrypoints; the separate image adds
+the framework-neutral qualification verifier, not the agent. Actor-specific
+mounts and authenticated loopback MCP retain the source/review/receipt boundaries.
+Required CI records exact image/lock/code hashes and fails on missing Docker.
+
 The [review adapter](HUMAN_REVIEW.md) is deterministic supervision outside model
 reasoning. It verifies actual source snapshots and current operator policy,
 enforces immutable product revisions and binds human decisions to a packet

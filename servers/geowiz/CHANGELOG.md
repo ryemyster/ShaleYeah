@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- #674: require nonempty Docker server metadata with no reported client/server errors before image qualification. Add tests for successful CLI exits with unavailable server information; isolate the negative test's Docker context.
+
+- #674: generic fixture client refuses remote/ambiguous endpoints before reading private settings and never follows redirects; endpoint comes from the harness argument, not file content. New real redirect/refusal controls run in extraction and required CI.
+
+- #674: extraction proof requires the installed employee's context-write boundary to reject unsupported business-contract versions before accepting the valid task.
+
+- #674: container readiness reads both Docker log streams, including the MCP startup diagnostic on stderr; a regression control preserves stdout-only parsing for structured command results.
+
+- #674: own build/test configuration and local contract/profile fixtures; allowlisted built archive and runtime start, clean source/installed-unit acceptance command, separate Node/Python-verifier image and required actor-separated container journey. Shared helper archives/wheels/locks and metadata receipts preserve exact source/context/qualification/review boundaries; no image-baked secrets or employee access to reviewer settings. Deleted displaced parent test-runner/config dependencies; hosted/live/domain support remains separate.
+
 - #577: mandatory private qualification verifier on human approval and protected continuation, exact packet/work/scope/task/product receipts and expiry, stored receipt hash and fail-closed existing grants. Added bounded installed Python adapter without shell/inherited credentials/model paths, actual CLI/MCP qualification controls and process failure/output/cancellation coverage. Reported eval settings cannot waive this gate.
 
 - #673: update the standalone installed-client interoperability probe to the exact packet/grant save interface, retaining its forbidden-save/anonymous/source-audit assertions. CI exposed its retired six-argument call; the actual new backend/CLI controls remain intact.

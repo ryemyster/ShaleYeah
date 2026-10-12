@@ -11,6 +11,10 @@ this SDK. New employee business records live in the independent
 [`contracts/` package](../contracts/README.md), which supplies the common JSON
 schemas and Python/TypeScript validation. Install SDK helpers only when needed
 by your TypeScript unit.
+The SDK builds with its own TypeScript configuration and packs only built code,
+types and license into its runtime archive. The
+[reference extraction proof](../docs/reference-packages.md) installs that archive
+with explicit contract/connector dependencies outside the checkout.
 
 The [migration ledger](../docs/legacy-migration-ledger.md#sdk-source-and-public-exports)
 maps SDK callers and compatibility decisions. Domain tools and parsers remain

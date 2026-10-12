@@ -75,11 +75,13 @@ stateless infrastructure. Multiple clients/replicas require #668 isolation,
 declared storage/concurrency and backend review enforcement; a load balancer
 alone supplies none of those.
 
-There is no tracked Geowiz Dockerfile, Compose recipe or published-image receipt
-at the inspected baseline. #674 owns installable SDK dependencies and the real
-reference image/network/mount recipes. This package currently declares
-`workspace:*` SDK/contracts/connectors and a parent-relative test runner, so copying its folder or
-installing its package.json alone does not prove extraction.
+The [reference packaging guide](../../../docs/reference-packages.md) supplies
+the tracked Dockerfile, declared helper archives, clean source builds and required
+container journey. Workspace references are authoring conveniences; packed
+dependencies are versioned, and extracted source uses explicit helper archives.
+Build/test configuration is package-owned. Production archives use built code;
+`pnpm start` runs `dist/index.js`, while `pnpm dev` runs TypeScript during editing.
+Registry publication and hosted recipes are separate.
 
 The portable container contract requires locked builds, explicit read-only
 source and persistent output/state mounts, private networking, executing

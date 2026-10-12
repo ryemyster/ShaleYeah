@@ -23,9 +23,7 @@ const executeRequest = (receipt: { reviewId: string; packetDigest: string }, gra
 
 export async function reviewFixture() {
 	const directory = mkdtempSync(path.join(os.tmpdir(), "geowiz-review-"));
-	const records = JSON.parse(
-		readFileSync(new URL("../../../contracts/fixtures/records.json", import.meta.url), "utf8"),
-	);
+	const records = JSON.parse(readFileSync(new URL("fixtures/employee-records.json", import.meta.url), "utf8"));
 	const requester = {
 		subjectId: "employee-run",
 		customerId: "operator-demo",
@@ -321,7 +319,8 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 		"qualification.json",
 		JSON.stringify({
 			schemaVersion: "0.1.0",
-			pythonExecutable: new URL("../../../evaluations/.venv/bin/python", import.meta.url).pathname,
+			pythonExecutable:
+				process.env.GEOWIZ_TEST_PYTHON ?? new URL("../../../evaluations/.venv/bin/python", import.meta.url).pathname,
 			evidenceDirectory,
 			policyFile: path.join(evidenceDirectory, "policy.json"),
 			codeRevision: "a".repeat(40),
@@ -404,17 +403,22 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 		const preview = JSON.parse(readFileSync(packetFile, "utf8"));
 		assert.equal(preview.packetDigest, pending.packetDigest);
 		assert.ok(preview.packet.sources[0].text.includes("~"));
-		await command("uv", [
-			"run",
-			"--project",
-			new URL("../../../evaluations", import.meta.url).pathname,
-			"--frozen",
-			"python",
+		const fixtureArgs = [
 			new URL("fixtures/qualification_fixture.py", import.meta.url).pathname,
 			packetFile,
 			evidenceDirectory,
-			new URL("../../../agents/geologist/tests/eval/performance_profile.json", import.meta.url).pathname,
-		]);
+			new URL("fixtures/performance-profile.json", import.meta.url).pathname,
+		];
+		if (process.env.GEOWIZ_TEST_PYTHON) await command(process.env.GEOWIZ_TEST_PYTHON, fixtureArgs);
+		else
+			await command("uv", [
+				"run",
+				"--project",
+				new URL("../../../evaluations", import.meta.url).pathname,
+				"--frozen",
+				"python",
+				...fixtureArgs,
+			]);
 		const reasonFile = privateWrite(
 			"reason.txt",
 			"I reviewed inputs, assumptions, reported eval limitations and the local save",

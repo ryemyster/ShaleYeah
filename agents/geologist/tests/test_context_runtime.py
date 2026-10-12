@@ -77,6 +77,36 @@ def offline(provider):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("provider", ["gemini", "anthropic"])
+async def test_employee_runs_without_reading_the_remote_synthesis_credential(tmp_path, provider):
+    catalog, *_ = await seeded(
+        tmp_path / "context",
+        configuration=policy(budget={"maxItems": 16, "maxBytes": 65536, "maxTokens": 16000}),
+    )
+    calls, native = offline(provider)
+    original_resolver = native["resolve_credential"]
+    resolved = []
+
+    async def employee_credential(owner, reference, purpose):
+        resolved.append(purpose)
+        if purpose != "agent":
+            raise FileNotFoundError("Remote tool credential is not mounted in the employee")
+        return await original_resolver(owner, reference, purpose)
+
+    native["resolve_credential"] = employee_credential
+    config = model_config(provider)
+    runtime = await GeologistRuntime.open(catalog, config, **native)
+    try:
+        result = await runtime.run("Review permitted source observations")
+        assert result["status"] == "ready", result.get("code")
+        assert calls and set(resolved) == {"agent"}
+        with pytest.raises(ContextError, match="secret_in_context"):
+            await runtime.guard_content({"text": config.synthesis["credentialRef"]})
+    finally:
+        await runtime.close()
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("provider", ["gemini", "anthropic"])
 async def test_native_database_restart_restores_context_without_replaying_old_transcript(
     tmp_path, provider
 ):

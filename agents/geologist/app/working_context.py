@@ -874,12 +874,12 @@ class ContextCatalog:
             "selectedEvidence": sources,
             "workingArtifactRefs": working,
             "sharedKnowledge": shared,
-            "assembledAt": self.clock().isoformat(),
+            "assembledAt": self.clock().isoformat(timespec="milliseconds"),
             "retention": {
                 "policy": self.policy["retention"]["policy"],
                 "expiresAt": (
                     self.clock() + timedelta(seconds=self.policy["retention"]["seconds"])
-                ).isoformat(),
+                ).isoformat(timespec="milliseconds"),
             },
             "budget": limit,
             "blockers": [
@@ -930,7 +930,7 @@ class ContextCatalog:
             "version": _VERSION,
             "scope": copy.deepcopy(self.scope),
             "subjectId": self.principal["subjectId"],
-            "expiresAt": min(expirations).isoformat(),
+            "expiresAt": min(expirations).isoformat(timespec="milliseconds"),
             "retentionPolicy": copy.deepcopy(self.policy["retention"]["policy"]),
             "task": task,
             "checkpoint": checkpoint,

@@ -10,13 +10,15 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "tsx src/index.ts",
+		"start": "node dist/index.js",
+		"dev": "tsx src/index.ts",
 		"start:http": "node examples/local-http.mjs",
-		"test": "bash ../../scripts/run-tests.sh",
+		"test": "node --import tsx --test tests/*.test.ts",
 		"test:review": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/review-workflow.ts --test-coverage-include=src/review-config.ts --test-coverage-include=src/qualification-config.ts tests/review-workflow.test.ts",
 		"test:las": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/formation-synthesis.ts --test-coverage-include=src/source-tools.ts --test-coverage-include=src/source-config.ts --test-coverage-include=src/tools/las-parse.ts --test-coverage-include=src/tools/las-review.ts --test-coverage-include=src/tools/curve-qc.ts tests/las*.test.ts tests/curve-qc.test.ts tests/model-provider-boundary.test.ts tests/source*.test.ts tests/http-access.test.ts",
 		"lint": "biome check .",
-		"type-check": "tsc --noEmit"
+		"type-check": "tsc --noEmit",
+		"test:extraction": "node --test tests/extraction/*.test.mjs"
 	},
 	"dependencies": {
 		"@shaleyeah/sdk": "workspace:*",
@@ -35,5 +37,11 @@
 		"@types/xml2js": "^0.4.14",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.2"
-	}
+	},
+	"license": "Apache-2.0",
+	"files": [
+		"dist",
+		"examples",
+		"LICENSE"
+	]
 }

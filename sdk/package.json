@@ -1,7 +1,7 @@
 {
 	"name": "@shaleyeah/sdk",
 	"version": "0.2.0",
-	"description": "Shared language for ShaleYeah agents and MCP servers — types, LLM client, base server, parsers",
+	"description": "Shared language for ShaleYeah agents and MCP servers \u2014 types, LLM client, base server, parsers",
 	"private": false,
 	"type": "module",
 	"main": "dist/index.js",
@@ -36,5 +36,10 @@
 		"@types/xml2js": "^0.4.14",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.2"
-	}
+	},
+	"files": [
+		"dist",
+		"LICENSE"
+	],
+	"license": "Apache-2.0"
 }

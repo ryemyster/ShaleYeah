@@ -217,17 +217,21 @@ class GeologistRuntime:
                 await guarded
         try:
             for profile in (self.config.agent, self.config.synthesis):
-                key = await self._resolve(
-                    copy.deepcopy(profile["owner"]), profile["credentialRef"], profile["purpose"]
-                )
-                if (
-                    not isinstance(key, str)
-                    or not 8 <= len(key) <= 4096
-                    or any(character.isspace() for character in key)
-                ):
-                    raise ContextError("credential_unavailable")
-                if key in serialized or profile["credentialRef"] in serialized:
+                if profile["credentialRef"] in serialized:
                     raise ContextError("secret_in_context")
+            # The remote synthesis key belongs to the executing tool, not this employee.
+            profile = self.config.agent
+            key = await self._resolve(
+                copy.deepcopy(profile["owner"]), profile["credentialRef"], profile["purpose"]
+            )
+            if (
+                not isinstance(key, str)
+                or not 8 <= len(key) <= 4096
+                or any(character.isspace() for character in key)
+            ):
+                raise ContextError("credential_unavailable")
+            if key in serialized:
+                raise ContextError("secret_in_context")
             if self._backend.credential is not _missing_credential:
                 key = await self._backend.credential()
                 if not isinstance(key, str) or not key:

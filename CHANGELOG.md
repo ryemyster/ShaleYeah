@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #674: validate Docker daemon information before reading the build bundle; incomplete server metadata and reported errors block as runtime unavailable even when the CLI exits successfully.
+
+- #674: constrain the generic fixture client to an explicit loopback MCP endpoint supplied separately from private settings, reject redirects and check both endpoint and authenticated-redirect boundaries in required reference CI.
+
+- #674: remove Geologist context's hidden dependency on the tool-owned synthesis key, preserving per-actor secret/refusal guards and separate mounts. Both providers reproduce the blocked employee before the repair.
+
+- #674: require an explicit installed-employee incompatible-contract denial in the extraction decision.
+
+- #674: corrected container-test readiness detection to include the tool's stderr startup diagnostic, with a subprocess stream regression test.
+
+- #674: package-owned Geowiz/SDK build settings, local Geowiz tests and allowlisted runtime archives; standalone Geologist source/wheel reference assets; clean installed source/tool/employee/pair proof and separate Python/Node container recipes with required CI receipts. Preserve source/context/qualification/human authority, actor-specific mounts and exact resume/replay behavior. Fixed generated context timestamp precision to the existing millisecond wire contract after a failing real-clock control. No live/domain or hosted-platform certification; replaced displaced parent-runner/config assumptions and stale JSON-finding/deployment claims.
+
 - #577: required Geologist/Geowiz reference qualification shared by CI and release packaging, frozen seven-case baseline and reviewed configurable regression policy, metadata-only decisions and fixture-limited release claims. Evaluation 0.3.0 recomputes mandatory checks and validates profile/dataset/candidate/evidence bindings; Geowiz requires exact private qualification on human approval and continuation with bounded installed verifier execution. Existing unqualified grants fail closed. Removed duplicate CI reference steps; initial researched benchmarks remain open to contributor refinement, with live/domain and final human MVP acceptance separate.
 
 - #673: added Geologist deterministic review supervision and Geowiz-owned immutable task/work/context/source/eval/action packets, separate enrolled operator inspection/approve/reject/request-changes, exact backend grants and transactional SQLite finding/audit/outcome replay protection. Added canonical review events with operator-reported time/corrections and backend revision counts. Actual MCP/CLI, native pinned SQLite confirmation restart, policy/source/revision/expiry/rollback/retention controls pass; deleted unguarded JSON save and inline save payload. Native confirmation remains a UI pause, reported evals do not grant authority, and complete extraction/container qualification remains #674.

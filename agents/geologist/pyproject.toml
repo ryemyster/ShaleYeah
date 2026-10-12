@@ -60,3 +60,9 @@ shaleyeah-contracts = { path = "../../contracts", editable = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"tests/eval/performance_profile.json" = "app/reference/performance_profile.json"
+"tests/eval/datasets/geologist-performance.json" = "app/reference/geologist-performance.json"
+"tests/eval/qualification_policy.json" = "app/reference/qualification_policy.json"
+"tests/eval/fixtures/baseline-reports.json" = "app/reference/baseline-reports.json"
