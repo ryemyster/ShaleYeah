@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #671: replaced LAS geological guesses and fixed quality scores with source-hashed observations, explicit density assumptions, unknown conclusions and review revisions. Added research-reviewed/pinned public lasio controls, strict null/unit/depth validation, optional cited model annotations and partial outage results. Deleted formation/depth heuristics, synthetic curve fitting and displaced tests; preserved configured provider/source/approval boundaries and synchronized Geologist fixtures. CI gates the reference LAS/source modules at 90 percent coverage; this is an initial open-source baseline, not measured field accuracy.
+
 - #574: added portable correlated employee-event profile, pre-export allowlisting/redaction, private JSONL/export adapters, native Geologist task/model/tool/eval/review hooks and trusted Geowiz correlation. Required export failures block before dispatch and report uncertain effects afterward. Removed reference MCP stdout/raw-error logging; fixture traces do not certify authenticated review or professional acceptance.
 
 

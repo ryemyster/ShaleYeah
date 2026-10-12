@@ -21,7 +21,7 @@ Existing server/tool checks use declared fixtures. `tests/http-access.test.ts`
 runs real loopback HTTP, the private local launcher and an external MCP client
 with an ephemeral dedicated credential. It checks granted read, anonymous/
 ungranted save denial and redacted ingress audit. No model key or live source is
-required; the existing quality tool's fixed metrics do not certify observed data.
+required; observed completeness does not certify geological accuracy.
 
 For a manual listener, follow [HTTP access setup](HTTP_ACCESS.md). PORT alone
 fails before listening. Health establishes startup; `/mcp` requires configured
@@ -31,7 +31,8 @@ and concurrent users.
 The installed Geologist client passes protected connection controls. Run
 [employee Python checks](../../../agents/geologist/docs/LOCAL_TESTING.md)
 independently. Actual professional/source/provider behavior remains
-#670/#671/#674. Protected backend review/resume is #673; agent confirmation
+#674. The initial LAS input/review checks are documented [here](LAS_REVIEW.md).
+Protected backend review/resume is #673; agent confirmation
 alone does not authorize persistence.
 
 | Symptom | Next step |
@@ -45,6 +46,12 @@ alone does not authorize persistence.
 See [integration](INTEGRATION.md) and [deployment](DEPLOYMENT.md).
 
 ## Correlated reference trace
+
+Run `pnpm test:las` from this package for the numeric LAS reference, real
+CLI/MCP source controls and a 90 percent line-coverage gate on the LAS,
+annotation and source-boundary modules. `pnpm test` also runs retained format
+smoke tests. Their processor count is not line coverage or domain accuracy;
+non-LAS formats remain outside this qualification.
 
 [Generate the complete fixture trace](../../../docs/employee-events.md#generate-an-operator-readable-fixture-trace)
 after building contracts, connectors, SDK and this server. It uses the actual

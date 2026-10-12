@@ -21,7 +21,7 @@ test("protected Geowiz denies a readable source without a server-owned data gran
 		generate: async () => {
 			calls++;
 			return {
-				output: { toc: 1, recommendation: "Fixture requires review" },
+				output: { note: "Fixture requires review", evidenceIds: ["curve:RHOB"] },
 				metadata: { provider: "gemini", model: "fixture" },
 			};
 		},
@@ -93,7 +93,7 @@ test("actual Geowiz binds LAS analysis and discovery to source bytes and denies 
 		generate: async () => {
 			calls++;
 			return {
-				output: { toc: 1, recommendation: "Review fixture" },
+				output: { note: "Review fixture", evidenceIds: ["curve:RHOB"] },
 				metadata: { provider: "gemini", model: "fixture" },
 			};
 		},
@@ -148,6 +148,10 @@ test("actual Geowiz binds LAS analysis and discovery to source bytes and denies 
 			assert.equal(result.isError, false, JSON.stringify(result.structuredContent));
 			const artifact = (result.structuredContent?.analysis as Record<string, unknown>).sourceArtifact as typeof config;
 			assert.equal(artifact.evidence.hash.value, config.sources[0].evidence.hash.value);
+			const analysis = result.structuredContent?.analysis as Record<string, unknown>;
+			const review = analysis.inputReview as { input: { contentHash: { value: string } }; review: { status: string } };
+			assert.equal(review.input.contentHash.value, artifact.evidence.hash.value);
+			assert.equal(review.review.status, "unreviewed");
 			assert.deepEqual(artifact.scope, config.scope);
 			assert.ok(!JSON.stringify(result).includes(directory));
 			assert.ok(!JSON.stringify(result).includes("shaleyeah-source-"));

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #671: result contract 0.2.0 now returns a versioned input-review packet: exact source hash, observed/null counts, sample statistics, explicit density assumptions, nullable conclusions and review revision. Strict LAS 2 depth/null/unit checks and typed permanent diagnostics replace skipped/malformed rows and invented geology. Optional cited model notes remain unreviewed; outages preserve deterministic evidence. Removed named formation/depth/default-pay/TOC/permeability guesses and synthetic fitted QC; independent public samples and real CLI/MCP controls gate reference coverage.
+
 - #574: the protected local launcher's fixture gets a separate ten-second cold-start budget within a twenty-second test deadline. CI exceeded its old five-second startup limit under parallel workspace load; access/secret assertions and runtime request/audit policy are preserved.
 
 - #574: forwards trusted event bindings and loads optional private eventConfigFile in the HTTP launcher. Actual native two-provider tests join client/backend event IDs and verified source hashes. Access/source audit remains separate; reference MCP operational stdout/raw exception logging is displaced by shared SDK behavior.

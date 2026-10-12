@@ -7,16 +7,13 @@
 
 import fs from "node:fs/promises";
 import { type ConnectorRuntime, SourceAccessError, type SourcePrincipal } from "@shaleyeah/connectors";
-import type { LASCurve } from "@shaleyeah/sdk";
 import {
 	buildMutualExclusivityError,
 	checkMutualExclusivity,
 	createFileModelCredentialResolver,
 	createModelRuntime,
-	FormationSchema,
 	type MCPExecutionContext,
 	type MCPServer,
-	type ModelMetadata,
 	ModelProviderError,
 	type ModelRuntime,
 	normalizeIdentifier,
@@ -26,14 +23,19 @@ import {
 	ServerFactory,
 	type ServerRuntimeOptions,
 	type ServerTemplate,
-	ServerUtils,
 	wrapWithGuiUrl,
 } from "@shaleyeah/sdk";
 import { z } from "zod";
+import { annotateLAS } from "./formation-synthesis.js";
 import { createFileSourceAudit, loadSourceBinding } from "./source-config.js";
 import { createSourceAnalysisTool, withSourceErrors } from "./source-tools.js";
-import { analyzeLASCurve, type CurveAnalysis } from "./tools/curve-qc.js";
-import { type LASData, parseLASFile } from "./tools/las-parse.js";
+import { parseLASFile } from "./tools/las-parse.js";
+import {
+	densityAssumptionsSchema,
+	type LASReviewOptions,
+	reviewConfidenceSchema,
+	reviewLAS,
+} from "./tools/las-review.js";
 
 interface GeowizOptions extends ServerRuntimeOptions {
 	modelRuntime?: ModelRuntime;
@@ -42,23 +44,9 @@ interface GeowizOptions extends ServerRuntimeOptions {
 	localSourcePrincipal?: SourcePrincipal;
 }
 
-interface GeologicalAnalysis {
-	formations: string[];
-	netPay: number;
-	porosity: number;
-	permeability: number;
-	toc: number;
-	maturity: string;
-	targets: number;
-	confidence: number;
-	recommendation: string;
-	canonicalOutput?: Record<string, unknown>;
-	modelMetadata: ModelMetadata;
-}
-
 function createGeowizTemplate(runtime?: ModelRuntime, options: GeowizOptions = {}): ServerTemplate {
 	const sourceTool = createSourceAnalysisTool(options, (name, context) => {
-		if (name === "analyze_formation") verifyModelOwner(runtime, context);
+		if (name === "analyze_formation" && runtime) verifyModelOwner(runtime, context);
 	});
 	return {
 		name: "geowiz",
@@ -78,11 +66,17 @@ function createGeowizTemplate(runtime?: ModelRuntime, options: GeowizOptions = {
 		tools: [
 			sourceTool(
 				"analyze_formation",
-				"Analyze approved unwrapped LAS 2 formations; geological review is required",
+				"Review approved unwrapped LAS 2 observations and supplied density assumptions; unknown geology stays unmeasured",
 				z.object({
 					filePath: z.string().describe("Configured source ID, relative locator or canonical approved LAS path"),
 					formations: z.array(z.string()).optional().describe("Target formations"),
 					analysisType: z.enum(["basic", "standard", "comprehensive"]).default("standard"),
+					densityAssumptions: densityAssumptionsSchema
+						.optional()
+						.describe("Explicit scenario densities; no rock or fluid defaults"),
+					reviewConfidence: reviewConfidenceSchema
+						.optional()
+						.describe("Declared reviewer assessment with basis; not calibrated model confidence"),
 					outputPath: z.string().optional(),
 					// Arcade #9: Mutual Exclusivity — identify a single formation by name OR id, not both.
 					formationName: z.string().optional().describe("Target formation by name (XOR with formationId)"),
@@ -106,7 +100,7 @@ function createGeowizTemplate(runtime?: ModelRuntime, options: GeowizOptions = {
 							? { matchedAs: normalizedFormationName, matchScore: 1.0 }
 							: {};
 
-					verifyModelOwner(runtime, context);
+					if (runtime) verifyModelOwner(runtime, context);
 					const analysis = await performFormationAnalysis(
 						{ ...args, formationName: normalizedFormationName },
 						runtime?.fork?.() ?? runtime,
@@ -292,136 +286,31 @@ function createGeowizTemplate(runtime?: ModelRuntime, options: GeowizOptions = {
 
 // Domain-specific geological analysis functions
 export async function performFormationAnalysis(
-	args: {
-		filePath: string;
-		formations?: string[];
-		analysisType?: string;
-	},
+	args: { filePath: string; formations?: string[]; analysisType?: string } & LASReviewOptions,
 	runtime?: ModelRuntime,
 	signal?: AbortSignal,
-): Promise<GeologicalAnalysis> {
-	if (!runtime) throw new ModelProviderError("configuration");
-	const lasData: LASData = parseLASFile(args.filePath);
-	const keyQCResults = await performCurveQC(args.filePath, lasData);
-	const analysis = await analyzeGeologicalData(
-		lasData,
-		keyQCResults,
-		args.analysisType || "standard",
-		args.formations,
-		runtime,
-		signal,
-	);
+) {
+	if (signal?.aborted) throw new ModelProviderError("cancelled");
+	const inputReview = reviewLAS(parseLASFile(args.filePath), args);
+	const synthesis = await annotateLAS(inputReview, runtime, signal);
 	return {
-		...analysis,
-		canonicalOutput: {
-			formation: FormationSchema.parse({
-				netPay: analysis.netPay,
-				porosity: analysis.porosity / 100,
-				saturation: undefined,
-			}),
-		},
+		analysisVersion: "0.2.0",
+		status: ["unavailable", "invalid_output"].includes(synthesis.status) ? "partial" : "needs_review",
+		inputReview,
+		synthesis,
+		requestedFormations: args.formations ?? [],
+		formations: [],
+		netPay: null,
+		porosity: null,
+		permeability: null,
+		toc: null,
+		maturity: null,
+		targets: null,
+		confidence: null,
+		recommendation:
+			"Review source measurements, supplied assumptions and missing evidence before interpreting geology.",
+		...(synthesis.modelMetadata ? { modelMetadata: synthesis.modelMetadata } : {}),
 	};
-}
-
-async function performCurveQC(filePath: string, lasData: LASData): Promise<Array<CurveAnalysis>> {
-	const qcResults: Array<CurveAnalysis> = [];
-	const keyCurves = ["GR", "NPHI", "RHOB", "RT", "PE", "CALI"];
-
-	for (const curveName of keyCurves) {
-		const curve = lasData.curves.find((c) => c.name.toUpperCase() === curveName);
-		if (curve) {
-			try {
-				const qcAnalysis = analyzeLASCurve(filePath, curveName);
-				qcResults.push(qcAnalysis);
-			} catch (_error) {
-				// Skip failed QC analysis
-			}
-		}
-	}
-
-	return qcResults;
-}
-
-async function analyzeGeologicalData(
-	lasData: LASData,
-	qcResults: Array<CurveAnalysis>,
-	analysisType: string,
-	targetFormations: string[] | undefined,
-	runtime: ModelRuntime,
-	signal?: AbortSignal,
-): Promise<GeologicalAnalysis> {
-	// Calculate petrophysical properties from real log curves
-	const grCurve = lasData.curves.find((c) => c.name.toUpperCase() === "GR");
-	const nphiCurve = lasData.curves.find((c) => c.name.toUpperCase() === "NPHI");
-	const rhobCurve = lasData.curves.find((c) => c.name.toUpperCase() === "RHOB");
-
-	// Calculate average porosity from neutron-density if available
-	let avgPorosity = 12.0; // Default
-	if (nphiCurve && rhobCurve) {
-		const validNphi = nphiCurve.data.filter((v) => !Number.isNaN(v));
-		const validRhob = rhobCurve.data.filter((v) => !Number.isNaN(v));
-		if (validNphi.length > 0 && validRhob.length > 0) {
-			const avgNphi = validNphi.reduce((sum, v) => sum + v, 0) / validNphi.length;
-			const avgRhob = validRhob.reduce((sum, v) => sum + v, 0) / validRhob.length;
-			avgPorosity = Math.max(0, Math.min(25, (avgNphi + (2.65 - avgRhob) / 0.015) / 2));
-		}
-	}
-
-	// Calculate net pay from gamma ray if available
-	let netPay = 150; // Default
-	if (grCurve) {
-		const validGR = grCurve.data.filter((v) => !Number.isNaN(v));
-		if (validGR.length > 0) {
-			const sandIntervals = validGR.filter((v) => v < 80).length;
-			netPay = (sandIntervals / validGR.length) * (lasData.depth_stop - lasData.depth_start);
-		}
-	}
-
-	// Calculate confidence based on QC results
-	const avgQCConfidence =
-		qcResults.length > 0
-			? qcResults.reduce((sum, qc) => sum + (qc.validPoints / qc.totalPoints) * 100, 0) / qcResults.length
-			: 75;
-
-	const detectedFormations = identifyFormations(lasData, grCurve);
-	const formationsForPrompt = (targetFormations ?? detectedFormations).join(", ") || "unidentified formation";
-	const depth = (lasData.depth_start + lasData.depth_stop) / 2;
-
-	// LLM synthesis — derive TOC and investment recommendation from real log data
-	const llmResult = await synthesizeAnalysisWithLLM(
-		{
-			filePath: lasData.well_name || "unknown well",
-			formations: formationsForPrompt,
-			analysisType,
-			avgPorosity,
-			avgDepth: depth,
-			netPay,
-			avgQCConfidence,
-		},
-		runtime,
-		signal,
-	);
-
-	const analysis: GeologicalAnalysis = {
-		formations: detectedFormations,
-		netPay: Math.round(netPay),
-		porosity: Math.round(avgPorosity * 10) / 10,
-		permeability: estimatePermeability(avgPorosity),
-		toc: llmResult.toc,
-		maturity: assessMaturity(lasData),
-		targets: identifyTargets(lasData),
-		confidence: Math.round(avgQCConfidence),
-		recommendation: llmResult.recommendation,
-		modelMetadata: llmResult.modelMetadata,
-	};
-
-	// Enhance analysis based on type
-	if (analysisType === "comprehensive") {
-		analysis.formations.push(...identifyAdditionalFormations(lasData));
-		analysis.confidence = Math.min(analysis.confidence + 5, 95);
-	}
-
-	return analysis;
 }
 
 // Enhanced GIS processing function
@@ -597,194 +486,32 @@ function generateGISInvestmentRecommendations(metrics: any): string[] {
 }
 
 export function assessDataQuality(args: {
+	filePath: string;
 	dataType: string;
-	thresholds?: {
-		completeness: number;
-		accuracy: number;
-		consistency: number;
+	thresholds?: { completeness: number; accuracy?: number; consistency?: number };
+}) {
+	if (args.dataType !== "las") throw new SourceAccessError("unsupported_capability");
+	const inputReview = reviewLAS(parseLASFile(args.filePath));
+	const { completeness } = inputReview.qc;
+	const insufficientCoverage =
+		args.thresholds !== undefined && (completeness === null || completeness < args.thresholds.completeness);
+	const accuracyUnmeasured = args.thresholds?.accuracy !== undefined;
+	return {
+		analysisVersion: "0.2.0",
+		dataType: "las",
+		inputReview,
+		overallScore: null,
+		confidence: null,
+		metrics: { completeness, accuracy: null, consistency: null },
+		issues: [
+			...(insufficientCoverage ? ["Completeness below the configured threshold"] : []),
+			...(accuracyUnmeasured ? ["Accuracy threshold cannot be evaluated without reference measurements"] : []),
+		],
+		passesThresholds: args.thresholds ? !insufficientCoverage && !accuracyUnmeasured : null,
+		recommendations: [
+			"Coverage is an observed sample fraction; validate calibration and context before interpretation.",
+		],
 	};
-}): Record<string, unknown> {
-	const assessment = {
-		dataType: args.dataType,
-		overallScore: ServerUtils.calculateConfidence(0.7, 0.95),
-		metrics: {
-			completeness: ServerUtils.calculateConfidence(0.8, 0.95),
-			accuracy: ServerUtils.calculateConfidence(0.9, 0.98),
-			consistency: ServerUtils.calculateConfidence(0.85, 0.95),
-		},
-		issues: [] as string[],
-		recommendations: [] as string[],
-		passesThresholds: true,
-	};
-
-	// Check thresholds if provided
-	if (args.thresholds) {
-		if (assessment.metrics.completeness < args.thresholds.completeness) {
-			assessment.issues.push(`Completeness below threshold`);
-			assessment.passesThresholds = false;
-		}
-		if (assessment.metrics.accuracy < args.thresholds.accuracy) {
-			assessment.issues.push(`Accuracy below threshold`);
-			assessment.passesThresholds = false;
-		}
-	}
-
-	assessment.recommendations.push(
-		assessment.passesThresholds ? "Data quality is excellent for analysis" : "Consider additional validation steps",
-	);
-
-	return assessment;
-}
-
-// Helper functions for geological analysis
-function identifyFormations(_lasData: LASData, grCurve?: LASCurve): string[] {
-	const formations = ["Unidentified Formation"];
-
-	if (grCurve && Array.isArray(grCurve.data) && grCurve.data.length > 0) {
-		const validGR = grCurve.data.filter((v: number) => !Number.isNaN(v));
-		if (validGR.length > 0) {
-			const avgGR = validGR.reduce((sum: number, v: number) => sum + v, 0) / validGR.length;
-
-			if (avgGR > 120) {
-				formations.push("Wolfcamp A", "Bone Spring");
-			} else if (avgGR > 80) {
-				formations.push("Wolfcamp B", "Leonard");
-			} else {
-				formations.push("Spraberry", "Clear Fork");
-			}
-		}
-	}
-
-	return formations.slice(1); // Remove default
-}
-
-function estimatePermeability(porosity: number): number {
-	const perm = ((porosity / 100) ** 3 / (1 - porosity / 100) ** 2) * 0.001;
-	return parseFloat(perm.toFixed(6));
-}
-
-interface LLMGeologicalResult {
-	modelMetadata: ModelMetadata;
-	toc: number;
-	recommendation: string;
-}
-
-/**
- * Synthesize geological analysis via LLM using computed petrophysical context.
- * Provider or schema failures propagate instead of producing substitute analysis.
- */
-async function synthesizeAnalysisWithLLM(
-	context: {
-		filePath: string;
-		formations: string;
-		analysisType: string;
-		avgPorosity?: number;
-		avgDepth?: number;
-		netPay?: number;
-		avgQCConfidence?: number;
-	},
-	runtime: ModelRuntime,
-	signal?: AbortSignal,
-): Promise<LLMGeologicalResult> {
-	const { formations, analysisType, avgPorosity = 12, avgDepth = 7000, netPay = 150, avgQCConfidence = 75 } = context;
-
-	const prompt = `You are Marcus Aurelius Geologicus, a master petroleum geologist.
-
-Analyze the following well log data for an oil & gas investment decision:
-- Target formations: ${formations}
-- Analysis type: ${analysisType}
-- Average porosity: ${avgPorosity.toFixed(1)}%
-- Average depth: ${avgDepth.toFixed(0)} ft
-- Net pay: ${netPay.toFixed(0)} ft
-- Data quality confidence: ${avgQCConfidence.toFixed(0)}%
-
-Return ONLY valid JSON (no markdown, no explanation) in this exact format:
-{
-  "toc": <number between 0 and 15, total organic carbon percentage>,
-  "recommendation": "<one sentence drilling recommendation>"
-}
-
-Base toc on: depth (deeper = higher maturity, estimate 2-8% for shale at 5000-12000ft), porosity, and formation type.
-Base recommendation on: porosity threshold >8% = good, netPay >100ft = good, confidence >75% = reliable.`;
-
-	const result = await runtime.generate({
-		signal,
-		prompt,
-		system: "You are a petroleum geologist. Respond only with the requested structured result.",
-		schema: {
-			type: "object",
-			properties: {
-				toc: { type: "number", minimum: 0, maximum: 15 },
-				recommendation: { type: "string", minLength: 1 },
-			},
-			required: ["toc", "recommendation"],
-			additionalProperties: false,
-		},
-	});
-	const output = z
-		.object({ toc: z.number().min(0).max(15), recommendation: z.string().min(1) })
-		.strict()
-		.parse(result.output);
-	return { ...output, modelMetadata: result.metadata };
-}
-
-export interface FormationProperties {
-	netPay: number;
-	porosity: number;
-	maturity: string;
-}
-
-/**
- * Formation-aware fallback when LAS parsing fails and no log curves are available.
- * Uses formation name keywords and depth to produce estimates that vary with input —
- * better than static constants but explicitly not a substitute for real log data.
- *
- * netPay: multi-zone plays have more aggregate pay than single-formation targets.
- * porosity: tight shale plays run 6–10%; carbonates and clean sands run higher.
- * maturity: mirrors assessMaturity() depth tiers so the two paths stay consistent.
- */
-export function deriveDefaultFormationProperties(formations: string[], depthHint: number): FormationProperties {
-	// Count how many distinct pay zones the formation list implies — more zones = more net pay
-	const shaleKeywords = ["wolfcamp", "eagle ford", "marcellus", "bone spring", "barnett", "haynesville", "utica"];
-	const carbonateKeywords = ["spraberry", "clear fork", "arbuckle", "austin chalk", "woodford"];
-
-	const lowerNames = formations.map((f) => f.toLowerCase());
-	const isShalePlay = lowerNames.some((n) => shaleKeywords.some((kw) => n.includes(kw)));
-	const isCarbonate = lowerNames.some((n) => carbonateKeywords.some((kw) => n.includes(kw)));
-	const zoneCount = Math.max(1, formations.filter((f) => f && f !== "Unidentified Formation").length);
-
-	// netPay: multi-zone shale stacks average 100–200 ft aggregate; single-zone or unknown 60–100 ft
-	const netPay = isShalePlay ? Math.min(200, 80 + zoneCount * 30) : isCarbonate ? 70 + zoneCount * 15 : 80;
-
-	// porosity: tight shale 6–10%, carbonate/clean sand 10–16%, unknown 10%
-	const porosity = isShalePlay ? 7.0 : isCarbonate ? 12.0 : 10.0;
-
-	// maturity: same depth tiers as assessMaturity() — keeps fallback and happy path consistent
-	let maturity: string;
-	if (depthHint > 8000) maturity = "Overmature Gas Window";
-	else if (depthHint > 6000) maturity = "Peak Oil Window";
-	else if (depthHint > 4000) maturity = "Early Oil Window";
-	else maturity = "Immature";
-
-	return { netPay, porosity, maturity };
-}
-
-function assessMaturity(lasData: LASData): string {
-	const depth = (lasData.depth_start + lasData.depth_stop) / 2;
-
-	if (depth > 8000) return "Overmature Gas Window";
-	if (depth > 6000) return "Peak Oil Window";
-	if (depth > 4000) return "Early Oil Window";
-	return "Immature";
-}
-
-function identifyTargets(lasData: LASData): number {
-	const depthRange = lasData.depth_stop - lasData.depth_start;
-	return Math.max(1, Math.floor(depthRange / 200)); // One target per 200ft
-}
-
-function identifyAdditionalFormations(_lasData: LASData): string[] {
-	return ["Atoka", "Strawn", "Canyon"];
 }
 
 // Multi-format well log processing function
@@ -793,161 +520,30 @@ export async function processMultiFormatWellLog(args: {
 	format?: string;
 	qualityAssessment?: boolean;
 }): Promise<Record<string, unknown>> {
-	try {
-		// Import the well log processor
-		const { processWellLogFile, detectWellLogFormat } = await import("./tools/well-log-processor.js");
-
-		// Detect or validate format
-		const detectedFormat = detectWellLogFormat(args.filePath);
-
-		if (detectedFormat === "UNKNOWN") {
-			throw new Error(`Unsupported well log format for file: ${args.filePath}`);
-		}
-
-		// Process the file
-		const wellLogData = await processWellLogFile(args.filePath);
-
-		// Enhanced analysis based on format
-		const analysis = {
-			fileInfo: {
-				path: args.filePath,
-				format: wellLogData.format,
-				detectedFormat: detectedFormat,
-			},
-			wellData: {
-				name: wellLogData.wellName,
-				depthRange: `${wellLogData.depthStart}-${wellLogData.depthStop} ${wellLogData.depthUnit}`,
-				totalCurves: wellLogData.curves.length,
-				totalRows: wellLogData.rows,
-			},
-			curves: wellLogData.curves.map((curve) => ({
-				name: curve.name,
-				unit: curve.unit,
-				description: curve.description,
-				dataQuality: {
-					validPoints: curve.validPoints,
-					nullPoints: curve.nullPoints,
-					completeness: curve.validPoints / (curve.validPoints + curve.nullPoints) || 0,
-				},
-				statistics: curve.statistics,
-			})),
-			qualityMetrics: wellLogData.qualityMetrics,
-			geologicalInsights: await generateGeologicalInsights(wellLogData),
-			recommendations: generateWellLogRecommendations(wellLogData),
-			metadata: wellLogData.metadata,
-		};
-
-		return analysis;
-	} catch (error) {
-		throw new Error(`Failed to process well log file: ${error}`);
-	}
-}
-
-// Generate geological insights from well log data
-async function generateGeologicalInsights(wellLogData: any): Promise<Record<string, unknown>> {
-	const insights = {
-		formations: [] as string[],
-		lithology: "Unknown",
-		hydrocarbon_indicators: [] as string[],
-		reservoir_quality: "Unknown",
-		drilling_recommendations: [] as string[],
+	const { processWellLogFile } = await import("./tools/well-log-processor.js");
+	const wellLogData = await processWellLogFile(args.filePath);
+	if (wellLogData.format !== "LAS" || !wellLogData.inputReview) throw new SourceAccessError("unsupported_capability");
+	const inputReview = wellLogData.inputReview;
+	return {
+		analysisVersion: "0.2.0",
+		inputReview,
+		wellData: {
+			name: wellLogData.wellName || null,
+			depthRange: `${wellLogData.depthStart}-${wellLogData.depthStop} ${wellLogData.depthUnit}`,
+			totalCurves: wellLogData.curves.length,
+			totalRows: wellLogData.rows,
+		},
+		curves: inputReview.observations.map((curve) => ({
+			name: curve.curve,
+			unit: curve.unit,
+			dataQuality: { validPoints: curve.validPoints, nullPoints: curve.nullPoints, completeness: curve.coverage },
+			statistics: curve.statistics,
+		})),
+		qualityMetrics: inputReview.qc,
+		geologicalInsights: { formations: [], lithology: null, hydrocarbon_indicators: [], reservoir_quality: null },
+		recommendations: ["Review measured curves, declared units and calibration before geological interpretation."],
+		metadata: wellLogData.metadata,
 	};
-
-	// Look for common curves and generate insights
-	const grCurve = wellLogData.curves.find((c: any) => c.name.toUpperCase().includes("GR"));
-	const resistivityCurve = wellLogData.curves.find(
-		(c: any) => c.name.toUpperCase().includes("RT") || c.name.toUpperCase().includes("RES"),
-	);
-	const porosityyCurve = wellLogData.curves.find(
-		(c: any) => c.name.toUpperCase().includes("NPHI") || c.name.toUpperCase().includes("RHOB"),
-	);
-
-	if (grCurve?.statistics) {
-		const avgGR = grCurve.statistics.mean;
-		if (avgGR > 120) {
-			insights.formations.push("High GR formations (Wolfcamp, Bone Spring)");
-			insights.lithology = "Organic-rich shale";
-		} else if (avgGR > 80) {
-			insights.formations.push("Moderate GR formations (Leonard, Spraberry)");
-			insights.lithology = "Mixed shale/carbonate";
-		} else {
-			insights.formations.push("Low GR formations (Carbonate, Clean sand)");
-			insights.lithology = "Carbonate/Clean sand";
-		}
-	}
-
-	if (resistivityCurve?.statistics) {
-		const avgRT = resistivityCurve.statistics.mean;
-		if (avgRT > 10) {
-			insights.hydrocarbon_indicators.push("High resistivity - potential hydrocarbon zones");
-		} else if (avgRT > 2) {
-			insights.hydrocarbon_indicators.push("Moderate resistivity - mixed zones");
-		}
-	}
-
-	if (porosityyCurve?.statistics) {
-		const avgPorosity = porosityyCurve.statistics.mean;
-		if (avgPorosity > 12) {
-			insights.reservoir_quality = "Good - High porosity zones identified";
-		} else if (avgPorosity > 8) {
-			insights.reservoir_quality = "Fair - Moderate porosity";
-		} else {
-			insights.reservoir_quality = "Poor - Low porosity";
-		}
-	}
-
-	// Generate drilling recommendations
-	insights.drilling_recommendations = generateDrillingRecommendations(insights);
-
-	return insights;
-}
-
-function generateDrillingRecommendations(insights: any): string[] {
-	const recommendations = [];
-
-	if (insights.lithology.includes("shale")) {
-		recommendations.push("Consider horizontal drilling with multi-stage completion");
-	}
-
-	if (insights.reservoir_quality.includes("Good")) {
-		recommendations.push("Proceed with development drilling");
-	} else if (insights.reservoir_quality.includes("Fair")) {
-		recommendations.push("Consider enhanced completion techniques");
-	} else {
-		recommendations.push("Additional data required before drilling decision");
-	}
-
-	if (insights.hydrocarbon_indicators.length > 0) {
-		recommendations.push("Focus drilling on high resistivity zones");
-	}
-
-	return recommendations.length > 0 ? recommendations : ["Standard evaluation protocols recommended"];
-}
-
-function generateWellLogRecommendations(wellLogData: any): string[] {
-	const recommendations = [];
-	const quality = wellLogData.qualityMetrics;
-
-	if (quality.completeness < 0.8) {
-		recommendations.push("Data completeness below 80% - consider data validation");
-	}
-
-	if (quality.confidence < 0.7) {
-		recommendations.push("Overall confidence below 70% - additional QC recommended");
-	}
-
-	if (wellLogData.curves.length < 5) {
-		recommendations.push("Limited curve suite - consider additional log acquisition");
-	}
-
-	// Format-specific recommendations
-	if (wellLogData.format === "DLIS") {
-		recommendations.push("DLIS format detected - verify software licensing compliance");
-	} else if (wellLogData.format === "WITSML") {
-		recommendations.push("WITSML format - industry standard XML well data");
-	}
-
-	return recommendations.length > 0 ? recommendations : ["Standard analysis protocols applied"];
 }
 
 // Process Access Database Data

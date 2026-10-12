@@ -298,7 +298,13 @@ export function createConnectorRuntime(value: unknown, options: ConnectorOptions
 					raw.asOf !== source.evidence.asOf
 				)
 					reject("revision_mismatch");
-				const inspected = inspectContent(bytes, source);
+				let inspected: ReturnType<typeof inspectContent>;
+				try {
+					inspected = inspectContent(bytes, source);
+				} catch {
+					// Verified bytes that violate their declared format need correction, not a network retry.
+					reject("conflicting_evidence");
+				}
 				if (input.expectedUnits.some((expected) => !inspected.units.some((actual) => same(expected, actual))))
 					reject("conflicting_evidence");
 				await authorize(input, principal, execution);

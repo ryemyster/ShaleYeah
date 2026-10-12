@@ -170,6 +170,16 @@ async def test_adk_to_actual_protected_geowiz_observes_both_model_boundaries(pro
         events, calls = await run_fixture(config, keys["agent"], backend, "analyze_geowiz_formation", {"file_path": str(REPO / "servers/geowiz/tests/sample-files/sample.las")}, "control_analyze_formation", Path(trace_path) if trace_path else None)
         responses = [part.function_response.response for event in events if event.content for part in event.content.parts if part.function_response and part.function_response.name == "analyze_geowiz_formation"]
         assert responses and responses[0]["isError"] is False
+        analysis = responses[0]["structuredContent"]["analysis"]
+        assert analysis["toc"] is None and analysis["netPay"] is None and analysis["confidence"] is None
+        assert analysis["formations"] == [] and "canonicalOutput" not in analysis
+        assert analysis["inputReview"]["input"]["rows"] == 21
+        assert analysis["inputReview"]["input"]["index"]["unit"] == "FT"
+        assert analysis["inputReview"]["input"]["index"]["stop"] == 8410
+        assert analysis["inputReview"]["input"]["contentHash"]["value"] == source_hash()
+        assert analysis["inputReview"]["review"]["status"] == "unreviewed"
+        assert analysis["synthesis"]["status"] == "unreviewed"
+        assert responses[0]["structuredContent"]["metadata"]["confidenceStatus"] == "unavailable"
         metadata = responses[0]["structuredContent"]["analysis"]["modelMetadata"]
         assert metadata["provider"] == provider and metadata["model"] == config.synthesis["model"]
         assert metadata["reportedModelRevision"] == "fixture-native-001"

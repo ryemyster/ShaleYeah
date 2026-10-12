@@ -7,7 +7,8 @@
  */
 
 import fs from "node:fs";
-import { type LASData, parseLASFile } from "./las-parse.js";
+import { LASInputError, parseLASFile } from "./las-parse.js";
+import { sampleStatistics } from "./las-review.js";
 
 interface QCMetrics {
 	rmse: number;
@@ -18,12 +19,12 @@ interface CurveAnalysis {
 	curve: string;
 	totalPoints: number;
 	validPoints: number;
-	minValue: number;
-	maxValue: number;
-	meanValue: number;
-	depthStart: number;
-	depthStop: number;
-	depthStep: number;
+	minValue: number | null;
+	maxValue: number | null;
+	meanValue: number | null;
+	depthStart: number | null;
+	depthStop: number | null;
+	depthStep: number | null;
 	rmse?: number;
 	nrmse?: number;
 	error?: string;
@@ -73,114 +74,37 @@ function computeRMSE_NRMSE(values: number[], fittedValues: number[]): QCMetrics 
 	return { rmse, nrmse };
 }
 
-/**
- * Create a simple fitted curve using linear trend (for demonstration)
- */
-function createLinearFit(values: number[]): number[] {
-	if (values.length <= 1) {
-		return values.slice();
-	}
-
-	// Filter out NaN values to calculate slope
-	const validValues = values.filter((v) => !Number.isNaN(v));
-	if (validValues.length < 2) {
-		return values.slice();
-	}
-
-	const slope = (validValues[validValues.length - 1] - validValues[0]) / validValues.length;
-	const startValue = validValues[0];
-
-	return values.map((_, i) => startValue + slope * i);
-}
-
-/**
- * Analyze a specific curve in a LAS file
- */
+/** Observational CLI summary; accuracy needs an independently supplied reference. */
 function analyzeLASCurve(filePath: string, curveName: string): CurveAnalysis {
 	try {
-		// Parse LAS file using our existing parser
-		const lasData: LASData = parseLASFile(filePath);
-
-		// Find the requested curve
-		const curve = lasData.curves.find((c) => c.name.toUpperCase() === curveName.toUpperCase());
-
-		if (!curve) {
-			const availableCurves = lasData.curves.map((c) => c.name);
-			return {
-				curve: curveName,
-				error: `Curve '${curveName}' not found. Available curves: ${availableCurves.join(", ")}`,
-				availableCurves,
-				totalPoints: 0,
-				validPoints: 0,
-				minValue: 0,
-				maxValue: 0,
-				meanValue: 0,
-				depthStart: 0,
-				depthStop: 0,
-				depthStep: 0,
-			};
-		}
-
-		// Get valid data points (filter out NaN)
-		const validData = curve.data.filter((v) => !Number.isNaN(v));
-
-		if (validData.length === 0) {
-			return {
-				curve: curveName,
-				error: `No valid data points for curve '${curveName}'`,
-				totalPoints: curve.data.length,
-				validPoints: 0,
-				minValue: 0,
-				maxValue: 0,
-				meanValue: 0,
-				depthStart: lasData.depth_start,
-				depthStop: lasData.depth_stop,
-				depthStep: lasData.depth_step,
-			};
-		}
-
-		// Calculate basic statistics
-		const minValue = Math.min(...validData);
-		const maxValue = Math.max(...validData);
-		const meanValue = validData.reduce((sum, v) => sum + v, 0) / validData.length;
-
-		const analysis: CurveAnalysis = {
+		const las = parseLASFile(filePath);
+		const curve = las.curves.find((c) => c.name === curveName.toUpperCase());
+		const statistics = curve ? sampleStatistics(curve.data) : null;
+		return {
 			curve: curveName,
-			totalPoints: curve.data.length,
-			validPoints: validData.length,
-			minValue,
-			maxValue,
-			meanValue,
-			depthStart: lasData.depth_start,
-			depthStop: lasData.depth_stop,
-			depthStep: lasData.depth_step,
+			totalPoints: curve?.data.length ?? 0,
+			validPoints: curve?.data.filter(Number.isFinite).length ?? 0,
+			minValue: statistics?.min ?? null,
+			maxValue: statistics?.max ?? null,
+			meanValue: statistics?.mean ?? null,
+			depthStart: las.depth_start,
+			depthStop: las.depth_stop,
+			depthStep: las.depth_step,
+			...(!curve ? { error: "curve_unavailable", availableCurves: las.curves.map((c) => c.name) } : {}),
+			...(curve && !statistics ? { error: "all_null" } : {}),
 		};
-
-		// Create fitted curve and compute QC metrics
-		if (validData.length > 1) {
-			const fittedValues = createLinearFit(curve.data);
-			const qcMetrics = computeRMSE_NRMSE(curve.data, fittedValues);
-
-			analysis.rmse = qcMetrics.rmse;
-			analysis.nrmse = qcMetrics.nrmse;
-		} else {
-			analysis.rmse = 0;
-			analysis.nrmse = 0;
-		}
-
-		return analysis;
 	} catch (error) {
 		return {
 			curve: curveName,
-			error: `Failed to analyze LAS file: ${error}`,
+			error: error instanceof LASInputError ? error.message : "source_unavailable",
 			totalPoints: 0,
 			validPoints: 0,
-			minValue: 0,
-			maxValue: 0,
-			meanValue: 0,
-			depthStart: 0,
-			depthStop: 0,
-			depthStep: 0,
+			minValue: null,
+			maxValue: null,
+			meanValue: null,
+			depthStart: null,
+			depthStop: null,
+			depthStep: null,
 		};
 	}
 }

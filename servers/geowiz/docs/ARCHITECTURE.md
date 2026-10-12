@@ -12,12 +12,12 @@ format qualification; a successful RPC does not certify their professional quali
 
 | Tool | Model use |
 | --- | --- |
-| `analyze_formation` | Injected Gemini/Anthropic structured synthesis |
+| `analyze_formation` | Deterministic LAS review; optional injected Gemini/Anthropic annotation |
 | `fetch_source`, `get_source_status` | Verified source provenance/health without model calls |
 | `get_model_profile` | Public binding discovery without secret references |
 | `process_gis`, `process_well_logs`, `process_access_database` | Existing processors; no model call |
 | `process_document`, `process_seismic_data`, `process_aries_database` | Existing processors; no model call |
-| `assess_quality` | Existing fixed metrics; input-derived repair is #671 |
+| `assess_quality` | Actual LAS completeness; accuracy/confidence unmeasured |
 | `save_finding` | File write; caller needs independent authorization/review |
 
 ## Local tools (src/tools/)
@@ -27,7 +27,8 @@ Private to this package — not re-exported, not part of the public API.
 | File | Purpose |
 |------|---------|
 | `las-parse.ts` | Synchronous LAS 2.0 parser used by the inline formation analysis path |
-| `curve-qc.ts` | Curve quality control — flags flat lines, spikes, noisy curves |
+| `las-review.ts` | Source-hashed observations, explicit density assumptions, nullable conclusions and review revision |
+| `curve-qc.ts` | Observed CLI curve statistics; RMSE helper requires an explicit paired reference |
 | `gis-processor.ts` | GeoJSON, Shapefile, KML parsing with turf.js spatial analysis |
 | `well-log-processor.ts` | Multi-format well log dispatch (wraps las-parse) |
 | `access-processor.ts` | Access/MDB table extraction |
@@ -46,7 +47,10 @@ checks the backend's public effective profile. The HTTP ingress supplies the
 verified customer/employee and scopes. The synthesis boundary checks ownership,
 fetches an independently permitted LAS snapshot, performs curve checks, and invokes its private native SDK runtime.
 Structured output is validated and returned with provider/model revisions.
-Missing configuration, provider errors and invalid outputs remain failures.
+Model outage/invalid output produces a marked partial result with deterministic
+evidence retained. Missing runtime configuration leaves annotation unconfigured;
+ownership, credential and cancellation failures remain errors. The configured
+employee pair still requires and verifies its selected synthesis binding.
 
 The injected runtime is captured in each server's tool template before the SDK
 factory constructs/registers capabilities. Each analysis gets a fresh bounded
@@ -54,9 +58,9 @@ synthesis budget; no global key or vendor default is consulted. Nonmodel tools
 remain usable without a model key. [Provider setup](../../../docs/model-providers.md)
 explains the contract and limits; [HTTP access](HTTP_ACCESS.md) explains authority.
 
-`deriveDefaultFormationProperties` remains a legacy utility export under #671;
-it is no longer a production synthesis fallback. Other parser estimates and
-source placeholders are not qualified by the provider fixture tests.
+The [LAS review contract](LAS_REVIEW.md) distinguishes observed curves, supplied
+calculation assumptions and unknown geological conclusions. Package-local
+parsers for other formats remain outside this reference qualification.
 
 `src/source-tools.ts` centralizes read-only file tool enforcement.
 `src/source-config.ts` supplies the local private-file policy/audit adapter;

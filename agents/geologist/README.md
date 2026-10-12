@@ -83,7 +83,7 @@ qualification; see [deployment limits](docs/DEPLOYMENT.md).
 
 | Tool | What it does | Type | HITL |
 |------|-------------|------|------|
-| `geologist.analyze_formation` | LAS/DLIS/WITSML log analysis — porosity, permeability, maturity | query | No |
+| `geologist.analyze_formation` | Approved LAS observations, explicit density assumptions and missing geological evidence | query | No |
 | `geologist.process_gis` | GIS spatial analysis (.shp, .geojson, .kml) | query | No |
 | `geologist.process_well_logs` | Multi-format well log processing | query | No |
 | `geologist.assess_quality` | Data quality scoring | query | No |
@@ -130,7 +130,10 @@ Run these from `agents/geologist`.
 Pytest includes project/eval shape, role mapping/failure and credential controls.
 Shared discovery/schema/result, retry/cancel and error checks live in the
 [client package](../../sdk/python/README.md). CI also checks installed wheels and
-the actual protected Geowiz connection. These are not employee performance scores. Live evals need the tool/model and selected grader prerequisites; see
+the actual protected Geowiz connection. The [LAS review baseline](../../servers/geowiz/docs/LAS_REVIEW.md)
+has pinned public/parser controls; it is not a field accuracy score. Optional
+`density_assumptions_json` and `review_confidence_json` forward explicit scenarios
+and reviewer assessments with their basis. Live evals need the tool/model and selected grader prerequisites; see
 [LOCAL_TESTING.md](docs/LOCAL_TESTING.md#run-adk-evals) for inputs, artifacts and
 limits. A passing mock, import or healthy port does not qualify geological work
 or backend approval enforcement.

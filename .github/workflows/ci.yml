@@ -55,9 +55,9 @@ jobs:
         uv run --locked ruff check .
         uv run --locked pytest -q --cov=shaleyeah_evaluations --cov-fail-under=90
         bash scripts/check-isolation.sh
-    - name: Geowiz source boundary coverage
+    - name: Geowiz LAS input and source boundary coverage
       working-directory: servers/geowiz
-      run: pnpm exec tsx --test --experimental-test-coverage '--test-coverage-include=src/source-*.ts' --test-coverage-lines=90 tests/source-*.test.ts tests/model-provider-boundary.test.ts
+      run: pnpm test:las
     - name: Python MCP client lint and conformance
       working-directory: sdk/python
       run: |

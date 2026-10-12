@@ -181,7 +181,7 @@ only behind explicit labeling and cannot become measured or approved evidence.
 
 | Verified source behavior | Required replacement evidence | Owner |
 | --- | --- | --- |
-| Geowiz `deriveDefaultFormationProperties(formations, 7000)` and fallback properties after absent/failed input | Missing measurements stay unavailable; null/units/provenance and real LAS fixtures | #671 owns first LAS path; remaining advertised capabilities must be separately qualified before #674 declares support |
+| Geowiz LAS formation/depth/default-pay/TOC heuristics | #671 deletes these on the initial LAS path; observations, explicit density assumptions, unknown conclusions and pinned independent controls replace them | Other format helpers remain outside the current reference path; #674 must qualify declared support |
 | Econobot `calculateDCFMetrics` uses `|| 75`, `|| 25`, `|| 500`, fixed investment/decline; catch returns `generateDefaultAnalysis`; separate IRR helpers also lack numerical qualification | Explicit observed/assumed cash flows, timing/sign/unit fixtures, zero preservation and non-solution states | #711 before #680 |
 | Curve-smith `performTypeCurveAnalysis` counts analogs but uses fixed tier rates and 1.5/0.6 factors labeled P10/P90 | Actual analog evidence or labeled scenarios, independently checked volume/units and justified uncertainty method | #712 before #681 |
 | Market `deriveDefaultCompetitorProfile` makes production/cost/share from name length; `fetchEiaPrices` returns stub prices with a fresh retrieval timestamp on missing/failed API | No fabricated metrics; observation date distinct from fetch date; missing/stale source deferral | #708 before #684 |
@@ -281,8 +281,8 @@ employee package files. Re-run after each migration and update the affected row.
 
 Deleted Geowiz’s hardcoded Anthropic call, missing-key/model-error demo synthesis,
 TOC/recommendation replacement helpers and obsolete live-key anti-stub tests.
-The retained `deriveDefaultFormationProperties` export has legacy utility tests
-and is no longer called by formation synthesis; #671 owns remaining geological
-estimates/source repair. SDK `callLLM` remains an explicit compatibility entry
+The remaining `deriveDefaultFormationProperties` export and its utility tests
+are deleted in #671 with unsupported LAS interpretation heuristics and fitted QC.
+SDK `callLLM` remains an explicit compatibility entry
 point for 13 unmigrated servers and four TypeScript employees, with removal
 owned by #692/#576. Native reference adapters and dependencies are pinned.

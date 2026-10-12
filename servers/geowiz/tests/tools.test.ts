@@ -5,6 +5,7 @@
  */
 
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { processAccessDatabase } from "../src/tools/access-processor.js";
 import { processAriesDatabase } from "../src/tools/aries-processor.js";
@@ -39,7 +40,7 @@ class FileProcessorTester {
 	constructor() {
 		this.testDir = path.join(process.cwd(), "tests");
 		this.sampleDir = path.join(this.testDir, "sample-files");
-		this.outputDir = path.join(this.testDir, "temp"); // Use tests/temp/ for outputs
+		this.outputDir = fs.mkdtempSync(path.join(os.tmpdir(), "geowiz-format-smoke-"));
 		this.ensureDirectories();
 		this.initializeTestConfigs();
 	}
@@ -165,6 +166,8 @@ class FileProcessorTester {
 				testResults.errorDetails.forEach((error) => console.error(" -", error));
 			}
 			process.exit(1);
+		} finally {
+			fs.rmSync(this.outputDir, { recursive: true, force: true });
 		}
 	}
 
@@ -368,7 +371,7 @@ class FileProcessorTester {
 		}
 
 		const coverageRate = (Array.from(results.coverage.values()).filter(Boolean).length / results.coverage.size) * 100;
-		console.log(`\n🎯 Code Coverage: ${coverageRate.toFixed(1)}%`);
+		console.log(`\nFormat smoke checks: ${coverageRate.toFixed(1)}% (not line coverage or domain accuracy)`);
 		console.log(`📁 Output Directory: ${this.outputDir}`);
 		console.log(`🗂️ Total Processors Tested: ${results.coverage.size}`);
 
@@ -384,9 +387,9 @@ class FileProcessorTester {
 			console.log("\n✨ BENEFITS ACHIEVED:");
 			console.log("  • DRY Architecture: No code duplication");
 			console.log("  • Comprehensive Coverage: All 7 processors tested");
-			console.log("  • Standardized Output: All results in tests/temp/");
+			console.log("  • Output: owned temporary directory, removed after the run");
 			console.log("  • Enhanced Error Reporting: Detailed diagnostics");
-			console.log("  • Production Ready: Zero linting/build errors");
+			console.log("  • These format smoke checks do not qualify field results or production readiness");
 		}
 	}
 }

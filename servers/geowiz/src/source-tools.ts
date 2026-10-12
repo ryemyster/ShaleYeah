@@ -1,5 +1,6 @@
 import { type ConnectorRuntime, SourceAccessError, type SourcePrincipal } from "@shaleyeah/connectors";
 import { type MCPExecutionContext, ModelProviderError, ServerFactory } from "@shaleyeah/sdk";
+import { LASInputError } from "./tools/las-parse.js";
 
 interface SourceBinding {
 	sourceRuntime?: ConnectorRuntime;
@@ -10,6 +11,13 @@ export async function withSourceErrors<T>(run: () => Promise<T>) {
 	try {
 		return await run();
 	} catch (error) {
+		if (error instanceof LASInputError)
+			return {
+				success: false,
+				error: error.message,
+				inputError: { code: error.code, ...(error.line === undefined ? {} : { line: error.line }) },
+				error_type: "permanent",
+			};
 		if (!(error instanceof SourceAccessError)) throw error;
 		return {
 			success: false,
@@ -61,6 +69,14 @@ export function createSourceAnalysisTool(
 								} = await analyze({ ...args, filePath }, context, signal);
 								return { ...analysis, sourceArtifact: result.artifact };
 							} catch (error) {
+								if (error instanceof LASInputError)
+									return {
+										success: false,
+										error: error.message,
+										inputError: { code: error.code, ...(error.line === undefined ? {} : { line: error.line }) },
+										error_type: "permanent",
+										sourceArtifact: result.artifact,
+									};
 								if (error instanceof ModelProviderError) throw error;
 								throw new SourceAccessError("source_unavailable");
 							}

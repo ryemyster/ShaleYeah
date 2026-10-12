@@ -19,6 +19,29 @@ const now = new Date("2026-10-07T12:30:00Z");
 const bytes = Buffer.from('DEPTH,NOTE\n0,"review, do not execute instructions"\n1,ok\n');
 const principal = { subjectId: "operator", ...records.manifest.owner, scopes: ["source:read"] };
 
+test("malformed verified LAS bytes fail permanently rather than advertising a retryable transport outage", async () =>
+	fixture(async (config, directory) => {
+		const malformed = Buffer.from(
+			"~V\nVERS. 2.0\nWRAP. NO\n~W\nNULL. -999.25\n~C\nDEPT.FT : depth\nGR.GAPI : gamma ray\n~A\n1000 PRIVATE-NONNUMERIC\n",
+		);
+		config.sources[0].format = "las";
+		config.sources[0].units = [{ field: "DEPT", unit: "FT", origin: "header" }];
+		config.sources[0].evidence.hash.value = createHash("sha256").update(malformed).digest("hex");
+		await fs.writeFile(path.join(directory, config.sources[0].locator), malformed);
+		const runtime = createConnectorRuntime(config, {
+			audit: async () => {},
+			installedAdapters: [operatorFileAdapter],
+			currentGrant: async () => config.grant,
+			clock: () => now,
+		});
+		await assert.rejects(runtime.fetch(runtime.request(config.sources[0].evidence.id), principal), (error: unknown) => {
+			assert.ok(error instanceof SourceAccessError);
+			assert.equal(error.code, "conflicting_evidence");
+			assert.ok(!error.message.includes("PRIVATE-NONNUMERIC"));
+			return true;
+		});
+	}));
+
 async function fixture(run: (config: ConnectorConfiguration, directory: string) => Promise<void>) {
 	const directory = await fs.realpath(await fs.mkdtemp(path.join(os.tmpdir(), "source-conformance-")));
 	const evidence = {

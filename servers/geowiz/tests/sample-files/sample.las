@@ -6,7 +6,7 @@ WRAP.      NO :   ONE LINE PER DEPTH STEP
 #MNEM.UNIT              DATA                       DESCRIPTION
 #----- -----            ----------               -------------------------
 STRT.FT                 8400.0000                :START DEPTH
-STOP.FT                 8450.0000                :STOP DEPTH
+STOP.FT                 8410.0000                :STOP DEPTH
 STEP.FT                 0.5000                   :STEP
 NULL.                   -999.25                  :NULL VALUE
 COMP.    DEMO OIL COMPANY                        :COMPANY
@@ -47,7 +47,7 @@ RM  .OHMM           0.35                 :MUD RESISTIVITY
 RMTF.OHMM           0.12                 :MUD FILTRATE RESISTIVITY
 
 ~ASCII
-DEPT     GR      RHOB    NPHI    PEFZ    CALI    RT
+#DEPT     GR      RHOB    NPHI    PEFZ    CALI    RT
 8400.0   89.2    2.41    0.124   2.8     8.6     12.4
 8400.5   91.8    2.43    0.118   2.9     8.5     14.2
 8401.0   88.6    2.45    0.115   3.0     8.4     16.8

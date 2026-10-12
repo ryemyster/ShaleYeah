@@ -53,7 +53,7 @@ source conventions, not scoring accuracy or expert acceptance.
 
 | MCP entrypoint | Calls | Current source evidence and owner |
 | --- | ---: | --- |
-| [geowiz](../../servers/geowiz/src/index.ts) | 9 | Formation summary rounds percentage QC; fallback uses unit-interval `calculateConfidence`; other outputs have nested/absent scores. #671 must resolve each advertised path before #674 |
+| [geowiz](../../servers/geowiz/src/index.ts) | 9 | Initial LAS flow returns null confidence; sample completeness is separate. Explicit reviewer zero/score and basis stay labeled in the input-review packet. Other formats are declined at the source boundary; #674 owns remaining qualification |
 | [curve-smith](../../servers/curve-smith/src/index.ts) | 4 | Decline-fit confidence is percentage; fallback is unit interval, with separate zero/50 paths. #712/#681 own numerical and scale qualification |
 | [econobot](../../servers/econobot/src/index.ts) | 3 | Data quality is rendered as percentage; fallback uses unit interval. #711/#680 own economic evidence and scale |
 | [research](../../servers/research/src/index.ts) | 2 | Market-research findings derive percentage scores; fallback uses unit interval. #709/#688 own cited evidence and scale |
