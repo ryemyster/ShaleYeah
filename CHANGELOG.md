@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #674: validate Docker daemon information before reading the build bundle; incomplete server metadata and reported errors block as runtime unavailable even when the CLI exits successfully.
+
 - #674: constrain the generic fixture client to an explicit loopback MCP endpoint supplied separately from private settings, reject redirects and check both endpoint and authenticated-redirect boundaries in required reference CI.
 
 - #674: remove Geologist context's hidden dependency on the tool-owned synthesis key, preserving per-actor secret/refusal guards and separate mounts. Both providers reproduce the blocked employee before the repair.

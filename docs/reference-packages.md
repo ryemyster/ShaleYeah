@@ -95,6 +95,8 @@ passes those digests into the recipes. The report records bases, built image IDs
 architecture, declared user, code revision, artifact/lock hashes and actual
 outcomes. Missing Docker, failed builds or failed behavior block; they are never
 skipped. Required reference CI runs this exact command and publishes metadata.
+An exit code alone cannot qualify the daemon: missing server information or
+reported Docker client/server errors block before the bundle is read.
 
 The worker runs in its own Python image, using its own writable context volume.
 The tool image contains Node and the portable Python qualification verifier; it

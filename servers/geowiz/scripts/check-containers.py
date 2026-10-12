@@ -89,7 +89,15 @@ def main():
     name = "shale-reference-" + hashlib.sha256(str(output).encode()).hexdigest()[:12]
     started = False
     try:
-        invoke("docker", "info", "--format", "{{.ServerVersion}}", timeout=30)
+        info = json.loads(invoke("docker", "info", "--format", "{{json .}}", timeout=30))
+        if (
+            not isinstance(info, dict)
+            or not isinstance(info.get("ServerVersion"), str)
+            or not info["ServerVersion"].strip()
+            or info.get("ServerErrors")
+            or info.get("ClientErrors")
+        ):
+            raise RuntimeError("Docker server information unavailable")
         stage = "container_build_failed"
         manifest = json.loads((bundle / "manifest.json").read_text())
         assert manifest["status"] == "passed" and manifest["qualification"] == "fixture"

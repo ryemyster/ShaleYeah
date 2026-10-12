@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #674: require nonempty Docker server metadata with no reported client/server errors before image qualification. Add tests for successful CLI exits with unavailable server information; isolate the negative test's Docker context.
+
 - #674: generic fixture client refuses remote/ambiguous endpoints before reading private settings and never follows redirects; endpoint comes from the harness argument, not file content. New real redirect/refusal controls run in extraction and required CI.
 
 - #674: extraction proof requires the installed employee's context-write boundary to reject unsupported business-contract versions before accepting the valid task.
