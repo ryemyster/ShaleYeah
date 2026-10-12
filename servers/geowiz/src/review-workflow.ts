@@ -11,6 +11,7 @@ import {
 	validateContract,
 	type WorkProduct,
 } from "@shaleyeah/contracts";
+import { redactEvent } from "@shaleyeah/contracts/events";
 import { z } from "zod";
 
 const id = z
@@ -25,6 +26,7 @@ const principalSchema = z
 const policySchema = z
 	.object({
 		version: z.literal("0.1.0"),
+		qualification: z.enum(["fixture", "live"]).default("fixture"),
 		id,
 		revision: id,
 		task: z.unknown(),
@@ -74,6 +76,12 @@ export const reviewCandidateSchema = z
 	.strict();
 export const reviewExecutionSchema = z
 	.object({ reviewId: id, packetDigest: z.string().regex(/^[a-f0-9]{64}$/), grantId: id })
+	.strict();
+const reviewMeasurements = z
+	.object({
+		humanReviewSeconds: z.number().min(0).max(86400).optional(),
+		corrections: z.number().int().min(0).max(1000000).optional(),
+	})
 	.strict();
 type Candidate = Omit<z.infer<typeof reviewCandidateSchema>, "work" | "context"> & {
 	work: WorkProduct;
@@ -487,12 +495,14 @@ export class ReviewWorkflow {
 		choice: ReviewDecision["decision"],
 		reason: string,
 		reviewer: SourcePrincipal,
+		measurements: { humanReviewSeconds?: number; corrections?: number } = {},
 	) {
 		return this.guarded("decide", reviewer, async () => {
 			const policy = await this.policy();
 			this.identity(reviewer, policy, true);
 			z.enum(["approve", "reject", "request_changes"]).parse(choice);
 			z.string().min(1).max(2048).parse(reason);
+			const measured = reviewMeasurements.parse(measurements);
 			const row = this.row(reviewId);
 			const packet = await this.fresh(row, policy);
 			if (row.digest !== packetDigest || row.state !== "awaiting-review") deny("revision_mismatch");
@@ -537,17 +547,46 @@ export class ReviewWorkflow {
 					.prepare("UPDATE reviews SET state=?,grant=?,decision=? WHERE id=?")
 					.run(state, choice === "approve" ? `grant.${randomUUID()}` : null, reviewJson(decision), reviewId);
 				this.audit("decide", state, reviewer, reviewId);
-				this.db.prepare("INSERT INTO audit VALUES (?,?)").run(
-					decision.auditRef.id,
-					reviewJson({
-						id: decision.auditRef.id,
-						observedAt: decision.decidedAt,
-						operation: "decision-binding",
-						outcome: state,
-						reviewRef: digest(reviewId),
-						principalRef: digest(reviewer.subjectId),
-					}),
-				);
+				if (
+					Number(this.db.prepare("SELECT COUNT(*) AS count FROM audit").get()?.count) >=
+					(this.options.maxAuditRecords ?? 100000)
+				)
+					deny("audit_capacity");
+				const event = redactEvent({
+					schemaVersion: "0.1.0",
+					kind: "employee-event",
+					eventId: decision.auditRef.id,
+					streamId: reviewId,
+					eventType: "review",
+					status: choice === "approve" ? "approved" : choice === "reject" ? "rejected" : "revision-requested",
+					observedAt: decision.decidedAt,
+					producer: { id: "geowiz-review", version: "0.1.0" },
+					sequence: 1,
+					context: {
+						runId: reviewId,
+						traceId: digest(reviewId).slice(0, 32),
+						scope: packet.task.scope,
+						taskRevision: packet.task.revision,
+						qualification: policy.qualification,
+					},
+					refs: [
+						{
+							kind: "review",
+							id: packet.request.id,
+							revision: packet.request.revision,
+							sha256: digest(packet.request),
+						},
+						{ kind: "review", id: decision.id, revision: decision.revision, sha256: digest(decision) },
+					],
+					measurements: {
+						...measured,
+						reworkCount:
+							Number(
+								this.db.prepare("SELECT COUNT(*) AS count FROM reviews WHERE namespace=?").get(row.namespace)?.count,
+							) - 1,
+					},
+				});
+				this.db.prepare("INSERT INTO audit VALUES (?,?)").run(decision.auditRef.id, reviewJson(event));
 				return this.receipt(this.row(reviewId));
 			});
 		});

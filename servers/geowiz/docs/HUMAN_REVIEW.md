@@ -42,6 +42,7 @@ The policy is data, so operators can change these limits without editing code:
 | Policy field | Meaning |
 | --- | --- |
 | `version` | `0.1.0`, the adapter configuration version |
+| `qualification` | `fixture` (default) or `live`; operational event provenance, not professional quality |
 | `id`, `revision` | Policy identity/version; changing policy invalidates prior packets |
 | `task` | Actual canonical 0.1.0 TaskAssignment, including current source-byte ArtifactRefs and exact customer/asset/task/employee scope |
 | `requester` | Bound employee subject/customer/employee/scopes from the trusted transport configuration; include `geowiz:review`, `geowiz:save` and required source scopes |
@@ -114,6 +115,15 @@ Use `request_changes` or `reject` in place of `approve` when appropriate. Only
 approval produces a grant. Inspection and decision are deliberately absent
 from the employee's MCP tool inventory. The CLI prints references/state only,
 never source content, credentials, the reason or the grant.
+
+Optionally append an owned private JSON measurement file to `decide` containing
+`humanReviewSeconds` (0–86400) and/or integer `corrections` (0–1000000). These
+are reported by the enrolled human, not estimated from waiting time. Zero stays
+zero; absent measurements stay absent. The backend adds `reworkCount` from the
+number of prepared revisions in this scoped task. Its transaction stores a
+validated, redacted canonical employee review event alongside the decision;
+operator audit paging can export that event to the existing event consumer.
+No measurement can grant authority or certify model/domain accuracy.
 
 ## Resume and recover
 

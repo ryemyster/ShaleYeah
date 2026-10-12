@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #673: record validated canonical review events in the same decision transaction, preserving zero/absent reported human time and correction counts and computing scoped revision attempts. Optional owned CLI measurement JSON is distinct from authority and professional qualification; fixture provenance is the default. Reject timezone-formatted expired context and source metadata drift without trusting revision bump discipline.
+
 - #673: add immutable bounded review packets, separate enrolled local human CLI/API, versioned policy/source/content checks and exact-grant command enforcement. Private SQLite commits finding, prepared/completed audit and consumed outcome together; exact retries are idempotent. Add expiry cleanup, capacity/ownership/revision gates and real generic-MCP/human-CLI controls. Remove unguarded timestamp/confidence JSON save and obsolete vector-promotion comments. Node >=22.13 with built-in SQLite is required; remote reviewer/IAM and full extraction remain separate qualification.
 
 - #671: result contract 0.2.0 now returns a versioned input-review packet: exact source hash, observed/null counts, sample statistics, explicit density assumptions, nullable conclusions and review revision. Strict LAS 2 depth/null/unit checks and typed permanent diagnostics replace skipped/malformed rows and invented geology. Optional cited model notes remain unreviewed; outages preserve deterministic evidence. Removed named formation/depth/default-pay/TOC/permeability guesses and synthetic fitted QC; independent public samples and real CLI/MCP controls gate reference coverage.

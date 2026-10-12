@@ -141,8 +141,14 @@ test("exact review, restart, and concurrent retries commit one finding with dura
 			"approve",
 			"Reviewed for this bounded local save",
 			f.reviewer,
+			{ humanReviewSeconds: 0, corrections: 0 },
 		);
 		assert.equal(approved.state, "approved");
+		const reviewEvent = f.workflow
+			.auditRecords()
+			.find((entry) => entry.eventType === "review" && entry.status === "approved");
+		assert.ok(reviewEvent);
+		assert.deepEqual(reviewEvent.measurements, { humanReviewSeconds: 0, corrections: 0, reworkCount: 0 });
 		f.workflow.close();
 		reopened = new ReviewWorkflow(f.directory, f.options);
 		const checkpoint = await reopened.status(pending.reviewId, f.requester);
@@ -364,9 +370,17 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 			"reason.txt",
 			"I reviewed inputs, assumptions, reported eval limitations and the local save",
 		);
-		await command(process.execPath, [cli, "decide", pending.reviewId, preview.packetDigest, "approve", reasonFile], {
-			env: { ...process.env, GEOWIZ_REVIEW_CONFIG_FILE: configFile },
-		});
+		const measurementsFile = privateWrite(
+			"measurements.json",
+			JSON.stringify({ humanReviewSeconds: 17, corrections: 0 }),
+		);
+		await command(
+			process.execPath,
+			[cli, "decide", pending.reviewId, preview.packetDigest, "approve", reasonFile, measurementsFile],
+			{
+				env: { ...process.env, GEOWIZ_REVIEW_CONFIG_FILE: configFile },
+			},
+		);
 		const checkpoint = await client.callTool({ name: "get_review_status", arguments: { reviewId: pending.reviewId } });
 		const approved = checkpoint.structuredContent!.analysis as {
 			reviewId: string;
@@ -381,6 +395,11 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 		assert.equal(saved.isError, false);
 		assert.equal((saved.structuredContent!.analysis as { stored: boolean }).stored, true);
 		assert.equal(f.workflow.findingCount(), 1);
+		assert.deepEqual(f.workflow.auditRecords().find((entry) => entry.eventType === "review")?.measurements, {
+			humanReviewSeconds: 17,
+			corrections: 0,
+			reworkCount: 0,
+		});
 	} finally {
 		binding?.workflow.close();
 		await client.close();

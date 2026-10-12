@@ -2,6 +2,28 @@ import { constants } from "node:fs";
 import fs from "node:fs/promises";
 import { loadReviewBinding } from "../dist/review-config.js";
 
+async function readPrivate(file) {
+	const handle = await fs.open(file, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
+	try {
+		const stat = await handle.stat();
+		if (!stat.isFile() || stat.nlink !== 1 || stat.mode & 0o077 || stat.uid !== process.getuid() || stat.size > 2048)
+			throw new Error("Private bounded file required");
+		const bytes = Buffer.alloc(2049);
+		let length = 0;
+		while (length < bytes.length) {
+			const next = await handle.read(bytes, length, bytes.length - length, length);
+			if (!next.bytesRead) break;
+			length += next.bytesRead;
+		}
+		const after = await handle.stat();
+		if (length !== stat.size || after.mtimeMs !== stat.mtimeMs || after.ctimeMs !== stat.ctimeMs)
+			throw new Error("File changed");
+		return bytes.subarray(0, length).toString("utf8").trim();
+	} finally {
+		await handle.close();
+	}
+}
+
 // This command is for the enrolled OS operator, never a model tool or public HTTP route.
 let binding;
 try {
@@ -24,22 +46,11 @@ try {
 			await handle.close();
 		}
 		console.log(JSON.stringify({ reviewId: packet.reviewId, packetDigest: packet.packetDigest, state: packet.state }));
-	} else if (command === "decide" && args.length === 3) {
-		const [packetDigest, decision, reasonFile] = args;
-		const handle = await fs.open(reasonFile, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
-		let reason;
-		try {
-			const stat = await handle.stat();
-			if (!stat.isFile() || stat.nlink !== 1 || stat.mode & 0o077 || stat.uid !== process.getuid() || stat.size > 2048)
-				throw new Error("Private reason file required");
-			const bytes = Buffer.alloc(2049);
-			const { bytesRead } = await handle.read(bytes, 0, bytes.length, 0);
-			if (bytesRead !== stat.size) throw new Error("Reason changed");
-			reason = bytes.subarray(0, bytesRead).toString("utf8").trim();
-		} finally {
-			await handle.close();
-		}
-		const result = await binding.workflow.decide(reviewId, packetDigest, decision, reason, reviewer);
+	} else if (command === "decide" && [3, 4].includes(args.length)) {
+		const [packetDigest, decision, reasonFile, measurementsFile] = args;
+		const reason = await readPrivate(reasonFile);
+		const measurements = measurementsFile ? JSON.parse(await readPrivate(measurementsFile)) : {};
+		const result = await binding.workflow.decide(reviewId, packetDigest, decision, reason, reviewer, measurements);
 		console.log(JSON.stringify({ reviewId: result.reviewId, state: result.state }));
 	} else {
 		throw new Error(
