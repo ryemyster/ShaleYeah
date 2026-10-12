@@ -11,6 +11,8 @@
 | `pyproject.toml` | Python ADK dependencies |
 | `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
 | `app/geowiz_mcp.py` | Geowiz role mappings/configuration using installed `shaleyeah-mcp-client` |
+| `app/working_context.py` | Role-local SQLite catalog, canonical records, dependency invalidation and bounded selection |
+| `app/context_runtime.py` | Native ADK session/runner binding and current-source dispatch gate |
 | `tests/` | pytest shape/result-boundary tests plus ADK eval dataset/config |
 | `servers/geowiz` | independent TypeScript MCP backend |
 
@@ -159,3 +161,21 @@ Progressive Disclosure (Skills)** with its existing model budget and save gate.
 No new reasoning loop, child-agent delegation or workflow authority is added.
 [Event semantics](../../../docs/employee-events.md) separate model latency,
 confidence and observed human rework, and preserve failed/blocked grades.
+
+## Retained working context
+
+The [working-context adapter](WORKING_CONTEXT.md) separates private task/work
+records, source metadata, reference-only checkpoint recovery and explicitly
+reviewed reusable knowledge. Native ADK `DatabaseSessionService` uses SQLite;
+the catalog checks authenticated scope, current source/review receipts, metadata
+revisions and dependency state before body retrieval and model dispatch. Historical
+conversation is retained privately but only current-turn contents plus qualified
+context enter the model. A sealed request hash prevents mutation after counting.
+
+Selected Gemini/Anthropic token counters share pinned native serialization with
+generation. Required references, uncertainty, pending decisions and conflicts
+cannot disappear to make a budget pass. Context blocks produce blocked employee
+events; an unexecuted model is not logged as a success. Scoped export/restore
+preserves original expiry and current deletion markers. The adapter has a single
+native writer, owned private files and explicit expiry purge. Business schemas
+remain independent of the framework; no warehouse or coordinator is introduced.

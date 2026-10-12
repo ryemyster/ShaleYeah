@@ -143,7 +143,8 @@ class GeologistEvents:
     async def after_agent(self, callback_context):
         pending = callback_context.invocation_id in self._pending_review
         self._pending_review.discard(callback_context.invocation_id)
-        await self.emitter.emit("agent", "review-required" if pending else "succeeded", versions=self._versions())
+        blocked = callback_context.state.get("temp:context_blocked", False)
+        await self.emitter.emit("agent", "blocked" if blocked else "review-required" if pending else "succeeded", versions=self._versions())
 
     async def before_model(self, callback_context, llm_request):
         span = uuid.uuid4().hex[:16]
@@ -151,6 +152,8 @@ class GeologistEvents:
         self._models[callback_context.invocation_id] = (time.monotonic(), span, receipt["eventId"])
 
     async def after_model(self, callback_context, llm_response):
+        if llm_response.custom_metadata and llm_response.custom_metadata.get("contextBlocked"):
+            return
         if getattr(llm_response, "partial", False):
             return
         pending = self._models.pop(callback_context.invocation_id, None)

@@ -41,6 +41,11 @@ def geowiz_backend_status() -> dict[str, Any]:
         "transport": "mcp-http",
         "independentBackend": True,
         "architectureMode": "stand-alone-with-progressive-disclosure-skills",
+        "reviewBoundary": {
+            "privateDrafts": "current-grants-required",
+            "sharedKnowledge": "authenticated-human-review-required",
+            "protectedActions": "executing-backend-authority-required",
+        },
         "notes": [
             "servers/geowiz remains independently runnable.",
             "Set GEOWIZ_MCP_URL to use a compatible internal or proprietary MCP backend.",
@@ -91,7 +96,15 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
     }
 
 
-def create_geologist_agent(config=None, *, backend_config=None, resolve_credential=None, adapter_factory=None, events=None):
+def create_geologist_agent(
+    config=None,
+    *,
+    backend_config=None,
+    resolve_credential=None,
+    adapter_factory=None,
+    events=None,
+    context_hooks=None,
+):
     backend = backend_config or _backend_config()
     expected = public_profile(config.synthesis) if config else None
     options = {}
@@ -99,8 +112,11 @@ def create_geologist_agent(config=None, *, backend_config=None, resolve_credenti
         options["resolve_credential"] = resolve_credential
     if adapter_factory is not None:
         options["adapter_factory"] = adapter_factory
+    if context_hooks is not None:
+        options["request_guard"] = context_hooks.before_dispatch
     model = ConfiguredModel(config.agent if config else None, **options)
     observer = GeologistEvents(events, config.agent if config else None) if events is not None else None
+
     def bind(function, backend, expected):
         return bind_backend(function, backend, expected, events)
 
@@ -111,12 +127,23 @@ def create_geologist_agent(config=None, *, backend_config=None, resolve_credenti
     return Agent(
         name="geologist",
         model=model,
-        before_agent_callback=[observer.before_agent, begin_model_budget] if observer else begin_model_budget,
+        before_agent_callback=[observer.before_agent, begin_model_budget]
+        if observer
+        else begin_model_budget,
         after_agent_callback=observer.after_agent if observer else None,
-        before_model_callback=[check_budget, observer.before_model] if observer else check_budget,
+        before_model_callback=[
+            check_budget,
+            *([context_hooks.before_model] if context_hooks else []),
+            *([observer.before_model] if observer else []),
+        ],
         after_model_callback=observer.after_model if observer else None,
         on_model_error_callback=observer.model_error if observer else None,
-        after_tool_callback=observer.after_tool if observer else None,
+        after_tool_callback=[
+            *([context_hooks.after_tool] if context_hooks else []),
+            *([observer.after_tool] if observer else []),
+        ]
+        or None,
+        include_contents="none" if context_hooks else "default",
         on_tool_error_callback=observer.tool_error if observer else None,
         instruction=(
             "You are Marcus Aurelius Geologicus, a geological diligence agent. "

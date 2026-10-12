@@ -22,6 +22,11 @@ At runtime:
 - `servers/geowiz` is the independently runnable MCP backend.
 - New Geologist reasoning/runtime work should target `app/agent.py` and `app/geowiz_mcp.py`.
 
+For retained work, embed the [scoped working-context runtime](docs/WORKING_CONTEXT.md).
+It uses native ADK/SQLite with separate evidence, private work, checkpoints and
+reviewed handoffs. Current source rights and byte/token budgets are checked before
+model use. The development CLI's in-memory session remains a separate entrypoint.
+
 ---
 
 ## Run A Geological Task
@@ -146,6 +151,8 @@ or backend approval enforcement.
 |------|---------|
 | [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Geowiz backend-selection tools |
 | [`app/geowiz_mcp.py`](app/geowiz_mcp.py) | Role configuration and ADK execution mappings using the installed MCP client |
+| [`app/working_context.py`](app/working_context.py) | Scoped durable catalog, source dependencies, bounded assembly and export/deletion |
+| [`app/context_runtime.py`](app/context_runtime.py) | Native ADK/SQLite session and dispatch adapter |
 | [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
 | [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
 | [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
@@ -164,6 +171,7 @@ or backend approval enforcement.
 | [INTEGRATION.md](docs/INTEGRATION.md) | Calling this agent from your own code |
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local setup, state/review requirements and qualified deployment limits |
 | [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Running both processes locally, HITL testing |
+| [WORKING_CONTEXT.md](docs/WORKING_CONTEXT.md) | Retaining and resuming scoped private work, configuration and recovery |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | TDD workflow, adding tools, implementation notes |
 
 ## Follow a task's events
@@ -173,6 +181,7 @@ correlated MCP events. Host hooks record validated task/context/work, evaluation
 and verified-review references with exact hashes. Raw source bodies, prompts,
 arguments and credentials are excluded from this event stream.
 [Employee events](../../docs/employee-events.md) provides private configuration,
-a complete offline reference trace and recovery limits. Review authentication,
-durable context and resume remain host responsibilities; the existing save
+a complete offline reference trace and recovery limits. The retained runtime
+also records selection manifests and context blocks. Review authentication and
+protected continuation remain host responsibilities; the existing save
 confirmation is a pause, not professional/backend approval.

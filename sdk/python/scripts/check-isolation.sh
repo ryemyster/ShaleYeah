@@ -27,6 +27,8 @@ cp "$geologist_root/tests/test_mcp_access_boundary.py" "$isolation_dir/tests/tes
 cp "$geologist_root/tests/test_mcp_result_contract.py" "$isolation_dir/tests/test_geologist_mapping.py"
 cp "$geologist_root/tests/test_eval_adapter.py" "$isolation_dir/agents/geologist/tests/"
 cp "$geologist_root/tests/test_employee_events.py" "$isolation_dir/agents/geologist/tests/"
+cp "$geologist_root/tests/test_working_context.py" "$geologist_root/tests/test_context_runtime.py" "$isolation_dir/agents/geologist/tests/"
+cp "$geologist_root/tests/test_context_token_count.py" "$isolation_dir/tests/"
 cp "$geologist_root/../../contracts/fixtures/records.json" "$isolation_dir/contracts/fixtures/"
 cp -R "$geologist_root/tests/eval/fixtures" "$geologist_root/tests/eval/datasets" "$isolation_dir/agents/geologist/tests/eval/"
 cp "$geologist_root/tests/eval/run_fixture_evals.py" "$isolation_dir/agents/geologist/tests/eval/"

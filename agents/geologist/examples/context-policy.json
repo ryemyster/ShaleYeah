@@ -1,0 +1,15 @@
+{
+  "version": "0.1.0",
+  "contextPolicy": {"id": "policy.context.geologist", "version": "r1"},
+  "budget": {"maxItems": 16, "maxBytes": 65536, "maxTokens": 16000},
+  "reservedTokens": 2048,
+  "maxCountCalls": 20,
+  "maxRecords": 512,
+  "maxRecordBytes": 65536,
+  "maxSourceAgeSeconds": 86400,
+  "retention": {
+    "policy": {"id": "policy.retention.geologist", "version": "r1"},
+    "seconds": 86400
+  },
+  "ranking": {"id": "lexical", "version": "1"}
+}
