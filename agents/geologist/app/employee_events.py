@@ -84,8 +84,10 @@ class GeologistEvents:
     async def record_work(self, product, *, parent_event_id=None):
         product = self._record(product, "work-product")
         # A declared final/approved artifact is still a claim until the separate verified review hook records it.
-        return await self.emitter.emit("work-product", "blocked" if product["blockers"] else "review-required",
-            refs=[self._ref(product, "work-product"), *self._source_refs(product["evidence"])], modelConfidence=product["confidence"],
+        status = "failed" if product["status"] == "failed" else "blocked" if product["blockers"] else "review-required"
+        return await self.emitter.emit("work-product", status,
+            refs=[self._ref(product, "work-product"), *self._source_refs(product["evidence"])],
+            **({"modelConfidence": product["confidence"]} if "confidence" in product else {}),
             **({"parentEventId": parent_event_id} if parent_event_id else {}))
 
     async def record_review_request(self, request, *, parent_event_id=None):

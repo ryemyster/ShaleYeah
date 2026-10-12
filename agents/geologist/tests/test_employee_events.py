@@ -109,6 +109,24 @@ async def test_model_claimed_final_product_still_needs_separate_verified_review(
 
 
 @pytest.mark.asyncio
+async def test_absent_optional_work_confidence_stays_absent_in_the_event():
+    observer_api, records = observer()
+    product = copy.deepcopy(RECORDS["work"])
+    product.pop("confidence")
+    await observer_api.record_work(product)
+    assert "modelConfidence" not in records[-1]
+
+
+@pytest.mark.asyncio
+async def test_failed_work_product_is_not_reported_as_merely_blocked():
+    observer_api, records = observer()
+    product = copy.deepcopy(RECORDS["blockedWork"])
+    product["status"] = "failed"
+    await observer_api.record_work(product)
+    assert records[-1]["status"] == "failed"
+
+
+@pytest.mark.asyncio
 async def test_running_task_uses_the_existing_business_enum():
     observer_api, records = observer()
     task = copy.deepcopy(RECORDS["task"])

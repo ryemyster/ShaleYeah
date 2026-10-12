@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #574: work-event hooks preserve absent optional confidence and zero values, and distinguish a failed work product from a blocked one. Canonical edge fixtures fail before the repair and pass afterward.
+
 - #574: adopted installed client 0.2.0/evaluations 0.2.1, native ADK event callbacks and host task/context/work/eval/review hooks. Added private event settings, actual protected two-provider trace and attestation-binding controls. Existing confirmation/budget/standalone topology remains; context/reviewer authorization/resume stay with #672/#673. Removed stale moving-model env guidance.
 
 
