@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #574: contracts package 0.3.0 adds separate event profile 0.1.0, Python/TypeScript validation/redaction, generated types, shared adversarial fixtures and isolated archive exports. Existing employee/source profiles remain unchanged.
+
+
 - #670: added separate connector profile 0.1.0, explicit Python/TypeScript source/private-configuration validators, offline shared-schema resolution, generated bindings and isolated npm/wheel controls. Existing employee schema 0.1.0 remains unchanged. Public package API advances to 0.2.0; structural validation does not authorize reads.
 
 - Added ADR 0004 for #572: mandatory/conditional employee/tool compositions,

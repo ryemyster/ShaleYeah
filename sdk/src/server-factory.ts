@@ -25,7 +25,7 @@ export interface ServerTemplate {
 	resources?: ServerResourceTemplate[];
 }
 
-export type ServerRuntimeOptions = Pick<MCPServerConfig, "http" | "dataPath">;
+export type ServerRuntimeOptions = Pick<MCPServerConfig, "http" | "dataPath" | "events">;
 
 export interface ServerToolTemplate extends MCPTool {}
 
@@ -58,6 +58,7 @@ export class ServerFactory {
 					persona: template.persona,
 					dataPath: options.dataPath,
 					http: options.http,
+					events: options.events,
 				});
 			}
 

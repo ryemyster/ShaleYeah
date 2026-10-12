@@ -1,10 +1,10 @@
 [project]
 name = "shaleyeah-evaluations"
-version = "0.2.0"
+version = "0.2.1"
 description = "Portable employee evaluation profiles and trusted deterministic metrics"
 requires-python = ">=3.11,<3.15"
 license = "Apache-2.0"
-dependencies = ["shaleyeah-contracts==0.2.0", "jsonschema==4.26.0", "rfc8785==0.1.4"]
+dependencies = ["shaleyeah-contracts==0.3.0", "jsonschema==4.26.0", "rfc8785==0.1.4"]
 
 [dependency-groups]
 dev = ["pytest>=9.0.2,<10", "pytest-cov>=7,<8", "ruff>=0.15,<1"]

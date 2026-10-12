@@ -379,7 +379,7 @@ wheels = [
 
 [[package]]
 name = "shaleyeah-contracts"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "../contracts" }
 dependencies = [
     { name = "jsonschema" },
@@ -405,7 +405,7 @@ dev = [
 
 [[package]]
 name = "shaleyeah-evaluations"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "." }
 dependencies = [
     { name = "jsonschema" },

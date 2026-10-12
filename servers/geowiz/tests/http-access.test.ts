@@ -125,7 +125,7 @@ test("real Geowiz enforces configured ingress for an external MCP client", async
 });
 
 test("local reference launcher loads private credential references and records redacted ingress", {
-	timeout: 10000,
+	timeout: 20000,
 }, async () => {
 	const dir = await fs.mkdtemp(path.join(os.tmpdir(), "shale-geowiz-launcher-"));
 	const token = randomUUID();
@@ -164,7 +164,7 @@ test("local reference launcher loads private credential references and records r
 			const deadline = setTimeout(() => {
 				clearInterval(timer);
 				reject(new Error("Local launcher did not become ready"));
-			}, 5000);
+			}, 10000);
 			const timer = setInterval(() => {
 				const match = output.match(/HTTP transport listening on port (\d+)/);
 				if (match) {

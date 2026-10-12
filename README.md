@@ -69,6 +69,7 @@ Each corresponding agent lives under `agents/<role>/` when implemented or migrat
 | Durable employee contracts and technology boundaries | [ADR 0001](docs/adr/0001-durable-employee-contracts.md) |
 | Permitted role data sources, exact-byte provenance and installed adapter hooks | [connectors/README.md](connectors/README.md) |
 | Employee record schemas, Python/TypeScript validation and compatibility | [contracts/README.md](contracts/README.md) |
+| Follow task, tool, model, evaluation and human-review events | [Employee events](docs/employee-events.md) |
 | Employee workflows, data, context, evaluations and human review | [Employee role matrix](docs/employee-role-matrix.md) |
 | Current topology and boundaries | [docs/topology.md](docs/topology.md) |
 | Local reference setup and qualified deployment limits | [Deployment support](docs/deployment-support.md) |

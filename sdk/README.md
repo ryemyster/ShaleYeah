@@ -128,3 +128,16 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](../docs/model-providers.md).
+
+## Correlated employee events
+
+SDK 0.2.0 depends on portable contracts 0.3.0 and exports `EventEmitter`,
+`EventExportError`, `createJsonlSink`, `loadJsonlEmitter`, `bindMCPEvents` and
+`MCPCorrelationError`. Supply a trusted emitter through `MCPServerConfig.events`
+or factory runtime options to record tool dispatch/completion. The binding rejects
+foreign/missing metadata before dispatch; the success schema is checked before
+a successful event. Required audit failure blocks before execution and reports
+uncertain effects afterward. Operational stdio messages use stderr; stdout remains
+MCP frames. [Employee events](../docs/employee-events.md) explains private setup,
+redaction, optional sinks and measurement limits. HTTP/source authorization audit
+remains an independent requirement.

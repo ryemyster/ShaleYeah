@@ -1,6 +1,8 @@
 import math
 import os
 import stat
+import time
+import uuid
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -9,8 +11,10 @@ from urllib.parse import urlsplit
 
 import anyio
 import httpx
+from shaleyeah_contracts.events import EventValidationError
 
 from .errors import MCPClientError
+from .events import EventEmitter, EventExportError
 from .results import discover_tool, read_result, validate_schema
 
 CredentialProvider = Callable[[], Awaitable[str]]
@@ -151,7 +155,7 @@ def _failure(error: Exception, dispatched: bool) -> MCPClientError:
 
 
 async def call_tool(
-    config: MCPClientConfig, tool_name: str, arguments: dict[str, Any]
+    config: MCPClientConfig, tool_name: str, arguments: dict[str, Any], *, events: EventEmitter | None = None
 ) -> dict[str, Any]:
     """One configured call/session. Only transient pre-dispatch setup may retry."""
 
@@ -163,13 +167,26 @@ async def call_tool(
         or not tool_name
         or len(tool_name) > 128
         or not isinstance(arguments, dict)
+        or (events is not None and not isinstance(events, EventEmitter))
     ):
         raise MCPClientError("invalid_input", "user_action")
     dispatched = False
+
+    async def record(status, **details):
+        if events is None:
+            return None
+        try:
+            return await events.emit("tool", status, toolName=tool_name, **details)
+        except (EventExportError, EventValidationError):
+            raise MCPClientError("audit_unavailable", "user_action", effect_unknown=dispatched) from None
+
     try:
         with anyio.fail_after(config.total_timeout):
             for attempt in range(config.preflight_attempts):
+                started = time.monotonic()
+                span_id = uuid.uuid4().hex[:16]
                 try:
+                    receipt = await record("started", attempt=attempt + 1, spanId=span_id)
                     try:
                         token = await config.credential()
                         if (
@@ -198,17 +215,43 @@ async def call_tool(
                                 tool = await discover_tool(session, tool_name)
                                 validate_schema(arguments, tool.inputSchema, "input")
                                 dispatched = True
-                                result = await session.call_tool(tool_name, arguments)
-                                return read_result(result, getattr(tool, "outputSchema", None))
+                                # Correlation is host-bound metadata, separate from model-visible arguments and authority.
+                                metadata = (
+                                    {"meta": {"org.shaleyeah/correlation": {
+                                        "context": events.context, "parentEventId": receipt["eventId"], "spanId": span_id,
+                                    }}} if events is not None else {}
+                                )
+                                result = await session.call_tool(tool_name, arguments, **metadata)
+                                output = read_result(result, getattr(tool, "outputSchema", None))
+                                await record(
+                                    "failed" if output["isError"] else "succeeded",
+                                    attempt=attempt + 1, spanId=span_id,
+                                    measurements={"toolLatencyMs": (time.monotonic() - started) * 1000},
+                                    **({"errorCode": "tool_failed"} if output["isError"] else {}),
+                                )
+                                return output
                 except Exception as error:
                     failure = _failure(error, dispatched)
-                    if (
+                    if failure.code == "audit_unavailable":
+                        raise failure from None
+                    terminal = (
                         dispatched
                         or failure.category != "retryable"
                         or attempt + 1 >= config.preflight_attempts
-                    ):
+                    )
+                    await record(
+                        ("blocked" if failure.category in ("auth_required", "user_action") else "failed") if terminal else "retried",
+                        attempt=attempt + 1, spanId=span_id, errorCode=failure.code, effectUnknown=failure.effect_unknown,
+                        measurements={"toolLatencyMs": (time.monotonic() - started) * 1000},
+                    )
+                    if terminal:
                         raise failure from None
                     await anyio.sleep(config.retry_delay)
     except TimeoutError:
+        # Cancellation exits the transport scope first; then record the unfinished action without replaying it.
+        await record(
+            "failed", attempt=attempt + 1, spanId=span_id, errorCode="timeout", effectUnknown=dispatched,
+            measurements={"toolLatencyMs": (time.monotonic() - started) * 1000},
+        )
         raise MCPClientError("timeout", "retryable", effect_unknown=dispatched) from None
     raise MCPClientError("protocol_error")

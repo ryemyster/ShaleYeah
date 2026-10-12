@@ -1,6 +1,6 @@
 {
 	"name": "@shaleyeah/sdk",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Shared language for ShaleYeah agents and MCP servers — types, LLM client, base server, parsers",
 	"private": false,
 	"type": "module",
@@ -19,6 +19,7 @@
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@shaleyeah/contracts": "workspace:*",
 		"@anthropic-ai/sdk": "0.104.1",
 		"@google/genai": "2.28.0",
 		"@modelcontextprotocol/sdk": "^1.29.0",

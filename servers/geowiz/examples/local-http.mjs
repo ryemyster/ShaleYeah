@@ -1,6 +1,12 @@
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
-import { createFileModelCredentialResolver, createModelRuntime, parseReferenceModelConfig } from "@shaleyeah/sdk";
+import {
+	bindMCPEvents,
+	createFileModelCredentialResolver,
+	createModelRuntime,
+	loadJsonlEmitter,
+	parseReferenceModelConfig,
+} from "@shaleyeah/sdk";
 import { GeowizServer } from "../dist/index.js";
 import { loadSourceBinding } from "../dist/source-config.js";
 
@@ -49,6 +55,7 @@ try {
 		auditFile: _auditFile,
 		modelConfigFile,
 		sourceConfigFile,
+		eventConfigFile,
 		dataPath,
 		...settings
 	} = config;
@@ -72,12 +79,14 @@ try {
 		});
 	};
 	const sourceBinding = sourceConfigFile ? await loadSourceBinding(sourceConfigFile, audit) : undefined;
+	const eventEmitter = eventConfigFile ? await loadJsonlEmitter(eventConfigFile, [accessToken]) : undefined;
 
 	process.env.PORT ??= "3001";
 	server = new GeowizServer({
 		dataPath,
 		modelRuntime,
 		sourceRuntime: sourceBinding?.runtime,
+		events: eventEmitter ? bindMCPEvents(eventEmitter) : undefined,
 		http: {
 			access: {
 				...settings,

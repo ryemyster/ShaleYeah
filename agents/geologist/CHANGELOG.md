@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #574: work-event hooks preserve absent optional confidence and zero values, and distinguish a failed work product from a blocked one. Canonical edge fixtures fail before the repair and pass afterward.
+
+- #574: adopted installed client 0.2.0/evaluations 0.2.1, native ADK event callbacks and host task/context/work/eval/review hooks. Added private event settings, actual protected two-provider trace and attestation-binding controls. Existing confirmation/budget/standalone topology remains; context/reviewer authorization/resume stay with #672/#673. Removed stale moving-model env guidance.
+
+
 - #667: added portable frozen-run reports, hard-failure/infrastructure states, versioned runtime-observed architecture and source-bound numeric gates, candidate comparison and the pinned Geologist ADK/agents-cli adapter with an independent BYO qualitative judge. Source-linked LAS/policy fixtures and installed SDK controls require no paid key; professional acceptance, durable review and promotion remain separate.
 
 - #666: replaced executable eval YAML and test exec with a versioned JSON profile and installed trusted registry; preserve all role expectations and observed confirmation. Explicit evaluation dependency and wheel isolation; runner adaptation remains #667.

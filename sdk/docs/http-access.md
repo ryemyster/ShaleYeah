@@ -127,9 +127,11 @@ decision/reason and classified operation, plus hashed principal/target reference
 where applicable. They exclude bearer/header values, raw IDs, arbitrary unknown
 operation text, arguments and verifier/sink exception messages. `allow` records
 an authorization attempt before dispatch, not successful domain completion.
-A failed sink stops the operation. Full tracing/export/redaction and durable
-sink qualification remain #574; exact-revision grants and transaction/restart
-enforcement remain #673. Connector/file/source rights remain #670.
+A failed sink stops the operation. [Employee events](../../docs/employee-events.md)
+add a separate correlated metadata stream and private local export; multi-process
+sink durability and external delivery require their own qualification.
+Exact-revision grants and transaction/restart enforcement remain #673.
+Connector/file/source rights use the independent connector boundary from #670.
 
 Ingress scopes do not approve interpretations, certify sources, grant source
 export rights or authorize consequential domain actions. Each protected backend

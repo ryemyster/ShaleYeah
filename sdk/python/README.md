@@ -6,7 +6,8 @@ It has no ADK, model-provider, business-role, warehouse or monorepo-source impor
 
 The first consumer is [Geologist](../../agents/geologist/README.md).
 Its installed-wheel isolation check also installs the consumer's declared portable
-evaluation/contract wheels; these do not become client runtime dependencies.
+evaluation/contract wheels. Portable contracts 0.3.0 is now a client runtime
+dependency for event validation; the evaluation package remains a consumer dependency.
 The role keeps its tool names, inputs, prompts and review responsibilities;
 this package owns credential handling, bounded connection setup, discovery,
 schema checks and result preservation.
@@ -23,8 +24,8 @@ uv build --wheel
 ```
 
 For a separate repository, install the built
-`dist/shaleyeah_mcp_client-0.1.0-py3-none-any.whl`. Nothing has been published
-to a package registry by this change. Declare `shaleyeah-mcp-client==0.1.0` as a
+`dist/shaleyeah_mcp_client-0.2.0-py3-none-any.whl`. Nothing has been published
+to a package registry by this change. Declare `shaleyeah-mcp-client==0.2.0` as a
 dependency and supply that wheel or your approved package index. Local Geologist
 development uses an explicit editable uv source; its built wheel has the normal versioned
 dependency and works with this client wheel outside the checkout.
@@ -138,7 +139,21 @@ See [SDK HTTP access](../docs/http-access.md) and the
 [migration ledger](../../docs/legacy-migration-ledger.md) for boundaries and
 remaining employee adoption owners.
 
-Installed-consumer isolation also installs the declared evaluation 0.2.0 wheel
+Installed-consumer isolation also installs the declared evaluation 0.2.1 wheel
 and exercises Geologist's native trace adapter, private host-input reader and
 independent qualitative judge controls. See [evaluation grading](../../agents/geologist/docs/LOCAL_TESTING.md#run-adk-evals).
-The MCP client API and transport boundary are unchanged.
+Calls without an event emitter preserve the existing transport API; event-enabled
+calls additionally send bounded correlation metadata through native MCP.
+
+## Optional employee events
+
+Import `EventEmitter`, `EventExportError`, `create_jsonl_sink` and
+`load_jsonl_emitter` from `shaleyeah_mcp.events`. Pass `events=emitter` to
+`call_tool(...)` to record starts, outcomes, preflight retries and uncertain effects.
+It sends validated `_meta` through pinned MCP 1.28.1. Calls without the option
+retain their previous behavior. A required export failure raises value-free
+`MCPClientError(code="audit_unavailable")`; dispatched calls are never replayed.
+Optional export failures increment emitter health.
+[Employee event setup](../../docs/employee-events.md) documents private settings,
+redaction, ordering and independent host review. Client source code imports no
+ADK/provider/evaluation runtime. The installed-wheel check includes these hooks.

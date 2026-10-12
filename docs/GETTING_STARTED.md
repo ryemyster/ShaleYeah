@@ -154,3 +154,10 @@ Read [CONTRIBUTING.md](../CONTRIBUTING.md) for issue/test/review standards,
 [docs/sdlc.md](sdlc.md) for enforcement/recovery, and
 [topology](topology.md) plus [current architecture](ARCHITECTURE.md) for package
 boundaries. Do not discard work or bypass hooks to clear a delivery slot.
+
+## Observe employee work
+
+After setting up the approved model, access and source configuration, follow
+[employee events](employee-events.md) to enable separate private JSONL streams
+and inspect a complete offline reference trace. Event config binds an approved
+assignment; it does not replace source rights or authenticated human review.

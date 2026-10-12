@@ -128,3 +128,21 @@ work products, source or authority observations. The host must bind those inputs
 Promotion gates follow in #577. Actual source/employee/context/restartable review
 qualification remains #671/#672/#673. No fixture or judge score can approve geology,
 persist employee memory or decide an investment.
+
+## Correlated trace controls
+
+From this package:
+
+```sh
+uv run --locked pytest -q tests/test_employee_events.py tests/test_native_employee_events.py
+```
+
+These tests
+cover exact host bindings, native model versions, confirmation pauses and actual
+protected Geowiz correlation for offline Gemini/Anthropic. Generate private
+[operator-readable JSONL](../../../docs/employee-events.md#generate-an-operator-readable-fixture-trace)
+with the documented export command. Authored review measurements are fixtures,
+not observed human acceptance. The installed-wheel test separately verifies host
+hooks and client export without monorepo imports. For grading, optional
+`--events /absolute/private/agent-events.json` records the completed reports
+against matching scope/revision/qualification.

@@ -6,7 +6,9 @@ from typing import Any
 from google.adk.agents import Agent
 from google.adk.apps import App
 from google.adk.tools import FunctionTool
+from shaleyeah_mcp.events import load_jsonl_emitter
 
+from app.employee_events import GeologistEvents
 from app.geowiz_mcp import (
     _backend_config,
     analyze_geowiz_formation,
@@ -89,7 +91,7 @@ def plan_geowiz_tool_call(goal: str, file_path: str, data_type: str = "las") -> 
     }
 
 
-def create_geologist_agent(config=None, *, backend_config=None, resolve_credential=None, adapter_factory=None):
+def create_geologist_agent(config=None, *, backend_config=None, resolve_credential=None, adapter_factory=None, events=None):
     backend = backend_config or _backend_config()
     expected = public_profile(config.synthesis) if config else None
     options = {}
@@ -98,6 +100,9 @@ def create_geologist_agent(config=None, *, backend_config=None, resolve_credenti
     if adapter_factory is not None:
         options["adapter_factory"] = adapter_factory
     model = ConfiguredModel(config.agent if config else None, **options)
+    observer = GeologistEvents(events, config.agent if config else None) if events is not None else None
+    def bind(function, backend, expected):
+        return bind_backend(function, backend, expected, events)
 
     def check_budget(callback_context, llm_request):
         if config:
@@ -106,8 +111,13 @@ def create_geologist_agent(config=None, *, backend_config=None, resolve_credenti
     return Agent(
         name="geologist",
         model=model,
-        before_agent_callback=begin_model_budget,
-        before_model_callback=check_budget,
+        before_agent_callback=[observer.before_agent, begin_model_budget] if observer else begin_model_budget,
+        after_agent_callback=observer.after_agent if observer else None,
+        before_model_callback=[check_budget, observer.before_model] if observer else check_budget,
+        after_model_callback=observer.after_model if observer else None,
+        on_model_error_callback=observer.model_error if observer else None,
+        after_tool_callback=observer.after_tool if observer else None,
+        on_tool_error_callback=observer.tool_error if observer else None,
         instruction=(
             "You are Marcus Aurelius Geologicus, a geological diligence agent. "
             "Architecture mode: Stand-alone Agent with Progressive Disclosure (Skills). "
@@ -116,22 +126,24 @@ def create_geologist_agent(config=None, *, backend_config=None, resolve_credenti
             "Never assume Geowiz is colocated; use the configured backend URL."
         ),
         tools=[
-            bind_backend(geowiz_backend_status, backend, expected),
-            bind_backend(plan_geowiz_tool_call, backend, expected),
-            bind_backend(analyze_geowiz_formation, backend, expected),
-            bind_backend(assess_geowiz_quality, backend, expected),
-            bind_backend(process_geowiz_well_logs, backend, expected),
-            bind_backend(process_geowiz_gis, backend, expected),
-            bind_backend(process_geowiz_access_database, backend, expected),
-            bind_backend(process_geowiz_document, backend, expected),
-            bind_backend(process_geowiz_seismic_data, backend, expected),
-            bind_backend(process_geowiz_aries_database, backend, expected),
-            FunctionTool(bind_backend(save_geowiz_finding, backend, expected), require_confirmation=True),
+            bind(geowiz_backend_status, backend, expected),
+            bind(plan_geowiz_tool_call, backend, expected),
+            bind(analyze_geowiz_formation, backend, expected),
+            bind(assess_geowiz_quality, backend, expected),
+            bind(process_geowiz_well_logs, backend, expected),
+            bind(process_geowiz_gis, backend, expected),
+            bind(process_geowiz_access_database, backend, expected),
+            bind(process_geowiz_document, backend, expected),
+            bind(process_geowiz_seismic_data, backend, expected),
+            bind(process_geowiz_aries_database, backend, expected),
+            FunctionTool(bind(save_geowiz_finding, backend, expected), require_confirmation=True),
         ],
     )
 
 
 reference_file = os.getenv("GEOLOGIST_MODEL_CONFIG_FILE")
-root_agent = create_geologist_agent(read_private_config(reference_file) if reference_file else None)
+event_file = os.getenv("GEOLOGIST_EVENT_CONFIG_FILE")
+root_agent = create_geologist_agent(read_private_config(reference_file) if reference_file else None,
+    events=load_jsonl_emitter(event_file) if event_file else None)
 
 app = App(root_agent=root_agent, name="app")

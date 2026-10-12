@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shaleyeah.org/schemas/employee-events/0.1.0",
+  "title": "EmployeeEvent",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "kind": {
+      "const": "employee-event"
+    },
+    "eventId": {
+      "$ref": "#/$defs/EventIdentifier"
+    },
+    "streamId": {
+      "$ref": "#/$defs/EventIdentifier"
+    },
+    "eventType": {
+      "enum": [
+        "task",
+        "agent",
+        "context",
+        "work-product",
+        "evaluation",
+        "review",
+        "tool",
+        "model",
+        "source"
+      ]
+    },
+    "status": {
+      "enum": [
+        "started",
+        "succeeded",
+        "failed",
+        "blocked",
+        "retried",
+        "review-required",
+        "infra-error",
+        "approved",
+        "rejected",
+        "revision-requested"
+      ]
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "producer": {
+      "$ref": "#/$defs/EventProducer"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "context": {
+      "$ref": "#/$defs/EmployeeEventContext"
+    },
+    "spanId": {
+      "type": "string",
+      "minLength": 16,
+      "maxLength": 16,
+      "pattern": "^[0-9a-f]{16}$"
+    },
+    "parentEventId": {
+      "$ref": "#/$defs/EventIdentifier"
+    },
+    "refs": {
+      "type": "array",
+      "maxItems": 64,
+      "items": {
+        "$ref": "#/$defs/EventReference"
+      }
+    },
+    "toolName": {
+      "$ref": "#/$defs/EventIdentifier"
+    },
+    "errorCode": {
+      "$ref": "#/$defs/EventIdentifier"
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 3
+    },
+    "effectUnknown": {
+      "type": "boolean"
+    },
+    "versions": {
+      "$ref": "#/$defs/EventVersions"
+    },
+    "measurements": {
+      "$ref": "#/$defs/EventMeasurements"
+    },
+    "modelConfidence": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "redaction": {
+      "$ref": "#/$defs/EventRedaction"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "kind",
+    "eventId",
+    "streamId",
+    "eventType",
+    "status",
+    "observedAt",
+    "producer",
+    "sequence",
+    "context",
+    "refs",
+    "redaction"
+  ],
+  "$defs": {
+    "EventIdentifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9_.:/-]*(?![\\s\\S])"
+    },
+    "EventScope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "customerId": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "assetId": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "taskId": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "employeeId": {
+          "$ref": "#/$defs/EventIdentifier"
+        }
+      },
+      "required": [
+        "customerId",
+        "assetId",
+        "taskId",
+        "employeeId"
+      ]
+    },
+    "EmployeeEventContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "runId": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "traceId": {
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 32,
+          "pattern": "^[0-9a-f]{32}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/EventScope"
+        },
+        "taskRevision": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "qualification": {
+          "enum": [
+            "fixture",
+            "live"
+          ]
+        }
+      },
+      "required": [
+        "runId",
+        "traceId",
+        "scope",
+        "taskRevision",
+        "qualification"
+      ]
+    },
+    "EventProducer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "version": {
+          "$ref": "#/$defs/EventIdentifier"
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "EventReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "task",
+            "context",
+            "work-product",
+            "evaluation",
+            "review",
+            "source",
+            "profile"
+          ]
+        },
+        "id": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "sha256": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "revision",
+        "sha256"
+      ]
+    },
+    "EventModel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "id": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "revision": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "reportedRevision": {
+          "$ref": "#/$defs/EventIdentifier"
+        }
+      },
+      "required": [
+        "provider",
+        "id",
+        "revision"
+      ]
+    },
+    "EventRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EventIdentifier"
+        },
+        "version": {
+          "$ref": "#/$defs/EventIdentifier"
+        }
+      },
+      "required": [
+        "id",
+        "version"
+      ]
+    },
+    "EventVersions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "model": {
+          "$ref": "#/$defs/EventModel"
+        },
+        "runtime": {
+          "$ref": "#/$defs/EventRuntime"
+        },
+        "harness": {
+          "$ref": "#/$defs/EventRuntime"
+        },
+        "judge": {
+          "$ref": "#/$defs/EventModel"
+        }
+      },
+      "required": []
+    },
+    "EventMeasurements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modelLatencyMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "toolLatencyMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "humanReviewSeconds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "corrections": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "reworkCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "taskCompleted": {
+          "type": "boolean"
+        },
+        "escalationQuality": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "toolFailures": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": []
+    },
+    "EventRedaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "$ref": "#/$defs/EventProducer"
+        },
+        "droppedFields": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "redactedValues": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "policy",
+        "droppedFields",
+        "redactedValues"
+      ]
+    }
+  }
+}
