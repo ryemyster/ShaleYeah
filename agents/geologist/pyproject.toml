@@ -13,6 +13,7 @@ dependencies = [
   "httpx==0.28.1",
   "httpx2==2.13.1",
   "rfc8785==0.1.4",
+  "shaleyeah-contracts==0.3.0",
   "shaleyeah-mcp-client==0.2.0",
   "shaleyeah-evaluations==0.2.1",
 ]

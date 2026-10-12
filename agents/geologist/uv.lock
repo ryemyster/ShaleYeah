@@ -2991,6 +2991,7 @@ dependencies = [
     { name = "httpx" },
     { name = "httpx2" },
     { name = "rfc8785" },
+    { name = "shaleyeah-contracts" },
     { name = "shaleyeah-evaluations" },
     { name = "shaleyeah-mcp-client" },
 ]
@@ -3023,6 +3024,7 @@ requires-dist = [
     { name = "httpx2", specifier = "==2.13.1" },
     { name = "rfc8785", specifier = "==0.1.4" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.4.6,<1.0.0" },
+    { name = "shaleyeah-contracts", editable = "../../contracts" },
     { name = "shaleyeah-evaluations", editable = "../../evaluations" },
     { name = "shaleyeah-mcp-client", editable = "../../sdk/python" },
     { name = "ty", marker = "extra == 'lint'", specifier = ">=0.0.1a0" },
