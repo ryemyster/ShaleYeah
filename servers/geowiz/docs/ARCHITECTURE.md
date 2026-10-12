@@ -6,7 +6,8 @@ Tier 1 MCP tool server. Exposes 9 domain tools and model-profile discovery and t
 
 ## Tool inventory
 
-There are nine domain operations and three discovery/query/status operations. Only formation
+There are nine domain operations, three discovery/source operations and two review
+preparation/status operations. Only formation
 analysis currently uses a model. Other processor outputs still need source and
 format qualification; a successful RPC does not certify their professional quality.
 
@@ -18,7 +19,8 @@ format qualification; a successful RPC does not certify their professional quali
 | `process_gis`, `process_well_logs`, `process_access_database` | Existing processors; no model call |
 | `process_document`, `process_seismic_data`, `process_aries_database` | Existing processors; no model call |
 | `assess_quality` | Actual LAS completeness; accuracy/confidence unmeasured |
-| `save_finding` | File write; caller needs independent authorization/review |
+| `prepare_review`, `get_review_status` | Immutable private packet / authenticated durable checkpoint |
+| `save_finding` | Exact human grant; transactional private SQLite finding/outcome/audit |
 
 ## Local tools (src/tools/)
 
@@ -80,6 +82,15 @@ is consumed by Geowiz analysis/QC handlers. Other format handlers decline until
 their adapter profile is qualified. See [source setup](DATA_SOURCES.md).
 
 ## Dependencies
+
+The [review adapter](HUMAN_REVIEW.md) is deterministic supervision outside model
+reasoning. It verifies actual source snapshots and current operator policy,
+enforces immutable product revisions and binds human decisions to a packet
+digest. Human inspect/decide are host APIs plus a restricted OS operator CLI,
+not employee MCP tools. Direct MCP saves use the same backend gate. Node's
+built-in SQLite (>=22.13, still experimental in Node 22) supplies one local
+transaction for finding, audit and durable consumed outcome. This adds no
+mandatory cloud/database service and promises no external-write atomicity.
 
 ```
 @shaleyeah/server-geowiz

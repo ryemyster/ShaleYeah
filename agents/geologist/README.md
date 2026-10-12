@@ -18,7 +18,7 @@ At runtime:
 
 - ADK owns the agent shape, instructions, eval path, and backend-selection contract.
 - Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- The agent executes current Geowiz MCP tools through package-local Python wrappers. `save_finding` is exposed through ADK confirmation before persistence.
+- The agent executes Geowiz MCP tools through package-local Python wrappers. Review preparation/status are available; `save_finding` needs a backend-issued exact-revision human grant and retains an additional ADK confirmation UI.
 - `servers/geowiz` is the independently runnable MCP backend.
 - New Geologist reasoning/runtime work should target `app/agent.py` and `app/geowiz_mcp.py`.
 
@@ -26,6 +26,9 @@ For retained work, embed the [scoped working-context runtime](docs/WORKING_CONTE
 It uses native ADK/SQLite with separate evidence, private work, checkpoints and
 reviewed handoffs. Current source rights and byte/token budgets are checked before
 model use. The development CLI's in-memory session remains a separate entrypoint.
+Use the [human review adapter](../../servers/geowiz/docs/HUMAN_REVIEW.md) to
+inspect actual source inputs, request changes/reject/approve and resume a bounded
+private finding save after restart.
 
 ---
 
@@ -96,11 +99,19 @@ qualification; see [deployment limits](docs/DEPLOYMENT.md).
 | `geologist.process_document` | Geological document parsing and extraction | query | No |
 | `geologist.process_seismic_data` | SEG-Y seismic interpretation | query | No |
 | `geologist.process_aries_database` | ARIES reserves database processing | query | No |
-| `geologist.save_finding` | Write finding JSON on the Geowiz host; durable employee context is separate | **command** | **Yes**, ADK confirmation; backend enforcement pending |
+| `prepare_geowiz_review` | Prepare an immutable evidence/assumptions/eval/action packet | command | Returns pending review; cannot approve |
+| `get_geowiz_review_status` | Read the authenticated employee's durable review checkpoint | query | No decision authority |
+| `geologist.save_finding` | Execute the exact reviewed private finding save in Geowiz SQLite | **command** | **Yes**, authenticated human grant plus ADK confirmation |
 
 ## HITL Boundary
 
-The agent may analyze geological data, assess data quality, process files, and summarize findings. It must ask for explicit confirmation before saving a finding or performing any persistence-like action.
+The agent may read authorized evidence, calculate, draft and request review.
+The enrolled human inspects the exact packet and approves, rejects or requests
+changes through a separate operator interface. Geowiz checks the bound grant
+even for direct MCP calls. Changed inputs/assumptions, revoked rights and expired
+grants require fresh review. Saving does not certify geology or promote shared
+knowledge. The primary Stand-alone + Skills brain uses a deterministic business
+review adapter; it adds no hierarchy or autonomous commitment authority.
 
 ---
 

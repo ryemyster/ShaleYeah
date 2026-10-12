@@ -24,6 +24,7 @@ This repo is a monorepo workspace for independently buildable project units:
 - [configurable employee evaluations](evaluations/README.md) with trusted metrics, portable run reports and mandatory review boundaries
 - [Geologist LAS input review](servers/geowiz/docs/LAS_REVIEW.md) with measured observations, explicit calculation assumptions, public parser samples and visible calibration gaps
 - [Geologist working context](agents/geologist/docs/WORKING_CONTEXT.md) with native SQLite restart, current-source checks, bounded model input and scoped recovery
+- [Geologist human review](servers/geowiz/docs/HUMAN_REVIEW.md) with exact evidence/action inspection, request changes/reject/approve and transactional private save/resume
 
 Each agent, MCP server, and orchestrator is intended to stand alone. The monorepo is the contributor workspace; it is not meant to force a single deployment shape. A user should be able to run one MCP server, one agent, an agent with a third-party MCP, a third-party agent with one of these MCPs, or the full reference system.
 

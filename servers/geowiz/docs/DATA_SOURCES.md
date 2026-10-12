@@ -70,7 +70,8 @@ authorized operation with the employee's existing confirmation boundary.
 These controls prove source access and byte identity. Fixed quality metrics,
 missing-input geology estimates and full professional LAS interpretation still
 require #671. Read access does not approve a finding, reserve certification or
-investment action; authenticated exact-revision review remains #673.
+investment action. The [human review adapter](HUMAN_REVIEW.md) separately checks
+the exact evidence/action and current rights before a private finding save.
 
 ## Verify without external keys
 

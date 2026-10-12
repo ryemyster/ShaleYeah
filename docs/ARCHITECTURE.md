@@ -51,7 +51,7 @@ not prove authenticated revision-bound professional review or restart recovery.
 Its development manifest declares in-memory sessions. The
 [retained embedding runtime](../agents/geologist/docs/WORKING_CONTEXT.md) now
 provides native ADK/SQLite context, current-source checks and scoped recovery;
-authenticated review/revision/protected resume remains #673. The reference reasoning/synthesis path uses explicit
+authenticated review/revision/private save resume uses the [Geowiz review adapter](../servers/geowiz/docs/HUMAN_REVIEW.md). The reference reasoning/synthesis path uses explicit
 Gemini/Anthropic profiles with independent judge configuration;
 [provider setup](model-providers.md) states its fixture qualification and limits.
 
@@ -120,7 +120,7 @@ The package verifies structure and declared references, not reviewer identity,
 real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
 specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
-#672 supplies durable context; #673 implements protected review/continuation. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
+#672 supplies durable context; #673 supplies enrolled exact-revision human review and transactional private save/continuation. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
 by #666; #667 adds portable reports and the Geologist-local ADK trace adapter.
 
 Legacy `ContextStore` is a process-local map, not durable isolated storage. ADK

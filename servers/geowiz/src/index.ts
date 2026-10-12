@@ -5,7 +5,6 @@
  * Marcus Aurelius Geologicus - Master Geological Analyst
  */
 
-import fs from "node:fs/promises";
 import { type ConnectorRuntime, SourceAccessError, type SourcePrincipal } from "@shaleyeah/connectors";
 import {
 	buildMutualExclusivityError,
@@ -27,6 +26,7 @@ import {
 } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { annotateLAS } from "./formation-synthesis.js";
+import { ReviewError, type ReviewWorkflow, reviewCandidateSchema, reviewExecutionSchema } from "./review-workflow.js";
 import { createFileSourceAudit, loadSourceBinding } from "./source-config.js";
 import { createSourceAnalysisTool, withSourceErrors } from "./source-tools.js";
 import { parseLASFile } from "./tools/las-parse.js";
@@ -38,6 +38,7 @@ import {
 } from "./tools/las-review.js";
 
 interface GeowizOptions extends ServerRuntimeOptions {
+	reviewWorkflow?: ReviewWorkflow;
 	modelRuntime?: ModelRuntime;
 	sourceRuntime?: ConnectorRuntime;
 	/** Trusted local operator identity for stdio; HTTP always uses its authenticated context. */
@@ -265,20 +266,42 @@ function createGeowizTemplate(runtime?: ModelRuntime, options: GeowizOptions = {
 			),
 			ServerFactory.createAnalysisTool(
 				"save_finding",
-				"Persist a key geological finding to the agent memory store for recall in future tasks. Closes the Observe→Think→Act→Learn loop.",
-				z.object({
-					findingType: z
-						.enum(["formation", "well-log", "quality-assessment", "seismic", "document", "general"])
-						.describe("Category of geological finding"),
-					title: z.string().min(1).describe("Short human-readable title"),
-					summary: z.string().min(1).describe("Detailed summary of the finding"),
-					confidence: z.number().min(0).max(1).describe("Confidence score 0–1"),
-					dataSource: z.string().min(1).describe("File path or reference that produced this finding"),
-					metadata: z.record(z.string(), z.unknown()).optional().describe("Optional structured metadata"),
-				}),
-				async (args) => {
-					return saveFinding(args);
-				},
+				"Execute one exact human-reviewed private finding save. Requires a current server-issued grant; an ADK confirmation boolean cannot authorize this command. Exact retry returns its recorded outcome.",
+				reviewExecutionSchema,
+				async (args, context, signal) =>
+					withReviewErrors(() =>
+						reviewBoundary(options, context).execute(args, reviewPrincipal(options, context), signal),
+					),
+			),
+			ServerFactory.createAnalysisTool(
+				"prepare_review",
+				"Prepare an immutable private review packet with actual source snapshots and reported eval evidence. Returns reference-only checkpoint; cannot approve or save. expectedHead is null for the first packet or the exact previous packetDigest.",
+				z
+					.object({
+						candidate: reviewCandidateSchema,
+						expectedHead: z
+							.string()
+							.regex(/^[a-f0-9]{64}$/)
+							.nullable(),
+					})
+					.strict(),
+				async (args, context) =>
+					withReviewErrors(() =>
+						reviewBoundary(options, context).prepare(
+							args.candidate,
+							reviewPrincipal(options, context),
+							args.expectedHead,
+						),
+					),
+			),
+			ServerFactory.createAnalysisTool(
+				"get_review_status",
+				"Read a scoped durable review checkpoint. Approved grants are returned only to the bound authenticated requester; human decision and content inspection use the separate operator interface.",
+				z.object({ reviewId: z.string().min(1).max(128).optional() }).strict(),
+				async (args, context) =>
+					withReviewErrors(() =>
+						reviewBoundary(options, context).status(args.reviewId, reviewPrincipal(options, context)),
+					),
 			),
 		],
 	};
@@ -1225,50 +1248,28 @@ function generateAriesRecommendations(ariesData: any): string[] {
 	return recommendations.length > 0 ? recommendations : ["Standard ARIES analysis protocols applied"];
 }
 
-// ── save_finding — closes the Observe→Think→Act→Learn loop ─────────────────
-// Persists a key geological finding to ./data/geowiz/findings/<id>.json.
-// The agent memory layer (#405, Supabase pgvector) will promote these to vector
-// storage when it ships; for now, local JSON ensures the write path exists and
-// tests can verify the Learn step works end-to-end without a database.
-
-interface SavedFinding {
-	findingId: string;
-	findingType: string;
-	title: string;
-	summary: string;
-	confidence: number;
-	dataSource: string;
-	metadata?: Record<string, unknown>;
-	savedAt: string;
+function reviewPrincipal(options: GeowizOptions, context?: MCPExecutionContext): SourcePrincipal {
+	const principal = context?.principal ?? options.localSourcePrincipal;
+	if (!principal) throw new ReviewError("authority_denied");
+	return principal;
 }
-
-async function saveFinding(args: {
-	findingType: string;
-	title: string;
-	summary: string;
-	confidence: number;
-	dataSource: string;
-	metadata?: Record<string, unknown>;
-}): Promise<{ findingId: string; stored: boolean; path: string }> {
-	const findingId = `geo-${Date.now()}-${Math.floor(args.confidence * 100)}`;
-	const findingsDir = "./data/geowiz/findings";
-	await fs.mkdir(findingsDir, { recursive: true });
-
-	const finding: SavedFinding = {
-		findingId,
-		findingType: args.findingType,
-		title: args.title,
-		summary: args.summary,
-		confidence: args.confidence,
-		dataSource: args.dataSource,
-		metadata: args.metadata,
-		savedAt: new Date().toISOString(),
-	};
-
-	const filePath = `${findingsDir}/${findingId}.json`;
-	await fs.writeFile(filePath, JSON.stringify(finding, null, 2));
-
-	return { findingId, stored: true, path: filePath };
+function reviewBoundary(options: GeowizOptions, context?: MCPExecutionContext): ReviewWorkflow {
+	reviewPrincipal(options, context);
+	if (!options.reviewWorkflow) throw new ReviewError("configuration");
+	return options.reviewWorkflow;
+}
+async function withReviewErrors<T>(run: () => Promise<T>) {
+	try {
+		return await run();
+	} catch (error) {
+		if (!(error instanceof ReviewError)) throw error;
+		return {
+			success: false,
+			reviewError: { code: error.code },
+			error: error.message,
+			error_type: error.code === "audit_unavailable" ? "retryable" : "user_action",
+		};
+	}
 }
 
 // Create the server using factory

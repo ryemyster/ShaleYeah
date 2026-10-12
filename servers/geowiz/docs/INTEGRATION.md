@@ -57,9 +57,10 @@ Optional formation annotation uses an injected Gemini/Anthropic runtime; see
 [provider setup](../../../docs/model-providers.md). Outages yield a marked
 partial result; they do not fabricate geological measurements.
 
-The local example leaves `save_finding` ungranted. Authenticated exact-revision
-backend review/resume remains #673. Agent confirmation or approval prose cannot
-replace that gate.
+The default local access example leaves `save_finding` ungranted. Add the
+[private human review configuration](HUMAN_REVIEW.md) for exact packet/grant
+saves and restart-safe continuation. Agent confirmation or approval prose cannot
+replace the executing backend gate.
 
 STDIO is managed by a trusted local launcher. Remote deployments inject identity
 and audit adapters through the [SDK API](../../../sdk/docs/http-access.md), then

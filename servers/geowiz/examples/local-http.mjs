@@ -8,6 +8,7 @@ import {
 	parseReferenceModelConfig,
 } from "@shaleyeah/sdk";
 import { GeowizServer } from "../dist/index.js";
+import { loadReviewBinding } from "../dist/review-config.js";
 import { loadSourceBinding } from "../dist/source-config.js";
 
 // This local example uses owned private files. Remote issuers and other secret/audit adapters are injected through the SDK API.
@@ -43,6 +44,7 @@ async function readPrivate(file, maximum) {
 }
 
 let server;
+let review;
 let auditFile;
 let pending = Promise.resolve();
 let queued = 0;
@@ -56,6 +58,7 @@ try {
 		modelConfigFile,
 		sourceConfigFile,
 		eventConfigFile,
+		reviewConfigFile,
 		dataPath,
 		...settings
 	} = config;
@@ -79,10 +82,12 @@ try {
 		});
 	};
 	const sourceBinding = sourceConfigFile ? await loadSourceBinding(sourceConfigFile, audit) : undefined;
+	review = reviewConfigFile ? await loadReviewBinding(reviewConfigFile) : undefined;
 	const eventEmitter = eventConfigFile ? await loadJsonlEmitter(eventConfigFile, [accessToken]) : undefined;
 
 	process.env.PORT ??= "3001";
 	server = new GeowizServer({
+		reviewWorkflow: review?.workflow,
 		dataPath,
 		modelRuntime,
 		sourceRuntime: sourceBinding?.runtime,
@@ -99,6 +104,7 @@ try {
 	await server.initialize();
 	const close = async () => {
 		await server.stop();
+		review?.workflow.close();
 		await pending.catch(() => {});
 		await auditFile.close();
 		process.exit(0);
@@ -111,6 +117,7 @@ try {
 	});
 } catch {
 	await server?.stop().catch(() => {});
+	review?.workflow.close();
 	await auditFile?.close().catch(() => {});
 	console.error("Geowiz local HTTP setup failed. Check the private configuration, file permissions and access policy.");
 	process.exitCode = 1;

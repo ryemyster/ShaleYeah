@@ -73,7 +73,8 @@ The CLI development session remains in memory. Embed the
 restart, bounded current context and scoped export/deletion. Supply authenticated
 principal/source callbacks and an owned persistent directory. The runtime
 rejects a second native writer; replication is unqualified. Revision-bound
-human review and protected continuation remain #673.
+human review and protected continuation use the
+[Geowiz review adapter](../../../servers/geowiz/docs/HUMAN_REVIEW.md).
 
 The agent may prepare analysis for review. Saving a finding goes through ADK
 confirmation; the executing backend must also enforce identity, source access
@@ -81,9 +82,11 @@ and the reviewed revision before consequential use. A direct MCP call is not
 protected by that UI confirmation. Professional geological approval stays with
 the human; unsupported inputs/results must be surfaced.
 
-The backend currently writes JSON findings under its working directory's
-`data/geowiz/findings`. Those files are not a complete employee context,
-approval or audit backup. See the [state/recovery requirements](../../../docs/deployment-support.md#durable-state-recovery-and-resource-qualification)
+The backend saves approved finding bodies, decisions, checkpoints and outcomes
+transactionally in the separately configured private `review.sqlite`. Retain its
+current state and source audit; expired bodies require operator cleanup. Replacing
+it with an old backup is unsupported because consumed grants must not return.
+See the [state/recovery requirements](../../../docs/deployment-support.md#durable-state-recovery-and-resource-qualification)
 for persistent volumes, export/restore, stale approval and access tests.
 
 ## Containers, scaling and hosted targets

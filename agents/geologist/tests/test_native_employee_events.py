@@ -100,7 +100,7 @@ async def test_native_confirmation_pause_records_review_required_without_dispatc
 
     monkeypatch.setattr(geowiz_mcp, "call_tool", client)
     backend = MCPClientConfig(endpoint="http://127.0.0.1:3001/mcp", credential=FileBearerCredential(tmp_path / "agent-key"), allow_loopback_http=True)
-    await run_fixture(config, keys["agent"], backend, "save_geowiz_finding", {"finding_type": "formation", "title": "Draft", "summary": "private-body", "confidence": 0.1, "data_source": "fixture.las"}, "review-pause", backend_calls=calls, event_emitter=emitter)
+    await run_fixture(config, keys["agent"], backend, "save_geowiz_finding", {"review_id": "review.fixture", "packet_digest": "a" * 64, "grant_id": "grant.unapproved"}, "review-pause", backend_calls=calls, event_emitter=emitter)
     assert not calls
     assert any(record["eventType"] == "review" and record["status"] == "review-required" for record in records)
     assert not any(record["status"] == "approved" for record in records)
