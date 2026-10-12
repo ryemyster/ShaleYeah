@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #674: extraction proof requires the installed employee's context-write boundary to reject unsupported business-contract versions before accepting the valid task.
+
 - #674: container readiness reads both Docker log streams, including the MCP startup diagnostic on stderr; a regression control preserves stdout-only parsing for structured command results.
 
 - #674: own build/test configuration and local contract/profile fixtures; allowlisted built archive and runtime start, clean source/installed-unit acceptance command, separate Node/Python-verifier image and required actor-separated container journey. Shared helper archives/wheels/locks and metadata receipts preserve exact source/context/qualification/review boundaries; no image-baked secrets or employee access to reviewer settings. Deleted displaced parent test-runner/config dependencies; hosted/live/domain support remains separate.

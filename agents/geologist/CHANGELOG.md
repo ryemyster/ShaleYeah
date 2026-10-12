@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #674: remove the context guard's hidden requirement to read the remote tool synthesis key. Scan owned employee/MCP credentials, reject both profile references, and preserve host and tool secret guards; tests reproduce and verify both native providers with no remote-key mount.
+
 - #674: standalone source/wheel export includes the reviewed profile, dataset, qualification policy and frozen baseline; separate portable Python container recipe and isolated native-provider/context/review journey. Format generated context timestamps to millisecond precision under the existing contract; reproduced microsecond-clock failure and added coverage. No persona, mode, wire schema or host authority change.
 
 - #577: adopted evaluation 0.3.0 and frozen reference baseline/policy; existing fixture runner now produces code-bound qualification decisions and blocks missing or changed inputs. Required CI/release reference checks preserve standalone Skills, role tools, private context and authenticated human authority. Initial research-reviewed targets need no outside reviewer to start; fixture conformance does not claim live/domain or final human acceptance.

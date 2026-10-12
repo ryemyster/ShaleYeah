@@ -60,9 +60,12 @@ Authenticated review submission and protected continuation belong to the next
 review implementation; this interface does not create approvals.
 
 An optional host `content_guard` can reject additional known secrets or restricted
-content. The runtime checks its configured model and MCP credentials before
-native event writes and token-count dispatch. It never saves credential profiles
-as knowledge. Keep independent judge credentials outside the employee runtime.
+content. Before native event writes and token-count dispatch, the runtime checks
+its own model key and MCP credential and rejects either configured credential
+reference in content. The synthesis key stays on the tool server; the employee
+does not need to read it. The tool checks that key at its own execution/output
+boundary. It never saves credential profiles as knowledge. Keep independent
+judge credentials outside the employee runtime.
 
 ```python
 import json

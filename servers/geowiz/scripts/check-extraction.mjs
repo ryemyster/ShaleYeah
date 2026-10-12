@@ -235,6 +235,7 @@ try {
 		"provider-switch",
 		"human-review-resume",
 		"revision-source-denial",
+		"contract-version-denial",
 	])
 		passed(id);
 	const version = (await run("git", ["rev-parse", "HEAD"])).trim();

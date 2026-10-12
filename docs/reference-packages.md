@@ -20,8 +20,10 @@ The command builds declared dependencies, produces npm archives and Python
 wheels, and creates two clean environments. It builds Geologist from exported
 source without authoring workspace paths, and builds/tests exported Geowiz source
 with explicitly supplied helper archives. The installed pair then runs outside
-the checkout. The result file contains versions/hashes and outcomes, not raw
-sources, prompts or credentials. A nonempty destination is rejected. Omitting
+the checkout. The installed employee must reject an unsupported business-contract
+version at its context-write boundary before accepting the valid task.
+The result file contains versions/hashes and outcomes, not raw sources, prompts
+or credentials. A nonempty destination is rejected. Omitting
 `--bundle` uses a temporary directory that is cleaned after the test.
 
 | Bundle item | Use |
@@ -107,6 +109,9 @@ MCP request. A separate-network or remotely hosted deployment must supply its ow
 qualified ingress/listener configuration. The worker sees its MCP/agent key files
 and task metadata; reviewer settings, synthesis keys and review store stay on the
 operator/tool side. No Docker socket or approval endpoint is supplied to it.
+The employee's context guard scans its own key/token and rejects configured
+credential references without reading the remote tool key. The tool owns its
+secret checks; a host can supply additional content restrictions.
 
 The operator performs fixture approval through a separate `docker exec` CLI.
 The harness verifies missing qualification blocks approval, then creates explicit

@@ -43,6 +43,7 @@ test("extracted employee, tool and pair preserve contracts and review without wo
 			"human-review-resume",
 			"revision-source-denial",
 			"distribution-allowlist",
+			"contract-version-denial",
 		])
 			assert.equal(result.controls.find((control) => control.id === name)?.status, "passed", name);
 	} finally {

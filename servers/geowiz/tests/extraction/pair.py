@@ -21,6 +21,7 @@ from app.geowiz_mcp import assess_geowiz_quality, bind_backend
 from app.model_provider import native_adapter, parse_reference_config
 from app.review_supervision import ReviewSupervisor
 from app.working_context import ContextCatalog
+from shaleyeah_contracts import ContractValidationError
 from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, MCPClientError, call_tool
 
 ROOT = Path(sys.argv[1]).resolve()
@@ -370,6 +371,12 @@ async def main():
                     )
 
                 catalog = await open_context()
+                try:
+                    await catalog.put_task({**task, "contractVersion": "999.0.0"})
+                except ContractValidationError as error:
+                    assert error.code == "unsupported_version"
+                else:
+                    raise AssertionError("Installed employee accepted an unsupported contract")
                 await catalog.put_task(task)
                 await catalog.put_source(source)
                 package = httpx if provider == "gemini" else httpx2

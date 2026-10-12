@@ -128,7 +128,12 @@ async def run(job, phase):
         result = await runtime.run(
             "Analyze only the permitted LAS; defer interpretation and save to exact human review"
         )
-        assert result["status"] == "ready" and len(calls) == 2
+        assert result["status"] == "ready" and len(calls) == 2, {
+            "status": result.get("status"),
+            "code": result.get("code"),
+            "nativeCalls": len(calls),
+            "provider": provider,
+        }
         analysis = (await call_tool(backend, "analyze_formation", {"filePath": job["sourceFile"]}))[
             "structuredContent"
         ]["analysis"]

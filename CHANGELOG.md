@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #674: remove Geologist context's hidden dependency on the tool-owned synthesis key, preserving per-actor secret/refusal guards and separate mounts. Both providers reproduce the blocked employee before the repair.
+
+- #674: require an explicit installed-employee incompatible-contract denial in the extraction decision.
+
 - #674: corrected container-test readiness detection to include the tool's stderr startup diagnostic, with a subprocess stream regression test.
 
 - #674: package-owned Geowiz/SDK build settings, local Geowiz tests and allowlisted runtime archives; standalone Geologist source/wheel reference assets; clean installed source/tool/employee/pair proof and separate Python/Node container recipes with required CI receipts. Preserve source/context/qualification/human authority, actor-specific mounts and exact resume/replay behavior. Fixed generated context timestamp precision to the existing millisecond wire contract after a failing real-clock control. No live/domain or hosted-platform certification; replaced displaced parent-runner/config assumptions and stale JSON-finding/deployment claims.
