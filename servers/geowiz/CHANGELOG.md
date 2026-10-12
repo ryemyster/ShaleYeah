@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #674: generic fixture client refuses remote/ambiguous endpoints before reading private settings and never follows redirects; endpoint comes from the harness argument, not file content. New real redirect/refusal controls run in extraction and required CI.
+
 - #674: extraction proof requires the installed employee's context-write boundary to reject unsupported business-contract versions before accepting the valid task.
 
 - #674: container readiness reads both Docker log streams, including the MCP startup diagnostic on stderr; a regression control preserves stdout-only parsing for structured command results.

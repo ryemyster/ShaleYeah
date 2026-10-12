@@ -4,10 +4,24 @@ import fs from "node:fs/promises";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 
+const endpoint = new URL(process.argv[3]);
+assert.ok(
+	endpoint.protocol === "http:" &&
+		endpoint.hostname === "127.0.0.1" &&
+		Number(endpoint.port) >= 1 &&
+		Number(endpoint.port) <= 65535 &&
+		!endpoint.username &&
+		!endpoint.password &&
+		endpoint.pathname === "/mcp" &&
+		!endpoint.search &&
+		!endpoint.hash,
+	"Fixture requires an explicit loopback MCP endpoint",
+);
 const settings = JSON.parse(await fs.readFile(process.argv[2], "utf8"));
 const credential = (await fs.readFile(settings.tokenFile, "utf8")).trim();
-const anonymous = await fetch(settings.endpoint, {
+const anonymous = await fetch(endpoint, {
 	method: "POST",
+	redirect: "error",
 	headers: { "content-type": "application/json" },
 	body: JSON.stringify({
 		jsonrpc: "2.0",
@@ -24,8 +38,8 @@ assert.equal(anonymous.status, 401);
 const client = new Client({ name: "generic-extracted-client", version: "r1" });
 try {
 	await client.connect(
-		new StreamableHTTPClientTransport(new URL(settings.endpoint), {
-			requestInit: { headers: { Authorization: `Bearer ${credential}` } },
+		new StreamableHTTPClientTransport(endpoint, {
+			requestInit: { headers: { Authorization: `Bearer ${credential}` }, redirect: "error" },
 		}),
 	);
 	const tools = (await client.listTools()).tools;

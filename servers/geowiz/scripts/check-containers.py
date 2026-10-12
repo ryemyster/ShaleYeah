@@ -333,7 +333,6 @@ def main():
                 owned(operator / "http.json", http)
                 port = start()
                 probe = {
-                    "endpoint": f"http://127.0.0.1:{port}/mcp",
                     "tokenFile": "/run/client/access-token",
                     "sourceFile": "/run/operator/sample.las",
                     "sourceId": source["sources"][0]["evidence"]["id"],
@@ -344,6 +343,7 @@ def main():
                     "node",
                     "/opt/reference/tool/checks/generic-client.mjs",
                     "/run/operator/probe.json",
+                    f"http://127.0.0.1:{port}/mcp",
                 )
                 artifact = json.loads((operator / "source-artifact.json").read_text())
                 task = {**records["task"], "scope": scope, "inputs": [artifact["artifact"]]}

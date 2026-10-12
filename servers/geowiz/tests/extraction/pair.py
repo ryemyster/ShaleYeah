@@ -327,12 +327,11 @@ async def main():
                 probe = owned(
                     private / "generic.json",
                     {
-                        "endpoint": backend.endpoint,
                         "tokenFile": credential,
                         "sourceFile": str(source_file),
                     },
                 )
-                await command("node", CHECKS / "generic-client.mjs", probe)
+                await command("node", CHECKS / "generic-client.mjs", probe, backend.endpoint)
 
                 async def grant(principal, expected_scope, operation):
                     assert expected_scope == scope

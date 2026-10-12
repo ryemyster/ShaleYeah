@@ -112,6 +112,10 @@ operator/tool side. No Docker socket or approval endpoint is supplied to it.
 The employee's context guard scans its own key/token and rejects configured
 credential references without reading the remote tool key. The tool owns its
 secret checks; a host can supply additional content restrictions.
+The generic fixture client receives its exact loopback `/mcp` address as a
+separate argument. Private settings cannot select the network destination, and
+both anonymous and authenticated requests reject redirects. Required CI tests
+remote/ambiguous destinations and an actual authenticated redirect refusal.
 
 The operator performs fixture approval through a separate `docker exec` CLI.
 The harness verifies missing qualification blocks approval, then creates explicit
