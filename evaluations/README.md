@@ -33,8 +33,8 @@ judge or dataset code. The isolation check installs the evaluation and portable
 contract wheels into an empty environment and runs conformance against copied
 fixture data. It imports no monorepo source or agent/model SDK.
 
-External consumers install the declared `shaleyeah-contracts==0.2.0` and
-`shaleyeah-evaluations==0.2.0` wheels. Local editable paths are contributor
+External consumers install the declared `shaleyeah-contracts==0.3.0` and
+`shaleyeah-evaluations==0.2.1` wheels. Local editable paths are contributor
 convenience, not a deployment requirement. No registry publication is implied.
 
 ## Load and tune a scorecard
@@ -101,7 +101,7 @@ review. Synthetic judge scores in arithmetic tests are not live judge evidence.
 
 ## Versions, hashes and migration
 
-Package, schema and registry versions are separate. Package 0.2.0 accepts the
+Package, schema and registry versions are separate. Package 0.2.1 accepts the
 unchanged profile/registry 0.1.0 for compatibility and performance profile/registry
 0.2.0. Performance requires architecture evaluator version 2 and the numeric
 gate for Geologist. Other evaluator versions are 1. The old architecture word
@@ -176,3 +176,11 @@ The Geologist remains a Stand-alone Agent with Progressive Disclosure (Skills).
 Human approval, professional review, secret resolution/redaction and scoped
 retention stay with the trusted host/runtime. This package persists no raw trace,
 promotes no memory and requires no secret or paid request for CI.
+
+## Correlated report export
+
+Evaluation 0.2.1 consumes contracts 0.3.0 while preserving profile/registry and
+report schemas. Geologist can export report/profile/product hashes through its
+[role-local event adapter](../docs/employee-events.md#record-host-work-evaluations-and-review).
+This core package gains no MCP, ADK or event-sink dependency. A missing judge and
+a failed mandatory gate keep their actual outcome in the correlated event.

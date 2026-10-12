@@ -106,7 +106,8 @@ version checks reject unsupported records. Expected scope/revision comparisons
 and a separately supplied policy check support callers without granting authority.
 Roman display names are separate from employee, role and capability IDs.
 
-These records are ready for adoption; current employees do not yet emit them.
+These records are ready for adoption; Geologist has host-bound metadata hooks
+for their hashes/references. Full context/review runtime adoption remains pending.
 The package verifies structure and declared references, not reviewer identity,
 real source content/rights or execution permission.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
@@ -132,7 +133,7 @@ ADR 0003 requires the executing backend to enforce identity, scopes, exact
 input/product/action review, source rights and redacted durable audit. Its
 reference cases validate current contract comparisons and specify future
 execution failures; they do not install that enforcement. #678 supplies ingress,
-while #673/#574 and connector/provider/context owners implement the remaining
+while #673 and connector/provider/context owners implement the remaining
 operation-specific policy. Namespace strings, prompts,
 caller approval booleans and transport session IDs cannot grant authority.
 Legacy runtime checks do not establish protection on every current ADK-to-MCP
@@ -141,6 +142,17 @@ shared MCP HTTP boundary now requires explicit verified identity/scopes/audit;
 source rights, domain-review grants and actual issuer/TLS deployment still need
 their qualification owners. Geologist uses the installed credential-aware client;
 the other nine Python roles adopt it through their migration issues.
+
+## Correlated employee events
+
+[Employee events](employee-events.md) connect task, context, work, tool, model,
+evaluation and review observations. Contracts 0.3.0 owns their separate 0.1.0
+schema/redaction profile. TypeScript SDK 0.2.0 and Python client 0.2.0 own portable
+emitters/JSONL; the client now depends on portable contracts. Geologist's native
+ADK callbacks and Geowiz's trusted MCP binding are the reference producers.
+Configured/observed model revisions and human review/rework measurements remain
+distinct. Required export failure blocks before dispatch and reports uncertain
+effects afterward; logs do not grant approval or certify task completion.
 
 ## Optional coordination
 

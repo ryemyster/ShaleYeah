@@ -142,3 +142,13 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](../../../docs/model-providers.md).
+
+## Correlated observations
+
+`app/employee_events.py` provides host hooks and installed native ADK callbacks.
+`app/geowiz_mcp.py` forwards the bound emitter to the installed client; eval export
+stays in `app/eval_adapter.py`. The employee remains **Stand-alone Agent with
+Progressive Disclosure (Skills)** with its existing model budget and save gate.
+No new reasoning loop, child-agent delegation or workflow authority is added.
+[Event semantics](../../../docs/employee-events.md) separate model latency,
+confidence and observed human rework, and preserve failed/blocked grades.

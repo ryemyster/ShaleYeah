@@ -206,3 +206,13 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](../../docs/model-providers.md).
+
+## Employee event boundary
+
+`events.ts` owns serialized async export and private JSONL. `mcp-events.ts` binds
+native MCP correlation to a separately trusted emitter and verified HTTP principal.
+`mcp-server.ts` records start before dispatch, validates successful outputs, and
+records failure without exception prose. Each emitter has its own stream/sequence;
+run/trace/scope/task revision and causal parent/span IDs link producers. The
+[portable event contract](../../docs/employee-events.md) supplies bounded metadata
+and redaction; no role, ADK or SIEM dependency enters that contract.

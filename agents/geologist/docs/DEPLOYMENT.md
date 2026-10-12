@@ -105,3 +105,13 @@ Frozen evaluation reports run locally through `app.eval_adapter`; see
 evaluation tooling is in the development group. Supply authenticated host
 evidence and an explicit independent private judge for real scoring. Reports
 do not persist context, grant approval or qualify a deployment.
+
+## Private event export
+
+Install client 0.2.0, contracts 0.3.0 and evaluations 0.2.1 with the agent wheel.
+Set optional `GEOLOGIST_EVENT_CONFIG_FILE` to the owned private settings file
+matching the approved assignment and backend binding. Keep separate producer
+logs, protected parent directories and operator retention.
+[Event setup](../../../docs/employee-events.md#configure-private-local-files)
+explains required/optional sink behavior and uncertain effects. Logging a review
+attestation does not supply reviewer authentication or a persistence grant.

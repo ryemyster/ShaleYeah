@@ -103,7 +103,8 @@ The agent may analyze geological data, assess data quality, process files, and s
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `GEOLOGIST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
+| `GEOLOGIST_MODEL_CONFIG_FILE` | For live models | None | Private explicit provider/model/credential profile |
+| `GEOLOGIST_EVENT_CONFIG_FILE` | No | None | Private correlated-event configuration and JSONL sink |
 | `GEOWIZ_MCP_URL` | No | `http://127.0.0.1:3001/mcp` | Validated Geowiz-compatible MCP endpoint |
 | `GEOWIZ_MCP_ACCESS_TOKEN_FILE` | For HTTP tools | None | Owned private file with the launcher's dedicated MCP credential |
 | `GEOWIZ_MCP_TIMEOUT_SECONDS` | No | `30` | Total call deadline, at most 120 seconds |
@@ -161,3 +162,14 @@ or backend approval enforcement.
 | [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Local setup, state/review requirements and qualified deployment limits |
 | [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Running both processes locally, HITL testing |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | TDD workflow, adding tools, implementation notes |
+
+## Follow a task's events
+
+Optional `GEOLOGIST_EVENT_CONFIG_FILE` enables native agent/model callbacks and
+correlated MCP events. Host hooks record validated task/context/work, evaluation
+and verified-review references with exact hashes. Raw source bodies, prompts,
+arguments and credentials are excluded from this event stream.
+[Employee events](../../docs/employee-events.md) provides private configuration,
+a complete offline reference trace and recovery limits. Review authentication,
+durable context and resume remain host responsibilities; the existing save
+confirmation is a pause, not professional/backend approval.

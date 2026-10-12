@@ -38,3 +38,18 @@ const output = await compile(
 if (process.argv.includes("--check")) {
 	if (readFileSync(target, "utf8") !== output) throw new Error("Generated types are stale. Run pnpm generate.");
 } else writeFileSync(target, output);
+
+const eventSchema = JSON.parse(
+	readFileSync(new URL("../shaleyeah_contracts/schemas/employee-events-0.1.0.schema.json", import.meta.url), "utf8"),
+);
+const eventTarget = new URL("../src/event-generated.ts", import.meta.url);
+const eventOutput = await compile(eventSchema, "EmployeeEvent", {
+	bannerComment: "/* Generated from employee-events 0.1.0. Run pnpm generate; do not edit. */",
+	unreachableDefinitions: true,
+	ignoreMinAndMaxItems: true,
+	style: { useTabs: true, printWidth: 120 },
+});
+if (process.argv.includes("--check")) {
+	if (readFileSync(eventTarget, "utf8") !== eventOutput)
+		throw new Error("Generated event types are stale. Run pnpm generate.");
+} else writeFileSync(eventTarget, eventOutput);

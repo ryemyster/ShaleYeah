@@ -10,15 +10,15 @@ from typing import Any
 from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, MCPClientError, call_tool
 
 GEOWIZ_DEFAULT_URL = "http://127.0.0.1:3001/mcp"
-_BINDING: ContextVar[tuple[MCPClientConfig, dict[str, Any] | None] | None] = ContextVar("geologist_backend_binding", default=None)
+_BINDING: ContextVar[tuple[MCPClientConfig, dict[str, Any] | None, Any] | None] = ContextVar("geologist_backend_binding", default=None)
 
 
-def bind_backend(function, config: MCPClientConfig, expected_profile: dict[str, Any] | None):
+def bind_backend(function, config: MCPClientConfig, expected_profile: dict[str, Any] | None, events=None):
     """Keep each employee's backend settings out of model arguments and global key state."""
     if inspect.iscoroutinefunction(function):
         @wraps(function)
         async def bound(*args, **kwargs):
-            token = _BINDING.set((config, expected_profile))
+            token = _BINDING.set((config, expected_profile, events))
             try:
                 return await function(*args, **kwargs)
             finally:
@@ -26,7 +26,7 @@ def bind_backend(function, config: MCPClientConfig, expected_profile: dict[str, 
     else:
         @wraps(function)
         def bound(*args, **kwargs):
-            token = _BINDING.set((config, expected_profile))
+            token = _BINDING.set((config, expected_profile, events))
             try:
                 return function(*args, **kwargs)
             finally:
@@ -67,11 +67,13 @@ def geowiz_backend_url() -> str:
 async def call_geowiz_tool(tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     """Call the installed MCP client; geology mappings and configuration stay here."""
     config = _backend_config()
+    binding = _BINDING.get()
+    event_options = {"events": binding[2]} if binding and binding[2] is not None else {}
     if tool_name == "analyze_formation":
         binding = _BINDING.get()
         if not binding or not binding[1]:
             raise MCPClientError("invalid_configuration", "user_action")
-        discovery = await call_tool(config, "get_model_profile", {})
+        discovery = await call_tool(config, "get_model_profile", {}, **event_options)
         payload = discovery.get("structuredContent") or {}
         if discovery.get("isError") or payload.get("success") is not True or payload.get("analysis") != binding[1]:
             raise MCPClientError("model_binding_mismatch", "user_action")
@@ -79,7 +81,7 @@ async def call_geowiz_tool(tool_name: str, arguments: dict[str, Any]) -> dict[st
         "backendUrl": config.endpoint,
         "mcpServer": "geowiz",
         "toolName": tool_name,
-        **await call_tool(config, tool_name, arguments),
+        **await call_tool(config, tool_name, arguments, **event_options),
     }
 
 

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #574: client 0.2.0 depends on contracts 0.3.0; adds optional keyword event emitter, native MCP metadata, measured attempts/retries/failures, private JSONL and required/optional sink policies. Installed-wheel checks include host task/review/eval hooks. Calls without events preserve their API.
+
+
 - #667: installed-consumer isolation now includes the declared evaluation 0.2.0 wheel and Geologist native trace/qualitative-judge adapter controls. Client transport API is unchanged.
 
 - #666: installed-consumer isolation now builds the Geologist's declared evaluation/contract wheels and tests the registered confirmation evaluator; client transport API is unchanged.

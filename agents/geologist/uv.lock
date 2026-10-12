@@ -2931,7 +2931,7 @@ wheels = [
 
 [[package]]
 name = "shaleyeah-contracts"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "../../contracts" }
 dependencies = [
     { name = "jsonschema" },
@@ -2957,7 +2957,7 @@ dev = [
 
 [[package]]
 name = "shaleyeah-evaluations"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "../../evaluations" }
 dependencies = [
     { name = "jsonschema" },
@@ -2990,6 +2990,7 @@ dependencies = [
     { name = "google-genai" },
     { name = "httpx" },
     { name = "httpx2" },
+    { name = "rfc8785" },
     { name = "shaleyeah-evaluations" },
     { name = "shaleyeah-mcp-client" },
 ]
@@ -3020,6 +3021,7 @@ requires-dist = [
     { name = "google-genai", specifier = "==2.11.0" },
     { name = "httpx", specifier = "==0.28.1" },
     { name = "httpx2", specifier = "==2.13.1" },
+    { name = "rfc8785", specifier = "==0.1.4" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.4.6,<1.0.0" },
     { name = "shaleyeah-evaluations", editable = "../../evaluations" },
     { name = "shaleyeah-mcp-client", editable = "../../sdk/python" },
@@ -3037,13 +3039,14 @@ dev = [
 
 [[package]]
 name = "shaleyeah-mcp-client"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "../../sdk/python" }
 dependencies = [
     { name = "anyio" },
     { name = "httpx" },
     { name = "jsonschema" },
     { name = "mcp" },
+    { name = "shaleyeah-contracts" },
 ]
 
 [package.metadata]
@@ -3052,6 +3055,7 @@ requires-dist = [
     { name = "httpx", specifier = "==0.28.1" },
     { name = "jsonschema", specifier = "==4.26.0" },
     { name = "mcp", specifier = "==1.28.1" },
+    { name = "shaleyeah-contracts", editable = "../../contracts" },
 ]
 
 [package.metadata.requires-dev]

@@ -16,6 +16,33 @@ from shaleyeah_evaluations import (
 PACKAGE = Path(__file__).resolve().parents[1]
 
 
+@pytest.mark.asyncio
+async def test_grade_dataset_emits_bound_reports_and_exact_work_product_references():
+    from shaleyeah_mcp.events import EventEmitter
+
+    from app.eval_adapter import grade_dataset
+    value = fixture()
+    profile = performance()
+    records = []
+    async def sink(record):
+        records.append(record)
+    runtime = value["trustedRuntime"]
+    emitter = EventEmitter({"runId": "eval-run", "traceId": "1234567890abcdef1234567890abcdef",
+        "scope": runtime["scope"], "taskRevision": runtime["task_revision"], "qualification": "fixture"},
+        {"id": "geologist", "version": "0.1.0"}, sink)
+    cases = [{"eval_case_id": case_id, "responses": [{"response": value["trace"]["response"]}], "agent_data": value["trace"]["agent_data"]} for case_id in profile.case_ids]
+    candidate = {"id": "fixture.gemini", "version": "r1", "model": {"provider": "gemini", "id": "fixture-model", "revision": "r1"},
+        "runtime": {"id": "google-adk", "version": "2.4.0"}, "harness": {"id": "agents-cli", "version": "1.3.1"}, "qualification": "fixture"}
+    reports = await grade_dataset(profile, {"eval_cases": cases},
+        contexts={case["eval_case_id"]: EvaluationContext.from_trusted_runtime(**runtime) for case in cases},
+        work_products={case["eval_case_id"]: value["trace"]["workProduct"] for case in cases},
+        candidate=candidate, events=emitter)
+    assert len(records) == len(reports)
+    assert all(record["eventType"] == "evaluation" and record["status"] == "infra-error" for record in records)
+    assert all(any(ref["kind"] == "work-product" and ref["id"] == runtime["product_ref"]["id"] for ref in record["refs"]) for record in records)
+    assert all(any(ref["kind"] == "profile" and ref["sha256"] == profile.config_hash for ref in record["refs"]) for record in records)
+
+
 def test_contentless_transfer_events_are_still_observed():
     from google.adk.events import Event, EventActions
 
@@ -95,6 +122,16 @@ def test_cli_grades_frozen_operator_inputs_and_reports_missing_judge(tmp_path, c
     result = json.loads(capsys.readouterr().out)
     assert len(result["reports"]) == len(cases)
     assert all(r["promotionBlocked"] and r["status"] == "infra-error" for r in result["reports"])
+    event_file = tmp_path / "events.json"
+    event_output = tmp_path / "events.jsonl"
+    runtime = value["trustedRuntime"]
+    event_file.write_text(json.dumps({"version": "0.1.0",
+        "context": {"runId": "eval-cli", "traceId": "1234567890abcdef1234567890abcdef", "scope": runtime["scope"], "taskRevision": runtime["task_revision"], "qualification": "fixture"},
+        "producer": {"id": "geologist", "version": "0.1.0"}, "jsonlFile": str(event_output), "required": True, "timeoutMs": 5000}))
+    event_file.chmod(0o600)
+    assert main([*args, "--events", str(event_file)]) == 0
+    capsys.readouterr()
+    assert len(event_output.read_text().splitlines()) == len(cases)
     assert main([*args, "--fixture-inputs"]) == 0
     capsys.readouterr()
     host["candidate"]["qualification"] = "live"

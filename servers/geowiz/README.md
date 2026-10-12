@@ -130,3 +130,12 @@ Launcher credential checks test shared files and symbolic links separately. Each
 process has a ten-second startup limit and must exit with refusal, keep the token
 out of logs, and open no HTTP listener. The startup limit bounds the fixture;
 production credential/access policy is unchanged.
+
+## Follow employee tool execution
+
+The private HTTP launcher accepts optional `eventConfigFile` pointing to an owned
+private settings file. Geowiz records bound starts and validated completions
+through SDK `events`; configured clients must send matching native correlation
+metadata. [Employee events](../../docs/employee-events.md) shows setup and the
+actual two-provider reference trace. Ingress/source authorization audit stays
+required independently; neither a trace ID nor a model approval grants rights.

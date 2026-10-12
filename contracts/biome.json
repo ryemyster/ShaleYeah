@@ -19,7 +19,14 @@
 		}
 	},
 	"files": {
-		"includes": ["src/**", "!src/generated.ts", "tests/**/*.ts", "scripts/**/*.ts", "*.json"],
+		"includes": [
+			"src/**",
+			"!src/generated.ts",
+			"!src/event-generated.ts",
+			"tests/**/*.ts",
+			"scripts/**/*.ts",
+			"*.json"
+		],
 		"ignoreUnknown": true
 	}
 }

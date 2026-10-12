@@ -12,8 +12,9 @@ dependencies = [
   "google-cloud-aiplatform==1.160.0",
   "httpx==0.28.1",
   "httpx2==2.13.1",
-  "shaleyeah-mcp-client==0.1.0",
-  "shaleyeah-evaluations==0.2.0",
+  "rfc8785==0.1.4",
+  "shaleyeah-mcp-client==0.2.0",
+  "shaleyeah-evaluations==0.2.1",
 ]
 requires-python = ">=3.11,<3.14"
 

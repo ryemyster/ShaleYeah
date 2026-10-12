@@ -6,12 +6,15 @@
 import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
+import { performance } from "node:perf_hooks";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
 import type { z } from "zod";
 import { classifyToolError, isToolFailure } from "./errors.js";
+import { EventExportError } from "./events.js";
 import { FileIntegrationManager } from "./file-integration.js";
+import { type BoundMCPEvents, MCPCorrelationError, type MCPEventBinding } from "./mcp-events.js";
 import { type MCPExecutionContext, MCPHttpAccess } from "./mcp-http-access.js";
 import { type MCPHttpOptions, MCPHttpSessions } from "./mcp-http-sessions.js";
 
@@ -34,6 +37,8 @@ export interface MCPServerConfig {
 	};
 	dataPath?: string;
 	http?: MCPHttpOptions;
+	/** Host-installed task binding; client metadata is correlation, never authority. */
+	events?: MCPEventBinding;
 }
 
 export interface MCPTool {
@@ -81,6 +86,7 @@ export abstract class MCPServer {
 	private _httpSessions?: MCPHttpSessions;
 	private _httpAccess?: MCPHttpAccess;
 	private _port?: number;
+	private readonly _events?: MCPEventBinding;
 	private readonly tools: MCPTool[] = [];
 	private readonly resources: MCPResource[] = [];
 	public config: MCPServerConfig;
@@ -90,7 +96,12 @@ export abstract class MCPServer {
 
 	constructor(config: MCPServerConfig) {
 		// Credential/verifier configuration stays inside the executing access adapter, not the public server view.
-		this.config = { ...config, http: config.http ? { ...config.http, access: undefined } : undefined };
+		this.config = {
+			...config,
+			events: undefined,
+			http: config.http ? { ...config.http, access: undefined } : undefined,
+		};
+		this._events = config.events;
 		this.dataPath = config.dataPath || path.join("./data", config.name.toLowerCase());
 		this.fileManager = new FileIntegrationManager();
 
@@ -154,7 +165,7 @@ export abstract class MCPServer {
 						this._httpServer!.off("error", onError);
 						const address = this._httpServer!.address();
 						if (address && typeof address !== "string") this._port = address.port;
-						console.log(`🌐 ${this.config.name} HTTP transport listening on port ${this._port}`);
+						console.error(`MCP HTTP transport listening on port ${this._port}`);
 						resolve();
 					};
 					this._httpServer!.once("error", onError);
@@ -163,10 +174,10 @@ export abstract class MCPServer {
 			}
 
 			this.initialized = true;
-			console.log(`✅ ${this.config.name} v${this.config.version} initialized`);
+			console.error("MCP server initialized");
 		} catch (error) {
 			await this._httpSessions?.close();
-			console.error(`❌ Failed to initialize ${this.config.name}:`, error);
+			console.error("MCP server initialization failed");
 			throw error;
 		}
 	}
@@ -175,7 +186,7 @@ export abstract class MCPServer {
 		if (!this.initialized) {
 			await this.initialize();
 		}
-		console.log(`🚀 ${this.config.persona.name} ready`);
+		console.error("MCP server ready");
 		await new Promise(() => {});
 	}
 
@@ -191,9 +202,9 @@ export abstract class MCPServer {
 			}
 			await this.server.close();
 			this.initialized = false;
-			console.log(`✅ ${this.config.name} stopped`);
+			console.error("MCP server stopped");
 		} catch (error) {
-			console.error(`❌ Error stopping ${this.config.name}:`, error);
+			console.error("MCP server stop failed");
 			throw error;
 		}
 	}
@@ -216,21 +227,51 @@ export abstract class MCPServer {
 				_meta: tool._meta,
 			},
 			async (args: any, extra) => {
+				let binding: BoundMCPEvents | undefined;
+				let dispatched = false;
+				const started = performance.now();
+				const details = () => ({
+					toolName: tool.name,
+					parentEventId: binding!.parentEventId,
+					spanId: binding!.spanId,
+					versions: { runtime: { id: "mcp-node", version: process.versions.node } },
+					measurements: { toolLatencyMs: performance.now() - started },
+				});
 				try {
 					const context = this._httpAccess?.currentContext();
 					if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
-					console.log(`🔧 ${this.config.persona.name}: ${tool.name}`);
+					binding = this._events?.(context, extra._meta?.["org.shaleyeah/correlation"]);
+					if (binding) await binding.emitter.emit("tool", "started", details());
 					const validatedArgs = tool.inputSchema.parse(args);
+					dispatched = true;
 					const result = await tool.handler(validatedArgs, context, extra.signal);
-					console.log(`✅ ${tool.name} completed`);
 					const hasOutcome = result !== null && typeof result === "object" && typeof result.success === "boolean";
 					const failed = isToolFailure(result);
+					if (!failed && tool.outputSchema) await tool.outputSchema.parseAsync(result);
 					const payload =
 						tool.outputSchema || hasOutcome || failed ? result : this.formatResult(result, tool.detailLevel);
-					return this.toolResult(payload, failed, Boolean(tool.outputSchema));
+					const response = this.toolResult(payload, failed, Boolean(tool.outputSchema));
+					if (binding)
+						await binding.emitter.emit("tool", failed ? "failed" : "succeeded", {
+							...details(),
+							...(failed ? { errorCode: "tool_failed" } : {}),
+						});
+					return response;
 				} catch (error) {
-					console.error(`❌ ${tool.name} failed:`, error);
-					return this.toolResult(this.formatError(tool.name, error), true, Boolean(tool.outputSchema));
+					let failure = error;
+					if (binding && !(error instanceof EventExportError)) {
+						try {
+							await binding.emitter.emit("tool", dispatched ? "failed" : "blocked", {
+								...details(),
+								errorCode: "tool_failed",
+								effectUnknown: dispatched,
+							});
+						} catch (recordingError) {
+							failure = recordingError;
+						}
+					}
+					console.error("MCP tool failed");
+					return this.toolResult(this.formatError(tool.name, failure, dispatched), true, Boolean(tool.outputSchema));
 				}
 			},
 		);
@@ -259,7 +300,7 @@ export abstract class MCPServer {
 			try {
 				const context = this._httpAccess?.currentContext();
 				if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
-				console.log(`📄 ${this.config.persona.name}: ${resource.name}`);
+				console.error("MCP resource read started");
 				const result = await resource.handler(uri, context);
 				return {
 					contents: [
@@ -271,7 +312,7 @@ export abstract class MCPServer {
 					],
 				};
 			} catch (error) {
-				console.error(`❌ Resource ${resource.name} failed:`, error);
+				console.error("MCP resource read failed");
 				return {
 					contents: [
 						{
@@ -299,14 +340,17 @@ export abstract class MCPServer {
 		};
 	}
 
-	protected formatError(operation: string, error: any): any {
-		const message = String(error);
+	protected formatError(operation: string, error: any, effectUnknown = false): any {
+		const auditFailure = error instanceof EventExportError;
+		const correlationFailure = error instanceof MCPCorrelationError;
 		return {
 			success: false,
 			error: {
 				operation,
-				message,
-				error_type: classifyToolError(error),
+				message: "MCP operation failed; inspect error_type and error_code",
+				error_type: auditFailure || correlationFailure ? "user_action" : classifyToolError(error),
+				error_code: auditFailure ? "audit_unavailable" : correlationFailure ? "correlation_rejected" : "tool_failed",
+				effectUnknown,
 				server: this.config.name,
 				persona: this.config.persona.name,
 				timestamp: new Date().toISOString(),
@@ -342,7 +386,7 @@ export async function runMCPServer(server: MCPServer): Promise<void> {
 	try {
 		process.on("SIGINT", async () => {
 			try {
-				console.log("\n📡 Shutting down...");
+				console.error("MCP server shutting down");
 				await server.stop();
 			} catch (_error) {
 				// Ignore shutdown errors to prevent EPIPE
@@ -353,7 +397,7 @@ export async function runMCPServer(server: MCPServer): Promise<void> {
 
 		process.on("SIGTERM", async () => {
 			try {
-				console.log("\n📡 Shutting down...");
+				console.error("MCP server shutting down");
 				await server.stop();
 			} catch (_error) {
 				// Ignore shutdown errors to prevent EPIPE
@@ -376,8 +420,8 @@ export async function runMCPServer(server: MCPServer): Promise<void> {
 		});
 
 		await server.start();
-	} catch (error) {
-		console.error("❌ Failed to start MCP server:", error);
+	} catch {
+		console.error("MCP server start failed");
 		process.exit(1);
 	}
 }

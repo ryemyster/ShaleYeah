@@ -53,7 +53,7 @@ process with Ctrl-C.
 `DATA_PATH` and `LOG_LEVEL` are not implemented environment settings here.
 Setting them does not relocate persisted files, change log level or redact
 outputs. [Source setup](DATA_SOURCES.md) supplies read-only root/grant/hash controls and
-source audit; broader observability remains #574.
+source audit; [correlated metadata export](../../../docs/employee-events.md) is optional.
 
 Provider credentials must be injected through secret references outside prompts
 and command history. Geologist and Geowiz share a configured production provider, with dedicated key
@@ -98,3 +98,12 @@ professional cases, issuer/TLS deployment, protected review and employee
 restart/restore still must pass before release support changes.
 Record package and server versions separately, plus the actual runtime/model/
 profile/image versions and limits. Follow [the MVP plan](../../../docs/mvp-release-plan.md).
+
+## Optional event files
+
+Add `eventConfigFile` only to the private HTTP launcher configuration, using the
+[employee event setup](../../../docs/employee-events.md#configure-private-local-files).
+It binds one approved assignment with a separate private JSONL destination.
+A different deployment injects a trusted SDK event binding/export sink; it must
+qualify its own durability and retention. The launcher remains portable local
+reference evidence, not a mandatory cloud/SIEM integration.

@@ -1725,7 +1725,11 @@ export const GeowizServer = function (options: GeowizOptions = {}) {
 			},
 		),
 	);
-	return new (ServerFactory.createServer(template))({ http: options.http, dataPath: options.dataPath });
+	return new (ServerFactory.createServer(template))({
+		http: options.http,
+		dataPath: options.dataPath,
+		events: options.events,
+	});
 } as unknown as { new (options?: GeowizOptions): MCPServer };
 export default GeowizServer;
 

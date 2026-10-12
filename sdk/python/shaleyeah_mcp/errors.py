@@ -22,6 +22,7 @@ _MESSAGES = {
     "discovery_limit": "MCP tool discovery exceeded 32 pages",
     "nesting_limit": "Legacy MCP result nesting exceeded supported depth",
     "protocol_error": "MCP protocol request failed",
+    "audit_unavailable": "MCP required event recording failed; an already dispatched operation may have taken effect",
 }
 
 

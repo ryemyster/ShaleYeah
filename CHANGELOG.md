@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #574: added portable correlated employee-event profile, pre-export allowlisting/redaction, private JSONL/export adapters, native Geologist task/model/tool/eval/review hooks and trusted Geowiz correlation. Required export failures block before dispatch and report uncertain effects afterward. Removed reference MCP stdout/raw-error logging; fixture traces do not certify authenticated review or professional acceptance.
+
+
 - #667: added portable frozen-run reports, hard-failure/infrastructure states, versioned runtime-observed architecture and source-bound numeric gates, candidate comparison and the pinned Geologist ADK/agents-cli adapter with an independent BYO qualitative judge. Source-linked LAS/policy fixtures and installed SDK controls require no paid key; professional acceptance, durable review and promotion remain separate.
 
 - #666: added the independently installable evaluation-profile schema/Python loader, fixed metric registry, exact dataset and RFC 8785 configuration hashes, mandatory trust gates and frozen-observation score receipts. Geologist now selects registered evaluators from JSON; deleted embedded executable YAML. ADK run/judge/report adaptation remains #667.

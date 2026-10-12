@@ -311,6 +311,13 @@ adapter consumes native traces and privately configured qualitative judges.
 Provider/framework imports stay in the agent package. Evaluations do not approve
 employee actions; promotion gates remain #577.
 
+The separate [employee event profile](employee-events.md) supplies correlated,
+redacted metadata without changing employee/source wire profiles. SDK exporters,
+native Geologist callbacks and Geowiz dispatch hooks consume it. Event identity
+and scope bind observations; trusted ingress/source policy and authenticated
+review remain the authorities. Local JSONL is the reference export; optional
+external sinks preserve the same semantics without becoming mandatory services.
+
 Small shared business contracts define:
 
 - schemas and types

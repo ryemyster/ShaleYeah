@@ -47,7 +47,7 @@ def reference(provider, directory):
 
 
 @asynccontextmanager
-async def protected_geowiz(directory, config_value):
+async def protected_geowiz(directory, config_value, *, employee_events=False):
     token_file = directory / "access-token"
     token = token_urlsafe(32)
     token_file.write_text(token)
@@ -61,12 +61,21 @@ async def protected_geowiz(directory, config_value):
     source = runpy.run_path(str(REPO / "contracts/fixtures/source_fixture.py"))["source_config"](REPO / "servers/geowiz/tests/sample-files/sample.las", principal)
     source_file.write_text(json.dumps(source))
     source_file.chmod(0o600)
+    event_options = {}
+    if employee_events:
+        event_file = directory / "backend-events.json"
+        event_file.write_text(json.dumps({"version": "0.1.0",
+            "context": {"runId": "protected-reference", "traceId": "1234567890abcdef1234567890abcdef", "scope": source["scope"], "taskRevision": source["taskRevision"], "qualification": "fixture"},
+            "producer": {"id": "geowiz", "version": "1.0.0"}, "jsonlFile": str(directory / "backend-events.jsonl"), "required": True, "timeoutMs": 5000}))
+        event_file.chmod(0o600)
+        event_options["eventConfigFile"] = str(event_file)
     config_file = directory / "http.json"
     config_file.write_text(json.dumps({
         "bindHost": "127.0.0.1", "allowedHosts": ["127.0.0.1"], "allowedOrigins": [],
         "principal": principal,
         "policy": {"id": "provider-reference", "version": "r1", "connectionScopes": ["mcp:connect"], "toolScopes": {"get_model_profile": ["geowiz:analyze"], "analyze_formation": ["geowiz:analyze"]}, "resourceScopes": {}},
         "accessTokenFile": str(token_file), "auditFile": str(audit_file), "modelConfigFile": str(model_file), "sourceConfigFile": str(source_file), "dataPath": str(directory / "data"),
+        **event_options,
     }))
     config_file.chmod(0o600)
     process = await asyncio.create_subprocess_exec("node", "--import", str(REPO / "servers/geowiz/tests/fixtures/provider-fetch.mjs"), str(REPO / "servers/geowiz/examples/local-http.mjs"),
@@ -100,7 +109,7 @@ async def protected_geowiz(directory, config_value):
         assert token not in "".join(output)
 
 
-async def run_fixture(config, key, backend, tool_name, arguments, case_id, trace_directory=None, backend_calls=None):
+async def run_fixture(config, key, backend, tool_name, arguments, case_id, trace_directory=None, backend_calls=None, *, event_emitter=None):
     package = httpx if config.agent["provider"] == "gemini" else httpx2
     calls = []
 
@@ -119,7 +128,7 @@ async def run_fixture(config, key, backend, tool_name, arguments, case_id, trace
             payload = {"id": "fixture", "type": "message", "role": "assistant", "model": "fixture-native-001", "content": [part], "stop_reason": "tool_use" if len(calls) == 1 else "end_turn", "usage": {"input_tokens": 12, "output_tokens": 16}}
         return package.Response(200, json=payload)
 
-    agent = create_geologist_agent(config, backend_config=backend, adapter_factory=lambda settings, secret: native_adapter(settings, secret, transport=package.MockTransport(respond)))
+    agent = create_geologist_agent(config, backend_config=backend, adapter_factory=lambda settings, secret: native_adapter(settings, secret, transport=package.MockTransport(respond)), **({"events": event_emitter} if event_emitter is not None else {}))
     service = InMemorySessionService()
     session = await service.create_session(app_name="provider_fixture", user_id="fixture", session_id=case_id)
     runner = Runner(agent=agent, app_name="provider_fixture", session_service=service)

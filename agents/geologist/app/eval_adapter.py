@@ -18,7 +18,9 @@ from shaleyeah_evaluations import (
     load_profile,
 )
 from shaleyeah_evaluations.runner import JudgeBackend, run_case
+from shaleyeah_mcp.events import EventExportError, load_jsonl_emitter
 
+from app.employee_events import GeologistEvents
 from app.model_provider import (
     ConfiguredModel,
     ModelProviderError,
@@ -99,6 +101,7 @@ async def grade_dataset(
     judge=None,
     measurements=None,
     judge_timeout_seconds=30,
+    events=None,
 ):
     """Grade frozen native traces; the host authenticates and binds products/observations."""
     if (
@@ -137,6 +140,10 @@ async def grade_dataset(
         )
     if seen != set(profile.case_ids):
         raise EvaluationError("incomplete_dataset")
+    if events is not None:
+        observer = GeologistEvents(events)
+        for report in reports:
+            await observer.record_evaluation(report, product=work_products[report["caseId"]])
     return reports
 
 
@@ -259,6 +266,7 @@ def main(argv=None):
     for name in ("profile", "dataset", "traces", "host-evidence"):
         parser.add_argument("--" + name, required=True)
     parser.add_argument("--fixture-inputs", action="store_true")
+    parser.add_argument("--events", help="Private host-bound JSONL event configuration")
     parser.add_argument(
         "--models", help="Private BYO configuration with an explicit independent judge"
     )
@@ -299,11 +307,12 @@ def main(argv=None):
                 candidate=host["candidate"],
                 judge=backend,
                 measurements=host.get("measurements"),
+                events=load_jsonl_emitter(args.events) if args.events else None,
             )
         )
         print(json.dumps({"reports": reports}))
         return 0
-    except (EvaluationError, ModelProviderError, ValueError, TypeError, KeyError):
+    except (EvaluationError, ModelProviderError, EventExportError, ValueError, TypeError, KeyError):
         print(json.dumps({"errorCode": "evaluation_failed"}))
         return 1
 

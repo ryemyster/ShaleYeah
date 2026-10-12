@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #574: forwards trusted event bindings and loads optional private eventConfigFile in the HTTP launcher. Actual native two-provider tests join client/backend event IDs and verified source hashes. Access/source audit remains separate; reference MCP operational stdout/raw exception logging is displaced by shared SDK behavior.
+
+
 - #667: split shared-file and symlink credential-refusal launcher controls into independent cases, preserving each ten-second startup deadline and every exit/redaction/no-listener assertion. This prevents a combined cold-start fixture budget from canceling successful security controls under workspace CI load; runtime access policy is unchanged.
 
 - #670: routed file-based MCP calls through installed source adapters, server-owned current grants, durable audit and private exact-byte snapshots. Emit canonical sourceArtifact provenance; remove displaced MCP outputPath writes/ad hoc file metadata. Add source fetch/health, private bootstrap, revocation and actual protected-consumer controls. Non-LAS handlers now explicitly decline unsupported formats; domain helper repairs remain #671.

@@ -150,8 +150,8 @@ required fields fail rather than gaining silent defaults.
 ## Versions and compatibility
 
 Every record declares exactly `contractVersion: "0.1.0"`. Package versions track
-public API releases; each schema profile has its own version. Package 0.2.0
-supports employee 0.1.0 and the new, separately selected connector 0.1.0 profile. Artifact/task revisions, policy versions and eval-profile
+public API releases; each schema profile has its own version. Package 0.3.0
+supports employee 0.1.0, connector 0.1.0 and the separately selected event 0.1.0 profile. Artifact/task revisions, policy versions and eval-profile
 versions are separate; changing an input or work product is not a schema upgrade.
 
 | Change | Rule |
@@ -207,3 +207,16 @@ and [Python jsonschema with format checks](https://python-jsonschema.readthedocs
 generates the declarations. Runtime validation remains authoritative.
 
 Apache 2.0; see [LICENSE](LICENSE).
+
+## Correlated employee events
+
+Package 0.3.0 adds `validateEvent`, `validateEventContext`, `redactEvent` and
+`EventValidationError` from `@shaleyeah/contracts/events`; Python imports their
+snake-case equivalents from `shaleyeah_contracts.events`. The separate
+[event schema](shaleyeah_contracts/schemas/employee-events-0.1.0.schema.json)
+and [shared fixtures](fixtures/employee-events.json) cover identical boundaries.
+Redaction keeps only bounded schema-allowed metadata, drops unknown fields before
+serialization, replaces configured sensitive literals and rejects sensitive scope
+bindings. It does not authenticate an event or anonymize arbitrary allowed IDs.
+See [configuration, failure semantics and reference trace](../docs/employee-events.md).
+Emitters/exporters live in runtime adapters; this package stays framework-free.

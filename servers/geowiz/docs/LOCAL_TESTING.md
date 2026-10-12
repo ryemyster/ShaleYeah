@@ -43,3 +43,12 @@ alone does not authorize persistence.
 | Build/import error | Build SDK, then Geowiz, using declared dependencies |
 
 See [integration](INTEGRATION.md) and [deployment](DEPLOYMENT.md).
+
+## Correlated reference trace
+
+[Generate the complete fixture trace](../../../docs/employee-events.md#generate-an-operator-readable-fixture-trace)
+after building contracts, connectors, SDK and this server. It uses the actual
+protected local launcher and native ADK with two offline provider transports.
+It checks source hashes, client/backend parents and excluded credentials/content.
+Successful tool execution remains separate from the missing-judge evaluation and
+authored human-review fixtures.

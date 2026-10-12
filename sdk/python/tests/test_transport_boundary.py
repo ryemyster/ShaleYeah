@@ -28,8 +28,8 @@ def config(**options):
     )
 
 
-def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, version="2025-11-25"):
-    state = {"connections": 0, "dispatches": 0, "closes": 0, "clients": []}
+def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, version="2025-11-25", result_error=False):
+    state = {"connections": 0, "dispatches": 0, "closes": 0, "clients": [], "metadata": []}
 
     class Session:
         def __init__(self, *_args, **_kwargs):
@@ -60,10 +60,11 @@ def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, vers
 
         async def call_tool(self, _name, arguments, **_):
             state["dispatches"] += 1
+            state["metadata"].append(_.get("meta"))
             await asyncio.sleep(call_delay)
             if call_error:
                 raise call_error
-            return SimpleNamespace(content=[], structuredContent=arguments, isError=False)
+            return SimpleNamespace(content=[], structuredContent=arguments, isError=result_error)
 
     @asynccontextmanager
     async def transport(_url, *, http_client, **_):

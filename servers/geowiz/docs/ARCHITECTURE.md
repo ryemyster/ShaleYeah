@@ -97,3 +97,13 @@ their adapter profile is qualified. See [source setup](DATA_SOURCES.md).
 - [DEPLOYMENT.md](DEPLOYMENT.md) — stdio vs HTTP, Docker, Kong, production checklist
 - [LOCAL_TESTING.md](LOCAL_TESTING.md) — running locally, testing tools directly
 - [DEVELOPMENT.md](DEVELOPMENT.md) — adding tools, LLM wiring pattern, TDD checklist
+
+## Correlated tool observations
+
+The server factory forwards trusted `events` to SDK dispatch. The local launcher
+loads optional private `eventConfigFile`, registers its dedicated access token as
+a sensitive literal, and uses `bindMCPEvents` to compare client metadata with the
+trusted task and verified principal. Starts precede dispatch; failed handlers or
+invalid successful outputs cannot log success.
+[Event boundaries](../../../docs/employee-events.md) preserve existing source
+grants, domain logic and separate mandatory access/source audit.

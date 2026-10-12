@@ -95,7 +95,8 @@ The local audit file serializes allowlisted events with fsync before successful
 dispatch and bounds queued writes at 128. Full/failed/timed-out audit prevents
 execution. Events record authorization attempts, not domain completion. This
 single-process example does not certify multi-process durability, backup/replay,
-SIEM integration or protected-action transactionality; #574/#673 own those gates.
+SIEM integration or protected-action transactionality. Correlated local employee
+events are configured separately below; exact-revision review/continuation remains #673.
 
 ## Employee client and qualification
 
@@ -111,3 +112,12 @@ Remote verifiers and private policies are operator services, separate from model
 keys and agent prompts. The public SDK context preserves verified customer/
 employee ownership and per-operation scopes. A session ID, Roman persona or
 model-generated approval never grants access.
+
+## Correlated employee events
+
+Optional `eventConfigFile` enables a second, assignment-bound metadata stream;
+it does not replace ingress/source audit. Follow
+[private event configuration](../../../docs/employee-events.md#configure-private-local-files),
+use the same trusted context in employee/backend settings, and send native MCP
+correlation metadata. Missing/foreign metadata stops before handler execution.
+Required completion export failure reports an uncertain effect without replay.

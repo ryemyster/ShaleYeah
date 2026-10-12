@@ -54,3 +54,17 @@ npx tsx tests/parsers.test.ts
 | `Cannot find module '@shaleyeah/sdk'` | Not built | `pnpm build` first |
 | `any` type errors in server-factory | Intentional — see CLAUDE.md | Do not remove |
 | Parser test failures | Missing fixture files | Add sample files to `tests/fixtures/` |
+
+## Event and protocol controls
+
+From this package:
+
+```sh
+pnpm exec tsx --test tests/events.test.ts tests/mcp-employee-events.test.ts tests/mcp-stdio-events.test.ts
+```
+
+This runs fake sink, private JSONL, authenticated actual MCP and actual stdio
+controls. Tests cover foreign bindings, failure before/after
+dispatch, optional failure health, invalid outputs and protocol-only stdout.
+The [reference trace](../../docs/employee-events.md#generate-an-operator-readable-fixture-trace)
+adds native Geologist/source/evaluation/review observations without live keys.

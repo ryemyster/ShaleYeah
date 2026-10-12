@@ -274,7 +274,7 @@ new parallel production path:
 
 | Retained path / gap | Replacement and deletion owner |
 | --- | --- |
-| [Shared MCP base](../../sdk/src/mcp-server.ts): #668 per-session lifecycle and #677 declared-schema/structured-success/genuine-failure checks; direct unauthenticated dispatch and stdout diagnostics remain | #678 enforces entry authority; #574 fixes stdio/event logging; #671/role owners qualify actual output schemas; #674 proves extraction and required composition |
+| [Shared MCP base](../../sdk/src/mcp-server.ts): #668 per-session lifecycle, #677 declared-schema/structured-success/genuine-failure checks, #678 entry authority and #574 correlated metadata/protocol-only stdout | #671/role owners qualify actual output schemas; #674 proves extraction and required composition; events do not supply domain authority |
 | [Geologist Python wrapper](../../agents/geologist/app/geowiz_mcp.py): initializes per call; #677 validates selected advertised schemas and preserves structured/error evidence with bounded legacy text compatibility | #679 supplies an installed reusable client and deletes copied transport; #671/#674 qualify actual role schemas/reference composition; retain role tool mappings with their own tests |
 | Other copied package-local MCP wrappers and four remaining TypeScript employees | #576 inventories exact callers; client adoption/role migrations remove displaced wrappers; #692 removes obsolete custom runtime after the last caller |
 | Optional coordinator is not an implemented universal task router | #675 defines authority; #676 implements the bounded workflow and C6 adapter proof |

@@ -47,3 +47,11 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](../../docs/model-providers.md).
+
+## Event export configuration
+
+Event-enabled consumers also install contracts 0.3.0. Keep per-assignment settings
+and per-producer JSONL outside the repository in owned private files. Use
+`loadJsonlEmitter` and pass `bindMCPEvents(emitter)` as runtime `events`. A host
+can select a trusted emitter for each task; client metadata never selects its own
+authority. See [ordered setup and recovery limits](../../docs/employee-events.md).
