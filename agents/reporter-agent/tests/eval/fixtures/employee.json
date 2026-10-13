@@ -1,0 +1,520 @@
+{
+  "charter": {
+    "contractVersion": "0.1.0",
+    "kind": "employee-charter",
+    "employeeId": "employee.geologist",
+    "displayName": "Marcus Aurelius Geologicus",
+    "aliases": [
+      "Geologist"
+    ],
+    "role": {
+      "id": "geologist",
+      "name": "Geological analyst"
+    },
+    "owner": {
+      "principalId": "reviewer.geologist",
+      "customerId": "operator-demo"
+    },
+    "responsibilities": [
+      "Prepare evidence-backed geological interpretations"
+    ],
+    "nonGoals": [
+      "Certify reserves or commit capital"
+    ],
+    "capabilities": [
+      "geology.interpret"
+    ],
+    "inputTypes": [
+      {
+        "id": "type.well-log",
+        "version": "1"
+      }
+    ],
+    "outputTypes": [
+      {
+        "id": "type.geological-interpretation",
+        "version": "1"
+      }
+    ],
+    "authorityPolicy": {
+      "id": "policy.geologist.review",
+      "version": "r1"
+    },
+    "sourcePolicy": {
+      "id": "policy.operator-data",
+      "version": "r1"
+    },
+    "contextPolicy": {
+      "id": "policy.employee-context",
+      "version": "r1"
+    },
+    "contextIsolation": [
+      "customer",
+      "asset",
+      "task",
+      "employee"
+    ],
+    "evalProfiles": [
+      {
+        "id": "eval.geologist",
+        "version": "r1"
+      }
+    ]
+  },
+  "externalCharter": {
+    "contractVersion": "0.1.0",
+    "kind": "employee-charter",
+    "employeeId": "external.geologist",
+    "displayName": "Operator supplied geologist",
+    "aliases": [],
+    "role": {
+      "id": "geologist",
+      "name": "Geological analyst"
+    },
+    "owner": {
+      "principalId": "reviewer.geologist",
+      "customerId": "operator-demo"
+    },
+    "responsibilities": [
+      "Prepare evidence-backed geological interpretations"
+    ],
+    "nonGoals": [
+      "Certify reserves or commit capital"
+    ],
+    "capabilities": [
+      "geology.interpret"
+    ],
+    "inputTypes": [
+      {
+        "id": "type.well-log",
+        "version": "1"
+      }
+    ],
+    "outputTypes": [
+      {
+        "id": "type.geological-interpretation",
+        "version": "1"
+      }
+    ],
+    "authorityPolicy": {
+      "id": "policy.geologist.review",
+      "version": "r1"
+    },
+    "sourcePolicy": {
+      "id": "policy.operator-data",
+      "version": "r1"
+    },
+    "contextPolicy": {
+      "id": "policy.employee-context",
+      "version": "r1"
+    },
+    "contextIsolation": [
+      "customer",
+      "asset",
+      "task",
+      "employee"
+    ],
+    "evalProfiles": [
+      {
+        "id": "eval.geologist",
+        "version": "r1"
+      }
+    ]
+  },
+  "task": {
+    "contractVersion": "0.1.0",
+    "kind": "task-assignment",
+    "id": "task-geology-1",
+    "revision": "r1",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "outcome": "Interpret the supplied log and identify missing evidence",
+    "requiredCapabilities": [
+      "geology.interpret"
+    ],
+    "inputs": [
+      {
+        "id": "artifact.log-1",
+        "revision": "r1",
+        "uri": "urn:example:well-log:1"
+      }
+    ],
+    "constraints": [
+      "Use permitted evidence only"
+    ],
+    "status": "assigned",
+    "workProductRefs": [],
+    "reviewDecisionRefs": []
+  },
+  "work": {
+    "contractVersion": "0.1.0",
+    "kind": "work-product",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "artifact": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "status": "ready_for_review",
+    "inputs": [
+      {
+        "id": "artifact.log-1",
+        "revision": "r1",
+        "uri": "urn:example:well-log:1"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "evidence.log-1",
+        "uri": "urn:example:well-log:1",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "revision": "r1",
+        "asOf": "2026-10-07T12:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      }
+    ],
+    "findings": [
+      {
+        "id": "finding.depth",
+        "basis": "measured",
+        "value": 1200,
+        "unit": "ft",
+        "evidenceIds": [
+          "evidence.log-1"
+        ],
+        "assumptionIds": []
+      },
+      {
+        "id": "finding.datum",
+        "basis": "assumed",
+        "value": "operator-datum",
+        "unit": "not_applicable",
+        "evidenceIds": [],
+        "assumptionIds": [
+          "assumption.datum"
+        ]
+      },
+      {
+        "id": "finding.porosity",
+        "basis": "unknown",
+        "value": null,
+        "unit": "fraction",
+        "reason": "Required curve is absent",
+        "evidenceIds": [],
+        "assumptionIds": []
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "assumption.datum",
+        "statement": "Use the supplied operator datum pending geologist review",
+        "evidenceIds": [
+          "evidence.log-1"
+        ]
+      }
+    ],
+    "uncertainty": "Datum assumption is unreviewed; porosity is unknown",
+    "confidence": 0,
+    "blockers": [],
+    "review": {
+      "status": "unreviewed",
+      "decisionRefs": []
+    }
+  },
+  "context": {
+    "contractVersion": "0.1.0",
+    "kind": "context-manifest",
+    "id": "context.geology-1",
+    "revision": "r1",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "contextPolicy": {
+      "id": "policy.employee-context",
+      "version": "r1"
+    },
+    "selectedEvidence": [
+      {
+        "id": "evidence.log-1",
+        "uri": "urn:example:well-log:1",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "revision": "r1",
+        "asOf": "2026-10-07T12:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      }
+    ],
+    "workingArtifactRefs": [
+      {
+        "id": "artifact.log-1",
+        "revision": "r1",
+        "uri": "urn:example:well-log:1"
+      }
+    ],
+    "sharedKnowledge": [],
+    "assembledAt": "2026-10-07T12:30:00Z",
+    "retention": {
+      "policy": {
+        "id": "policy.retention",
+        "version": "r1"
+      },
+      "expiresAt": "2026-11-07T12:30:00Z"
+    },
+    "budget": {
+      "maxItems": 5,
+      "maxBytes": 10000,
+      "maxTokens": 2000
+    },
+    "blockers": []
+  },
+  "reviewRequest": {
+    "contractVersion": "0.1.0",
+    "kind": "review-request",
+    "id": "review.geology-1",
+    "revision": "r1",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "productRef": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "requestedDecision": "Approve geological interpretation and stated assumptions",
+    "reviewerPolicy": {
+      "id": "policy.geologist.review",
+      "version": "r1"
+    },
+    "createdAt": "2026-10-07T12:30:00Z"
+  },
+  "reviewDecision": {
+    "contractVersion": "0.1.0",
+    "kind": "review-decision",
+    "id": "decision.geology-1",
+    "revision": "r1",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "requestRef": {
+      "id": "review.geology-1",
+      "revision": "r1"
+    },
+    "productRef": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "decision": "request_changes",
+    "reviewer": {
+      "principalId": "reviewer.geologist",
+      "authorityPolicy": {
+        "id": "policy.geologist.review",
+        "version": "r1"
+      }
+    },
+    "reason": "Resolve depth datum before accepting the interpretation",
+    "decidedAt": "2026-10-07T13:00:00Z",
+    "auditRef": {
+      "id": "audit.review-1",
+      "revision": "r1"
+    }
+  },
+  "blockedWork": {
+    "contractVersion": "0.1.0",
+    "kind": "work-product",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "artifact": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "status": "blocked",
+    "inputs": [],
+    "evidence": [],
+    "findings": [],
+    "assumptions": [],
+    "uncertainty": "Datum assumption is unreviewed; porosity is unknown",
+    "confidence": 0,
+    "blockers": [
+      {
+        "code": "missing_input",
+        "message": "Well log was not supplied",
+        "references": []
+      }
+    ],
+    "review": {
+      "status": "unreviewed",
+      "decisionRefs": []
+    }
+  },
+  "finalWork": {
+    "contractVersion": "0.1.0",
+    "kind": "work-product",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "artifact": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "status": "final",
+    "inputs": [
+      {
+        "id": "artifact.log-1",
+        "revision": "r1",
+        "uri": "urn:example:well-log:1"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "evidence.log-1",
+        "uri": "urn:example:well-log:1",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "1111111111111111111111111111111111111111111111111111111111111111"
+        },
+        "revision": "r1",
+        "asOf": "2026-10-07T12:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      }
+    ],
+    "findings": [
+      {
+        "id": "finding.depth",
+        "basis": "measured",
+        "value": 1200,
+        "unit": "ft",
+        "evidenceIds": [
+          "evidence.log-1"
+        ],
+        "assumptionIds": []
+      },
+      {
+        "id": "finding.datum",
+        "basis": "assumed",
+        "value": "operator-datum",
+        "unit": "not_applicable",
+        "evidenceIds": [],
+        "assumptionIds": [
+          "assumption.datum"
+        ]
+      },
+      {
+        "id": "finding.porosity",
+        "basis": "unknown",
+        "value": null,
+        "unit": "fraction",
+        "reason": "Required curve is absent",
+        "evidenceIds": [],
+        "assumptionIds": []
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "assumption.datum",
+        "statement": "Use the supplied operator datum pending geologist review",
+        "evidenceIds": [
+          "evidence.log-1"
+        ]
+      }
+    ],
+    "uncertainty": "Datum assumption is unreviewed; porosity is unknown",
+    "confidence": 0,
+    "blockers": [],
+    "review": {
+      "status": "approved",
+      "decisionRefs": [
+        {
+          "id": "decision.geology-approved-1",
+          "revision": "r1"
+        }
+      ]
+    }
+  },
+  "approveDecision": {
+    "contractVersion": "0.1.0",
+    "kind": "review-decision",
+    "id": "decision.geology-approved-1",
+    "revision": "r1",
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "employee.geologist"
+    },
+    "taskRevision": "r1",
+    "requestRef": {
+      "id": "review.geology-1",
+      "revision": "r1"
+    },
+    "productRef": {
+      "id": "product.geology-1",
+      "revision": "r1",
+      "uri": "urn:example:interpretation:1"
+    },
+    "decision": "approve",
+    "reviewer": {
+      "principalId": "reviewer.geologist",
+      "authorityPolicy": {
+        "id": "policy.geologist.review",
+        "version": "r1"
+      }
+    },
+    "reason": "The revised assumptions are accepted for this synthetic example.",
+    "decidedAt": "2026-10-07T13:00:00Z",
+    "auditRef": {
+      "id": "audit.review-1",
+      "revision": "r1"
+    }
+  }
+}

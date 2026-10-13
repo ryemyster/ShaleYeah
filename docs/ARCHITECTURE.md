@@ -68,6 +68,11 @@ Other file formats and domain correctness remain unqualified; non-LAS MCP
 handlers explicitly decline until their adapters are reviewed. Existing
 source-independent helper APIs are not an access boundary.
 
+The Reporter now uses the same installed helpers through its own role factory.
+Its source interface reads reviewed business artifacts, preserves literal values
+and requires exact qualified human review before private release. It does not
+certify disclosures or send reports externally. See the [Reporter package](../agents/reporter-agent/README.md).
+
 ## Packages and dependency boundaries
 
 | Area | Current responsibility | Target boundary |
@@ -78,12 +83,13 @@ source-independent helper APIs are not an access boundary.
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
 | `sdk/python/` | Independently buildable `shaleyeah-mcp-client`; Geologist first consumer | Installed protocol adapter with no ADK/domain/root source imports |
+| `sdk/employee/` | Installed scoped context, providers/events, native runtime and protected review client; role factories own persona/tool selection | Independently installable helpers with optional ADK adapter and no employee imports |
 | `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
-Ten agents have ADK manifests: Geologist, Risk Analyst, Legal Analyst, Market
+Eleven agents have ADK manifests: Geologist, Reporter, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
-Infrastructure Planner and Investment Chair. Economist, Reservoir Engineer,
-Reporter and Quality Assurance retain TypeScript implementations.
+Infrastructure Planner and Investment Chair. Economist, Reservoir Engineer and
+Quality Assurance retain TypeScript implementations.
 See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
 
 Those TypeScript agents use `LocalAgentRuntime` and copied task loops.

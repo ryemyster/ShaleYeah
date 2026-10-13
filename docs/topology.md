@@ -422,3 +422,9 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 (Skills); provider configuration adds no orchestration or approval authority.
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](model-providers.md).
+
+The Geologist and Reporter factories use installable `sdk/employee` helpers for
+scoped state, providers/events, optional native ADK and protected continuation.
+Role code owns persona and tool mappings; the helper imports no employee. The
+TypeScript SDK review core accepts trusted role-owned source/action/schema
+adapters. Reporter business artifacts stay separate from the LAS/CSV connector.

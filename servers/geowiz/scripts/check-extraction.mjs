@@ -90,7 +90,7 @@ try {
 			`${manifest.name.replace(/^@/, "").replaceAll("/", "-")}-${manifest.version}.tgz`,
 		);
 	}
-	for (const relative of ["contracts", "evaluations", "sdk/python", "agents/geologist"])
+	for (const relative of ["contracts", "evaluations", "sdk/python", "sdk/employee", "agents/geologist"])
 		await run("uv", ["build", "--wheel", "--out-dir", path.join(root, "wheels")], path.join(repo, relative));
 	const agentSource = path.join(root, "source/geologist");
 	await fs.mkdir(agentSource, { recursive: true });
@@ -105,7 +105,7 @@ try {
 			return !localSources;
 		})
 		.join("\n");
-	assert.ok(!projectText.includes("../../sdk/python") && !projectText.includes("../../evaluations"));
+	assert.ok(!projectText.includes("../../sdk/") && !projectText.includes("../../evaluations"));
 	await fs.writeFile(agentProject, projectText);
 	await run("uv", ["build", "--wheel", "--out-dir", path.join(root, "wheels")], agentSource);
 	for (const [relative, name] of [

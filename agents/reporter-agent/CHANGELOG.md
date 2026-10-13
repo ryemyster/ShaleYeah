@@ -1,13 +1,12 @@
-# Changelog — @shaleyeah/reporter-agent
+# Changelog — Reporter employee
 
 ## [Unreleased]
 
-### Added
-- `runReporterAgentTask` Layer 2 execution loop — LLM-driven multi-step loop with Permission Gate via `runtime.execute()`, HITL throw when no callback provided, and max-steps synthesis (#441)
-- `executeWithRetry` — exponential backoff (500ms/1s/2s, up to 3 retries) for retryable tool failures before surfacing error to LLM (#441)
-- **Permanent halt guard** — `executeLoop` returns immediately when `execResult.retryable === false` (blocking evals, scope rejections, security gates); does not continue to next LLM step (#441)
-- 3 reporting tools: `reporter-agent.generate_investment_decision`, `reporter-agent.create_executive_report`, `reporter-agent.synthesize_analysis` — all wired to `@shaleyeah/server-reporter` over HTTP (port 3009) (#441)
-- `callReporterTool` MCP HTTP client — delegates to `@shaleyeah/server-reporter` over HTTP transport (#441)
-- `createReporterAgentRuntime` / `createReporterAgentEndpoint` factories (#441)
-- `reporterAgentManifest` + `reporterAgentConfig` — full Arcade-compliant manifest with HITL, evals (schema: blocking, redactSecrets: blocking), memory namespace, and model routing (#441)
-- 54 tests: full contract suite (manifest validation, progressive discovery, model routing, HITL policy, evals, health endpoint, permanent halt) + MCP client tests (#441)
+### Changed
+
+- #541: native ADK/Python Reporter uses installable employee context/provider/MCP/review helpers, explicit BYO profiles and independently configurable role evaluations. Its own source-backed context survives restart; exact human review and current source rights govern private publication.
+- #541: clean source, wheel and npm exports with locked dependencies, external compatible MCP peer, separate container recipes and required CI controls. Initial judgments are research fixtures; live/domain quality and final human acceptance remain separate.
+
+### Removed
+
+- #541: displaced TypeScript loop, private MCP client, npm/config surfaces and their tests from #441. Native ADK and the shared protocol client now own those paths.

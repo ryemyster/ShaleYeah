@@ -1,38 +1,23 @@
-# Architecture — @shaleyeah/server-reporter
+# Reporter service architecture
 
-## Role
+Reporter is the independently runnable tool boundary for source-linked drafting
+and human publication review. The employee's primary mode is **Stand-alone Agent
+with Progressive Disclosure (Skills)**; the service uses deterministic business
+state rather than an agent reasoning loop.
 
-Tier 1 MCP tool server. Generates professional investment reports and executive summaries from structured analysis inputs. Paired with the `reporter-agent` agent (port 4009).
+`report-assembly.ts` preserves upstream values, units, basis and source revisions.
+`reviewed-sources.ts` verifies exact task/work/review/sharing receipts through an
+installed authority adapter. The reviewed-business-artifact interface is JSON;
+it does not claim conformance with the separate LAS/CSV raw-data connector.
 
-## Tool inventory
+`review-workflow.ts` owns Reporter action, destination, scopes and candidate
+schema while reusing the shared durable review machinery. Exact reassembly and
+configured requirements reject altered numbers, missing disclosures or invented
+publication prose. Owner edits require a new draft and review packet. Only the
+authenticated human can approve. Qualification is required and cannot be waived
+by a declared score. The store rechecks current rights before committing once.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `synthesize_analysis` | LLM | ✅ `callLLM` | Combine outputs from multiple domain agents into cohesive analysis |
-| `generate_investment_decision` | LLM | ✅ `callLLM` | One-page go/no-go decision memo with rationale |
-| `create_executive_report` | LLM | ✅ `callLLM` | Full executive report with appendices |
-
-## LLM + fallback pattern
-
-Takes structured analysis results from other servers as input, calls `callLLM()` to synthesize into prose, returns markdown-formatted reports. All formatting and structure decisions are in the prompt. Falls back to deterministic defaults if the API is unavailable.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3009`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: create_executive_report { dealName, sections, audience }
-  → callLLM(prompt with all gathered domain data)
-  ↘ fallback: deterministic default
-  → Return: markdown-formatted executive report
-```
-
-## Dependencies
-
-```
-@shaleyeah/server-reporter
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
-```
+`server.ts` registers bounded reference-based tools. `configuration.ts` provides
+an owner-only local bootstrap; remote hosts inject their source, secret, audit
+and HTTP identity services through the declared interfaces. Synthesis can add an
+unreviewed cited note with an explicit model profile, never a publication grant.

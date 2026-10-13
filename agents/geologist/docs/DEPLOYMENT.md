@@ -131,3 +131,7 @@ logs, protected parent directories and operator retention.
 [Event setup](../../../docs/employee-events.md#configure-private-local-files)
 explains required/optional sink behavior and uncertain effects. Logging a review
 attestation does not supply reviewer authentication or a persistence grant.
+
+The extracted employee also installs the declared shared employee-helper wheel.
+The helper contains neutral context/provider/native/review adapters; the
+Geologist package retains its persona and domain tool mappings.

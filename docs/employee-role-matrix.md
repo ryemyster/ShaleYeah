@@ -64,7 +64,7 @@ Versioned capability IDs will be published in #568.
 | Research Analyst | [research-analyst](../agents/research-analyst/README.md) | [research](../servers/research/src/index.ts): `conduct_market_research`, `analyze_competition` | #688 |
 | Infrastructure Planner | [infrastructure-planner](../agents/infrastructure-planner/README.md) | [infrastructure](../servers/infrastructure/src/index.ts): `plan_pipeline`, `size_facilities`, `estimate_costs`, `assess_compliance` | #689 |
 | Investment Chair | [investment-chair](../agents/investment-chair/README.md) | [decision](../servers/decision/src/index.ts): `make_investment_decision`, `calculate_bid_strategy`, `analyze_portfolio_fit` | #690 |
-| Reporter | [reporter-agent](../agents/reporter-agent/src/agent/index.ts) | [reporter](../servers/reporter/src/index.ts): `generate_investment_decision`, `create_executive_report`, `synthesize_analysis` | #541 |
+| Reporter | [reporter-agent](../agents/reporter-agent/app/agent.py) | [reporter](../servers/reporter/src/index.ts): `get_reviewed_source`, `draft_report`, `prepare_review`, `release_report` | #541 |
 | Quality Assurance | [quality-assurance](../agents/quality-assurance/README.md) | [qa-server](../servers/qa-server/src/index.ts): `run_quality_tests`, `generate_quality_report` | #538, #716, #542 |
 | Chief of Staff, proposed | No separate employee package yet | [Optional coordinator source](../orchestrator/src/index.ts) is a scaffold; no additional specialist server is assumed | #675, #676 |
 

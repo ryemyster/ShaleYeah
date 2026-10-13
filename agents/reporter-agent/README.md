@@ -1,38 +1,42 @@
-# @shaleyeah/reporter-agent
+# Reporter employee
 
-> **Status: Stub** — implementation tracked in [#368](https://github.com/ryemyster/ShaleYeah/issues/368). Reference implementation: `agents/geologist/`.
+Scriptor Reporticus Maximus helps an oil-and-gas team turn reviewed specialist
+work into a report for an explicit audience. It keeps numbers, units, assumptions,
+missing evidence and source revisions visible so the owner can review the result.
+It does not choose the investment decision or certify reserves.
 
-The reporter agent assembles analysis outputs from the other agents into formatted reports, executive summaries, well decks, and presentations. It pairs with the **reporter** Tier 1 MCP server (port 3009).
+The employee uses Google's Agent Development Kit (ADK) with Python. Its primary
+architecture is **Stand-alone Agent with Progressive Disclosure (Skills)**.
+It calls an independently configured Reporter-compatible Model Context Protocol
+(MCP) service; MCP is the interface used to discover and call bounded tools.
+The matching [Reporter server](../../servers/reporter/README.md) assembles reports
+and enforces the durable human-review gate.
 
-## Pair
+Private drafting requires current source rights. The human owner requests edits
+or approves the exact qualified report revision before it enters the configured
+private reviewed-reports destination. No external sending is implemented.
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-reporter` | 3009 |
-| Tier 2 (agent) | `@shaleyeah/reporter-agent` | 4009 |
-
-## Quick start (once implemented)
+From this package directory:
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/reporter && PORT=3009 pnpm start
-
-# Terminal 2 — Tier 2 agent
-cd agents/reporter-agent
-ANTHROPIC_API_KEY=sk-ant-... REPORTER_MCP_URL=http://localhost:3009 pnpm test
+uv sync --locked
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+uv run --locked ruff check app tests
+agents-cli info
 ```
 
-## Implementing this agent
+These commands install declared dependencies, run local controls and inspect the
+portable project. They do not contact a paid model or deploy a service. Python
+3.11–3.13 is supported; CI uses Python 3.12.
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `reporterAgent` and `geowiz` → `reporter`.
+Set `REPORTER_MODEL_CONFIG_FILE` to the private BYO model configuration and
+`REPORTER_MCP_ACCESS_TOKEN_FILE` to a separate private MCP credential. Set
+`REPORTER_MCP_URL` for an external compatible service. The default local address
+is `http://127.0.0.1:3009/mcp`; a missing credential fails closed. Providers are
+explicit profiles, with separate agent, synthesis and optional judge ownership.
+See [provider setup](../../docs/model-providers.md) and
+[integration](docs/INTEGRATION.md).
 
-> **Note:** Report generation tools write files to disk and should set `destructive: true`. Consider `requiresHumanApproval: true` for reports that will be sent externally.
-
-## Docs
-
-- [Architecture](docs/ARCHITECTURE.md)
-- [How It Works](docs/HOW_IT_WORKS.md)
-- [Development](docs/DEVELOPMENT.md)
-- [Integration Guide](docs/INTEGRATION.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Local Testing](docs/LOCAL_TESTING.md)
+[Architecture](docs/ARCHITECTURE.md) explains context and review.
+[Local testing](docs/LOCAL_TESTING.md) explains the configuration-based scorecard.
+[Deployment](docs/DEPLOYMENT.md) states the supported execution limits.

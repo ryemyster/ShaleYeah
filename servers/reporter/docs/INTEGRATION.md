@@ -1,62 +1,26 @@
-# Integration — @shaleyeah/server-reporter
+# Integrating Reporter tools
 
-## Who calls reporter?
+A compatible MCP client discovers and calls reference-based tools. Pass exact
+source IDs and the configured requirements to `draft_report`. The result includes
+canonical private work, Markdown, source revisions and disclosure requirements.
+No tool accepts filesystem output paths or caller-supplied authority receipts.
 
-The `reporter-agent` (`agents/reporter-agent/`) connects over HTTP, typically as the final step in the deal workflow after all domain agents have run.
+Trusted hosts configure `ReviewedSources.current` to authenticate origin review
+and current recipient read/export rights. The service validates exact work, task,
+request and decision bindings. Local owner-only exports provide an explicitly
+operator-attested alternative; they do not prove a remote signature or professional
+correctness. Business artifacts remain separate from raw connector profiles.
 
-## Example call (agent side)
+The `get_context_source_metadata` query returns permitted evidence metadata for
+native context selection. Business-work metadata follows current sharing rights.
+Original evidence needs its own exact current grant through
+`ReviewedSources.currentMetadata`; local configuration uses
+`contextMetadataGrants`. This does not grant raw-file access. Shared context must
+match the current upstream origin/review/usage/retention references and the exact
+private report artifact. Foreign evidence or a changed receipt blocks review.
 
-```typescript
-import { callReporterTool } from "./reporter-client.js";
-
-const result = await callReporterTool(
-    "http://localhost:3009",
-    "create_executive_report",
-    {
-        dealName: "Permian Basin Acquisition",
-        audience: "investment_committee",
-        sections: {
-            geology: geologySummary,
-            economics: economicsSummary,
-            risk: riskSummary,
-            legal: legalSummary,
-        },
-    },
-);
-```
-
-## Tool call reference
-
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `synthesize_analysis` | `sections`, `context` | Combined multi-domain analysis |
-| `generate_investment_decision` | `analysis`, `criteria` | Go/no-go with structured rationale |
-| `create_executive_report` | `dealName`, `sections`, `audience` | Full executive summary document |
-
-## Upstream dependencies
-
-Reporter has no external data dependencies — it synthesizes data provided by the caller.
-
-```
-All domain agents (geowiz, econobot, drilling, ...)
-  ↓ via reporter-agent
-reporter (port 3009)
-  ↓ callLLM()
-Anthropic API
-```
-
-## Downstream consumers
-
-```
-reporter (port 3009)
-  ↑ MCP over HTTP
-reporter-agent (port 4009)
-  ↓ result → orchestrator / user
-```
-
-## Error types
-
-```json
-{ "error_type": "retryable", "message": "LLM timeout — retry" }
-{ "error_type": "permanent", "message": "Missing required section: dealName" }
-```
+Submit the exact work/context/evaluation/publication snapshot to `prepare_review`.
+The human owner uses the separate enrolled review interface to inspect, request
+changes, reject or approve that packet. `get_review_status` supplies a durable
+checkpoint; `release_report` commits its exact grant to private reviewed reports
+once. Source, task, template or qualification changes block continuation.

@@ -63,6 +63,8 @@ The reference fleet covers 14 business concerns:
 | Investment decision | Augustus Decidius Maximus | `servers/decision` |
 
 Each corresponding agent lives under `agents/<role>/` when implemented or migrated.
+The [Reporter employee](agents/reporter-agent/README.md) prepares source-linked
+private reports with an exact human publication gate and configurable scorecard.
 
 ## Start Here
 

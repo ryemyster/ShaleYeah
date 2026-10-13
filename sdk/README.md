@@ -145,3 +145,12 @@ uncertain effects afterward. Operational stdio messages use stderr; stdout remai
 MCP frames. [Employee events](../docs/employee-events.md) explains private setup,
 redaction, optional sinks and measurement limits. HTTP/source authorization audit
 remains an independent requirement.
+
+## Employee helpers
+
+The independently installable [Python employee helpers](employee/README.md) own
+scoped context, configured providers, metadata events, optional native ADK state
+and protected review continuation. Role factories supply persona and tools.
+The TypeScript SDK now shares the durable review store, owner-only JSON reader
+and installed qualification launcher; role adapters own action, destination,
+source interface and exact candidate validation.

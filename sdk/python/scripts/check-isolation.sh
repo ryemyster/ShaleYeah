@@ -10,6 +10,7 @@ uv build --wheel --out-dir "$isolation_dir/wheels"
 uv build --project "$geologist_root" --wheel --out-dir "$isolation_dir/wheels"
 uv build --project "$client_root/../../contracts" --wheel --out-dir "$isolation_dir/wheels"
 uv build --project "$client_root/../../evaluations" --wheel --out-dir "$isolation_dir/wheels"
+uv build --project "$client_root/../employee" --wheel --out-dir "$isolation_dir/wheels"
 uv export --project "$geologist_root" --locked --no-emit-local --no-hashes \
   --output-file "$isolation_dir/requirements.txt" > /dev/null
 uv venv --python 3.12 "$isolation_dir/.venv"
@@ -19,6 +20,7 @@ uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
   "$isolation_dir/wheels/shaleyeah_mcp_client-0.2.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_contracts-0.3.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_evaluations-0.3.0-py3-none-any.whl" \
+  "$isolation_dir/wheels/shaleyeah_employee_runtime-0.1.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_geologist_adk-0.1.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/tests/eval" "$isolation_dir/agents/geologist/tests/eval" "$isolation_dir/servers/geowiz/tests/sample-files" "$isolation_dir/contracts/fixtures"

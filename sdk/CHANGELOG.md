@@ -4,6 +4,10 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+### Changed
+
+- #541: add the independently installable Python employee runtime and extract TypeScript durable review/qualification/private-file helpers behind trusted role adapters. Require role-bound context and action validation; preserve Geowiz interfaces through its facade.
+
 - #674: own TypeScript build configuration and allowlisted built/types/license runtime archive. Actual clean Geowiz source/installed consumers use versioned packed dependencies without SDK source symlinks or root configuration. Preserve public runtime APIs until their owning migration/deletion work.
 
 - #574: SDK 0.2.0 adds portable contract-backed event emitters, private JSONL settings/export, trusted native MCP correlation and truthful start/completion/failure events. Validate successful tool output before completion; keep stdio operational messages on stderr and remove raw thrown-error prose.

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- #541: replace duplicated context, provider, event and native review implementations with thin facades over the installable employee helper. Preserve Geologist role tools, namespaces and stored review semantics; run existing conformance and independent extraction checks.
+
 - #674: remove the context guard's hidden requirement to read the remote tool synthesis key. Scan owned employee/MCP credentials, reject both profile references, and preserve host and tool secret guards; tests reproduce and verify both native providers with no remote-key mount.
 
 - #674: standalone source/wheel export includes the reviewed profile, dataset, qualification policy and frozen baseline; separate portable Python container recipe and isolated native-provider/context/review journey. Format generated context timestamps to millisecond precision under the existing contract; reproduced microsecond-clock failure and added coverage. No persona, mode, wire schema or host authority change.

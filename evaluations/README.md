@@ -185,3 +185,9 @@ report schemas. Geologist can export report/profile/product hashes through its
 [role-local event adapter](../docs/employee-events.md#record-host-work-evaluations-and-review).
 This core package gains no MCP, ADK or event-sink dependency. A missing judge and
 a failed mandatory gate keep their actual outcome in the correlated event.
+
+Reporter profiles use explicit reviewed-business-artifact evidence, literal
+source reconciliation and disclosure coverage. Its mandatory publication,
+architecture and tool gates are installed role metrics. Qualification policy
+selects a supported role; Geologist and Reporter retain separate required gates.
+Operator configuration can change cases and rubrics but cannot waive trust floors.
