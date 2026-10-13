@@ -117,6 +117,11 @@ pnpm turbo test
 pnpm --dir contracts check:isolation
 ```
 
+For a small machine or hosted CI runner, use `pnpm turbo test --concurrency=2`
+for the workspace test command. It schedules fewer packages at once while
+keeping the full suite and its existing time limits. Native and installed-unit
+qualification still use their owning package commands.
+
 These transitional workspace checks do not replace Python package checks or
 live employee evals. [Contracts](../contracts/README.md) also documents its
 package-local Python/TypeScript parity commands.

@@ -104,9 +104,14 @@ numbers while placing each repair before its consumer. These are required
 missing-evidence/numerical fixes, not additional employee migrations.
 
 QA research in #538 adds [#716](https://github.com/ryemyster/ShaleYeah/issues/716)
-at 27a, bringing the current plan to **51 outcomes**. It replaces configuration-
+at 27a, bringing the plan to 51 outcomes. It replaces configuration-
 based PASS and estimated coverage with observed rule results before #542;
 independent domain algorithm work stays outside that employee migration.
+
+Repeated workspace CLI timeouts during accepted Reporter/QA delivery add
+[#744](https://github.com/ryemyster/ShaleYeah/issues/744) at 27b. The current plan
+has **52 outcomes**. This bounded CI reliability repair precedes the next
+employee migration and preserves all required behavioral/qualification checks.
 
 ### Foundations and decisions
 
@@ -157,7 +162,8 @@ Independent defects discovered during adoption receive their own repair issue.
 | --- | --- | --- | --- | --- | --- |
 | 27 | [#541](https://github.com/ryemyster/ShaleYeah/issues/541) | Migrate Reporter to the reference employee contracts | #674, #568, #571, #572, #573, #577, #679 | develop | Reporting fixtures, source-linked work product, human edits/review, isolated operation and TypeScript removal |
 | 27a | [#716](https://github.com/ryemyster/ShaleYeah/issues/716) | Replace QA pass estimates with observed rule results | #538, #568, #573, #666, #670, #677, #678, #710, #674 | develop | Eight observed dimensions, sealed profile/source/task authority, immutable recorded reports and 22 configured synthetic cases; standalone archive and non-root Node container receipts required before acceptance; #542 remains separate |
-| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #568, #571, #572, #573, #577, #679 | develop | Observed server results, data-quality failures/review handoffs, independent checks, context/evaluations and TypeScript removal |
+| 27b | [#744](https://github.com/ryemyster/ShaleYeah/issues/744) | Make constrained-runner workspace checks reliable | #716 | develop | Bounded scheduling, full package/control coverage and failure propagation; existing source/human review assertions and deadlines preserved; exact PR and merged push checks pass |
+| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #744, #568, #571, #572, #573, #577, #679 | develop | Observed server results, data-quality failures/review handoffs, independent checks, context/evaluations and TypeScript removal |
 | 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Independent NPV/IRR/payback fixtures, units/periods, non-solution and zero/missing cases; synthetic success removed |
 | 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
 | 29a | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |

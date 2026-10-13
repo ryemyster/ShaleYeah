@@ -85,7 +85,8 @@ jobs:
     - run: pnpm turbo build
     - name: Install Reporter native runtime for protocol and context controls
       run: uv sync --project agents/reporter-agent --locked
-    - run: pnpm turbo test
+    - name: Workspace tests on the constrained runner
+      run: pnpm turbo test --concurrency=2
     - run: pnpm --dir contracts check:isolation
     - run: pnpm --dir connectors check:isolation
     - name: Native model adapter coverage
