@@ -25,6 +25,16 @@ def invoke(*command, expected=0, timeout=600):
     )
     if result.returncode != expected:
         print(f"Subprocess exit: {result.returncode}; expected: {expected}", file=sys.stderr)
+        diagnostics = {
+            "permission": r"permission denied|operation not permitted|EACCES|EPERM",
+            "missing_file": r"no such file|cannot find|ENOENT|not found",
+            "syntax": r"SyntaxError|Unexpected token|does not provide an export",
+            "assertion": r"AssertionError|assertion failed",
+            "docker_runtime": r"OCI runtime|Error response from daemon|unable to start",
+        }
+        for label, pattern in diagnostics.items():
+            if re.search(pattern, result.stderr + result.stdout, re.IGNORECASE):
+                print(f"Subprocess category: {label}", file=sys.stderr)
         for code in sorted(set(re.findall(r"\bERR_[A-Z_]{1,64}\b", result.stderr))):
             print(f"Subprocess Node code: {code}", file=sys.stderr)
         for line in result.stderr.splitlines():
