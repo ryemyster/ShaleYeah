@@ -1,6 +1,8 @@
 # Changelog — @shaleyeah/investment-chair
 
 ## [Unreleased]
+- #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
+
 
 ### Changed
 

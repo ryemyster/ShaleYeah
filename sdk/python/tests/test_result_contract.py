@@ -51,35 +51,34 @@ def fake_backend(
     calls = []
 
     class Session:
-        def __init__(self, *_):
-            pass
+        def __init__(self, transport, **_):
+            self.transport = transport
+            self.session = self
+            self.protocol_version = "2026-07-28"
 
         async def __aenter__(self):
+            await self.transport.__aenter__()
             return self
 
-        async def __aexit__(self, *_):
-            return None
-
-        async def initialize(self):
-            calls.append("initialize")
-            return SimpleNamespace(protocolVersion="2025-11-25")
+        async def __aexit__(self, *error):
+            await self.transport.__aexit__(*error)
 
         async def list_tools(self, **_):
             calls.append("list_tools")
             return SimpleNamespace(
                 tools=[
                     SimpleNamespace(
-                        name="echo", inputSchema=input_schema, outputSchema=output_schema
+                        name="echo", input_schema=input_schema, output_schema=output_schema
                     )
                 ],
-                nextCursor=None,
+                next_cursor=None,
             )
 
-        async def call_tool(self, name, arguments):
+        async def call_tool(self, name, arguments, **_):
             calls.append((name, arguments))
             return SimpleNamespace(
-                structuredContent=structured,
-                isError=is_error,
+                structured_content=structured,
+                is_error=is_error,
                 content=[] if text is None else [{"type": "text", "text": text}],
             )
 
@@ -87,7 +86,7 @@ def fake_backend(
     async def transport(_url, **_kwargs):
         yield (None, None, None)
 
-    monkeypatch.setattr(mcp, "ClientSession", Session)
+    monkeypatch.setattr(mcp, "Client", Session)
     monkeypatch.setattr(mcp.client.streamable_http, "streamable_http_client", transport)
     return calls
 
@@ -98,7 +97,7 @@ async def test_structured_only_success_is_retained_and_discovered(monkeypatch):
     result = await call_geowiz_tool("echo", {"value": "x"})
     assert result["structuredContent"] == {"value": "kept"}
     assert result["isError"] is False
-    assert calls == ["initialize", "list_tools", ("echo", {"value": "x"})]
+    assert calls == ["list_tools", ("echo", {"value": "x"})]
 
 
 @pytest.mark.asyncio
@@ -215,35 +214,36 @@ async def test_discovery_fails_closed_for_unknown_ambiguous_and_unbounded_tools(
     called = []
 
     class Session:
-        def __init__(self, *_):
+        def __init__(self, transport, **_):
+            self.transport = transport
+            self.session = self
+            self.protocol_version = "2026-07-28"
             self.page = 0
 
         async def __aenter__(self):
+            await self.transport.__aenter__()
             return self
 
-        async def __aexit__(self, *_):
-            pass
-
-        async def initialize(self):
-            return SimpleNamespace(protocolVersion="2025-11-25")
+        async def __aexit__(self, *error):
+            await self.transport.__aexit__(*error)
 
         async def list_tools(self, **_):
             names, cursor = pages[self.page]
             self.page += 1
             return SimpleNamespace(
                 tools=[
-                    SimpleNamespace(name=name, inputSchema=INPUT, outputSchema=OUTPUT)
+                    SimpleNamespace(name=name, input_schema=INPUT, output_schema=OUTPUT)
                     for name in names
                 ],
-                nextCursor=cursor,
+                next_cursor=cursor,
             )
 
-        async def call_tool(self, *_):
+        async def call_tool(self, *_, **_kwargs):
             called.append(True)
-            return SimpleNamespace(content=[], structuredContent={"value": "kept"}, isError=False)
+            return SimpleNamespace(content=[], structured_content={"value": "kept"}, is_error=False)
 
     fake_backend(monkeypatch, structured={"value": "kept"})
-    monkeypatch.setattr(mcp, "ClientSession", Session)
+    monkeypatch.setattr(mcp, "Client", Session)
     with pytest.raises(RuntimeError, match=message):
         await call_geowiz_tool("echo", {"value": "x"})
     assert not called

@@ -64,9 +64,22 @@ The package's own `README.md`, `CHANGELOG.md` and `docs/` must describe its new
 install/run/check/review lifecycle. Do not delete the matching TypeScript MCP.
 Update workspace lock entries as dependencies actually disappear.
 
+#722 mechanically moves the three remaining private TypeScript clients to the
+explicit modern protocol; their copied employee loops and deletion owners stay
+with #680, #681 and #542. The protocol upgrade does not qualify those employee
+implementations. It also removes the nine ADK callers' copied ClientSession,
+initialization and serializer implementations in favor of the installed shared
+client. Their tool names/argument maps and role brains are retained; own employee
+workflows still belong to #682–#690. The old shared HTTP session registry is deleted and replaced
+by bounded per-request SDK serving, with transferred lifecycle/trust controls.
+The Google model SDK still declares its own optional historical MCP peer; no
+such SDK object crosses our selected tool boundary.
+
 The private TypeScript clients use MCP `Client` and Streamable HTTP, return
-content blocks and race an external timeout. They are active compatibility
-code, not evidence of full schema/error/cancellation conformance. Replace with
+content blocks, resolve dedicated private credentials, bound discovery and response
+bytes, and abort on a bounded deadline. #722 tests real failed tool replies,
+redirect refusal and no post-dispatch replay. Full employee qualification remains
+separate. Replace with
 the installable Python client from [#679](https://github.com/ryemyster/ShaleYeah/issues/679)
 and keep typed role tool mappings; remove displaced transport tests with the
 client, carrying useful failure/cancellation cases into replacement tests.
@@ -77,24 +90,24 @@ All ten paths below are imported by their package's `app/agent.py`. Geologist
 now uses the installed [Python client](../sdk/python/README.md); its thin adapter
 keeps only role configuration, labels and nine tool mappings. Its copied protocol
 and schema/result logic and old transport-text assertions were replaced in #679.
-The other nine packages still read/use their local copies, which initialize
-an MCP session per call and serialize content. Shared
-protocol/session/error/auth/cancel handling belongs in an installable helper.
+In #722 the other nine packages adopt the same installable stateless helper,
+remove copied initialization/serialization and add private credential-file
+configuration. Shared protocol/error/auth/cancel handling belongs in that helper.
 Role URL configuration, tool names, typed inputs and human-confirmation mapping
 remain role-local. Consolidation does not erase those responsibilities.
 
 | Current adapter path | Replacement/deletion owner | Expiry |
 | --- | --- | --- |
 | [geologist/app/geowiz_mcp.py](../agents/geologist/app/geowiz_mcp.py) | #679 replaced protocol plumbing with declared `shaleyeah-mcp-client==0.1.0`; retain useful role mappings | Client/Geologist wheels and actual protected Geowiz connection pass; full source/review journey remains #671/#673/#674 |
-| [risk-analyst/app/risk_analysis_mcp.py](../agents/risk-analyst/app/risk_analysis_mcp.py) | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Role adopts verified helper and deletes copied plumbing |
-| [legal-analyst/app/legal_mcp.py](../agents/legal-analyst/app/legal_mcp.py) | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Same, including human legal authority |
-| [market-analyst/app/market_mcp.py](../agents/market-analyst/app/market_mcp.py) | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Same, including source freshness/assumptions |
-| [title-analyst/app/title_mcp.py](../agents/title-analyst/app/title_mcp.py) | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Same, including title/source access boundaries |
-| [drilling-engineer/app/drilling_mcp.py](../agents/drilling-engineer/app/drilling_mcp.py) | [#686](https://github.com/ryemyster/ShaleYeah/issues/686) | Same, including design approval |
-| [development-planner/app/development_mcp.py](../agents/development-planner/app/development_mcp.py) | [#687](https://github.com/ryemyster/ShaleYeah/issues/687) | Same, including plan revision/review |
-| [research-analyst/app/research_mcp.py](../agents/research-analyst/app/research_mcp.py) | [#688](https://github.com/ryemyster/ShaleYeah/issues/688) | Same, including citation/coverage boundaries |
-| [infrastructure-planner/app/infrastructure_mcp.py](../agents/infrastructure-planner/app/infrastructure_mcp.py) | [#689](https://github.com/ryemyster/ShaleYeah/issues/689) | Same, including engineering/compliance approval |
-| [investment-chair/app/decision_mcp.py](../agents/investment-chair/app/decision_mcp.py) | [#690](https://github.com/ryemyster/ShaleYeah/issues/690) | Same, including human capital authority |
+| [risk-analyst/app/risk_analysis_mcp.py](../agents/risk-analyst/app/risk_analysis_mcp.py) | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Stateless helper adopted in #722; role still adopts full employee contracts |
+| [legal-analyst/app/legal_mcp.py](../agents/legal-analyst/app/legal_mcp.py) | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Helper adopted in #722; human legal authority remains role-owned |
+| [market-analyst/app/market_mcp.py](../agents/market-analyst/app/market_mcp.py) | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Helper adopted in #722; source freshness/assumptions remain role-owned |
+| [title-analyst/app/title_mcp.py](../agents/title-analyst/app/title_mcp.py) | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Helper adopted in #722; title/source access boundaries remain role-owned |
+| [drilling-engineer/app/drilling_mcp.py](../agents/drilling-engineer/app/drilling_mcp.py) | [#686](https://github.com/ryemyster/ShaleYeah/issues/686) | Helper adopted in #722; design approval remains role-owned |
+| [development-planner/app/development_mcp.py](../agents/development-planner/app/development_mcp.py) | [#687](https://github.com/ryemyster/ShaleYeah/issues/687) | Helper adopted in #722; plan revision/review remains role-owned |
+| [research-analyst/app/research_mcp.py](../agents/research-analyst/app/research_mcp.py) | [#688](https://github.com/ryemyster/ShaleYeah/issues/688) | Helper adopted in #722; citation/coverage boundaries remain role-owned |
+| [infrastructure-planner/app/infrastructure_mcp.py](../agents/infrastructure-planner/app/infrastructure_mcp.py) | [#689](https://github.com/ryemyster/ShaleYeah/issues/689) | Helper adopted in #722; engineering/compliance approval remains role-owned |
+| [investment-chair/app/decision_mcp.py](../agents/investment-chair/app/decision_mcp.py) | [#690](https://github.com/ryemyster/ShaleYeah/issues/690) | Helper adopted in #722; human capital authority remains role-owned |
 
 The #576 inventory baseline counted **1,276 lines** in the ten files, including useful role mappings. Delete
 duplicated protocol machinery after the owning role passes; a thin role adapter
@@ -119,7 +132,7 @@ unknown downstream use cannot be waved away by a repository search.
 | [context-store.ts](../sdk/src/context-store.ts) | Four employee loops + shared loop + their tests; process-local map of appended strings | Adapter → delete #692 after durable scoped context [#672](https://github.com/ryemyster/ShaleYeah/issues/672) and role adoption; preserve reviewed-sharing/invalidation/export requirements |
 | [runtime.ts](../sdk/src/runtime.ts) | Four runtime factories, shared loop types, identity tests; `redactSensitive` used internally and publicly exported | Adapter → delete displaced executor #692 only after backend authority/review/audit behavior is replaced; decide reusable redaction separately, retaining it only with callers/tests |
 | [service.ts](../sdk/src/service.ts) | All four employee endpoint factories construct `LocalAgentEndpoint` | Adapter → delete #692 after those factories migrate; this facade is not a universal HTTP employee service |
-| [async-job.ts](../sdk/src/async-job.ts) | Four loops + shared loop; bare JSON-RPC fetch poller and timing constants | Adapter → delete #692 after declared supported long-running tool behavior/cancellation is covered; do not mistake polling helpers for implemented server jobs |
+| [async-job.ts](../sdk/src/async-job.ts) | Four loops + shared loop; compatibility types/timing constants and an unsupported default; #722 deletes the anonymous raw protocol path, preserving trusted injected adapters | Adapter → delete #692 after declared supported long-running tool behavior/cancellation is covered; do not mistake polling helpers for implemented server jobs |
 | [compensation.ts](../sdk/src/compensation.ts) | Four loops + shared loop call registry; registration observed in tests, not production handler setup | Adapter → delete #692 after reviewed write/failure recovery is preserved at executing backend; remove unsupported rollback claims |
 | [contracts.ts](../sdk/src/contracts.ts) | Four employee imports, runtime/service/loop; public legacy runtime/transport interfaces, distinct from `contracts/` business records | Adapter → retire displaced interfaces in #692 after last supported caller/public API disposition. Move any still-supported interfaces with declared compatibility; do not delete by filename alone |
 | [errors.ts](../sdk/src/errors.ts) | Runtime, four private clients and `sdk/tests/errors.test.ts` | Refactor error boundary #677/#679; #692 deletes only obsolete runtime-specific exports after last caller and public disposition |

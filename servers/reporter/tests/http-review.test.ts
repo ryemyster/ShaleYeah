@@ -5,8 +5,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
 import { promisify } from "node:util";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createQualificationGuard } from "@shaleyeah/sdk";
 import { ReportReviewWorkflow } from "../src/review-workflow.js";
 import { ReviewedSources } from "../src/reviewed-sources.js";
@@ -78,7 +77,10 @@ test("actual independent MCP client cannot approve; enrolled operator CLI reques
 	});
 	if (previous === undefined) delete process.env.PORT;
 	else process.env.PORT = previous;
-	const client = new Client({ name: "independent-reporter-client", version: "r1" });
+	const client = new Client(
+		{ name: "independent-reporter-client", version: "r1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		await server.initialize();
 		const endpoint = new URL(`http://127.0.0.1:${server.httpPort()}/mcp`);

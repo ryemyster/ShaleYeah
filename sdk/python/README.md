@@ -1,10 +1,12 @@
 # Python MCP client
 
 `shaleyeah-mcp-client` is an installable HTTP client for independent employee
-packages. It uses the maintained Python MCP SDK for protocol/session handling.
+packages. It uses the maintained Python MCP SDK for stateless protocol handling.
 It has no ADK, model-provider, business-role, warehouse or monorepo-source import.
 
-The first consumer is [Geologist](../../agents/geologist/README.md).
+The first consumer is [Geologist](../../agents/geologist/README.md). Reporter and
+the other nine ADK packages also use this client for the selected wire profile.
+Connection compatibility does not complete those roles' employee workflows.
 Its installed-wheel isolation check also installs the consumer's declared portable
 evaluation/contract wheels. Portable contracts 0.3.0 is now a client runtime
 dependency for event validation; the evaluation package remains a consumer dependency.
@@ -13,6 +15,15 @@ this package owns credential handling, bounded connection setup, discovery,
 schema checks and result preservation.
 
 ## Install and use
+
+For a role caller, `load_mcp_config("RISK_ANALYSIS", default_endpoint)` reads
+`RISK_ANALYSIS_MCP_URL`, `RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE`,
+`RISK_ANALYSIS_MCP_TIMEOUT_SECONDS` and
+`RISK_ANALYSIS_MCP_REQUEST_TIMEOUT_SECONDS`. Other callers use their documented
+prefix. The file reference is resolved only at dispatch; missing credentials
+fail safely. Defaults are 30 seconds total and 10 seconds per request, bounded to
+at most 120 seconds. Remote endpoints require HTTPS; local HTTP is limited to
+loopback. The backend must separately configure identity/scopes and audit.
 
 From this directory:
 
@@ -24,8 +35,8 @@ uv build --wheel
 ```
 
 For a separate repository, install the built
-`dist/shaleyeah_mcp_client-0.2.0-py3-none-any.whl`. Nothing has been published
-to a package registry by this change. Declare `shaleyeah-mcp-client==0.2.0` as a
+`dist/shaleyeah_mcp_client-0.3.0-py3-none-any.whl`. Nothing has been published
+to a package registry by this change. Declare `shaleyeah-mcp-client==0.3.0` as a
 dependency and supply that wheel or your approved package index. Local Geologist
 development uses an explicit editable uv source; its built wheel has the normal versioned
 dependency and works with this client wheel outside the checkout.
@@ -74,15 +85,16 @@ call/attempt; no token is returned in the result envelope.
 | `request_timeout` | 10 seconds | Greater than zero through 120; total deadline still applies |
 | `preflight_attempts` | 2 | 1 through 3, including the first attempt |
 | `retry_delay` | 0.1 seconds | 0 through 10, within the total deadline |
-| `protocol_versions` | `("2025-11-25",)` | Nonempty tuple of explicitly selected versions supported by pinned MCP 1.28.1 |
+| `max_response_bytes` | 1048576 bytes (1 MiB) | Positive integer through 16777216; bounds every JSON/SSE response |
+| `protocol_versions` | `("2026-07-28",)` | This exact qualified profile; other revisions fail before credential resolution |
 | `allow_loopback_http` | `False` | Explicit boolean; affects loopback only |
 
-The transport pins MCP 1.28.1, HTTPX 0.28.1, AnyIO 4.14.2 and JSON Schema 4.26.0.
+The transport pins MCP 2.3.0, HTTPX2 2.13.1, AnyIO 4.14.2 and JSON Schema 4.26.0.
 Locks and qualification record transitive dependencies; a new pin/profile needs
 the conformance suite again. Primary implementation references:
-[modern HTTP transport](https://github.com/modelcontextprotocol/python-sdk/blob/v1.28.1/src/mcp/client/streamable_http.py),
-[client session](https://github.com/modelcontextprotocol/python-sdk/blob/v1.28.1/src/mcp/client/session.py)
-and [MCP security guidance](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices).
+[modern HTTP transport](https://github.com/modelcontextprotocol/python-sdk/blob/v2.3.0/src/mcp/client/streamable_http.py),
+[client call boundary](https://github.com/modelcontextprotocol/python-sdk/blob/v2.3.0/src/mcp/client/session.py)
+and the [official migration guide](https://py.sdk.modelcontextprotocol.io/migration/).
 
 ## Results and failures
 
@@ -105,12 +117,26 @@ After dispatch starts, no tool is automatically replayed. A failed/timed-out
 dispatch is conservatively marked `effect_unknown`; investigate before another
 action. A `retryable` category does not authorize replay of an uncertain effect.
 
-One call owns a fresh SDK session. Normal completion requests DELETE and closes
-local HTTP/stream resources. Cancellation propagates; timeouts are typed failures.
-A later independent call initializes again. Broken networks/cancellation cannot
-guarantee server termination or rollback; server idle limits and operation-specific
-recovery still apply. There is no pooling, custom protocol loop, resumable event
-store or workflow-restart mechanism here.
+One call owns a fresh pinned client and closes its local HTTP/stream resources.
+It sends no initialization handshake, transport session ID or session DELETE.
+The HTTP response hook rejects every redirect, including same-origin redirects
+the maintained transport could otherwise follow. Catalog caching is disabled so
+each call discovers current schemas within its own credential scope.
+Response framing and streamed bytes are checked before decoding. The selected
+profile requests identity encoding and rejects compressed responses, so a
+compressed body cannot bypass the configured byte limit.
+
+The adapter uses the maintained SDK's manual single-call boundary. An
+`input_required` response becomes a safe `user_action` failure with an uncertain
+effect; it never triggers automatic MRTR or header-mismatch replay. The owning
+employee presents the blocker and follows its configured review/input workflow.
+MCP input requests or opaque request state are never human approval.
+
+Cancellation propagates and timeouts remain typed failures. A later independent
+call checks its credentials and discovers tools again. Network failure cannot
+guarantee server termination or rollback; operation-specific recovery remains
+required. Employee context and reviewed continuation persist through their own
+durable records. There is no custom protocol loop or pooled transport authority.
 
 ## Verify interoperability and extraction
 

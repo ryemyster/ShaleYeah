@@ -21,21 +21,23 @@ helper artifacts and the independently built tool.
 |----------|-------------|---------|
 | `ANTHROPIC_API_KEY` | `LLMClient` | Authenticates Anthropic API calls |
 | `PORT` | HTTP MCP mode | Integer 0–65535 with explicit `http.access`; absent selects stdio; 0 requests an OS-assigned test port |
-| `MCP_HTTP_SESSION_IDLE_TIMEOUT_MS` | HTTP session lifecycle | Idle expiry; default 900000 ms (15 minutes) |
-| `MCP_HTTP_REQUEST_TIMEOUT_MS` | HTTP session lifecycle | Each JSON body-read / accepted POST response deadline; default 120000 ms |
-| `MCP_HTTP_MAX_SESSIONS` | HTTP session lifecycle | Active/pending initialized protocol instances; default 128, capacity returns 503 |
+| `MCP_HTTP_REQUEST_TIMEOUT_MS` | HTTP exchange | Body plus operation deadline; default and maximum 120000 ms |
+| `MCP_HTTP_MAX_CONCURRENT_REQUESTS` | HTTP exchange | In-flight request limit; default 128, maximum 1024; capacity returns 503 |
+| `MCP_HTTP_MAX_REQUEST_BODY_BYTES` | HTTP exchange | Body bound; default and maximum 1048576 bytes (1 MiB) |
 
-Limits accept positive finite integers up to 2147483647. Optional
-`MCPServerConfig.http` values override these environment limits. JSON request
-bodies are limited to 1 MiB. No provider key is needed for deterministic tools.
+Limits accept positive integers within their listed maximums. Optional
+`MCPServerConfig.http` values override environment limits. The old session idle
+and capacity settings are replaced by exchange limits. No provider key is
+needed for deterministic tools.
 
-Sessions are process-local and end at shutdown/expiry/DELETE/response timeout.
-Clients initialize after 404; session IDs do not grant authenticated identity,
-source permissions or human approval. [HTTP access](http-access.md) requires
+Clients pin MCP 2026-07-28 and send self-contained requests. Initialization,
+transport session IDs and session DELETE are outside this selected profile.
+[HTTP access](http-access.md) requires
 explicit local/remote identity, exact host/origin policy, scopes and an audit
 sink. The default bind is loopback; qualified remote TLS/issuer/deployment is
 separate. Do not infer hosted qualification from these settings.
-Employee working context/review persists through its own adapters, not this map.
+Employee working context/review persists through its own adapters across
+connection changes and restart.
 
 ## When this package ships as an npm package
 

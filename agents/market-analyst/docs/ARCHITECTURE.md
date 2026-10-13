@@ -43,7 +43,7 @@ Graph-based workflow is reserved for a later issue if market review needs determ
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `MARKET_MCP_URL` | `http://localhost:3007` | Market MCP backend URL |
+| `MARKET_MCP_URL` | `http://localhost:3007/mcp` | Market MCP backend URL |
 | `MARKET_ANALYST_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
 
 ## Safety Boundary

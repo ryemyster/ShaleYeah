@@ -4,7 +4,13 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+- #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.
+
+- #722: complete the retained TypeScript connection sweep with private MCP credential files, bounded discovery and 1 MiB responses, redirect refusal and safe permanent post-dispatch/tool-failure errors; preserve all three role brains until their owning employee migrations.
+
 ### Changed
+
+- #722: SDK 0.3.0 selects MCP 2026-07-28 through maintained TypeScript server/client and Node adapters. Replace hidden HTTP sessions with bounded authenticated exchanges, preserve schema/error/trace/cancellation and business review boundaries, and explicitly reject unsupported historical protocol clients.
 
 - #541: add the independently installable Python employee runtime and extract TypeScript durable review/qualification/private-file helpers behind trusted role adapters. Require role-bound context and action validation; preserve Geowiz interfaces through its facade.
 

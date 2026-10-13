@@ -35,3 +35,14 @@ pnpm test    # current package regressions; not professional QA qualification
 | Variable | Purpose |
 |----------|---------|
 | `ANTHROPIC_API_KEY` | Required for synthesis calls |
+| `QA_SERVER_MCP_ACCESS_TOKEN_FILE` | Dedicated owner-readable MCP bearer file (mode `0600`); separate from the model key |
+
+The configured QA backend URL must identify its `/mcp` endpoint; the retained
+runtime's historical bare local URL is normalized to that route. Configure the
+backend's explicit identity, scopes and audit sink through the
+[HTTP access guide](../../sdk/docs/http-access.md). `PORT` alone is insufficient.
+The connection uses the pinned stateless protocol, bounded discovery, a
+30-second default deadline (maximum 120 seconds), a 1 MiB response limit and
+no redirects. Genuine tool errors and uncertain failures after dispatch stop
+automatic retry. Transport compatibility does not establish the employee's
+observed QA workflow, which remains assigned to #542.

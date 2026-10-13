@@ -7,7 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.
+
+- #722: complete the retained TypeScript connection sweep with private MCP credential files, bounded discovery and 1 MiB responses, redirect refusal and safe permanent post-dispatch/tool-failure errors; preserve all three role brains until their owning employee migrations.
+
+- #722: Complete the Python caller sweep through the installable stateless client, correct `/mcp` routes and add required locked package compatibility checks; retain each role's separate employee-workflow acceptance.
+
+
 ### Changed
+
+- #722: select the stateless MCP 2026-07-28 profile through shared TypeScript/Python adapters, pin maintained clients explicitly, and preserve private context, source authority and human review across transport changes. Remove displaced HTTP sessions and legacy protocol dependencies from direct Node consumers; add modern wire/interoperability and no-replay controls.
 
 - #744: bound hosted workspace test scheduling to two package processes, retaining all tests, assertions and existing deadlines. Track the repeated native/CLI startup timeout repair before further employee migrations.
 

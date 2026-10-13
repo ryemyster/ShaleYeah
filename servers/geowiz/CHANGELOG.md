@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.
+
 ### Changed
 
 - #541: reuse the shared durable review, private configuration reader and portable qualification adapter through Geowiz-specific facades. Preserve public packet/action/storage semantics and source authorization; include the employee helper wheel in standalone exports.

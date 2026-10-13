@@ -23,7 +23,7 @@ The agent runs as a stand-alone specialist with progressive disclosure of its Re
 - `conduct_market_research` for market, source, commodity, technology, policy, or regulatory research.
 - `analyze_competition` for operator, competitor, strategy, performance, or regional competitive-landscape work.
 
-The default MCP backend URL is `http://localhost:3008`. Set `RESEARCH_MCP_URL` to point at another compatible Research MCP server.
+The default MCP backend URL is `http://localhost:3008/mcp`. Set `RESEARCH_MCP_URL` to point at another compatible Research MCP server.
 
 ## Run Locally
 
@@ -45,7 +45,10 @@ Then run ADK or pytest commands from `agents/research-analyst`.
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `RESEARCH_MCP_URL` | No | `http://localhost:3008` | Research MCP backend URL |
+| `RESEARCH_MCP_URL` | No | `http://localhost:3008/mcp` | Research MCP backend URL |
+| `RESEARCH_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
+| `RESEARCH_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
+| `RESEARCH_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
 | `RESEARCH_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
 
 Provider credentials are supplied by the ADK runtime or deployment environment. Do not check secrets or subscription credentials into this package.

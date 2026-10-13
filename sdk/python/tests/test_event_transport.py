@@ -1,7 +1,7 @@
 import copy
 import json
 
-import httpx
+import httpx2 as httpx
 import pytest
 from test_events import CONTEXT, PRODUCER
 from test_transport_boundary import backend, config

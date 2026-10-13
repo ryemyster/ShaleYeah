@@ -5,6 +5,11 @@ source IDs and the configured requirements to `draft_report`. The result include
 canonical private work, Markdown, source revisions and disclosure requirements.
 No tool accepts filesystem output paths or caller-supplied authority receipts.
 
+Pin MCP 2026-07-28 for the shared SDK 0.3.0 transport. Every HTTP request is
+self-contained and authenticated; initialization and transport session IDs are
+rejected. Private work and human-review handles persist independently of the
+connection. Discover the current tool schemas before calling them.
+
 Trusted hosts configure `ReviewedSources.current` to authenticate origin review
 and current recipient read/export rights. The service validates exact work, task,
 request and decision bindings. Local owner-only exports provide an explicitly

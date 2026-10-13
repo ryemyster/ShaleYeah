@@ -41,7 +41,7 @@ app/agent.py
 app/title_mcp.py
        |
        v
-TITLE_MCP_URL, default http://localhost:3010
+TITLE_MCP_URL, default http://localhost:3010/mcp
        |
        v
 servers/title
@@ -75,7 +75,7 @@ agents-cli eval run
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `TITLE_MCP_URL` | `http://localhost:3010` | Title-compatible MCP backend URL |
+| `TITLE_MCP_URL` | `http://localhost:3010/mcp` | Title-compatible MCP backend URL |
 | `TITLE_ANALYST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
 
 The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Title MCP backend is reachable when execution tools are invoked.

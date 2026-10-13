@@ -40,7 +40,7 @@ app/agent.py
 app/drilling_mcp.py
        |
        v
-DRILLING_MCP_URL, default http://localhost:3003
+DRILLING_MCP_URL, default http://localhost:3003/mcp
        |
        v
 servers/drilling
@@ -73,7 +73,7 @@ agents-cli eval run
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DRILLING_MCP_URL` | `http://localhost:3003` | Drilling-compatible MCP backend URL |
+| `DRILLING_MCP_URL` | `http://localhost:3003/mcp` | Drilling-compatible MCP backend URL |
 | `DRILLING_ENGINEER_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
 
 The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Drilling MCP backend is reachable when execution tools are invoked.

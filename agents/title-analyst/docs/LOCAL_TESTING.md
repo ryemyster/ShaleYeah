@@ -27,7 +27,7 @@ Run the ADK agent in another terminal:
 ```bash
 cd agents/title-analyst
 agents-cli install
-TITLE_MCP_URL=http://localhost:3010 agents-cli run \
+TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Examine ownership for Section 12 in Reeves County, Texas"
 ```
 

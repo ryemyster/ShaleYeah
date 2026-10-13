@@ -61,7 +61,7 @@ try {
 	await run("npm", ["run", "test:coverage"], source);
 	passed("clean-source-build");
 	const tool = path.join(root, "tool");
-	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", typescript: "6.0.2", "@modelcontextprotocol/sdk": "1.29.0" }, dependencies: Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) }));
+	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", typescript: "6.0.2", "@modelcontextprotocol/client": "2.3.1" }, dependencies: Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) }));
 	await run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], tool);
 	await fs.cp(path.join(source, "tests"), path.join(tool, "tests"), { recursive: true });
 	for (const [directory, prefix] of [[path.join(tool, "tests"), "../"], [path.join(tool, "tests/fixtures"), "../../"]]) {

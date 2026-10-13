@@ -2,8 +2,7 @@
 import assert from "node:assert/strict";
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 
 const [settingsFile, endpointInput] = process.argv.slice(2);
 let client;
@@ -22,7 +21,10 @@ try {
 	);
 	const settings = JSON.parse(await fs.readFile(settingsFile, "utf8"));
 	const token = (await fs.readFile(settings.tokenFile, "utf8")).trim();
-	client = new Client({ name: "reporter-container-protocol-client", version: "r1" });
+	client = new Client(
+		{ name: "reporter-container-protocol-client", version: "r1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	await client.connect(
 		new StreamableHTTPClientTransport(endpoint, {
 			requestInit: { headers: { Authorization: `Bearer ${token}` }, redirect: "error" },

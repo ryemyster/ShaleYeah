@@ -6,7 +6,7 @@ This package is an ADK/Python agent. It can run locally, in a container, on Clou
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012` | Infrastructure MCP backend URL |
+| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012/mcp` | Infrastructure MCP backend URL |
 | `INFRASTRUCTURE_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
 
 Provider credentials should come from the deployment environment or secret manager. Do not bake credentials or confidential project data into the image.

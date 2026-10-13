@@ -1,8 +1,7 @@
 /** Installed third-party MCP client, with no agent or server implementation imports. */
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 
 const endpoint = new URL(process.argv[3]);
 assert.ok(
@@ -35,7 +34,10 @@ const anonymous = await fetch(endpoint, {
 	}),
 });
 assert.equal(anonymous.status, 401);
-const client = new Client({ name: "generic-extracted-client", version: "r1" });
+const client = new Client(
+	{ name: "generic-extracted-client", version: "r1" },
+	{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+);
 try {
 	await client.connect(
 		new StreamableHTTPClientTransport(endpoint, {

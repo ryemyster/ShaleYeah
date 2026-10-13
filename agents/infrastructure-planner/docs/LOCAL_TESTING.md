@@ -22,7 +22,7 @@ Then run ADK commands from this package with:
 
 ```bash
 cd agents/infrastructure-planner
-INFRASTRUCTURE_MCP_URL=http://localhost:3012 agents-cli run "Plan pipeline infrastructure for 12 Reeves County wells with 7200 BOPD expected production."
+INFRASTRUCTURE_MCP_URL=http://localhost:3012/mcp INFRASTRUCTURE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run "Plan pipeline infrastructure for 12 Reeves County wells with 7200 BOPD expected production."
 ```
 
 Use evals for behavior quality and HITL boundary checks; use pytest for deterministic code shape and wrapper contracts.

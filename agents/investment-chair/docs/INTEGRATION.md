@@ -6,7 +6,7 @@ The Investment Chair integrates with Decision-compatible MCP backends over Strea
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DECISION_MCP_URL` | `http://localhost:3013` | Decision MCP backend URL |
+| `DECISION_MCP_URL` | `http://localhost:3013/mcp` | Decision MCP backend URL |
 | `INVESTMENT_CHAIR_ADK_MODEL` | `gemini-flash-latest` | ADK model for the agent |
 
 ## Decision Contract
@@ -30,3 +30,7 @@ Any internal or third-party MCP backend can replace `servers/decision` if it imp
 ## Human Review
 
 Integrators must enforce review before final approvals, binding bids, transaction documents, capital release, disclosures, legal/tax/title/fiduciary/conflict conclusions, reserve/resource classifications, final allocation decisions, or sensitive memory promotion.
+
+## Connection profile
+
+This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.

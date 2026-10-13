@@ -1,6 +1,8 @@
 # @shaleyeah/economist
 
-> **Status: Tier 2 agent** — implemented from the `agents/geologist/` and `agents/quality-assurance/` runtime pattern.
+The current TypeScript runtime delegates tools to Econobot. Its full employee
+workflow is tracked in [#680](https://github.com/ryemyster/ShaleYeah/issues/680),
+after the backend repair in [#711](https://github.com/ryemyster/ShaleYeah/issues/711).
 
 The economist agent analyzes the financial viability of oil & gas projects — NPV, IRR, break-even prices, sensitivity tables, and capital budgeting decisions. It pairs with the **econobot** Tier 1 MCP server (port 3002).
 
@@ -11,18 +13,29 @@ The economist agent analyzes the financial viability of oil & gas projects — N
 | Tier 1 (tools) | `@shaleyeah/server-econobot` | 3002 |
 | Tier 2 (agent) | `@shaleyeah/economist` | 4002 |
 
-## Quick start
+## Package checks
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/econobot && PORT=3002 pnpm start
-
-# Terminal 2 — Tier 2 agent
 cd agents/economist
-ANTHROPIC_API_KEY=sk-ant-... ECONOBOT_MCP_URL=http://localhost:3002 pnpm test
+pnpm build
+pnpm test
 ```
 
-`ECONOBOT_MCP_URL` is the deployment-time URL for the paired econobot MCP server. The default local runtime config uses `mcpServers.econobot.url = "http://localhost:3002"`.
+## MCP connection
+
+Configure Econobot's identity, scopes and audit sink using the
+[HTTP access guide](../../sdk/docs/http-access.md); `PORT` alone does not enroll
+an HTTP server. Set `ECONOBOT_MCP_URL` to the configured `/mcp` endpoint and
+`ECONOBOT_MCP_ACCESS_TOKEN_FILE` to its dedicated owner-readable credential
+file (mode `0600`, separate from the model key). Historical bare local URLs are
+normalized to `/mcp`.
+
+Each call uses the pinned stateless protocol, a fresh bounded tool catalog,
+a 30-second default deadline (maximum 120 seconds) and a 1 MiB response limit.
+Redirects are denied. Genuine tool errors and failures after command dispatch
+stop automatic retry; inspect the outcome before repeating a command. Transport
+compatibility does not qualify professional recommendations, employee context
+or revision-bound human review; those remain assigned to the role issue.
 
 ## Runtime
 

@@ -5,7 +5,7 @@ export class PrivateConfigError extends Error {
 		super("Private configuration unavailable");
 	}
 }
-export async function readPrivateJson(file: string, maximum = 65536): Promise<unknown> {
+export async function readPrivateText(file: string, maximum = 65536): Promise<string> {
 	if (!Number.isSafeInteger(maximum) || maximum < 1 || maximum > 8_388_608) throw new PrivateConfigError();
 	let handle: Awaited<ReturnType<typeof fs.open>> | undefined;
 	try {
@@ -29,10 +29,18 @@ export async function readPrivateJson(file: string, maximum = 65536): Promise<un
 		const after = await handle.stat();
 		if (length !== before.size || after.mtimeMs !== before.mtimeMs || after.ctimeMs !== before.ctimeMs)
 			throw new PrivateConfigError();
-		return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(0, length)));
+		return new TextDecoder("utf-8", { fatal: true }).decode(bytes.subarray(0, length));
 	} catch {
 		throw new PrivateConfigError();
 	} finally {
 		await handle?.close();
+	}
+}
+
+export async function readPrivateJson(file: string, maximum = 65536): Promise<unknown> {
+	try {
+		return JSON.parse(await readPrivateText(file, maximum));
+	} catch {
+		throw new PrivateConfigError();
 	}
 }

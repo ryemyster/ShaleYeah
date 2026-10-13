@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #722: Add a shared validated role environment loader and migrate all nine remaining Python callers to the selected client; preserve private credential resolution, canonical results and failure classifications.
+
+
+- #722: client 0.3.0 pins the MCP 2026-07-28 stateless profile with maintained Python SDK 2.3.0 and HTTPX2. Preserve outward result keys, credential/schema/audit bounds and cancellation; reject all redirects and return interrupted input as a blocker without automatic command replay. Update independent Node interoperability, installed consumers and source/fixture controls.
+
 - #574: client 0.2.0 depends on contracts 0.3.0; adds optional keyword event emitter, native MCP metadata, measured attempts/retries/failures, private JSONL and required/optional sink policies. Installed-wheel checks include host task/review/eval hooks. Calls without events preserve their API.
 
 

@@ -24,7 +24,7 @@ Then run the ADK agent:
 
 ```bash
 cd agents/market-analyst
-MARKET_MCP_URL=http://localhost:3007 agents-cli run \
+MARKET_MCP_URL=http://localhost:3007/mcp MARKET_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Analyze gas market conditions for the Haynesville over a 1 year timeframe"
 ```
 

@@ -7,7 +7,7 @@ Integrate with this package as an ADK agent. Keep direct backend execution in `s
 Set the backend URL for live tool calls:
 
 ```bash
-INFRASTRUCTURE_MCP_URL=http://localhost:3012
+INFRASTRUCTURE_MCP_URL=http://localhost:3012/mcp
 ```
 
 The Python wrappers call these MCP tools:
@@ -33,3 +33,7 @@ The Python wrappers call these MCP tools:
 - Infrastructure CAPEX estimate.
 - Permitting, safety, environmental, ROW, and compliance risk summary.
 - Missing-input list and human-review boundary.
+
+## Connection profile
+
+This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.

@@ -27,7 +27,7 @@ Run the ADK agent in another terminal:
 ```bash
 cd agents/drilling-engineer
 agents-cli install
-DRILLING_MCP_URL=http://localhost:3003 agents-cli run \
+DRILLING_MCP_URL=http://localhost:3003/mcp DRILLING_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Design a drilling program for a horizontal Wolfcamp well at 10000 ft"
 ```
 

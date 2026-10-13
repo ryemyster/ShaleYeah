@@ -23,7 +23,7 @@ agents/investment-chair
 servers/decision
 ```
 
-The default backend URL is `http://localhost:3013`. Set `DECISION_MCP_URL` to point the agent at a local, hosted, internal, or proprietary Decision-compatible MCP service.
+The default backend URL is `http://localhost:3013/mcp`. Set `DECISION_MCP_URL` to point the agent at a local, hosted, internal, or proprietary Decision-compatible MCP service.
 
 ## Architecture Mode
 

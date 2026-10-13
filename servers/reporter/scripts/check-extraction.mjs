@@ -189,7 +189,7 @@ try {
 		JSON.stringify({
 			private: true,
 			type: "module",
-			devDependencies: { tsx: "4.21.0", "@modelcontextprotocol/sdk": "1.29.0" },
+			devDependencies: { tsx: "4.21.0", "@modelcontextprotocol/client": "2.3.1" },
 		}),
 	);
 	await run(

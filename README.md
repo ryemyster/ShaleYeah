@@ -88,6 +88,14 @@ checks and reports their recorded results, with optional unreviewed model notes.
 
 ## Project Status
 
+Geologist and Reporter have implemented reference employee workflows with
+configured evaluations, persistent context, protected review and independent
+package checks. Nine other roles have basic ADK definitions and three retain
+older TypeScript employee loops; their full workflows are still pending. The
+QA tool server runs observed rules, while its employee integration is pending.
+The optional coordinator is a stub. Fixture qualification is separate from
+professional validation and real operator acceptance.
+
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 
 Current root commands are workspace conveniences, not permanent architecture constraints. Package-local READMEs and docs are the source of truth for each independently buildable unit.

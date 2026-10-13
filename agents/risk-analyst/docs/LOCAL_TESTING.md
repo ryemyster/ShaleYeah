@@ -27,7 +27,7 @@ Run the ADK agent in another terminal:
 ```bash
 cd agents/risk-analyst
 agents-cli install
-RISK_ANALYSIS_MCP_URL=http://localhost:3005 agents-cli run \
+RISK_ANALYSIS_MCP_URL=http://localhost:3005/mcp RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Assess investment risk for a Wolfcamp project"
 ```
 

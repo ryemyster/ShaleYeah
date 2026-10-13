@@ -4,8 +4,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { z } from "zod";
 import { type EmployeeEvent, type EmployeeEventContext, EventEmitter } from "../src/events.js";
 import { bindMCPEvents } from "../src/mcp-events.js";
@@ -126,7 +125,10 @@ async function fixture({
 		else process.env.PORT = previous;
 	}
 	await server.initialize();
-	const client = new Client({ name: "events-client", version: "1" });
+	const client = new Client(
+		{ name: "events-client", version: "1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${server.httpPort()}/mcp`), {
 		requestInit: { headers: { Authorization: `Bearer ${token}` } },
 	});
@@ -138,7 +140,6 @@ async function fixture({
 		client,
 		server,
 		async close() {
-			await transport.terminateSession();
 			await client.close();
 			await server.stop();
 			await rm(directory, { recursive: true, force: true });

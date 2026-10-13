@@ -10,7 +10,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import anyio
-import httpx
+import httpx2 as httpx
 from shaleyeah_contracts.events import EventValidationError
 
 from .errors import MCPClientError
@@ -66,7 +66,8 @@ class MCPClientConfig:
     request_timeout: float = 10
     preflight_attempts: int = 2
     retry_delay: float = 0.1
-    protocol_versions: tuple[str, ...] = ("2025-11-25",)
+    max_response_bytes: int = 1_048_576
+    protocol_versions: tuple[str, ...] = ("2026-07-28",)
 
     def __post_init__(self):
         try:
@@ -107,16 +108,16 @@ class MCPClientConfig:
             or not 0 < self.total_timeout <= 120
             or not 0 < self.request_timeout <= 120
             or not 0 <= self.retry_delay <= 10
+            or isinstance(self.max_response_bytes, bool)
+            or not isinstance(self.max_response_bytes, int)
+            or not 1 <= self.max_response_bytes <= 16_777_216
             or isinstance(self.preflight_attempts, bool)
             or not isinstance(self.preflight_attempts, int)
             or not 1 <= self.preflight_attempts <= 3
             or not callable(self.credential)
             or not isinstance(self.protocol_versions, tuple)
             or not self.protocol_versions
-            or any(
-                version not in ("2024-11-05", "2025-03-26", "2025-06-18", "2025-11-25")
-                for version in self.protocol_versions
-            )
+            or self.protocol_versions != ("2026-07-28",)
         ):
             raise MCPClientError("invalid_configuration", "user_action")
 
@@ -125,6 +126,23 @@ def _leaves(error: Exception) -> list[Exception]:
     if isinstance(error, ExceptionGroup):
         return [leaf for nested in error.exceptions for leaf in _leaves(nested)]
     return [error]
+
+
+class _BoundedResponseStream(httpx.AsyncByteStream):
+    def __init__(self, stream: httpx.AsyncByteStream, maximum: int):
+        self.stream = stream
+        self.maximum = maximum
+
+    async def __aiter__(self):
+        received = 0
+        async for chunk in self.stream:
+            received += len(chunk)
+            if received > self.maximum:
+                raise MCPClientError("result_limit", "user_action")
+            yield chunk
+
+    async def aclose(self):
+        await self.stream.aclose()
 
 
 def _failure(error: Exception, dispatched: bool) -> MCPClientError:
@@ -157,9 +175,9 @@ def _failure(error: Exception, dispatched: bool) -> MCPClientError:
 async def call_tool(
     config: MCPClientConfig, tool_name: str, arguments: dict[str, Any], *, events: EventEmitter | None = None
 ) -> dict[str, Any]:
-    """One configured call/session. Only transient pre-dispatch setup may retry."""
+    """One pinned modern call. Only transient pre-dispatch setup may retry."""
 
-    from mcp import ClientSession
+    from mcp import Client
     from mcp.client.streamable_http import streamable_http_client
 
     if (
@@ -197,39 +215,74 @@ async def call_tool(
                             raise ValueError()
                     except Exception:
                         raise MCPClientError("authentication_required", "auth_required") from None
+                    async def enforce_response(response: httpx.Response) -> None:
+                        # The MCP transport can follow same-origin redirects independently of the HTTP flag.
+                        if 300 <= response.status_code < 400:
+                            raise MCPClientError("redirect_denied")
+                        if response.status_code == 401:
+                            raise MCPClientError("authentication_required", "auth_required")
+                        if response.status_code == 403:
+                            raise MCPClientError("forbidden", "user_action")
+                        if response.status_code == 429 or response.status_code >= 500:
+                            raise MCPClientError("connection_failed", "retryable")
+                        if response.status_code >= 400:
+                            raise MCPClientError("protocol_error")
+                        if response.headers.get("content-encoding", "identity").lower() != "identity":
+                            raise MCPClientError("unsupported_encoding", "user_action")
+                        length = response.headers.get("content-length")
+                        if length is not None:
+                            try:
+                                if int(length) < 0:
+                                    raise ValueError()
+                                if int(length) > config.max_response_bytes:
+                                    raise MCPClientError("result_limit", "user_action")
+                            except ValueError:
+                                raise MCPClientError("invalid_result") from None
+                        if response.is_stream_consumed:
+                            if len(response.content) > config.max_response_bytes:
+                                raise MCPClientError("result_limit", "user_action")
+                        else:
+                            response.stream = _BoundedResponseStream(response.stream, config.max_response_bytes)
+
                     async with httpx.AsyncClient(
-                        headers={"Authorization": f"Bearer {token}"},
+                        headers={"Authorization": f"Bearer {token}", "Accept-Encoding": "identity"},
                         timeout=config.request_timeout,
                         follow_redirects=False,
                         trust_env=False,
+                        event_hooks={"response": [enforce_response]},
                     ) as client:
-                        async with streamable_http_client(config.endpoint, http_client=client) as (
-                            reader,
-                            writer,
-                            _,
-                        ):
-                            async with ClientSession(reader, writer) as session:
-                                initialized = await session.initialize()
-                                if initialized.protocolVersion not in config.protocol_versions:
-                                    raise MCPClientError("unsupported_protocol")
-                                tool = await discover_tool(session, tool_name)
-                                validate_schema(arguments, tool.inputSchema, "input")
-                                dispatched = True
-                                # Correlation is host-bound metadata, separate from model-visible arguments and authority.
-                                metadata = (
-                                    {"meta": {"org.shaleyeah/correlation": {
-                                        "context": events.context, "parentEventId": receipt["eventId"], "spanId": span_id,
-                                    }}} if events is not None else {}
-                                )
-                                result = await session.call_tool(tool_name, arguments, **metadata)
-                                output = read_result(result, getattr(tool, "outputSchema", None))
-                                await record(
-                                    "failed" if output["isError"] else "succeeded",
-                                    attempt=attempt + 1, spanId=span_id,
-                                    measurements={"toolLatencyMs": (time.monotonic() - started) * 1000},
-                                    **({"errorCode": "tool_failed"} if output["isError"] else {}),
-                                )
-                                return output
+                        transport = streamable_http_client(
+                            config.endpoint, http_client=client, terminate_on_close=False,
+                            max_sse_event_size=config.max_response_bytes,
+                        )
+                        async with Client(
+                            transport, mode="2026-07-28", cache=None,
+                            read_timeout_seconds=config.request_timeout,
+                        ) as peer:
+                            if peer.protocol_version not in config.protocol_versions:
+                                raise MCPClientError("unsupported_protocol")
+                            tool = await discover_tool(peer, tool_name)
+                            validate_schema(arguments, tool.input_schema, "input")
+                            dispatched = True
+                            # Host-bound correlation is separate from model-visible arguments and authority.
+                            metadata = (
+                                {"meta": {"org.shaleyeah/correlation": {
+                                    "context": events.context, "parentEventId": receipt["eventId"], "spanId": span_id,
+                                }}} if events is not None else {}
+                            )
+                            # The high-level helper can automatically replay MRTR/header mismatches.
+                            # A single manual session call preserves our no-replay action boundary.
+                            result = await peer.session.call_tool(
+                                tool_name, arguments, allow_input_required=True, **metadata,
+                            )
+                            output = read_result(result, getattr(tool, "output_schema", None))
+                            await record(
+                                "failed" if output["isError"] else "succeeded",
+                                attempt=attempt + 1, spanId=span_id,
+                                measurements={"toolLatencyMs": (time.monotonic() - started) * 1000},
+                                **({"errorCode": "tool_failed"} if output["isError"] else {}),
+                            )
+                            return output
                 except Exception as error:
                     failure = _failure(error, dispatched)
                     if failure.code == "audit_unavailable":

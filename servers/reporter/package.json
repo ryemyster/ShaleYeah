@@ -1,7 +1,7 @@
 {
 	"name": "@shaleyeah/server-reporter",
 	"version": "0.1.0",
-	"description": "Reporter MCP server \u2014 report generation and document assembly",
+	"description": "Reporter MCP server — report generation and document assembly",
 	"private": true,
 	"type": "module",
 	"main": "dist/index.js",
@@ -21,11 +21,11 @@
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
-		"@modelcontextprotocol/sdk": "^1.29.0",
 		"@biomejs/biome": "^2.5.0",
 		"@types/node": "^25.9.3",
 		"tsx": "^4.21.0",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.2",
+		"@modelcontextprotocol/client": "2.3.1"
 	},
 	"engines": {
 		"node": ">=22.13.0"

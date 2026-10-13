@@ -267,7 +267,7 @@ If any unit cannot be extracted into a separate repo without breaking the rest o
 [ADR 0004](../contracts/docs/0004-composition-conformance.md) specifies replacement
 employees, third-party tools, standalone units and optional coordination. MCP is
 the tool interface; task/artifact/review adapters are a separate employee boundary.
-The pinned MCP 2025-11-25 reference profiles require qualification; A2A and other
+The pinned MCP 2026-07-28 reference profiles require qualification in #722; A2A and other
 protocol/platform variants remain optional and unqualified. Executed record cases
 and future adapter scenarios are labeled separately so structural validation
 cannot be mistaken for protected execution or professional job acceptance.

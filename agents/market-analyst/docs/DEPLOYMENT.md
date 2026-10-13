@@ -6,7 +6,7 @@ Market Analyst deploys as an ADK/Python agent package paired with the Market MCP
 
 | Variable | Required | Default |
 |----------|----------|---------|
-| `MARKET_MCP_URL` | No | `http://localhost:3007` |
+| `MARKET_MCP_URL` | No | `http://localhost:3007/mcp` |
 | `MARKET_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
 
 Set `MARKET_MCP_URL` to the deployed `servers/market` endpoint for non-local deployments.

@@ -7,16 +7,15 @@ import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import type { CallToolResult, ToolAnnotations } from "@modelcontextprotocol/sdk/types.js";
+import { type CallToolResult, McpServer, type ToolAnnotations } from "@modelcontextprotocol/server";
+import { type StdioServerHandle, serveStdio } from "@modelcontextprotocol/server/stdio";
 import type { z } from "zod";
 import { classifyToolError, isToolFailure } from "./errors.js";
 import { EventExportError } from "./events.js";
 import { FileIntegrationManager } from "./file-integration.js";
 import { type BoundMCPEvents, MCPCorrelationError, type MCPEventBinding } from "./mcp-events.js";
 import { type MCPExecutionContext, MCPHttpAccess } from "./mcp-http-access.js";
-import { type MCPHttpOptions, MCPHttpSessions } from "./mcp-http-sessions.js";
+import { type MCPHttpOptions, MCPHttpRequests } from "./mcp-http-requests.js";
 
 export type {
 	MCPExecutionContext,
@@ -81,9 +80,9 @@ export interface MCPResource {
  */
 export abstract class MCPServer {
 	protected server: McpServer;
-	protected transport?: StdioServerTransport;
+	private _stdio?: StdioServerHandle;
 	private _httpServer?: http.Server;
-	private _httpSessions?: MCPHttpSessions;
+	private _httpRequests?: MCPHttpRequests;
 	private _httpAccess?: MCPHttpAccess;
 	private _port?: number;
 	private readonly _events?: MCPEventBinding;
@@ -117,18 +116,16 @@ export abstract class MCPServer {
 				throw new Error("PORT must be an integer between 0 and 65535");
 			}
 			this._httpAccess = new MCPHttpAccess(config.http?.access, { name: config.name, version: config.version });
-			this._httpSessions = new MCPHttpSessions(() => this.createHttpProtocolServer(), config.http, this._httpAccess);
+			this._httpRequests = new MCPHttpRequests(() => this.createProtocolServer(), config.http, this._httpAccess);
 			this._httpServer = http.createServer((req, res) => {
-				void this._httpSessions!.handleRequest(req, res);
+				void this._httpRequests!.handleRequest(req, res);
 			});
-		} else {
-			this.transport = new StdioServerTransport();
 		}
 
 		this.setupCapabilities();
 	}
 
-	private createHttpProtocolServer(): McpServer {
+	private createProtocolServer(): McpServer {
 		const server = new McpServer({ name: this.config.name, version: this.config.version });
 		for (const tool of this.tools) this.installTool(server, tool);
 		for (const resource of this.resources) this.installResource(server, resource);
@@ -152,10 +149,10 @@ export abstract class MCPServer {
 		try {
 			await fs.mkdir(this.dataPath, { recursive: true });
 			await this.setupDataDirectories();
-			if (this.transport) await this.server.connect(this.transport);
+			if (!this._httpServer) this._stdio = serveStdio(() => this.createProtocolServer(), { legacy: "reject" });
 
 			if (this._httpServer && this._port !== undefined) {
-				this._httpSessions!.open();
+				this._httpRequests!.open();
 				await new Promise<void>((resolve, reject) => {
 					const onError = (error: Error) => {
 						this._httpServer!.off("listening", onListen);
@@ -176,7 +173,8 @@ export abstract class MCPServer {
 			this.initialized = true;
 			console.error("MCP server initialized");
 		} catch (error) {
-			await this._httpSessions?.close();
+			await this._httpRequests?.close();
+			await this._stdio?.close();
 			console.error("MCP server initialization failed");
 			throw error;
 		}
@@ -193,7 +191,8 @@ export abstract class MCPServer {
 	async stop(): Promise<void> {
 		try {
 			// Drain protocol streams before closing the listener; otherwise open SSE streams keep close() pending.
-			await this._httpSessions?.close();
+			await this._httpRequests?.close();
+			await this._stdio?.close();
 			if (this._httpServer?.listening) {
 				this._httpServer.closeAllConnections();
 				await new Promise<void>((resolve, reject) => {
@@ -211,7 +210,6 @@ export abstract class MCPServer {
 
 	public registerTool(tool: MCPTool): void {
 		this.installTool(this.server, tool);
-		this._httpSessions?.forEachServer((server) => this.installTool(server, tool));
 		this.tools.push(tool);
 	}
 
@@ -240,11 +238,11 @@ export abstract class MCPServer {
 				try {
 					const context = this._httpAccess?.currentContext();
 					if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
-					binding = this._events?.(context, extra._meta?.["org.shaleyeah/correlation"]);
+					binding = this._events?.(context, extra.mcpReq._meta?.["org.shaleyeah/correlation"]);
 					if (binding) await binding.emitter.emit("tool", "started", details());
 					const validatedArgs = tool.inputSchema.parse(args);
 					dispatched = true;
-					const result = await tool.handler(validatedArgs, context, extra.signal);
+					const result = await tool.handler(validatedArgs, context, extra.mcpReq.signal);
 					const hasOutcome = result !== null && typeof result === "object" && typeof result.success === "boolean";
 					const failed = isToolFailure(result);
 					if (!failed && tool.outputSchema) await tool.outputSchema.parseAsync(result);
@@ -291,39 +289,43 @@ export abstract class MCPServer {
 
 	public registerResource(resource: MCPResource): void {
 		this.installResource(this.server, resource);
-		this._httpSessions?.forEachServer((server) => this.installResource(server, resource));
 		this.resources.push(resource);
 	}
 
 	private installResource(server: McpServer, resource: MCPResource): void {
-		server.resource(resource.name, resource.uri, async (uri: URL) => {
-			try {
-				const context = this._httpAccess?.currentContext();
-				if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
-				console.error("MCP resource read started");
-				const result = await resource.handler(uri, context);
-				return {
-					contents: [
-						{
-							uri: uri.toString(),
-							mimeType: resource.mimeType || "application/json",
-							text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
-						},
-					],
-				};
-			} catch (error) {
-				console.error("MCP resource read failed");
-				return {
-					contents: [
-						{
-							uri: uri.toString(),
-							mimeType: "application/json",
-							text: JSON.stringify(this.formatError(resource.name, error), null, 2),
-						},
-					],
-				};
-			}
-		});
+		server.registerResource(
+			resource.name,
+			resource.uri,
+			{ description: resource.description, mimeType: resource.mimeType },
+			async (uri: URL) => {
+				try {
+					const context = this._httpAccess?.currentContext();
+					if (this.isHttpMode() && !context) throw new Error("Verified MCP execution context required");
+					console.error("MCP resource read started");
+					const result = await resource.handler(uri, context);
+					return {
+						contents: [
+							{
+								uri: uri.toString(),
+								mimeType: resource.mimeType || "application/json",
+								text: typeof result === "string" ? result : JSON.stringify(result, null, 2),
+							},
+						],
+					};
+				} catch (error) {
+					console.error("MCP resource read failed");
+					return {
+						contents: [
+							{
+								uri: uri.toString(),
+								mimeType: "application/json",
+								text: JSON.stringify(this.formatError(resource.name, error), null, 2),
+							},
+						],
+					};
+				}
+			},
+		);
 	}
 
 	protected formatResult(data: any, detailLevel?: "summary" | "standard" | "full"): any {

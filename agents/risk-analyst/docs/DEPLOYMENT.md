@@ -15,7 +15,7 @@ Set `RISK_ANALYSIS_MCP_URL` in the Risk Analyst runtime to the reachable Risk An
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `RISK_ANALYSIS_MCP_URL` | No | `http://localhost:3005` | Risk Analysis-compatible MCP backend URL |
+| `RISK_ANALYSIS_MCP_URL` | No | `http://localhost:3005/mcp` | Risk Analysis-compatible MCP backend URL |
 | `RISK_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
 Provider credentials depend on the selected ADK model and deployment target.
@@ -32,7 +32,7 @@ agents-cli info
 With Risk Analysis running:
 
 ```bash
-RISK_ANALYSIS_MCP_URL=http://localhost:3005 agents-cli run \
+RISK_ANALYSIS_MCP_URL=http://localhost:3005/mcp RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Assess investment risk for a project with moderate risk profile"
 ```
 

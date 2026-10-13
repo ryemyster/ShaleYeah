@@ -13,7 +13,7 @@ Deploy the Development Planner as a Python ADK app from `agents/development-plan
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011` | Development MCP backend URL |
+| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011/mcp` | Development MCP backend URL |
 | `DEVELOPMENT_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK root-agent model |
 
 ## Deployment Targets

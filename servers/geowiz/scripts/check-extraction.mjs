@@ -166,7 +166,14 @@ try {
 	await run("npm", ["test"], source, { GEOWIZ_TEST_PYTHON: path.join(root, "tool/.venv", pythonName) });
 	passed("tool-generic-client");
 	passed("qualification-required");
-	await fs.writeFile(path.join(root, "tool/package.json"), JSON.stringify({ private: true, type: "module" }));
+	await fs.writeFile(
+		path.join(root, "tool/package.json"),
+		JSON.stringify({
+			private: true,
+			type: "module",
+			dependencies: { "@modelcontextprotocol/client": "2.3.1" },
+		}),
+	);
 	await run(
 		"npm",
 		[

@@ -5,7 +5,7 @@ from app.agent import development_backend_status, plan_development_tool_call, ro
 
 
 def test_python_mcp_client_module_exists_for_development_execution() -> None:
-    assert development_mcp.DEVELOPMENT_DEFAULT_URL == "http://localhost:3011"
+    assert development_mcp.DEVELOPMENT_DEFAULT_URL == "http://localhost:3011/mcp"
     assert hasattr(development_mcp, "call_development_tool")
     assert hasattr(development_mcp, "create_development_plan")
     assert hasattr(development_mcp, "estimate_project_timeline")

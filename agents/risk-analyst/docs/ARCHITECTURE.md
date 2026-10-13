@@ -39,7 +39,7 @@ app/agent.py
 app/risk_analysis_mcp.py
        |
        v
-RISK_ANALYSIS_MCP_URL, default http://localhost:3005
+RISK_ANALYSIS_MCP_URL, default http://localhost:3005/mcp
        |
        v
 servers/risk-analysis
@@ -71,7 +71,7 @@ agents-cli eval run
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `RISK_ANALYSIS_MCP_URL` | `http://localhost:3005` | Risk Analysis-compatible MCP backend URL |
+| `RISK_ANALYSIS_MCP_URL` | `http://localhost:3005/mcp` | Risk Analysis-compatible MCP backend URL |
 | `RISK_ANALYST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
 
 The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Risk Analysis MCP backend is reachable when execution tools are invoked.

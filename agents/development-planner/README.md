@@ -24,7 +24,7 @@ The agent runs as a stand-alone specialist with progressive disclosure of its De
 - `estimate_project_timeline` for schedule, phase, milestone, or critical-path work.
 - `monitor_development_progress` for schedule, budget, safety, and quality status.
 
-The default MCP backend URL is `http://localhost:3011`. Set `DEVELOPMENT_MCP_URL` to point at another compatible Development MCP server.
+The default MCP backend URL is `http://localhost:3011/mcp`. Set `DEVELOPMENT_MCP_URL` to point at another compatible Development MCP server.
 
 ## Run Locally
 
@@ -46,7 +46,10 @@ Then run ADK or pytest commands from `agents/development-planner`.
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011` | Development MCP backend URL |
+| `DEVELOPMENT_MCP_URL` | No | `http://localhost:3011/mcp` | Development MCP backend URL |
+| `DEVELOPMENT_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
+| `DEVELOPMENT_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
+| `DEVELOPMENT_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
 | `DEVELOPMENT_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
 
 Provider credentials are supplied by the ADK runtime or deployment environment. Do not check secrets into this package.
