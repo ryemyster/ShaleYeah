@@ -1,0 +1,48 @@
+{
+	"name": "@shaleyeah/sdk",
+	"version": "0.3.0",
+	"description": "Shared language for ShaleYeah agents and MCP servers — types, LLM client, base server, parsers",
+	"private": false,
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "tsc",
+		"test": "bash ../scripts/run-tests.sh",
+		"test:employee-review": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=dist/employee-review.js --test-coverage-include=dist/qualification.js --test-coverage-include=dist/private-json.js tests/private-json.test.ts ../servers/geowiz/tests/review-workflow.test.ts ../servers/reporter/tests/report-review.test.ts ../servers/reporter/tests/review-context.test.ts",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@anthropic-ai/sdk": "0.104.1",
+		"@google/genai": "2.28.0",
+		"@modelcontextprotocol/node": "2.1.1",
+		"@modelcontextprotocol/server": "2.3.1",
+		"@shaleyeah/contracts": "workspace:*",
+		"@turf/turf": "^7.3.4",
+		"exceljs": "^4.4.0",
+		"shapefile": "^0.6.6",
+		"xml2js": "^0.6.2",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
+		"@modelcontextprotocol/client": "2.3.1",
+		"@types/geojson": "^7946.0.16",
+		"@types/node": "^25.9.3",
+		"@types/xml2js": "^0.4.14",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	},
+	"files": [
+		"dist",
+		"LICENSE"
+	],
+	"license": "Apache-2.0"
+}

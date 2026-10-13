@@ -1,0 +1,40 @@
+{
+	"name": "@shaleyeah/server-qa",
+	"version": "0.1.0",
+	"description": "QA MCP server — quality assurance and test tooling",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "node scripts/build.mjs",
+		"start": "node dist/index.js",
+		"test": "node --import tsx --test tests/*.test.ts",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit",
+		"dev": "tsx src/index.ts",
+		"test:coverage": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
+		"test:extraction": "node --test tests/extraction/*.test.mjs",
+		"qualify": "node scripts/qualify.mjs"
+	},
+	"dependencies": {
+		"@shaleyeah/contracts": "workspace:*",
+		"@shaleyeah/sdk": "workspace:*",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
+		"@types/node": "^25.9.3",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2",
+		"@modelcontextprotocol/client": "2.3.1"
+	},
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"files": [
+		"dist",
+		"examples",
+		"LICENSE",
+		"scripts/qualify.mjs"
+	]
+}

@@ -1,0 +1,695 @@
+{
+  "fixtureVersion": 1,
+  "purpose": "Executable canonical record cases and specified future adapter acceptance transcripts; no protocol/auth runtime implemented here.",
+  "baseRecords": "records.json",
+  "profiles": {
+    "employeeContract": "0.1.0",
+    "mcpProtocol": "2025-11-25",
+    "mcpTransports": [
+      "stdio",
+      "streamable-http"
+    ],
+    "a2a": "deferred-unqualified"
+  },
+  "compositions": [
+    {
+      "id": "C1",
+      "requirement": "mandatory",
+      "description": "Our employee and our tools; reference Geologist/Geowiz."
+    },
+    {
+      "id": "C2",
+      "requirement": "mandatory",
+      "description": "Our employee with a fixture third-party MCP tool of explicitly mapped required capabilities."
+    },
+    {
+      "id": "C3",
+      "requirement": "mandatory",
+      "description": "Fake external employee with our MCP, plus generic-client proof."
+    },
+    {
+      "id": "C4",
+      "requirement": "mandatory",
+      "description": "Standalone employee without paired MCP; bounded input-only task, unsupported tool capabilities explicit."
+    },
+    {
+      "id": "C5",
+      "requirement": "mandatory",
+      "description": "Standalone MCP with generic permitted client and no employee."
+    },
+    {
+      "id": "C6",
+      "requirement": "conditional",
+      "description": "Compatible external employee under optional Chief of Staff; mandatory when the pilot is claimed."
+    }
+  ],
+  "control": {
+    "scope": {
+      "customerId": "operator-demo",
+      "assetId": "well-demo-1",
+      "taskId": "task-geology-1",
+      "employeeId": "external.geologist"
+    },
+    "records": {
+      "charter": "composition: external charter accepted",
+      "task": "composition: external task accepted",
+      "work": "composition: external work accepted",
+      "context": "composition: external private context accepted",
+      "request": "composition: external review request accepted",
+      "decision": "composition: external human decision accepted"
+    },
+    "interpretation": "These patches materialize a fake external employee record chain. Authenticated review and actual source hashes are not proved by structural acceptance. Runtime harnesses replace placeholder hashes consistently with computed digests of actual fixture bytes."
+  },
+  "toolControl": {
+    "interpretation": "Synthetic future MCP peer transcript, not captured traffic or an implemented server tool.",
+    "initializeRequest": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "method": "initialize",
+      "params": {
+        "protocolVersion": "2025-11-25",
+        "capabilities": {},
+        "clientInfo": {
+          "name": "generic-fixture-client",
+          "version": "1"
+        }
+      }
+    },
+    "initializeResponse": {
+      "jsonrpc": "2.0",
+      "id": 1,
+      "result": {
+        "protocolVersion": "2025-11-25",
+        "capabilities": {
+          "tools": {}
+        },
+        "serverInfo": {
+          "name": "fixture-tool-peer",
+          "version": "1"
+        }
+      }
+    },
+    "initialized": {
+      "jsonrpc": "2.0",
+      "method": "notifications/initialized"
+    },
+    "listRequest": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "method": "tools/list",
+      "params": {}
+    },
+    "listResponse": {
+      "jsonrpc": "2.0",
+      "id": 2,
+      "result": {
+        "tools": [
+          {
+            "name": "fixture.echo_artifact",
+            "description": "Echo a permitted fixture artifact URI; synthetic protocol control only.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "artifactUri": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "artifactUri"
+              ],
+              "additionalProperties": false
+            },
+            "outputSchema": {
+              "type": "object",
+              "properties": {
+                "artifactUri": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              },
+              "required": [
+                "artifactUri"
+              ],
+              "additionalProperties": false
+            }
+          }
+        ]
+      }
+    },
+    "callRequest": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "method": "tools/call",
+      "params": {
+        "name": "fixture.echo_artifact",
+        "arguments": {
+          "artifactUri": "urn:example:well-log:1"
+        }
+      }
+    },
+    "success": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+        "structuredContent": {
+          "artifactUri": "urn:example:well-log:1"
+        },
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"artifactUri\":\"urn:example:well-log:1\"}"
+          }
+        ],
+        "isError": false
+      }
+    },
+    "failure": {
+      "jsonrpc": "2.0",
+      "id": 3,
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "fixture artifact access denied"
+          }
+        ],
+        "isError": true
+      }
+    }
+  },
+  "validationCases": [
+    {
+      "name": "composition: external charter accepted",
+      "record": "externalCharter",
+      "patches": [],
+      "valid": true,
+      "options": {"trustedAuthority": {"employeeId": "external.geologist", "customerId": "operator-demo", "capabilities": ["geology.interpret"], "authorityPolicy": {"id": "policy.geologist.review", "version": "r1"}}}
+    },
+    {
+      "name": "composition: external task accepted",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: external work accepted",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    },
+    {
+      "name": "composition: external private context accepted",
+      "record": "context",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: external review request accepted",
+      "record": "reviewRequest",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    },
+    {
+      "name": "composition: external human decision accepted",
+      "record": "approveDecision",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    },
+    {
+      "name": "composition: missing input remains blocked",
+      "record": "blockedWork",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: task awaiting review preserves product reference",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "awaiting_review"}, {"path": ["workProductRefs"], "value": [{"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}]}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: partial artifact stays draft",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "draft"}, {"path": ["evidence"], "value": []}, {"path": ["findings"], "value": []}, {"path": ["assumptions"], "value": []}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: cancelled is a valid business task state",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "cancelled"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: transport input-required cannot leak into business task enum",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "input-required"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: completed task needs an artifact reference",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "completed"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: completed task with artifact is structurally valid not proof of review",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["status"], "value": "completed"}, {"path": ["workProductRefs"], "value": [{"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}]}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"}
+    },
+    {
+      "name": "composition: unknown employee contract version rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["contractVersion"], "value": "9.0.0"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "unsupported_version"
+    },
+    {
+      "name": "composition: native transport artifact is not an employee work product",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["parts"], "value": [{"text": "done"}]}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: wrong customerId rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["scope", "customerId"], "value": "unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "composition: wrong assetId rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["scope", "assetId"], "value": "unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "composition: wrong taskId rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["scope", "taskId"], "value": "unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "composition: wrong employeeId rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["scope", "employeeId"], "value": "unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "composition: stale task revision rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["taskRevision"], "value": "r0"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "composition: wrong artifact id rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["artifact", "id"], "value": "product.unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "composition: wrong artifact revision rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["artifact", "revision"], "value": "r2"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "composition: wrong artifact uri rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["artifact", "uri"], "value": "urn:example:unrelated"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "revision_mismatch"
+    },
+    {
+      "name": "composition: ready output without evidence rejected",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["evidence"], "value": []}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: secret field cannot enter work product",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["apiKey"], "value": "example-secret-sentinel"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: forwarded bearer cannot enter task payload",
+      "record": "task",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["authorization"], "value": "example-secret-sentinel"}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: framework session cannot enter employee context",
+      "record": "context",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["adkSession"], "value": {"id": "private-session"}}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1"},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: prose approval flag cannot enter review decision",
+      "record": "approveDecision",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["approved"], "value": true}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: review without human identity rejected",
+      "record": "approveDecision",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["reviewer"], "remove": true}],
+      "valid": false,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}},
+      "code": "invalid_contract"
+    },
+    {
+      "name": "composition: external reject decision remains a decision not an execution grant",
+      "record": "approveDecision",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["decision"], "value": "reject"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    },
+    {
+      "name": "composition: external changes decision remains a decision not an execution grant",
+      "record": "approveDecision",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["decision"], "value": "request_changes"}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    },
+    {
+      "name": "composition: external capability escalation denied",
+      "record": "externalCharter",
+      "patches": [{"path": ["capabilities"], "value": ["geology.interpret", "capital.commit"]}],
+      "valid": false,
+      "options": {"trustedAuthority": {"employeeId": "external.geologist", "customerId": "operator-demo", "capabilities": ["geology.interpret"], "authorityPolicy": {"id": "policy.geologist.review", "version": "r1"}}},
+      "code": "authority_denied"
+    },
+    {
+      "name": "composition: external policy substitution denied",
+      "record": "externalCharter",
+      "patches": [{"path": ["authorityPolicy", "version"], "value": "r2"}],
+      "valid": false,
+      "options": {"trustedAuthority": {"employeeId": "external.geologist", "customerId": "operator-demo", "capabilities": ["geology.interpret"], "authorityPolicy": {"id": "policy.geologist.review", "version": "r1"}}},
+      "code": "authority_denied"
+    },
+    {
+      "name": "composition: declared hash validates without fetching source bytes",
+      "record": "work",
+      "patches": [{"path": ["scope", "employeeId"], "value": "external.geologist"}, {"path": ["evidence"], "value": [{"id": "evidence.log-1", "uri": "urn:example:well-log:1", "hash": {"algorithm": "sha256", "value": "2222222222222222222222222222222222222222222222222222222222222222"}, "revision": "r1", "asOf": "2026-10-07T12:00:00Z", "accessClassification": "restricted", "usagePolicy": {"id": "policy.operator-data", "version": "r1"}}]}],
+      "valid": true,
+      "options": {"expectedScope": {"customerId": "operator-demo", "assetId": "well-demo-1", "taskId": "task-geology-1", "employeeId": "external.geologist"}, "expectedTaskRevision": "r1", "expectedProductRef": {"id": "product.geology-1", "revision": "r1", "uri": "urn:example:interpretation:1"}}
+    }
+  ],
+  "adapterScenarios": [
+    {
+      "id": "employee-control",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "control",
+      "given": "An approved external charter and the six control records; the runtime harness supplies actual fixture bytes, resolves the permitted input URI and replaces placeholder hashes consistently with their computed digest.",
+      "when": "Run a fake employee in a separate process with only an installed contracts package and explicit adapter dependencies.",
+      "then": "Accept task/context, return validated scoped work with unchanged verified evidence/revisions, create a review request; no ADK/root imports, no effect before authenticated review. Record the test process dependencies and outputs.",
+      "owners": [674, 676]
+    },
+    {
+      "id": "tool-control",
+      "compositions": ["C1", "C2", "C3", "C5"],
+      "category": "control",
+      "given": "The toolControl transcript below and a generic SDK MCP client, without any employee package.",
+      "when": "Initialize, notify initialized, list all tools, validate arguments and call fixture.echo_artifact.",
+      "then": "Exact selected version and advertised schemas survive discovery; structuredContent and compatibility text decode to the same value; no employee/coordinator import or model key required.",
+      "owners": [677, 679, 674]
+    },
+    {
+      "id": "discovery-version",
+      "compositions": ["C1", "C2", "C3", "C5"],
+      "category": "edge",
+      "given": "An MCP peer replies to initialize with unsupported protocolVersion 2099-01-01.",
+      "when": "Connect with only the selected 2025-11-25 conformance profile enabled.",
+      "then": "Disconnect before tools/call; observable compatibility failure, no silent downgrade or per-request-protocol emulation.",
+      "owners": [668, 679]
+    },
+    {
+      "id": "discovery-capabilities",
+      "compositions": ["C1", "C2", "C3"],
+      "category": "boundary",
+      "given": "Advertised tools omit fixture.echo_artifact or its required input/output schema; pagination may hide a later page.",
+      "when": "Resolve the configured required tool names across all pages with bounded discovery.",
+      "then": "Missing/changed required schema or exhausted discovery budget fails compatibility before invocation; no guessed name, copied schema or prompt fallback.",
+      "owners": [677, 679]
+    },
+    {
+      "id": "tool-list-change",
+      "compositions": ["C1", "C2", "C3"],
+      "category": "edge",
+      "given": "A peer advertises listChanged and changes a tool schema after initial discovery.",
+      "when": "Receive notification or reconnect to that peer.",
+      "then": "Invalidate cached schema and revalidate before the next call; an unsupported required capability fails closed.",
+      "owners": [677, 679]
+    },
+    {
+      "id": "employee-negotiation",
+      "compositions": ["C3", "C4", "C6"],
+      "category": "edge",
+      "given": "External discovery offers only employee contract 9.0.0 or no required task/artifact/review semantics.",
+      "when": "Evaluate trusted capability and policy intersection before assignment.",
+      "then": "unsupported_version or unsupported_capability; no translation by deleting required fields, no effect and no substitution of a merely similarly named employee.",
+      "owners": [674, 676]
+    },
+    {
+      "id": "capability-authority",
+      "compositions": ["C3", "C6"],
+      "category": "boundary",
+      "given": "An external charter claims capital.commit outside the separately trusted policy or claims another customer.",
+      "when": "Attempt admission and a task using that capability.",
+      "then": "authority_denied/scope_mismatch from the trusted boundary; discovery and an Agent Card cannot grant rights.",
+      "owners": [678, 674, 676]
+    },
+    {
+      "id": "tool-error",
+      "compositions": ["C1", "C2", "C3", "C5"],
+      "category": "edge",
+      "given": "A tool returns toolControl.failure with isError=true, or a JSON-RPC method/parameter error.",
+      "when": "Decode the response through the employee client.",
+      "then": "Preserve native error type and safe details; do not treat text content as successful work; deterministic classification decides retry vs input/auth/permanent failure.",
+      "owners": [677, 679]
+    },
+    {
+      "id": "tool-output-schema",
+      "compositions": ["C1", "C2", "C3"],
+      "category": "edge",
+      "given": "A success response violates its advertised outputSchema, lacks structuredContent, or conflicts with compatibility text.",
+      "when": "Validate and map a tool result.",
+      "then": "Explicit invalid_contract/incompatible tool result; no numeric defaults, no inferred success, no completion from malformed data. Error-result handling stays distinct from success schema.",
+      "owners": [677, 679]
+    },
+    {
+      "id": "partial-artifact",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "edge",
+      "given": "The partial draft validation case, a missing chunk or an interrupted stream.",
+      "when": "Receive a done/completed transport signal before a complete validated work product is durable.",
+      "then": "Keep partial work draft and business task running/blocked; no final promotion, review approval or duplicate append. Bound bytes/chunks and verify actual content before readiness.",
+      "owners": [674, 676]
+    },
+    {
+      "id": "artifact-resolution",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "A returned artifact URI points outside configured source rights or its actual digest/revision differs from the manifest.",
+      "when": "Resolve the artifact in the receiving scope.",
+      "then": "access_denied or stale_evidence/invalid_contract; do not follow arbitrary URLs/paths, accept a claimed hash or expose bytes to another employee.",
+      "owners": [670, 672, 674]
+    },
+    {
+      "id": "input-required",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "edge",
+      "given": "Missing well-log input; blockedWork control, no grant to fetch a substitute.",
+      "when": "Employee asks for input and receives a permitted corrected input revision.",
+      "then": "Business task blocked with missing_input; keep same trusted task identity, create revised assignment/context and invalidate stale review; never fabricate findings or silently reuse another employee context.",
+      "owners": [672, 673, 674, 676]
+    },
+    {
+      "id": "review-wait",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "Ready work and review request from the external control; approval is absent.",
+      "when": "Transport reports completed or an MCP confirmation says approved=true.",
+      "then": "Business task awaiting_review; protected save/export/promotion denied with approval_required. A2A input-required/auth-required or ADK confirmation cannot replace authenticated business review.",
+      "owners": [673, 678, 674, 676]
+    },
+    {
+      "id": "review-resume",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "control",
+      "given": "Authenticated approve, reject and request_changes decisions bound to actual product/task/source/action revisions under ADR 0003.",
+      "when": "Resume the same task after each decision, including process restart.",
+      "then": "Approve permits only the bound operation; reject blocks it; changes create a new reviewed revision. Wrong identity, stale decision, replay or changed operation cannot execute.",
+      "owners": [673, 674, 676]
+    },
+    {
+      "id": "cancel-before-effect",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "control",
+      "given": "A running task paused before its effect and a declared cancellable adapter.",
+      "when": "Issue cancellation, then send a late work result.",
+      "then": "Confirm cancellation only after backend stop/terminal acknowledgement; task cancelled, late output retained as unaccepted evidence and no post-cancel promotion/effect.",
+      "owners": [668, 674, 676]
+    },
+    {
+      "id": "cancel-unsupported",
+      "compositions": ["C1", "C2", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "The selected workload requires cancellation but a tool/employee adapter cannot stop it.",
+      "when": "Negotiate the workload, then simulate a cancellation request.",
+      "then": "Reject the workload as unsupported_capability before dispatch; never claim cancellation from closing a socket. If an already-running operation cannot stop, expose that fact and reconcile.",
+      "owners": [668, 679, 674, 676]
+    },
+    {
+      "id": "deadline",
+      "compositions": ["C1", "C2", "C3", "C4", "C5", "C6"],
+      "category": "edge",
+      "given": "Injected clock; configured task deadline=1000 ms, tool timeout=200 ms, cancel grace=100 ms and retries=0.",
+      "when": "Run a fixture peer that never replies, then deliver a late response.",
+      "then": "Stop waiting within the configured bounds, persist timeout separately from business state, attempt supported cancellation, suppress late completion; unknown effect outcome needs reconciliation, never blind retry.",
+      "owners": [668, 679, 674, 676]
+    },
+    {
+      "id": "cancel-complete-race",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "edge",
+      "given": "Completion and cancel/effect acknowledgement race with duplicated events.",
+      "when": "Replay both orderings, including a process crash.",
+      "then": "One durable terminal outcome based on committed backend state; no contradictory completed/cancelled claims or duplicate effects; unresolved external outcome remains uncertain.",
+      "owners": [673, 574, 674, 676]
+    },
+    {
+      "id": "direct-tool-bypass",
+      "compositions": ["C3", "C5"],
+      "category": "boundary",
+      "given": "A generic client calls a protected command without the human review grant or allowed scopes.",
+      "when": "Skip all employee prompts and call the MCP endpoint directly.",
+      "then": "Backend denies before effect, with redacted audit; valid JSON/transport session and a caller approval boolean confer no authority.",
+      "owners": [678, 673, 674]
+    },
+    {
+      "id": "token-passthrough",
+      "compositions": ["C1", "C2", "C3", "C5", "C6"],
+      "category": "boundary",
+      "given": "Synthetic bearer/key sentinels for two peers and a downstream source, each with a different audience.",
+      "when": "Connect, call, retry, redirect, fail and export logs/results; capture all peer requests.",
+      "then": "Only intended endpoint receives its own credential; no original bearer passthrough to another server/source; no model/source keys in task/artifact/context/Agent Card/prompts/logs. Receiving backend rejects wrong audience/expired/revoked credentials.",
+      "owners": [678, 679, 670, 574]
+    },
+    {
+      "id": "model-key-is-not-authority",
+      "compositions": ["C1", "C2", "C3", "C6"],
+      "category": "boundary",
+      "given": "A valid model key and missing employee/customer/source authority.",
+      "when": "Generate work and attempt source access or protected save.",
+      "then": "Model call permission does not authorize source/tool/review; backend denies before side effects and output is not promoted.",
+      "owners": [669, 678, 674]
+    },
+    {
+      "id": "session-scope",
+      "compositions": ["C1", "C2", "C3", "C5"],
+      "category": "boundary",
+      "given": "Two concurrent MCP clients with distinct permitted identities/scopes; restart and close one connection.",
+      "when": "Interleave initialize/call/get/delete/reconnect and try the other session ID.",
+      "then": "Separate transport sessions and lifecycle; no cross-client results or context. Session IDs do not authenticate a principal or resume employee memory.",
+      "owners": [668, 678, 674]
+    },
+    {
+      "id": "context-isolation",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "Private context for Geologist and Research Analyst; one reviewed permitted shared work product.",
+      "when": "External employee/coordinator requests raw private memory or another customer evidence.",
+      "then": "Receive only assigned scoped context and approved permitted handoff; private traces/working state and foreign-customer artifacts denied; apply item/byte/token/retention budgets.",
+      "owners": [672, 676, 674]
+    },
+    {
+      "id": "standalone-units",
+      "compositions": ["C4", "C5"],
+      "category": "control",
+      "given": "Clean external directories, absent root workspace and absent optional coordinator.",
+      "when": "Install and run agent with explicit permitted local input only; separately run MCP with generic client.",
+      "then": "Agent declares any absent domain capability rather than requiring paired MCP; MCP tools work without agent/model credentials. Record lockfiles, actual install/run/test commands and dependency graph.",
+      "owners": [674]
+    },
+    {
+      "id": "licensed-source",
+      "compositions": ["C1", "C2", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "Fixture internal/licensed source with use allowed but sharing/export denied; no live paid keys.",
+      "when": "Analyze and attempt coordinator handoff/export.",
+      "then": "Respect source rights in receiving scope, deny disallowed sharing/export and preserve provenance. Paid smoke proof remains opt-in; no claim of connector support from a stub.",
+      "owners": [670, 672, 674, 676]
+    },
+    {
+      "id": "eval-gate",
+      "compositions": ["C1", "C3", "C4", "C6"],
+      "category": "boundary",
+      "given": "A valid work-product record but a failed configured professional case or expired eval profile.",
+      "when": "Swap employee/provider and attempt promotion.",
+      "then": "Run same versioned role cases; failed/missing eval blocks promotion independent of valid transport/schema. Deterministic policy judges, expert professional judgment and optional configured LLM rubric stay separate.",
+      "owners": [666, 667, 577, 674]
+    },
+    {
+      "id": "coordinator-handoff",
+      "compositions": ["C6"],
+      "category": "control",
+      "given": "An optional Chief of Staff with granted delegation and compatible external employee; no fleet authority.",
+      "when": "Delegate one scoped task, receive work/review state, lose the employee connection and resume.",
+      "then": "Delegation respects capabilities/policy; durable IDs and states survive; failed/unreviewed work cannot authorize downstream decisions and private context remains private.",
+      "owners": [675, 676, 674]
+    },
+    {
+      "id": "upgrade-regression",
+      "compositions": ["C1", "C2", "C3", "C4", "C5", "C6"],
+      "category": "edge",
+      "given": "A new SDK/protocol/runtime version and prior accepted fixture/role result bundle.",
+      "when": "Propose adapter replacement including MCP 2026-07-28 or A2A 1.0.",
+      "then": "Pin exact implementation/profile, rerun required compositions and trust/role cases; unsupported state/schema/auth/cancel semantics fail compatibility. Preserve stable 0.1.0 domain records; no latest aliases or silent adoption.",
+      "owners": [674, 577, 676]
+    }
+  ]
+}

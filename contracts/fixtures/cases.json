@@ -1,0 +1,1270 @@
+[
+  {
+    "name": "valid-charter",
+    "record": "charter",
+    "valid": true
+  },
+  {
+    "name": "valid-externalCharter",
+    "record": "externalCharter",
+    "valid": true
+  },
+  {
+    "name": "valid-task",
+    "record": "task",
+    "valid": true
+  },
+  {
+    "name": "valid-work",
+    "record": "work",
+    "valid": true
+  },
+  {
+    "name": "valid-context",
+    "record": "context",
+    "valid": true
+  },
+  {
+    "name": "valid-reviewRequest",
+    "record": "reviewRequest",
+    "valid": true
+  },
+  {
+    "name": "valid-reviewDecision",
+    "record": "reviewDecision",
+    "valid": true
+  },
+  {
+    "name": "valid-blockedWork",
+    "record": "blockedWork",
+    "valid": true
+  },
+  {
+    "name": "valid-finalWork",
+    "record": "finalWork",
+    "valid": true
+  },
+  {
+    "name": "unknown-version",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "contractVersion"
+        ],
+        "value": "9.0.0"
+      }
+    ],
+    "valid": false,
+    "code": "unsupported_version"
+  },
+  {
+    "name": "unnegotiated-minor-version",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "contractVersion"
+        ],
+        "value": "0.2.0"
+      }
+    ],
+    "valid": false,
+    "code": "unsupported_version"
+  },
+  {
+    "name": "missing-version",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "contractVersion"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "unknown-kind",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "kind"
+        ],
+        "value": "adk-session"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "unknown-status",
+    "record": "task",
+    "patches": [
+      {
+        "path": [
+          "status"
+        ],
+        "value": "probably-done"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-evidence",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence"
+        ],
+        "value": []
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-source-uri",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "uri"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-hash",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "hash"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-source-revision",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "revision"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-as-of",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "asOf"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-access-classification",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "accessClassification"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "bad-source-date",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "asOf"
+        ],
+        "value": "2026-02-30T12:00:00Z"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "relative-source-uri",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "uri"
+        ],
+        "value": "/private/source"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "bad-hash",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence",
+          0,
+          "hash",
+          "value"
+        ],
+        "value": "not-a-hash"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "confidence-negative",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "confidence"
+        ],
+        "value": -0.1
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "confidence-too-high",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "confidence"
+        ],
+        "value": 1.1
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-units",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          0,
+          "unit"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "unknown-observation-has-value",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          2,
+          "value"
+        ],
+        "value": 0
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "measured-observation-needs-evidence",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          0,
+          "evidenceIds"
+        ],
+        "value": []
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "assumed-observation-needs-assumption",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          1,
+          "assumptionIds"
+        ],
+        "value": []
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "orphan-evidence-reference",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          0,
+          "evidenceIds"
+        ],
+        "value": [
+          "evidence.absent"
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "orphan-assumption-reference",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          1,
+          "assumptionIds"
+        ],
+        "value": [
+          "assumption.absent"
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "duplicate-evidence-id",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "evidence"
+        ],
+        "value": [
+          {
+            "id": "evidence.log-1",
+            "uri": "urn:example:well-log:1",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "revision": "r1",
+            "asOf": "2026-10-07T12:00:00Z",
+            "accessClassification": "restricted",
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            }
+          },
+          {
+            "id": "evidence.log-1",
+            "uri": "urn:example:well-log:1",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "revision": "r1",
+            "asOf": "2026-10-07T12:00:00Z",
+            "accessClassification": "restricted",
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            }
+          }
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "blocked-without-blocker",
+    "record": "blockedWork",
+    "patches": [
+      {
+        "path": [
+          "blockers"
+        ],
+        "value": []
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "final-without-reviewed-decision",
+    "record": "finalWork",
+    "patches": [
+      {
+        "path": [
+          "review",
+          "decisionRefs"
+        ],
+        "value": []
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "completed-task-without-product",
+    "record": "task",
+    "patches": [
+      {
+        "path": [
+          "status"
+        ],
+        "value": "completed"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "framework-state-rejected",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "adkSession"
+        ],
+        "value": {
+          "state": "provider-shaped-state"
+        }
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "undeclared-extension-rejected",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "extensions"
+        ],
+        "value": {
+          "vendor.private": {
+            "apiKey": "example-secret-sentinel"
+          }
+        }
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "credential-field-rejected",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "apiKey"
+        ],
+        "value": "example-secret-sentinel"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "isolation-dimension-missing",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "contextIsolation"
+        ],
+        "value": [
+          "customer",
+          "asset",
+          "employee"
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-review-product-revision",
+    "record": "reviewDecision",
+    "patches": [
+      {
+        "path": [
+          "productRef",
+          "revision"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-review-authority-reference",
+    "record": "reviewDecision",
+    "patches": [
+      {
+        "path": [
+          "reviewer",
+          "authorityPolicy"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-review-audit-reference",
+    "record": "reviewDecision",
+    "patches": [
+      {
+        "path": [
+          "auditRef"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "missing-context-retention-policy",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "retention",
+          "policy"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "expired-assembly-order",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "retention",
+          "expiresAt"
+        ],
+        "value": "2026-10-01T00:00:00Z"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "zero-context-budget",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "budget",
+          "maxTokens"
+        ],
+        "value": 0
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "scope-mismatch",
+    "record": "work",
+    "patches": [],
+    "valid": false,
+    "code": "scope_mismatch",
+    "options": {
+      "expectedScope": {
+        "customerId": "another-operator",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      }
+    }
+  },
+  {
+    "name": "task-revision-mismatch",
+    "record": "reviewDecision",
+    "patches": [],
+    "valid": false,
+    "code": "revision_mismatch",
+    "options": {
+      "expectedTaskRevision": "r2"
+    }
+  },
+  {
+    "name": "product-revision-mismatch",
+    "record": "reviewDecision",
+    "patches": [],
+    "valid": false,
+    "code": "revision_mismatch",
+    "options": {
+      "expectedProductRef": {
+        "id": "product.geology-1",
+        "revision": "r2",
+        "uri": "urn:example:interpretation:1"
+      }
+    }
+  },
+  {
+    "name": "charter-with-independent-policy",
+    "record": "charter",
+    "valid": true,
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "employee.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  },
+  {
+    "name": "capital-authority-claim",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "capabilities"
+        ],
+        "value": [
+          "geology.interpret",
+          "investment.commit"
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "authority_denied",
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "employee.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  },
+  {
+    "name": "wrong-policy-reference",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "authorityPolicy",
+          "version"
+        ],
+        "value": "r2"
+      }
+    ],
+    "valid": false,
+    "code": "authority_denied",
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "employee.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  },
+  {
+    "name": "wrong-employee-policy",
+    "record": "externalCharter",
+    "patches": [],
+    "valid": false,
+    "code": "authority_denied",
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "employee.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  },
+  {
+    "name": "external-replacement-policy",
+    "record": "externalCharter",
+    "valid": true,
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "external.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  },
+  {
+    "name": "optional-alias-absent",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "aliases"
+        ],
+        "remove": true
+      }
+    ],
+    "valid": true
+  },
+  {
+    "name": "optional-alias-addition",
+    "record": "charter",
+    "patches": [
+      {
+        "path": [
+          "aliases"
+        ],
+        "value": [
+          "Geologist",
+          "Well log reviewer"
+        ]
+      }
+    ],
+    "valid": true
+  },
+  {
+    "name": "valid-approve-decision",
+    "record": "approveDecision",
+    "patches": [],
+    "valid": true
+  },
+  {
+    "name": "unknown-finding-needs-reason",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings",
+          2,
+          "reason"
+        ],
+        "value": ""
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "orphan-assumption-evidence",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "assumptions",
+          0,
+          "evidenceIds"
+        ],
+        "value": [
+          "evidence.absent"
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "duplicate-assumption-id",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "assumptions"
+        ],
+        "value": [
+          {
+            "id": "assumption.datum",
+            "statement": "Use the supplied operator datum pending geologist review",
+            "evidenceIds": [
+              "evidence.log-1"
+            ]
+          },
+          {
+            "id": "assumption.datum",
+            "statement": "Use the supplied operator datum pending geologist review",
+            "evidenceIds": [
+              "evidence.log-1"
+            ]
+          }
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "duplicate-finding-id",
+    "record": "work",
+    "patches": [
+      {
+        "path": [
+          "findings"
+        ],
+        "value": [
+          {
+            "id": "finding.depth",
+            "basis": "measured",
+            "value": 1200,
+            "unit": "ft",
+            "evidenceIds": [
+              "evidence.log-1"
+            ],
+            "assumptionIds": []
+          },
+          {
+            "id": "finding.depth",
+            "basis": "measured",
+            "value": 1200,
+            "unit": "ft",
+            "evidenceIds": [
+              "evidence.log-1"
+            ],
+            "assumptionIds": []
+          }
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "task-scope-identity",
+    "record": "task",
+    "patches": [
+      {
+        "path": [
+          "scope",
+          "taskId"
+        ],
+        "value": "task-other"
+      }
+    ],
+    "valid": false,
+    "code": "scope_mismatch"
+  },
+  {
+    "name": "context-over-item-budget",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "budget",
+          "maxItems"
+        ],
+        "value": 1
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "reviewed-shared-context",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "sharedKnowledge"
+        ],
+        "value": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "operator-demo",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "reviewDecisionRef": {
+              "id": "decision.geology-approved-1",
+              "revision": "r1"
+            },
+            "usagePolicy": {
+              "id": "policy.operator.data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ]
+      }
+    ],
+    "valid": true
+  },
+  {
+    "name": "cross-customer-shared-context",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "sharedKnowledge"
+        ],
+        "value": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "other-customer",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "reviewDecisionRef": {
+              "id": "decision.geology-approved-1",
+              "revision": "r1"
+            },
+            "usagePolicy": {
+              "id": "policy.operator.data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "scope_mismatch"
+  },
+  {
+    "name": "shared-context-no-review",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "sharedKnowledge"
+        ],
+        "value": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "operator-demo",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "usagePolicy": {
+              "id": "policy.operator.data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ]
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "lowercase-timestamps",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "assembledAt"
+        ],
+        "value": "2026-10-07t12:30:00z"
+      }
+    ],
+    "valid": true
+  },
+  {
+    "name": "sub-millisecond-timestamp-rejected",
+    "record": "context",
+    "patches": [
+      {
+        "path": [
+          "assembledAt"
+        ],
+        "value": "2026-10-07T12:30:00.0001Z"
+      }
+    ],
+    "valid": false,
+    "code": "invalid_contract"
+  },
+  {
+    "name": "matching-review-scope",
+    "record": "reviewDecision",
+    "patches": [],
+    "valid": true,
+    "options": {
+      "expectedScope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "expectedTaskRevision": "r1",
+      "expectedProductRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      }
+    }
+  },
+  {
+    "name": "matching-task-revision",
+    "record": "task",
+    "patches": [],
+    "valid": true,
+    "options": {
+      "expectedTaskRevision": "r1"
+    }
+  },
+  {
+    "name": "matching-product-revision",
+    "record": "work",
+    "patches": [],
+    "valid": true,
+    "options": {
+      "expectedProductRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      }
+    }
+  },
+  {
+    "name": "charter-cannot-be-work-product",
+    "record": "charter",
+    "patches": [],
+    "valid": false,
+    "code": "revision_mismatch",
+    "options": {
+      "expectedProductRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      }
+    }
+  },
+  {
+    "name": "charter-cannot-be-task",
+    "record": "charter",
+    "patches": [],
+    "valid": false,
+    "code": "revision_mismatch",
+    "options": {
+      "expectedTaskRevision": "r1"
+    }
+  },
+  {
+    "name": "charter-cannot-own-work-scope",
+    "record": "charter",
+    "patches": [],
+    "valid": false,
+    "code": "scope_mismatch",
+    "options": {
+      "expectedScope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      }
+    }
+  },
+  {
+    "name": "unknown-validation-option",
+    "record": "work",
+    "patches": [],
+    "valid": false,
+    "code": "invalid_contract",
+    "options": {
+      "expectedScop": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      }
+    }
+  },
+  {
+    "name": "malformed-trusted-policy",
+    "record": "charter",
+    "patches": [],
+    "valid": false,
+    "code": "invalid_contract",
+    "options": {
+      "trustedAuthority": {
+        "capabilities": [
+          "geology.interpret"
+        ]
+      }
+    }
+  },
+  {
+    "name": "policy-on-product-is-not-authority",
+    "record": "work",
+    "patches": [],
+    "valid": false,
+    "code": "authority_denied",
+    "options": {
+      "trustedAuthority": {
+        "employeeId": "employee.geologist",
+        "customerId": "operator-demo",
+        "capabilities": [
+          "geology.interpret"
+        ],
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      }
+    }
+  }
+]

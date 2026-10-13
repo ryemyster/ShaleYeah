@@ -1,0 +1,184 @@
+name: Reference qualification
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  protocol-callers:
+    name: Python caller compatibility (${{ matrix.role }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        role: [development-planner, drilling-engineer, infrastructure-planner, investment-chair, legal-analyst, market-analyst, research-analyst, risk-analyst, title-analyst]
+    defaults:
+      run:
+        working-directory: agents/${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - name: Locked package and connection shape controls
+        run: |
+          uv run --locked --extra lint ruff check app tests
+          uv run --locked pytest -q
+      - name: Native authoring imports and selected protocol dependencies
+        run: |
+          uv run --locked python -c 'from app.agent import root_agent; assert root_agent.name; print(root_agent.name)'
+          uv run --locked python -c 'from importlib.metadata import version; assert version("mcp") == "2.3.0"; assert version("shaleyeah-mcp-client") == "0.3.0"'
+  reference:
+    name: Geologist and Geowiz qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Build reference tool dependencies
+        run: pnpm turbo build --filter=@shaleyeah/server-geowiz...
+      - name: Evaluation lint, controls and installed isolation
+        working-directory: evaluations
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_evaluations --cov-fail-under=90
+          bash scripts/check-isolation.sh
+      - name: Python client controls
+        working-directory: sdk/python
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_mcp --cov-fail-under=90
+      - name: Geologist package and project-shape controls
+        working-directory: agents/geologist
+        run: |
+          uv run --locked --extra lint ruff check app tests/eval/run_fixture_evals.py
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+      - name: Source access, human approval and protected continuation
+        working-directory: servers/geowiz
+        run: |
+          pnpm test:las
+          pnpm test:review
+      - name: Installed client and Geologist wheels
+        run: bash sdk/python/scripts/check-isolation.sh
+      - name: Actual protected Geowiz interoperability
+        run: uv run --project agents/geologist --locked python sdk/python/scripts/check_geowiz.py
+      - name: Clean reference exports and installed pair
+        run: |
+          pnpm --dir servers/geowiz exec node --test \
+            tests/extraction/container-control.test.mjs \
+            tests/extraction/generic-client-control.test.mjs
+          pnpm --dir servers/geowiz exec node scripts/check-extraction.mjs \
+            --bundle "$RUNNER_TEMP/shale-reference-bundle" \
+            --report "$RUNNER_TEMP/reference-extraction.json"
+      - name: Separate container images and protected pair
+        run: |
+          uv run --project evaluations --locked python servers/geowiz/scripts/check-containers.py \
+            --bundle "$RUNNER_TEMP/shale-reference-bundle" \
+            --report "$RUNNER_TEMP/reference-containers.json"
+      - name: Publish extraction and image decisions
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-extraction-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/reference-extraction.json
+            ${{ runner.temp }}/reference-containers.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Frozen baseline regression qualification
+        working-directory: agents/geologist
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked python tests/eval/run_fixture_evals.py \
+            --output artifacts/evals/reference-qualification.json \
+            --qualification-policy tests/eval/qualification_policy.json \
+            --baseline tests/eval/fixtures/baseline-reports.json \
+            --code-revision "$QUALIFICATION_CODE_REVISION"
+      - name: Publish decision metadata
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: agents/geologist/artifacts/evals/reference-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+  reporter:
+    name: Reporter employee and tool qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Build Reporter and the existing Geowiz regression service
+        run: pnpm turbo build --filter=@shaleyeah/server-reporter... --filter=@shaleyeah/server-geowiz...
+      - name: Reporter Python authoring and coverage controls
+        working-directory: agents/reporter-agent
+        run: |
+          uv run --locked ruff check app tests
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+      - name: Shared employee controls and existing Geologist conformance
+        env:
+          COVERAGE_FILE: ${{ runner.temp }}/employee.coverage
+        run: |
+          uv run --project sdk/employee --locked --extra adk ruff check sdk/employee
+          uv run --project agents/geologist --locked pytest agents/geologist/tests -q --cov=shaleyeah_employee
+          uv run --project sdk/employee --locked --extra adk pytest sdk/employee/tests -q --cov=shaleyeah_employee --cov-append --cov-fail-under=90
+      - name: Reporter MCP and protected continuation coverage
+        working-directory: servers/reporter
+        run: pnpm test:coverage
+      - name: Shared executing review, qualification and private configuration coverage
+        run: pnpm --dir sdk test:employee-review
+      - name: Extraction controls and installed independent pair
+        run: |
+          pnpm --dir servers/reporter test:extraction
+          pnpm --dir servers/reporter exec node scripts/check-extraction.mjs \
+            --bundle "$RUNNER_TEMP/reporter-bundle" \
+            --report "$RUNNER_TEMP/reporter-extraction.json"
+      - name: Separate Reporter containers and protected continuation
+        run: |
+          uv run --project evaluations --locked python servers/reporter/scripts/check-containers.py \
+            --bundle "$RUNNER_TEMP/reporter-bundle" \
+            --report "$RUNNER_TEMP/reporter-containers.json"
+      - name: Frozen source-fidelity and authority qualification
+        working-directory: agents/reporter-agent
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked python tests/eval/run_fixture_evals.py \
+            --output artifacts/evals/reference-qualification.json \
+            --code-revision "$QUALIFICATION_CODE_REVISION"
+      - name: Publish Reporter decision metadata
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reporter-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/reporter-extraction.json
+            ${{ runner.temp }}/reporter-containers.json
+            agents/reporter-agent/artifacts/evals/reference-qualification.json
+          if-no-files-found: error
+          retention-days: 14
