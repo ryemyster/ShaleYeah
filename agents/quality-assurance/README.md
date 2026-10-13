@@ -5,11 +5,13 @@ review defects in oil-and-gas inputs and analysis products.
 
 The [employee charter](docs/ROLE.md) defines its job, own context, configurable
 rules, source hooks, evaluation cases and human decisions. The current runtime
-wraps two qa-server tools through MCP (Model Context Protocol), with reasoning
-and human-in-the-loop (HITL) settings. Its existing configuration-based assessments
-are not observed data-quality checks. [Issue #716](https://github.com/ryemyster/ShaleYeah/issues/716)
-implements those checks; [#542](https://github.com/ryemyster/ShaleYeah/issues/542)
-implements the charter in the independently runnable ADK/Python employee.
+has not yet adopted the observed server's exact task/profile/result references.
+Use the [QA server](../../servers/qa-server/README.md) directly for current
+configured data checks and recorded reports. It accepts independent clients
+through MCP (Model Context Protocol). [Issue #542](https://github.com/ryemyster/ShaleYeah/issues/542)
+completes the independently runnable ADK/Python employee, its context, configurable
+evaluations and human review. The current TypeScript package's unit regressions
+do not qualify that full employee workflow.
 
 ## Quick start
 

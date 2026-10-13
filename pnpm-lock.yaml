@@ -420,6 +420,9 @@ importers:
 
   servers/qa-server:
     dependencies:
+      '@shaleyeah/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
       '@shaleyeah/sdk':
         specifier: workspace:*
         version: link:../../sdk
@@ -430,6 +433,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.5.0
         version: 2.5.0
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
       '@types/node':
         specifier: ^25.9.3
         version: 25.9.3

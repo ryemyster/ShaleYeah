@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- #716: replace QA threshold/model pass estimates and report templates with eight configured observed-rule checks, exact authorized source/profile bindings, private immutable result reports and optional unreviewed BYO triage. Add synthetic detection scorecards, generic MCP/authority/restart controls, isolated source/archive checks and required installed Node container CI. QA employee migration remains #542.
+
 - Migrate the Reporter employee to native ADK/Python and source-faithful private reporting, with configurable role evaluations and exact human review. Reuse extracted employee/review helpers and delete the displaced TypeScript loop, fabricated reporting defaults and unreviewed path writes.
 
 - #674: validate Docker daemon information before reading the build bundle; incomplete server metadata and reported errors block as runtime unavailable even when the CLI exits successfully.

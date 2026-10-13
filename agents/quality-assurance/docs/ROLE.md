@@ -248,24 +248,23 @@ examples are synthetic and need domain-owner validation before professional use.
 
 ## Current implementation evidence and handoff
 
-The existing server's
-[validation function](../../../servers/qa-server/src/tools/validation.ts)
-reviews target/configuration strings and falls back to a threshold-based status.
-[run_quality_tests](../../../servers/qa-server/src/index.ts) derives coverage from
-target count and pass rate from that verdict; it does not retrieve actual target
-data for the eight dimensions. Normalized names and `matchScore: 1.0` are not
-identity verification. Optional `outputPath` writes a JSON file, so these tools
-cannot be described as read-only without an executing write boundary.
+The [QA server](../../../servers/qa-server/README.md) now evaluates eight
+allowlisted dimensions against authorized normalized or canonical-work bytes.
+Its observed packets retain rule/profile/source versions, hashes, located
+defects, row counts and actual denominators. Reports read immutable private
+results; no output path or waiver/acceptance/publication action is exposed.
+Source/task/profile rights are rechecked at the executing backend. Optional
+configured model triage remains unreviewed and cannot alter the checks.
 
-[generate_quality_report](../../../servers/qa-server/src/tools/reporting.ts)
-returns a structure with unavailable telemetry and an assessment label, not a
-report from observed source checks. Existing tests validate portions of the
-current implementation; they do not demonstrate this researched job performance.
-Declared employee scopes/confirmation do not establish direct MCP enforcement.
+The 22 configured synthetic cases provide initial research-assisted detection
+labels. They do not validate operator-specific rules, professional severity or
+human-effort savings. The employee's own context, review workflow and ADK
+integration follow in #542. Use the independent QA server for current observed
+checks while that employee integration is completed.
 
 | Owner | Required replacement/qualification |
 | --- | --- |
-| #716 | Replace threshold-only PASS fallback, target-count coverage/verdict passRate, unexplained confidence and template-as-assessment with source/rule/result evidence; preserve useful failure/contract tests |
+| #716 | Observed server checks, sealed source/profile/task authority, immutable reports, synthetic detection scorecard and independent package/container qualification |
 | #542 | Adopt measured tool records and shared Python MCP/provider/context/review/eval components; preserve role boundaries, add accepted fixtures and remove displaced employee loop/wrapper/runtime/docs |
 | #670/#677/#678/#574 | Authorized source snapshots, schemas/errors, backend identity/scopes and redacted audit/correlation; format-specific parser work stays with its source owner |
 | #666/#667/#577/#691 | Configured role evals, result/version evidence and promotion/fleet gates; do not count this charter as passing runtime cases |
@@ -275,5 +274,5 @@ Declared employee scopes/confirmation do not establish direct MCP enforcement.
 Open acceptance needs: actual operator source dictionaries/examples/rights;
 licensed rule/schema mapping where used; independently reviewed truth/severity
 labels; professional reviewer identity/policy; a measured human effort baseline;
-executed deterministic/source/access/restart/composition cases. No algorithm,
-runtime, rule engine dependency or production deployment ships with this charter.
+employee-level context/review/composition qualification. The server fixture
+evidence is separate from professional and final human MVP acceptance.

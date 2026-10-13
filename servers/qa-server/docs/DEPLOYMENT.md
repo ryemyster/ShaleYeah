@@ -1,60 +1,50 @@
-# Deployment — @shaleyeah/server-qa
+# Deployment
 
-## Transport modes
+Build and run the TypeScript MCP server with Node >=22.13. The README shows
+repository setup. The standalone check exports the QA package plus its declared
+SDK and contract archives, installs a clean source copy, and installs the
+production package separately. It does not depend on another employee package.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3014` | Agent fleet, Docker, Kong |
+`QA_CONFIG_FILE` selects an absolute owner-only JSON file. Its
+`sourceAuthority: operator-attested-export` explicitly means a local operator
+attests upstream task/profile/source rights; it is not a remote authorization
+service. The fixture generator shows the supported schema. Sources contain
+base64-encoded exact normalized/work-product bytes and their existing SHA-256,
+revision, observation time, usage policy and recipient grants. Base64 is only
+transport encoding, never encryption or a raw petroleum parser.
 
-```bash
-# stdio mode
-pnpm build && pnpm start
+The configuration and sensitive files must be owner-only regular files.
+The result directory is private; `auditFile` must be a direct child of it.
+The configuration fixes the OS user, task scope/revision, storage/audit paths and
+correlation context. Start a new binding when those change. Current source,
+profile and grant data are reread on access. `current: false`, expiry, denied
+sharing or a changed version blocks reuse. An operator controls this local file;
+use a trusted hosted authority for stronger separation between identities.
 
-# HTTP mode
-PORT=3014 pnpm start
+Optional `modelsFile` uses the shared versioned provider configuration. Only its
+explicit synthesis profile is used for QA triage. Gemini and Anthropic use the
+shared native adapters; credentials are resolved from owner-only file references.
+List other sensitive values in `sensitiveFiles`, also as private file paths.
+Do not place keys in data, prompts, grants or logs. No provider key is needed for
+deterministic checks, reports, or fixture qualification.
+
+Limits are 256 rules, 64 source snapshots, 10,000 rows per source, 8 MB per source,
+8 MB for the private configuration/result artifact, 100 defect details per rule,
+and 1,000 retained artifacts by default. Result retention defaults to one hour
+and cannot exceed a day or the original grant expiry. Expired results are removed
+on subsequent store operations; operators own backup/offline retention. The MCP
+request timeout defaults to 30 seconds and can be configured by the host up to
+120 seconds. Cancellation prevents late source resolution from storing a result.
+
+To export a portable install bundle and metadata report:
+
+```sh
+node servers/qa-server/scripts/check-extraction.mjs --bundle /private/tmp/qa-bundle --report /private/tmp/qa-extraction.json
 ```
 
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Testius Validatus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3014`) |
-| `DATA_PATH` | No | `./data` | Path to QA data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
-
-## Docker Compose (agent pair)
-
-```yaml
-services:
-  qa-server:
-    image: shaleyeah/qa-server:latest
-    environment:
-      PORT: "3014"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3014:3014"
-  quality-assurance:
-    image: shaleyeah/quality-assurance:latest
-    environment:
-      QA_SERVER_MCP_URL: http://qa-server:3014
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [qa-server]
-```
-
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=qa-server
-curl -X POST http://kong:8001/upstreams/qa-server/targets -d target=qa-server:3014
-curl -X POST http://kong:8001/services -d name=qa-server -d host=qa-server
-curl -X POST http://kong:8001/services/qa-server/routes -d paths[]=/mcp/qa-server
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3014` set
-- [ ] Registered with Kong at `/mcp/qa-server`
-- [ ] Paired with `quality-assurance` agent at port 4014
+The bundle destination must be empty. It includes archives, a production lock,
+a clean source check and installed checks. `Dockerfile` builds from that bundle
+and runs as user 10001. Container qualification is a separate required CI check;
+its report identifies the tested image, runtime and fixture boundaries. Default
+container transport is stdio. A remote HTTP deployment supplies its own trusted
+SDK access adapter and live artifact/source authority; no cloud platform is hardcoded.

@@ -16,9 +16,43 @@ permissions:
 jobs:
   reference-qualification:
     uses: ./.github/workflows/reference-qualification.yml
+  qa-observed-qualification:
+    name: QA observed result qualification
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - run: pnpm --dir contracts build
+    - run: pnpm --dir sdk build
+    - run: pnpm --dir servers/qa-server build
+    - run: pnpm --dir servers/qa-server type-check
+    - run: pnpm --dir servers/qa-server lint
+    - run: pnpm --dir servers/qa-server test:coverage
+    - name: Configured observed-result scorecard
+      run: pnpm --dir servers/qa-server qualify --report /tmp/qa-scorecard.json
+    - name: Independent source and installed archive
+      run: node servers/qa-server/scripts/check-extraction.mjs --report /tmp/qa-extraction.json
+    - name: Installed non-root Node container
+      run: node servers/qa-server/scripts/check-containers.mjs --report /tmp/qa-container.json
+    - name: Publish QA decision metadata
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: qa-observed-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+        path: |
+          /tmp/qa-scorecard.json
+          /tmp/qa-extraction.json
+          /tmp/qa-container.json
+        if-no-files-found: error
+        retention-days: 14
   pr-checks:
     name: PR checks
-    needs: reference-qualification
+    needs: [reference-qualification, qa-observed-qualification]
     runs-on: ubuntu-latest
 
     steps:
