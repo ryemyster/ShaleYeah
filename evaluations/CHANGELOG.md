@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #542: add QA observed-fidelity, topology, tool and protected-disposition metrics plus trusted role qualification floors. Configuration cannot remove these or select arbitrary evaluator code.
+
+
 ### Changed
 
 - #541: register Reporter source-fidelity, disclosure and publication-boundary metrics, a reviewed-business-artifact provenance revision and trusted Reporter profile/qualification policy. Six frozen control/edge/authority families use explicit research fixtures; no measured professional accuracy or paid-model claim.

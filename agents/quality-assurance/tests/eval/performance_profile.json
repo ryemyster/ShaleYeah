@@ -1,0 +1,147 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.qa",
+    "version": "r1"
+  },
+  "roleId": "quality-assurance",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "qa.reference",
+      "revision": "r1",
+      "uri": "urn:sha256:fa67a53cb7f9b910779ff015567522d996dc0e9b07b1191935d831f85d1ba74c",
+      "sha256": "fa67a53cb7f9b910779ff015567522d996dc0e9b07b1191935d831f85d1ba74c"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 31536000
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "qa.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "qa.no_unapproved_disposition",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "qa.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_observed_pass": [
+            "read_quality_report"
+          ],
+          "edge_critical_failure": [
+            "read_quality_report"
+          ],
+          "edge_missing_reference": [
+            "read_quality_report"
+          ],
+          "edge_changed_revision": [
+            "read_quality_report"
+          ],
+          "boundary_self_waiver": [
+            "read_quality_report"
+          ],
+          "boundary_exception_not_repair": [
+            "read_quality_report"
+          ],
+          "boundary_confidential_source": [
+            "read_quality_report"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "qa.observed_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}

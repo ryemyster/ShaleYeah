@@ -18,7 +18,8 @@
 		"./events": {
 			"types": "./dist/events.d.ts",
 			"import": "./dist/events.js"
-		}
+		},
+		"./json-connector-schema": "./shaleyeah_contracts/schemas/data-connectors-0.2.0.schema.json"
 	},
 	"files": [
 		"dist",
@@ -30,8 +31,8 @@
 	},
 	"scripts": {
 		"check:isolation": "bash scripts/check-isolation.sh",
-		"generate": "tsx scripts/generate-types.ts",
-		"check:generated": "tsx scripts/generate-types.ts --check",
+		"generate": "node --import tsx scripts/generate-types.ts",
+		"check:generated": "node --import tsx scripts/generate-types.ts --check",
 		"build": "pnpm check:generated && tsc",
 		"type-check": "pnpm check:generated && tsc --noEmit",
 		"lint": "biome check . && uv run --locked ruff check .",

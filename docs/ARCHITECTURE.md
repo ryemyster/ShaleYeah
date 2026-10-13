@@ -41,8 +41,8 @@ remain owned by #671/#674 and their role peers.
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
-previous 2025-11-25 receipts remain historical evidence. Geologist and Reporter
-keep ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
+previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter and QA
+use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
 uses server/client 2.3.1 and Node adapter 2.1.1 with explicit modern options.
@@ -77,6 +77,13 @@ Its source interface reads reviewed business artifacts, preserves literal values
 and requires exact qualified human review before private release. It does not
 certify disclosures or send reports externally. See the [Reporter package](../agents/reporter-agent/README.md).
 
+The [QA employee](../agents/quality-assurance/README.md) reads immutable observed
+results, keeps its own source-linked context, and proposes exact private dispositions.
+Its backend rechecks current input/profile/policy authority and an installed
+packet-bound qualification before authenticated owner approval can execute.
+An accepted exception retains the failed result and cannot repair data or certify
+a release. Native confirmation alone grants no authority.
+
 ## Packages and dependency boundaries
 
 | Area | Current responsibility | Target boundary |
@@ -90,10 +97,10 @@ certify disclosures or send reports externally. See the [Reporter package](../ag
 | `sdk/employee/` | Installed scoped context, providers/events, native runtime and protected review client; role factories own persona/tool selection | Independently installable helpers with optional ADK adapter and no employee imports |
 | `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
-Eleven agents have ADK manifests: Geologist, Reporter, Risk Analyst, Legal Analyst, Market
+Twelve agents have ADK manifests: Geologist, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
-Infrastructure Planner and Investment Chair. Economist, Reservoir Engineer and
-Quality Assurance retain TypeScript implementations.
+Infrastructure Planner and Investment Chair. Economist and Reservoir Engineer
+retain TypeScript implementations.
 See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
 
 Those TypeScript agents use `LocalAgentRuntime` and copied task loops.

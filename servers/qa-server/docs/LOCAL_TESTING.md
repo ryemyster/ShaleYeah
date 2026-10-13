@@ -25,3 +25,10 @@ approved profile hash and source grants. If a result is untested, inspect its
 missing source/reference or unsupported basis. If configuration is unavailable,
 check file ownership/permissions and supported versions. Never replace an error
 with a success template or change permissions to make a failing fixture pass.
+
+QA employee tests also run native offline Gemini/Anthropic tool journeys against
+the protected service: read a real failed result, draft exact work, prepare with
+host-owned context, restart and stop on revoked sources. Operator/installed-verifier
+tests exercise a separately enrolled exact decision and retain the original failure.
+The CI container-pair check repeats protected native continuation in separately
+installed employee/tool images; local absence of Docker never counts as a pass.

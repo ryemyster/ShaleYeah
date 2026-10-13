@@ -14,17 +14,24 @@ from shaleyeah_contracts import (
 RECORDS = json.loads((Path(__file__).parents[1] / "fixtures/data-connectors.json").read_text())
 
 
-@pytest.mark.parametrize("record", [value for key, value in RECORDS.items() if key != "configuration"], ids=[key for key in RECORDS if key != "configuration"])
+@pytest.mark.parametrize(
+    "record",
+    [value for key, value in RECORDS.items() if key != "configuration"],
+    ids=[key for key in RECORDS if key != "configuration"],
+)
 def test_portable_connector_round_trip(record):
     assert validate_source_contract(record) == record
 
 
-@pytest.mark.parametrize("path,value", [
-    (("artifact", "revision"), "changed"),
-    (("evidence", "uri"), "https://example.com/log?api_key=example-secret-sentinel"),
-    (("retrievedAt",), "2026-10-06T12:00:00Z"),
-    (("units",), [RECORDS["artifact"]["units"][0]] * 2),
-])
+@pytest.mark.parametrize(
+    "path,value",
+    [
+        (("artifact", "revision"), "changed"),
+        (("evidence", "uri"), "https://example.com/log?api_key=example-secret-sentinel"),
+        (("retrievedAt",), "2026-10-06T12:00:00Z"),
+        (("units",), [RECORDS["artifact"]["units"][0]] * 2),
+    ],
+)
 def test_source_artifact_cannot_misstate_provenance(path, value):
     record = copy.deepcopy(RECORDS["artifact"])
     target = record
@@ -40,8 +47,25 @@ def test_private_connector_configuration():
     assert validate_connector_configuration(RECORDS["configuration"]) == RECORDS["configuration"]
     with pytest.raises(ContractValidationError):
         validate_contract(RECORDS["configuration"])
-    variants = [None, object(), {**RECORDS["configuration"], "contractVersion": "2.0.0"}, {**RECORDS["configuration"], "secret": "example-secret-sentinel"}]
-    for path, value in [(("manifest", "owner", "customerId"), "different"), (("grant", "scope", "taskId"), "different"), (("manifest", "formats"), ["csv"]), (("sources", 0, "evidence", "uri"), "https://user:password@example.com/log"), (("sources", 0, "units"), [*RECORDS["configuration"]["sources"][0]["units"], {**RECORDS["configuration"]["sources"][0]["units"][0], "unit": "M"}])]:
+    variants = [
+        None,
+        object(),
+        {**RECORDS["configuration"], "contractVersion": "2.0.0"},
+        {**RECORDS["configuration"], "secret": "example-secret-sentinel"},
+    ]
+    for path, value in [
+        (("manifest", "owner", "customerId"), "different"),
+        (("grant", "scope", "taskId"), "different"),
+        (("manifest", "formats"), ["csv"]),
+        (("sources", 0, "evidence", "uri"), "https://user:password@example.com/log"),
+        (
+            ("sources", 0, "units"),
+            [
+                *RECORDS["configuration"]["sources"][0]["units"],
+                {**RECORDS["configuration"]["sources"][0]["units"][0], "unit": "M"},
+            ],
+        ),
+    ]:
         record = copy.deepcopy(RECORDS["configuration"])
         target = record
         for key in path[:-1]:
@@ -59,3 +83,16 @@ def test_private_connector_configuration():
 def test_employee_profile_remains_closed():
     with pytest.raises(ContractValidationError):
         validate_contract(RECORDS["manifest"])
+
+
+def test_operator_normalized_json_snapshot_has_a_truthful_portable_source_format():
+    record = copy.deepcopy(RECORDS["artifact"])
+    record["format"] = "json"
+    with pytest.raises(ContractValidationError):
+        validate_source_contract(record)
+    record["contractVersion"] = "0.2.0"
+    record["parserRef"] = {"id": "normalized-qa-data", "version": "0.1.0"}
+    assert validate_source_contract(record) == record
+    record["format"] = "arbitrary-executable"
+    with pytest.raises(ContractValidationError):
+        validate_source_contract(record)

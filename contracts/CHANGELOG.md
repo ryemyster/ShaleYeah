@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #542: publish explicitly selected JSON-source artifact profile 0.2.0 and generated/validated Python/TypeScript bindings. Preserve closed LAS/CSV source and employee 0.1.0 values; unknown versions and automatic format downgrade fail.
+
+
 - #574: contracts package 0.3.0 adds separate event profile 0.1.0, Python/TypeScript validation/redaction, generated types, shared adversarial fixtures and isolated archive exports. Existing employee/source profiles remain unchanged.
 
 

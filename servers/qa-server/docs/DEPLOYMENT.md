@@ -45,6 +45,19 @@ node servers/qa-server/scripts/check-extraction.mjs --bundle /private/tmp/qa-bun
 The bundle destination must be empty. It includes archives, a production lock,
 a clean source check and installed checks. `Dockerfile` builds from that bundle
 and runs as user 10001. Container qualification is a separate required CI check;
-its report identifies the tested image, runtime and fixture boundaries. Default
-container transport is stdio. A remote HTTP deployment supplies its own trusted
+its report identifies the tested image, runtime and fixture boundaries. The default container launcher uses a privately configured loopback HTTP
+endpoint; the public entry still supports stdio. A remote HTTP deployment supplies its own trusted
 SDK access adapter and live artifact/source authority; no cloud platform is hardcoded.
+
+The optional `review` object declares `policy`, `dispositionPolicy`,
+`localReviewer` and `qualificationConfigFile`. The review policy binds the same
+canonical task and requester, allowed source usage/context/retention policies and
+separately enrolled reviewers. Disposition policy lists allowed actions, repair
+owners, maximum expiry and whether critical exceptions may be reviewed. The
+qualification file selects the installed verifier, exact code revision and owned
+evidence/policy files. An enrolled operator inspects through
+`node examples/review.mjs inspect REVIEW_ID NEW_PRIVATE_PACKET_FILE`, then decides
+through `decide REVIEW_ID PACKET_DIGEST approve|reject|request_changes PRIVATE_REASON_JSON`.
+A compatible agent can request review and resume a granted disposition, but cannot
+make the human decision. Private local files are owner attestations; hosted
+authorities may inject separate enterprise identities.

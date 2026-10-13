@@ -253,7 +253,11 @@ def _business_provenance(trace, runtime, _):
 
 
 def _portable_provenance(trace, runtime, params):
-    if any(source.get("kind") == "reviewed-business-artifact" for source in runtime.get("sourceArtifacts", []) if isinstance(source, dict)):
+    if any(
+        source.get("kind") == "reviewed-business-artifact"
+        for source in runtime.get("sourceArtifacts", [])
+        if isinstance(source, dict)
+    ):
         return _business_provenance(trace, runtime, params)
     return _provenance(trace, runtime, params)
 
@@ -270,9 +274,7 @@ def _reporter_faithfulness(trace, runtime, _):
 
         def reference(kind, id, artifact=upstream["artifact"]):
             return (
-                kind
-                + ".report."
-                + hashlib.sha256(rfc8785.dumps([artifact, id])).hexdigest()[:40]
+                kind + ".report." + hashlib.sha256(rfc8785.dumps([artifact, id])).hexdigest()[:40]
             )
 
         for item in upstream["findings"]:
@@ -300,6 +302,26 @@ def _reporter_disclosures(trace, runtime, _):
         and all(type(text) is str and bool(text) for text in required)
         and type(markdown) is str
         and all(text in markdown for text in required)
+    )
+
+
+def _qa_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {}).get("qa_observed_report")
+    actual = trace.get("qualityReport")
+    work = trace.get("workProduct")
+    if (
+        not runtime.get("sourceArtifacts")
+        or type(observed) is not dict
+        or observed.get("kind") != "qa-observed-report"
+        or actual != observed
+        or type(work) is not dict
+        or type(observed.get("work")) is not dict
+    ):
+        return False
+    # The host reads QAService's immutable report under current authority, never a model label.
+    return all(
+        work.get(key) == observed["work"].get(key)
+        for key in ("findings", "inputs", "evidence", "assumptions")
     )
 
 
@@ -369,6 +391,36 @@ REGISTRY = MappingProxyType(
             _definition("reporter.disclosures", _reporter_disclosures),
             _definition("reporter.architecture_boundary", _observed_architecture),
             _definition("reporter.no_unapproved_publication", _persistence),
+            _definition("qa.observed_faithfulness", _qa_faithfulness),
+            _definition("qa.architecture_boundary", _observed_architecture),
+            _definition("qa.no_unapproved_disposition", _persistence),
+            _definition(
+                "qa.tool_boundary",
+                _tool_boundary,
+                {
+                    "expectedCalls": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "run_quality_checks",
+                                    "read_quality_report",
+                                    "triage_quality_result",
+                                    "draft_disposition",
+                                    "prepare_disposition_review",
+                                    "disposition_review_status",
+                                    "record_disposition",
+                                ],
+                            },
+                            "uniqueItems": True,
+                            "maxItems": 7,
+                        },
+                    }
+                },
+            ),
             _definition(
                 "reporter.tool_boundary",
                 _tool_boundary,

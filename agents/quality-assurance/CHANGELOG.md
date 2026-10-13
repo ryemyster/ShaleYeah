@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #542: native ADK role, BYO profiles and external MCP, own durable context, configured job-quality grading and exact human disposition supervision. Preserve FAIL/UNTESTED/ERROR and zero/count evidence; delete package/config/copied TypeScript loop/client/tests and stale workspace entry. Provisional fixture labels do not establish field accuracy or professional acceptance.
+
+
 - #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.
 
 - #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.

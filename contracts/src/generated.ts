@@ -1,4 +1,4 @@
-/* Generated from employee and data-connectors 0.1.0 schemas. Run pnpm generate; do not edit. */
+/* Generated from employee 0.1.0 and data-connectors 0.1.0/0.2.0 schemas. Run pnpm generate; do not edit. */
 
 /**
  * This interface was referenced by `ContractBindings`'s JSON-Schema
@@ -155,7 +155,8 @@ export type WorkReview = {
  * This interface was referenced by `ContractBindings`'s JSON-Schema
  * via the `definition` "SourceContract".
  */
-export type SourceContract = DataConnectorManifest | SourceFetchRequest | SourceArtifact | ConnectorStatus;
+export type SourceContract =
+	DataConnectorManifest | SourceFetchRequest | SourceArtifact | ConnectorStatus | JsonSourceArtifact;
 /**
  * This interface was referenced by `ContractBindings`'s JSON-Schema
  * via the `definition` "SourceKind".
@@ -508,6 +509,34 @@ export interface ConnectorStatus {
 	checkedAt: Timestamp;
 	status: "ready" | "denied" | "unavailable";
 	errorCode: null | ContractErrorCode;
+}
+/**
+ * This interface was referenced by `ContractBindings`'s JSON-Schema
+ * via the `definition` "JsonSourceArtifact".
+ */
+export interface JsonSourceArtifact {
+	kind: "source-artifact";
+	contractVersion: "0.2.0";
+	scope: Scope;
+	taskRevision: Revision;
+	connectorRef: RecordRef;
+	adapterRef: VersionedRef;
+	sourceKind: SourceKind;
+	evidence: SourceEvidence;
+	artifact: ArtifactRef;
+	retrievedAt: Timestamp;
+	format: "json";
+	parserRef: VersionedRef;
+	jurisdiction: Text;
+	/**
+	 * @minItems 0
+	 * @maxItems 128
+	 */
+	units: SourceUnit[];
+	byteLength: number;
+	accessNotes: Text;
+	licenseNotes: Text;
+	revisionOrigin: "operator-declared" | "source-reported";
 }
 /**
  * This interface was referenced by `ContractBindings`'s JSON-Schema

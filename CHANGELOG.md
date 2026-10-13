@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #542: replace the QA employee loop with native ADK, own scoped context and configurable observed-fidelity evaluations; exact owner dispositions retain immutable failures, support restart and reject stale/revoked/expired grants. Add explicit JSON-source 0.2.0 with old source/employee profiles preserved; carry prepare cancellation through the installed review helper. Delete displaced QA TypeScript surfaces and require independent employee/tool qualification. Preserve current connector output versions and pass only UV cache/offline build settings through workspace checks. Use native Node/tsx imports for the unchanged shared test/generation programs, avoiding unnecessary CLI IPC startup.
+
+
 - #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
 
 - #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.

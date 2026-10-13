@@ -17,6 +17,7 @@ test("QA source and installed production archive run outside the checkout", asyn
 		assert.equal(code, 0, output);
 		const report = JSON.parse(await readFile(reportFile, "utf8"));
 		assert.equal(report.status, "passed"); assert.equal(report.professionalAcceptance, false);
-		for (const id of ["clean-source-build", "installed-tool", "archive-allowlist", "generic-mcp", "durable-observed-results", "production-independent-client"]) assert.equal(report.controls.find((control) => control.id === id)?.status, "passed", id);
+		for (const id of ["clean-source-build", "installed-tool", "archive-allowlist", "generic-mcp", "durable-observed-results", "production-independent-client", "installed-employee", "external-mcp", "source-context-review-restart", "source-revocation", "installed-exact-qualification"]) assert.equal(report.controls.find((control) => control.id === id)?.status, "passed", id);
+		assert.match(report.employeeArtifactSha256, /^[a-f0-9]{64}$/);
 	} finally { await rm(directory, { recursive: true, force: true }); }
 });

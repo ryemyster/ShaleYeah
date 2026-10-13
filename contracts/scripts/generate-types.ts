@@ -9,6 +9,16 @@ const sourceSchema = JSON.parse(
 );
 // Resolve shared definitions mechanically for generation; the two published profiles retain their own roots/IDs.
 const sourceDefs = JSON.parse(JSON.stringify(sourceSchema.$defs).split(`${schema.$id}#/$defs/`).join("#/$defs/"));
+const jsonSourceSchema = JSON.parse(
+	readFileSync(new URL("../shaleyeah_contracts/schemas/data-connectors-0.2.0.schema.json", import.meta.url), "utf8"),
+);
+const jsonSourceDefs = JSON.parse(
+	JSON.stringify(jsonSourceSchema.$defs)
+		.split(`${schema.$id}#/$defs/`)
+		.join("#/$defs/")
+		.split(`${sourceSchema.$id}#/$defs/`)
+		.join("#/$defs/"),
+);
 const target = new URL("../src/generated.ts", import.meta.url);
 // A mechanical object root makes the generator emit even unreferenced $defs.
 const { oneOf, ...base } = schema;
@@ -23,13 +33,15 @@ const output = await compile(
 		$defs: {
 			...schema.$defs,
 			...sourceDefs,
+			...jsonSourceDefs,
 			EmployeeContract: { oneOf },
-			SourceContract: { oneOf: sourceSchema.oneOf },
+			SourceContract: { oneOf: [...sourceSchema.oneOf, { $ref: "#/$defs/JsonSourceArtifact" }] },
 		},
 	},
 	"ContractBindings",
 	{
-		bannerComment: "/* Generated from employee and data-connectors 0.1.0 schemas. Run pnpm generate; do not edit. */",
+		bannerComment:
+			"/* Generated from employee 0.1.0 and data-connectors 0.1.0/0.2.0 schemas. Run pnpm generate; do not edit. */",
 		unreachableDefinitions: true,
 		ignoreMinAndMaxItems: true,
 		style: { useTabs: true, printWidth: 120 },

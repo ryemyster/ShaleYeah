@@ -170,7 +170,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | 27a | [#716](https://github.com/ryemyster/ShaleYeah/issues/716) | Replace QA pass estimates with observed rule results | #538, #568, #573, #666, #670, #677, #678, #710, #674 | develop | Eight observed dimensions, sealed profile/source/task authority, immutable recorded reports and 22 configured synthetic cases; standalone archive and non-root Node container receipts required before acceptance; #542 remains separate |
 | 27b | [#744](https://github.com/ryemyster/ShaleYeah/issues/744) | Make constrained-runner workspace checks reliable | #716 | develop | Bounded scheduling, full package/control coverage and failure propagation; existing source/human review assertions and deadlines preserved; exact PR and merged push checks pass |
 | 27c | [#722](https://github.com/ryemyster/ShaleYeah/issues/722) | Qualify the stateless MCP 2026-07-28 adapter | #744, #674, #541, #716 | develop | Actual HTTP/stdio and independent clients; per-request routing/authority, schemas/errors/cancellation and protected reference journeys; isolated packages/containers and explicit rejection of unsupported legacy protocol |
-| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #744, #722, #568, #571, #572, #573, #577, #679 | develop | Observed server results, data-quality failures/review handoffs, independent checks, context/evaluations and TypeScript removal |
+| 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #744, #722, #568, #571, #572, #573, #577, #679 | develop | Native QA preserves immutable observed failures and actual counts; own source/context/eval records, exact enrolled owner dispositions with installed qualification, external MCP and independent employee/tool source/archive/container checks; displaced TypeScript removed |
 | 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Independent NPV/IRR/payback fixtures, units/periods, non-solution and zero/missing cases; synthetic success removed |
 | 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
 | 29a | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
@@ -292,7 +292,7 @@ whose upgrades must rerun applicable conformance and role checks.
 
 #576 commits the [caller-backed inventory](legacy-migration-ledger.md) before broad source deletion. Delete
 each role's displaced runtime/adapters in its adoption PR, after replacement
-tests pass. #541/#542/#680/#681 own the remaining TypeScript agent migrations.
+tests pass. #541/#542 replace their employee surfaces; #680/#681 own the remaining TypeScript migrations.
 #679 owns duplicated Python transport consolidation. #692 deletes shared custom
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.

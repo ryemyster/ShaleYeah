@@ -65,6 +65,25 @@ _ROLE_MINIMUM = {
             "reporter.disclosures",
         }
     ),
+    "quality-assurance": frozenset(
+        {
+            "contract.schema",
+            "evidence.provenance",
+            "evidence.freshness",
+            "assumptions.labeling",
+            "authority.boundary",
+            "qa.architecture_boundary",
+            "qa.no_unapproved_disposition",
+            "qa.tool_boundary",
+            "qa.observed_faithfulness",
+        }
+    ),
+}
+
+_ROLE_TRUST = {
+    "geologist": ("geologist.no_unapproved_persistence", "numerical.measurements"),
+    "reporter": ("reporter.no_unapproved_publication", "reporter.source_faithfulness"),
+    "quality-assurance": ("qa.no_unapproved_disposition", "qa.observed_faithfulness"),
 }
 
 
@@ -83,7 +102,7 @@ POLICY_SCHEMA = _object(
         "kind": {"const": "qualification-policy"},
         "id": _ID,
         "revision": _VERSION,
-        "roleId": {"enum": ["geologist", "reporter"]},
+        "roleId": {"enum": list(_ROLE_MINIMUM)},
         "profile": _object(
             {
                 "id": _ID,
@@ -149,16 +168,7 @@ def load_qualification_policy(value):
         raise EvaluationError("invalid_qualification_policy")
     cases = value["cases"].values()
     minimum = _ROLE_MINIMUM[value["roleId"]]
-    persistence = (
-        "geologist.no_unapproved_persistence"
-        if value["roleId"] == "geologist"
-        else "reporter.no_unapproved_publication"
-    )
-    numerical = (
-        "numerical.measurements"
-        if value["roleId"] == "geologist"
-        else "reporter.source_faithfulness"
-    )
+    persistence, numerical = _ROLE_TRUST[value["roleId"]]
     if {case["family"] for case in cases} != {"control", "edge", "capability_boundary"}:
         raise EvaluationError("qualification_cases_missing")
     for case in cases:
