@@ -2,11 +2,11 @@
 import assert from "node:assert/strict";
 import { constants } from "node:fs";
 import fs from "node:fs/promises";
-import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 
 const [settingsFile, endpointInput] = process.argv.slice(2);
 let client;
 try {
+	const { Client, StreamableHTTPClientTransport } = await import("@modelcontextprotocol/client");
 	const endpoint = new URL(endpointInput);
 	assert.ok(
 		endpoint.protocol === "http:" &&
