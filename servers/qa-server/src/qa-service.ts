@@ -144,7 +144,7 @@ export class QAService {
 					value: known ? result.status : null,
 					unit: "not_applicable",
 					...(known ? {} : { reason: result.reason }),
-					evidenceIds: result.evidence.map((item) => item.id),
+					evidenceIds: known ? result.evidence.map((item) => item.id) : [],
 					assumptionIds: [],
 				};
 			}),
@@ -257,6 +257,27 @@ export class QAService {
 			results: saved.payload.results,
 			disclosures: saved.payload.disclosures,
 			review: "unreviewed",
+		};
+	}
+	async contextMetadata(
+		evidenceId: string,
+		principal: QAPrincipal,
+		operation: "read" | "export",
+		signal?: AbortSignal,
+	) {
+		const before = await this.authority(principal, "report");
+		const ref = before.task.inputs.find((ref) => ref.id === evidenceId);
+		if (!ref) throw new QAError("source_unavailable");
+		const source = await this.options.inputs.fetch(ref, principal, operation, signal);
+		const after = await this.authority(principal, "report");
+		if (before.binding !== after.binding) throw new QAError("revision_mismatch");
+		return {
+			subjectId: principal.subjectId,
+			scope: before.task.scope,
+			allowed: true,
+			operations: [operation],
+			evidence: source.evidence,
+			retentionExpiresAt: source.retentionExpiresAt,
 		};
 	}
 	async triage(reference: QARef, principal: QAPrincipal, signal?: AbortSignal) {

@@ -1,16 +1,20 @@
 import {
 	type MCPExecutionContext,
 	type MCPServer,
+	reviewExecutionSchema,
 	ServerFactory,
 	type ServerRuntimeOptions,
 	type ServerTemplate,
 } from "@shaleyeah/sdk";
 import { z } from "zod";
+import { qaDispositionProposalSchema } from "./qa-disposition.js";
 import { QAError, type QAPrincipal, qaRefSchema } from "./qa-inputs.js";
 import { type QAService, qaRunSchema } from "./qa-service.js";
+import { type QADispositionWorkflow, qaDispositionCandidateSchema } from "./review-workflow.js";
 
 export interface QAOptions extends ServerRuntimeOptions {
 	service?: QAService;
+	reviewWorkflow?: QADispositionWorkflow;
 	localPrincipal?: QAPrincipal;
 	close?: () => void;
 	timeoutMs?: number;
@@ -93,6 +97,7 @@ export function createQATemplate(options: QAOptions = {}): ServerTemplate {
 						],
 						rawConnectorFormats: [],
 						professionalCertification: false,
+						dispositionReviewConfigured: Boolean(options.reviewWorkflow),
 						reviewBoundary:
 							"Data/producing owner reviews defects, waivers, source repair, acceptance and publication outside these tools",
 					},
@@ -143,8 +148,88 @@ export function createQATemplate(options: QAOptions = {}): ServerTemplate {
 					};
 				},
 			},
+			...(options.reviewWorkflow ? reviewTools(options) : []),
 		],
 	};
+}
+
+function reviewTools(options: QAOptions): ServerTemplate["tools"] {
+	const workflow = options.reviewWorkflow!;
+	return [
+		{
+			name: "draft_disposition",
+			type: "query",
+			description:
+				"Derive a new exact source-bound disposition draft from a currently authorized immutable QA report. No human decision or change to original results.",
+			inputSchema: z
+				.object({ resultRef: qaRefSchema, proposal: qaDispositionProposalSchema, revision: z.string().min(1).max(128) })
+				.strict(),
+			handler: async (args, context, signal) => ({
+				success: true,
+				analysis: await bounded(options, signal, (active) =>
+					workflow.draft(args.resultRef, args.proposal, args.revision, principal(options, context), active),
+				),
+			}),
+		},
+		{
+			name: "get_context_source_metadata",
+			type: "query",
+			description:
+				"Verify current task, rule-profile and source metadata rights for this employee's context. No source bytes or authority grant are returned.",
+			inputSchema: z.object({ evidenceId: z.string().min(1).max(128), operation: z.enum(["read", "export"]) }).strict(),
+			handler: async (args, context, signal) => ({
+				success: true,
+				analysis: await bounded(options, signal, (active) =>
+					service(options).contextMetadata(args.evidenceId, principal(options, context), args.operation, active),
+				),
+			}),
+		},
+		{
+			name: "prepare_review",
+			type: "command",
+			description:
+				"Prepare an exact private QA disposition with current observed result, source, context and eval bindings. This cannot approve an exception or repair data.",
+			inputSchema: z
+				.object({
+					candidate: qaDispositionCandidateSchema,
+					expectedHead: z
+						.string()
+						.regex(/^[a-f0-9]{64}$/)
+						.nullable(),
+				})
+				.strict(),
+			handler: async (args, context, signal) => ({
+				success: true,
+				analysis: await bounded(options, signal, (active) =>
+					workflow.prepare(args.candidate, principal(options, context), args.expectedHead, active),
+				),
+			}),
+		},
+		{
+			name: "get_review_status",
+			type: "query",
+			description:
+				"Read the current scoped durable disposition checkpoint; current source and profile rights remain required.",
+			inputSchema: z.object({ reviewId: z.string().min(1).max(128).optional() }).strict(),
+			handler: async (args, context, signal) => ({
+				success: true,
+				analysis: await bounded(options, signal, () => workflow.status(args.reviewId, principal(options, context))),
+			}),
+		},
+		{
+			name: "record_disposition",
+			type: "command",
+			description:
+				"Record the exact qualified authenticated human-approved private disposition once. The original FAIL, UNTESTED or ERROR remains unchanged; no source correction, certification or release.",
+			inputSchema: reviewExecutionSchema,
+			handler: async (args, context, signal) => ({
+				success: true,
+				analysis: await bounded(options, signal, (active) =>
+					workflow.execute(args, principal(options, context), active),
+				),
+			}),
+		},
+	];
 }
 export const QAServer = function (options: QAOptions = {}) {
 	if (!new.target) throw new QAError("configuration");

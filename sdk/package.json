@@ -1,7 +1,7 @@
 {
 	"name": "@shaleyeah/sdk",
 	"version": "0.3.0",
-	"description": "Shared language for ShaleYeah agents and MCP servers — types, LLM client, base server, parsers",
+	"description": "Shared language for ShaleYeah agents and MCP servers \u2014 types, LLM client, base server, parsers",
 	"private": false,
 	"type": "module",
 	"main": "dist/index.js",
@@ -15,7 +15,7 @@
 	"scripts": {
 		"build": "tsc",
 		"test": "bash ../scripts/run-tests.sh",
-		"test:employee-review": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=dist/employee-review.js --test-coverage-include=dist/qualification.js --test-coverage-include=dist/private-json.js tests/private-json.test.ts ../servers/geowiz/tests/review-workflow.test.ts ../servers/reporter/tests/report-review.test.ts ../servers/reporter/tests/review-context.test.ts",
+		"test:employee-review": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=dist/employee-review.js --test-coverage-include=dist/qualification.js --test-coverage-include=dist/private-json.js tests/private-json.test.ts ../servers/geowiz/tests/review-workflow.test.ts ../servers/reporter/tests/report-review.test.ts ../servers/reporter/tests/review-context.test.ts ../servers/qa-server/tests/qa-review.test.ts ../servers/qa-server/tests/disposition-timeout.test.ts",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
 	},

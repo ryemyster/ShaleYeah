@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #542: keep the implemented LAS/CSV producer explicitly bound to source profile 0.1.0 when shared validation also recognizes JSON-source 0.2.0. Existing parsing and source authority are preserved.
+
+
 - #671: classify verified bytes with invalid declared format as permanent conflicting evidence rather than a retryable source outage. Provenance, current-grant rechecks, private snapshots, source rights and audit behavior are unchanged.
 
 - #574: isolated archive installation now consumes contracts 0.3.0. Connector/source profile and runtime behavior are unchanged; the new event profile stays separate.

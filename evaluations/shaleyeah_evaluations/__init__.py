@@ -120,6 +120,13 @@ class TrustedEvalPolicy:
                 "reporter.disclosures",
             }
             if self.role_id == "reporter"
+            else {
+                "qa.architecture_boundary",
+                "qa.no_unapproved_disposition",
+                "qa.tool_boundary",
+                "qa.observed_faithfulness",
+            }
+            if self.role_id == "quality-assurance"
             else set()
         )
 
@@ -210,7 +217,13 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("reporter.") and policy.role_id != "reporter":
             raise EvaluationError("policy_denied")
-        if policy.role_id != "reporter" and metric["id"] == "evidence.provenance" and metric["version"] == "2":
+        if metric["id"].startswith("qa.") and policy.role_id != "quality-assurance":
+            raise EvaluationError("policy_denied")
+        if (
+            policy.role_id != "reporter"
+            and metric["id"] == "evidence.provenance"
+            and metric["version"] == "2"
+        ):
             raise EvaluationError("policy_denied")
         if (
             policy.role_id == "reporter"
@@ -228,7 +241,8 @@ def load_profile(text, *, datasets, policy):
         ):
             raise EvaluationError("policy_denied")
         if (
-            metric["id"] in {"geologist.tool_boundary", "reporter.tool_boundary"}
+            metric["id"]
+            in {"geologist.tool_boundary", "reporter.tool_boundary", "qa.tool_boundary"}
             and set(metric["parameters"]["expectedCalls"]) != case_ids
         ):
             raise EvaluationError("invalid_parameters")

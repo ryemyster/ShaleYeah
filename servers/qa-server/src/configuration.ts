@@ -5,6 +5,7 @@ import {
 	createFileModelCredentialResolver,
 	createJsonlSink,
 	createModelRuntime,
+	createQualificationGuard,
 	EventEmitter,
 	readPrivateJson,
 	readPrivateReferenceModelConfig,
@@ -14,6 +15,7 @@ import { z } from "zod";
 import { QAError, QAInputs, qaEvidenceSchema, qaScopeSchema } from "./qa-inputs.js";
 import { QAService, qaGrantSchema } from "./qa-service.js";
 import { QAResultStore } from "./qa-store.js";
+import { parseQAReviewPolicy, QADispositionWorkflow, qaDispositionPolicySchema } from "./review-workflow.js";
 import { qaProjectionSchema } from "./tools/qa-data.js";
 import { qaProfileSchema } from "./tools/qa-rules.js";
 
@@ -48,6 +50,17 @@ const schema = z
 		localOperator: z.object({ uid: z.number().int().nonnegative(), subjectId: z.string().min(1).max(128) }).strict(),
 		sensitiveFiles: z.array(z.string().min(1).max(4096)).max(32),
 		modelsFile: z.string().min(1).max(4096).optional(),
+		review: z
+			.object({
+				policy: z.unknown(),
+				dispositionPolicy: qaDispositionPolicySchema,
+				localReviewer: z
+					.object({ uid: z.number().int().nonnegative(), subjectId: z.string().min(1).max(128) })
+					.strict(),
+				qualificationConfigFile: z.string().min(1).max(4096).optional(),
+			})
+			.strict()
+			.optional(),
 		retentionSeconds: z.number().int().min(1).max(86400).default(3600),
 	})
 	.strict();
@@ -65,6 +78,7 @@ export async function loadQABinding(file: string, options: { clock?: () => Date 
 			initial.auditFile,
 			...initial.sensitiveFiles,
 			...(initial.modelsFile ? [initial.modelsFile] : []),
+			...(initial.review?.qualificationConfigFile ? [initial.review.qualificationConfigFile] : []),
 		].every(path.isAbsolute) ||
 		path.dirname(initial.auditFile) !== initial.directory
 	)
@@ -81,6 +95,8 @@ export async function loadQABinding(file: string, options: { clock?: () => Date 
 			value.retentionSeconds !== initial.retentionSeconds ||
 			value.modelsFile !== initial.modelsFile ||
 			value.qualification !== initial.qualification ||
+			Boolean(value.review) !== Boolean(initial.review) ||
+			value.review?.qualificationConfigFile !== initial.review?.qualificationConfigFile ||
 			reviewJson(value.correlation) !== reviewJson(initial.correlation)
 		)
 			throw new QAError("configuration_changed");
@@ -90,6 +106,18 @@ export async function loadQABinding(file: string, options: { clock?: () => Date 
 			value.localOperator.subjectId !== initial.grant.subjectId
 		)
 			throw new QAError("access_denied");
+		if (value.review) {
+			const policy = parseQAReviewPolicy(value.review.policy);
+			if (
+				reviewJson(policy.task) !== reviewJson(active) ||
+				policy.requester.subjectId !== value.grant.subjectId ||
+				policy.qualification !== value.qualification ||
+				policy.requester.customerId !== active.scope.customerId ||
+				policy.requester.employeeId !== active.scope.employeeId ||
+				value.grant.operations.some((operation) => !policy.requester.scopes.includes(`qa:${operation}`))
+			)
+				throw new QAError("configuration");
+		}
 		return value;
 	};
 	const owner = { customerId: task.scope.customerId, employeeId: task.scope.employeeId };
@@ -125,6 +153,7 @@ export async function loadQABinding(file: string, options: { clock?: () => Date 
 	});
 	await current();
 	const store = new QAResultStore(initial.directory, { clock: options.clock });
+	let reviewWorkflow: QADispositionWorkflow | undefined;
 	try {
 		const emitter = new EventEmitter({
 			context: {
@@ -169,18 +198,50 @@ export async function loadQABinding(file: string, options: { clock?: () => Date 
 				);
 			},
 		});
+		if (initial.review)
+			reviewWorkflow = new QADispositionWorkflow(path.join(initial.directory, "review"), {
+				service,
+				inputs,
+				contentGuard,
+				clock: options.clock,
+				currentPolicy: async () => (await current()).review!.policy,
+				currentDispositionPolicy: async () => (await current()).review!.dispositionPolicy,
+				qualificationGuard: initial.review.qualificationConfigFile
+					? createQualificationGuard(initial.review.qualificationConfigFile)
+					: undefined,
+			});
 		return {
 			service,
+			reviewWorkflow,
+			reviewer: initial.review
+				? async () => {
+						const value = (await current()).review!;
+						const policy = parseQAReviewPolicy(value.policy);
+						if (
+							!process.getuid ||
+							process.getuid() !== value.localReviewer.uid ||
+							!policy.reviewerIds.includes(value.localReviewer.subjectId)
+						)
+							throw new QAError("authority_denied");
+						return { subjectId: value.localReviewer.subjectId, ...owner, scopes: ["qa:human-review"] };
+					}
+				: undefined,
 			localPrincipal: {
 				subjectId: initial.grant.subjectId,
 				...owner,
-				scopes: initial.grant.operations.map((operation) => `qa:${operation}`),
+				scopes: initial.review
+					? parseQAReviewPolicy(initial.review.policy).requester.scopes
+					: initial.grant.operations.map((operation) => `qa:${operation}`),
 			},
 			events: bindMCPEvents(emitter),
 			dataPath: initial.directory,
-			close: () => store.close(),
+			close: () => {
+				reviewWorkflow?.close();
+				store.close();
+			},
 		};
 	} catch (error) {
+		reviewWorkflow?.close();
 		store.close();
 		throw error;
 	}

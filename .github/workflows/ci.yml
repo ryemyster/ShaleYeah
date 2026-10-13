@@ -27,6 +27,18 @@ jobs:
         node-version: '22.x'
         cache: 'pnpm'
     - run: pnpm install --frozen-lockfile
+    - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+      with:
+        version: '0.12.21'
+        python-version: '3.12'
+    - name: Native QA employee lint, coverage and frozen qualification
+      working-directory: agents/quality-assurance
+      env:
+        QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+      run: |
+        uv run --locked ruff check app tests
+        uv run --locked pytest -q --cov=app --cov-fail-under=90
+        uv run --locked python tests/eval/run_fixture_evals.py --output /tmp/qa-employee-scorecard.json --code-revision "$QUALIFICATION_CODE_REVISION"
     - run: pnpm --dir contracts build
     - run: pnpm --dir sdk build
     - run: pnpm --dir servers/qa-server build
@@ -36,9 +48,11 @@ jobs:
     - name: Configured observed-result scorecard
       run: pnpm --dir servers/qa-server qualify --report /tmp/qa-scorecard.json
     - name: Independent source and installed archive
-      run: node servers/qa-server/scripts/check-extraction.mjs --report /tmp/qa-extraction.json
+      run: node servers/qa-server/scripts/check-extraction.mjs --bundle "$RUNNER_TEMP/qa-bundle" --report /tmp/qa-extraction.json
     - name: Installed non-root Node container
       run: node servers/qa-server/scripts/check-containers.mjs --report /tmp/qa-container.json
+    - name: Separate QA employee and tool images with protected review continuation
+      run: uv run --project evaluations --locked python servers/qa-server/scripts/check-employee-containers.py --bundle "$RUNNER_TEMP/qa-bundle" --report /tmp/qa-employee-containers.json
     - name: Publish QA decision metadata
       if: always()
       uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
@@ -48,6 +62,8 @@ jobs:
           /tmp/qa-scorecard.json
           /tmp/qa-extraction.json
           /tmp/qa-container.json
+          /tmp/qa-employee-scorecard.json
+          /tmp/qa-employee-containers.json
         if-no-files-found: error
         retention-days: 14
   pr-checks:
@@ -85,6 +101,8 @@ jobs:
     - run: pnpm turbo build
     - name: Install Reporter native runtime for protocol and context controls
       run: uv sync --project agents/reporter-agent --locked
+    - name: Install QA native runtime for observed-result context and disposition controls
+      run: uv sync --project agents/quality-assurance --locked
     - name: Workspace tests on the constrained runner
       run: pnpm turbo test --concurrency=2
     - run: pnpm --dir contracts check:isolation

@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #542: wire observed reports into a separate exact human disposition workflow and context metadata authority; installable qualification binds the packet, protected operator CLI stays outside MCP tools, and recorded failures remain immutable. Reject self approval, policy/source changes, expiry and post-timeout preparation. Correct canonical unknown finding evidence links so actual UNTESTED/ERROR reports preserve their reasons instead of failing record validation; rule algorithms and counts are unchanged.
+
+
 - #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
 
 - #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.

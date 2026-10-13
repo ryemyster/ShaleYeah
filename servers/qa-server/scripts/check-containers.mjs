@@ -28,7 +28,7 @@ try {
 	assert.equal(info.OSType, "linux"); assert.ok(info.Architecture && !info.ServerErrors?.length);
 	await run(process.execPath, ["scripts/check-extraction.mjs", "--bundle", bundle, "--report", path.join(temporary, "extraction.json")]);
 	await fs.copyFile(path.join(root, "Dockerfile"), path.join(bundle, "Dockerfile"));
-	await fs.writeFile(path.join(bundle, ".dockerignore"), "**\n!Dockerfile\n!npm/\n!npm/**\n!tool/\n!tool/package.json\n!tool/package-lock.json\n");
+	await fs.writeFile(path.join(bundle, ".dockerignore"), "**\n!Dockerfile\n!npm/\n!npm/**\n!tool/\n!tool/package.json\n!tool/package-lock.json\n!wheels/\n!wheels/**\n!requirements-tool.txt\n");
 	await run("docker", ["build", "--platform", "linux/amd64", "--tag", tag, bundle]); built = true;
 	const image = JSON.parse(await run("docker", ["image", "inspect", tag]))[0];
 	assert.equal(image.Config.User, "10001:10001"); assert.ok(/^sha256:[a-f0-9]{64}$/.test(image.Id));

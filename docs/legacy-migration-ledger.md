@@ -41,7 +41,7 @@ Local file/import verification supplies the conclusions below. Context Engine
 investigations returned partial evidence, including a narrower retry; failed
 searches were not treated as proof of no consumers.
 
-## Four remaining TypeScript employees
+## Original TypeScript employees and remaining adapters
 
 Each `src/agent/index.ts` contains role configuration, tool mappings, prompts and
 a copied task loop. These files total **2,505 lines**: 656 Economist, 655 Reservoir
@@ -53,7 +53,7 @@ not a claim that every line is duplicated or should disappear.
 | [economist/src/agent/index.ts](../agents/economist/src/agent/index.ts), [econobot-client.ts](../agents/economist/src/agent/econobot-client.ts) | `src/index.ts`, package start script, `tests/agent.test.ts`, `tests/mcp-client.test.ts`; loop imports SDK runtime/context/poller/compensation/LLM | Adapter → delete in [#680](https://github.com/ryemyster/ShaleYeah/issues/680), after ADK employee/review/context/eval/tool acceptance; economics repair [#711](https://github.com/ryemyster/ShaleYeah/issues/711) first |
 | [reservoir-engineer/src/agent/index.ts](../agents/reservoir-engineer/src/agent/index.ts), [curve-smith-client.ts](../agents/reservoir-engineer/src/agent/curve-smith-client.ts) | Same package entry/start/tests and SDK dependency pattern | Adapter → delete in [#681](https://github.com/ryemyster/ShaleYeah/issues/681); type-curve repair [#712](https://github.com/ryemyster/ShaleYeah/issues/712) first |
 | Reporter custom TypeScript loop and private MCP wrapper | Deleted in #541; [ADK role factory](../agents/reporter-agent/app/agent.py) uses installable helpers | Source-faithful report assembly and executing-backend human publication review replace the displaced runtime |
-| [quality-assurance/src/agent/index.ts](../agents/quality-assurance/src/agent/index.ts), [qa-server-client.ts](../agents/quality-assurance/src/agent/qa-server-client.ts) | Same entry/start/tests; runtime and endpoint factory remain exported | Adapter → delete in [#542](https://github.com/ryemyster/ShaleYeah/issues/542), using charter [#538](https://github.com/ryemyster/ShaleYeah/issues/538); preserve independent data-quality tools |
+| QA copied TypeScript loop and private client | Deleted in #542; [native QA role](../agents/quality-assurance/app/agent.py) uses installable context/provider/review helpers | Source-bound observed reports, configured performance grading and exact owner dispositions replace the displaced employee surface; retained data-rule algorithms remain in qa-server |
 
 For **each of these four packages**, its owning PR must remove or replace
 `src/index.ts`, `src/agent/`, `package.json`, `tsconfig.json`, `biome.json`, the
@@ -66,7 +66,7 @@ Update workspace lock entries as dependencies actually disappear.
 
 #722 mechanically moves the three remaining private TypeScript clients to the
 explicit modern protocol; their copied employee loops and deletion owners stay
-with #680, #681 and #542. The protocol upgrade does not qualify those employee
+with #680 and #681. The protocol upgrade does not qualify those employee
 implementations. It also removes the nine ADK callers' copied ClientSession,
 initialization and serializer implementations in favor of the installed shared
 client. Their tool names/argument maps and role brains are retained; own employee

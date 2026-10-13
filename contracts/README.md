@@ -149,9 +149,14 @@ required fields fail rather than gaining silent defaults.
 
 ## Versions and compatibility
 
-Every record declares exactly `contractVersion: "0.1.0"`. Package versions track
+Employee records and LAS/CSV connector records declare `contractVersion: "0.1.0"`.
+JSON source artifacts explicitly declare `contractVersion: "0.2.0"` and use the
+[JSON-source profile](shaleyeah_contracts/schemas/data-connectors-0.2.0.schema.json).
+The profile uses the same scope/evidence fields and content-hash semantics; it
+adds no employee fields or raw JSON connector implementation. Package versions track
 public API releases; each schema profile has its own version. Package 0.3.0
-supports employee 0.1.0, connector 0.1.0 and the separately selected event 0.1.0 profile. Artifact/task revisions, policy versions and eval-profile
+supports employee 0.1.0, LAS/CSV connector 0.1.0, explicitly selected JSON source
+0.2.0 and the separately selected event 0.1.0 profile. Artifact/task revisions, policy versions and eval-profile
 versions are separate; changing an input or work product is not a schema upgrade.
 
 | Change | Rule |
@@ -162,8 +167,9 @@ versions are separate; changing an input or work product is not a schema upgrade
 | Add required fields, remove/rename fields, change units/meaning or accepted enums | Breaking; publish a new version, migrate consumers explicitly and retain old fixtures during any supported transition |
 
 Before 1.0, contract changes use a new minor version; from 1.0 onward, breaking
-changes use a new major version. This implementation supports only 0.1.0.
-Any other supplied string version fails with `unsupported_version`; there is no
+changes use a new major version. Source validation selects exactly 0.1.0 for existing records or 0.2.0 for JSON
+source artifacts; employee validation selects only 0.1.0. Unsupported string
+versions fail with `unsupported_version`; there is no
 automatic downgrade, coercion or latest-version selection. A missing/non-string
 version is an invalid contract.
 

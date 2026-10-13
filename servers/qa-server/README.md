@@ -6,11 +6,12 @@ well record, or a disagreement with another employee's result. MCP (Model
 Context Protocol) lets an agent or another client call these tools.
 
 This server performs **observed checks on supplied data**. The QA employee uses
-these results to help its human colleague review defects. The employee's ADK
-(Python Agent Development Kit) workflow is a separate package and delivery step.
+these results to help its human colleague review defects. The [native ADK/Python employee](../../agents/quality-assurance/README.md) is an
+independently installed package; ADK means Agent Development Kit.
 A data or producing owner decides whether to repair a source, waive a defect,
-accept an assessment, or publish a report. These tools create private drafts;
-they provide no approval, waiver, repair or publication action.
+accept an assessment, or publish a report. An optional configured review workflow records exact owner-approved private
+dispositions. Original failed/untested/error observations stay unchanged; source
+repair, certification and external publication remain outside this tool surface.
 
 ## Run a synthetic example
 
@@ -41,6 +42,10 @@ supports discovery; data checks remain blocked.
 | `run_quality_tests` | Evaluate the authorized task with its approved profile and save an immutable private result |
 | `generate_quality_report` | Read that exact recorded result under current source export rights |
 | `triage_quality_result` | Request an optional, unreviewed BYO-model note; model failure leaves the observed result intact |
+| `get_context_source_metadata` | Verify current scoped context rights without returning source bytes; available with review configuration |
+| `draft_disposition` | Derive exact work and policy bindings from a current recorded result, before human review |
+| `prepare_review` / `get_review_status` | Prepare and read the exact durable disposition checkpoint; available with review configuration |
+| `record_disposition` | Record only a qualified current human-approved private disposition once; available with review configuration |
 
 Supported inputs are `normalized-qa-data@0.1.0` and canonical
 `work-product@0.1.0`. Raw LAS logs, CSV files, connector responses and petroleum
@@ -79,3 +84,8 @@ refine the initial research-assisted labels through review.
 See [how it works](docs/HOW_IT_WORKS.md), [architecture](docs/ARCHITECTURE.md),
 [deployment](docs/DEPLOYMENT.md), [local testing](docs/LOCAL_TESTING.md), and
 [development](docs/DEVELOPMENT.md) for the supported boundaries and checks.
+
+The separate enrolled operator uses `examples/review.mjs` to inspect and decide
+a packet. Human decision tools are never exposed to the employee over MCP.
+Current qualification and one-time authority bind exact work, source, context,
+rule/result and disposition-policy revisions. See [deployment](docs/DEPLOYMENT.md).

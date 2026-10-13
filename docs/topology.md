@@ -428,3 +428,10 @@ scoped state, providers/events, optional native ADK and protected continuation.
 Role code owns persona and tool mappings; the helper imports no employee. The
 TypeScript SDK review core accepts trusted role-owned source/action/schema
 adapters. Reporter business artifacts stay separate from the LAS/CSV connector.
+
+QA adoption selects an explicit JSON-source artifact profile 0.2.0 for normalized
+operator exports. Existing LAS/CSV source and employee work/context profiles
+remain 0.1.0. Scope, exact-byte evidence, current source rights and human review
+retain their own boundaries; format metadata alone grants no access or parsing
+capability. The native QA unit uses installed helpers and independently qualified
+source/archive/container checks around that selected profile.

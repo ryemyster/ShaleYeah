@@ -327,7 +327,7 @@ export function createConnectorRuntime(value: unknown, options: ConnectorOptions
 					licenseNotes: source.licenseNotes,
 					revisionOrigin: raw.revisionOrigin,
 				});
-				if (artifact.kind !== "source-artifact") reject("invalid_contract");
+				if (artifact.kind !== "source-artifact" || artifact.contractVersion !== "0.1.0") reject("invalid_contract");
 				await emit("retrieved", input, principal, null, execution);
 				const result = { artifact, bytes };
 				issued.set(result, JSON.stringify(artifact));
