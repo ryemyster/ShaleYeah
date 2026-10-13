@@ -203,15 +203,22 @@ async def main():
         finally:
             await runtime.close()
         return
-    await catalog.put_task(task)
-    await catalog.put_source(settings["sourceArtifact"])
-    await catalog.put_work(work)
-    await catalog.checkpoint(
-        work_refs=[work["artifact"]],
-        pending_review_refs=[{"id": "review.pending", "revision": "r1"}],
-        questions=["Owner must review this bounded disposition; original FAIL remains"],
-        conflicts=[],
-    )
+    if settings.get("mode") == "resume":
+        checkpoint = await catalog.current_checkpoint()
+        assert checkpoint["workRefs"] == [work["artifact"]]
+        assert checkpoint["pendingReviewRefs"] == [
+            {"id": settings["reviewId"], "revision": "r1"}
+        ], "A restarted employee must retain the actual pending owner review"
+    else:
+        await catalog.put_task(task)
+        await catalog.put_source(settings["sourceArtifact"])
+        await catalog.put_work(work)
+        await catalog.checkpoint(
+            work_refs=[work["artifact"]],
+            pending_review_refs=[],
+            questions=["Owner must review this bounded disposition; original FAIL remains"],
+            conflicts=[],
+        )
     runtime = await QARuntime.open(catalog, models, **options)
     review_context = await runtime.review_context(work)
     assert review_context["workingArtifactRefs"] == [work["artifact"]]
