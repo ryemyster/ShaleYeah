@@ -41,7 +41,7 @@ jobs:
       run: node servers/qa-server/scripts/check-containers.mjs --report /tmp/qa-container.json
     - name: Publish QA decision metadata
       if: always()
-      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
       with:
         name: qa-observed-qualification-${{ github.run_id }}-${{ github.run_attempt }}
         path: |
