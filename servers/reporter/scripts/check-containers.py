@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 import time
+import traceback
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from secrets import token_urlsafe
@@ -375,6 +376,7 @@ def main():
                     {
                         "version": "0.1.0",
                         "required": True,
+                        "timeoutMs": 5000,
                         "context": {
                             "runId": "container-" + provider,
                             "traceId": "1" * 32,
@@ -549,6 +551,11 @@ def main():
         subprocess.TimeoutExpired,
     ) as error:
         decision["failures"].append(stage)
+        decision["failureLocation"] = [
+            {"function": frame.name, "line": frame.lineno}
+            for frame in traceback.extract_tb(error.__traceback__)
+            if Path(frame.filename).name == "check-containers.py"
+        ]
         print(
             f"Reporter container qualification blocked at {stage}: {type(error).__name__}",
             file=sys.stderr,
