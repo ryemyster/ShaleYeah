@@ -29,3 +29,10 @@ The human owner uses the separate enrolled review interface to inspect, request
 changes, reject or approve that packet. `get_review_status` supplies a durable
 checkpoint; `release_report` commits its exact grant to private reviewed reports
 once. Source, task, template or qualification changes block continuation.
+
+The standalone extraction check installs its independent MCP consumer from an
+explicit production dependency. It removes development packages and verifies
+the consumer can still import the maintained client before container checks.
+Test runners remain development dependencies. This qualifies the fixture
+connection environment; it does not add a client dependency to the tool server
+or replace its source and human-review boundaries.

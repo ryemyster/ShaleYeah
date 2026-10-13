@@ -189,7 +189,8 @@ try {
 		JSON.stringify({
 			private: true,
 			type: "module",
-			devDependencies: { tsx: "4.21.0", "@modelcontextprotocol/client": "2.3.1" },
+			devDependencies: { tsx: "4.21.0" },
+			dependencies: { "@modelcontextprotocol/client": "2.3.1" },
 		}),
 	);
 	await run(
@@ -257,6 +258,9 @@ try {
 	passed("installed-tool");
 	passed("source-context-review-restart");
 	passed("source-revocation");
+	await run("npm", ["ci", "--ignore-scripts", "--omit=dev", "--no-audit", "--no-fund"], tool);
+	await run(process.execPath, ["--input-type=module", "-e", 'await import("@modelcontextprotocol/client")'], tool);
+	passed("production-independent-client");
 	for (const [id, file] of [
 		["reporter", artifacts["@shaleyeah/server-reporter"]],
 		[

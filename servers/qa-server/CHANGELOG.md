@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
+
 - #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.
 
 ### Changed

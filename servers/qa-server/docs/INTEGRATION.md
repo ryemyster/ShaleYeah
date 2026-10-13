@@ -65,3 +65,10 @@ cannot pass new rules, grants, thresholds, approval flags, output paths or scrip
 Changing source content requires a new source revision/hash and task references;
 the resulting artifact has a new immutable reference. Previous artifacts are
 unchanged and cannot be exported under mismatched current authority.
+
+The standalone extraction check installs its independent MCP consumer from an
+explicit production dependency. It removes development packages and verifies
+the consumer can still import the maintained client before container checks.
+Test runners remain development dependencies. This qualifies the fixture
+connection environment; it does not add a client dependency to the tool server
+or replace its source and human-review boundaries.

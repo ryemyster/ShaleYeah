@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
+
 - #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.
 
 - #722: complete the retained TypeScript connection sweep with private MCP credential files, bounded discovery and 1 MiB responses, redirect refusal and safe permanent post-dispatch/tool-failure errors; preserve all three role brains until their owning employee migrations.
