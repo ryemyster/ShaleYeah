@@ -107,7 +107,8 @@ jobs:
           version: '0.12.21'
           python-version: '3.12'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm turbo build --filter=@shaleyeah/server-reporter...
+      - name: Build Reporter and the existing Geowiz regression service
+        run: pnpm turbo build --filter=@shaleyeah/server-reporter... --filter=@shaleyeah/server-geowiz...
       - name: Reporter Python authoring and coverage controls
         working-directory: agents/reporter-agent
         run: |
