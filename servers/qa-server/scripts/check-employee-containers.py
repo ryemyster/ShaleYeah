@@ -24,6 +24,9 @@ def invoke(*command, expected=0, timeout=600):
         check=False,
     )
     if result.returncode != expected:
+        print(f"Subprocess exit: {result.returncode}; expected: {expected}", file=sys.stderr)
+        for code in sorted(set(re.findall(r"\bERR_[A-Z_]{1,64}\b", result.stderr))):
+            print(f"Subprocess Node code: {code}", file=sys.stderr)
         for line in result.stderr.splitlines():
             if re.fullmatch(r"Fixture client blocked: [A-Za-z]+Error/[-A-Z0-9_a-z]{1,64}", line):
                 print(line, file=sys.stderr)
