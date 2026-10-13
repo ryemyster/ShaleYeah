@@ -20,9 +20,11 @@ do not establish the charter's job quality or authenticated backend authority.
 | `quality-assurance.generate_quality_report` | `deterministic` | No | `qa-generate-report` |
 
 Both employee tools declare `read:qa` and currently leave tool approval off.
-Both server handlers can write a JSON artifact when `outputPath` is supplied;
-they are not entirely read-only. Direct MCP identity/scopes, approved output
-roots and protected actions still require qualification under #678/#670/#716.
+The observed QA backend accepts exact task/profile/result references, enforces
+`qa:read`, `qa:run` and `qa:report` plus source grants, and stores only private
+immutable draft results. It exposes no arbitrary output path. The current
+employee argument/scopes do not yet match that boundary; use the server directly
+until #542 completes employee integration.
 The charter permits scoped draft artifacts and requires authenticated review
 for source edits, critical waivers, final acceptance and external publication.
 
@@ -34,10 +36,10 @@ The qa-server and the quality-assurance agent expose the same underlying functio
 |---------|-------------------|---------------------------|
 | Transport | MCP over stdio or configured HTTP | AgentRuntime delegates through an HTTP MCP client |
 | Routing | None — receives tool calls | Routes to `standard-analysis` or `deterministic` model |
-| HITL | None | Configured (currently off for all tools; can be enabled per tool) |
-| Evals | None | Schema validation, secret redaction, confidence scoring |
+| HITL | No waiver/acceptance/publication action; data owner reviews elsewhere | Configured (currently off for all tools; can be enabled per tool) |
+| Evals | Configured observed-rule fixtures and detection scorecard | Schema validation, secret redaction, confidence scoring |
 | Memory | No employee working context | `@shaleyeah/sdk` memory namespace; durable/scoped context remains unqualified |
-| Scopes | None | `read:qa` required on all calls |
+| Scopes | Authenticated task/profile/source grants and `qa:*` scopes | `read:qa` required on all calls |
 | Autonomy | Always executes | `"reviewed"` — can be changed to `"assistive"` or `"autonomous"` |
 
 ## Execution path
@@ -68,10 +70,10 @@ requireForMemoryPromotion: true   — configured promotion policy; current task-
 ```
 
 The operator can configure capability labels through `AgentRuntimeConfig.modelRouting`.
-Current defaults select Anthropic models; server synthesis uses the SDK's LLM
-client. This is not yet a qualified bring-your-own-provider path through both
-employee and server (#669/#542). `deterministic` reporting currently means a
-template with unavailable telemetry, not measured rule results (#716).
+Current employee defaults select Anthropic models; its provider path still
+needs #542 qualification. The server uses deterministic observed checks and
+recorded reports; optional triage uses an explicit shared BYO synthesis profile
+and native provider adapter, without changing the verdict.
 
 ## Memory policy
 

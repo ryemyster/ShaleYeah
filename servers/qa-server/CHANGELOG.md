@@ -2,6 +2,32 @@
 
 ## [Unreleased]
 
+### Changed
+
+- #716: deterministic completeness, correctness, units, identity, duplication,
+  freshness, provenance and contradiction checks on declared normalized and
+  canonical-work profiles; located defects, partial/untested/error states,
+  measured denominators and bounded detail.
+- Recheck current task, approved profile hash, source byte/revision/projection,
+  recipient read/export rights and secret policy; immutable scoped private
+  SQLite artifacts retain original expiry and survive restart.
+- Reports consume exact recorded results. Optional configured native-model
+  triage stays unreviewed and cannot waive, repair, approve or change a verdict.
+- The independent build invokes its declared local compiler directly, preserving
+  npm-installed archives rather than triggering a pnpm reinstall. A compiler
+  regression covers execution with no package manager available.
+- Package-owned build/settings, declared dependencies, synthetic 22-case
+  scorecards, actual generic HTTP/stdio controls, independent source/archive
+  verification and installed non-root Node container CI.
+
+### Removed
+
+- Threshold-only PASS fallback, target-count coverage estimates, verdict-derived
+  100% passRate, fixed confidence, fuzzy identity, arbitrary output paths and
+  unobserved report assessment claims.
+- Displaced validation/reporting helpers and tests rewarding fabricated success.
+  QA TypeScript employee migration and its private wrapper remain owned by #542.
+
 ## [0.2.0] — 2026-06-10
 
 ### Added

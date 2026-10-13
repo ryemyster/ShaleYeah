@@ -65,6 +65,8 @@ The reference fleet covers 14 business concerns:
 Each corresponding agent lives under `agents/<role>/` when implemented or migrated.
 The [Reporter employee](agents/reporter-agent/README.md) prepares source-linked
 private reports with an exact human publication gate and configurable scorecard.
+The [QA server](servers/qa-server/README.md) runs configurable observed data
+checks and reports their recorded results, with optional unreviewed model notes.
 
 ## Start Here
 

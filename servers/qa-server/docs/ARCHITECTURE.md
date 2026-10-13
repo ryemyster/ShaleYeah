@@ -1,41 +1,41 @@
-# Architecture — @shaleyeah/server-qa
+# Architecture
 
-## Role
+The operating mode is **shared contract/process only**: deterministic QA tools
+with an optional model note. There is no employee reasoning loop or coordinator
+inside the server. It is independently buildable and extractable with declared
+SDK and business-contract archives.
 
-Tier 1 MCP tool server. Quality assurance tooling — runs validation suites against other servers and generates quality reports. Paired with the `quality-assurance` agent (port 4014).
+`server.ts` defines the MCP interface and bounds each request's time.
+`QAService` checks the current authenticated principal, task, profile approval
+and source rights. `QAInputs` resolves references through a host-owned authority,
+checks exact scope/revision/URI/hash and scans source content. `decodeQAData`
+validates supported records and maps defect locations to original source fields.
+`evaluateQARules` executes the eight allowlisted rule types. `QAResultStore`
+keeps private immutable SQLite artifacts; reports read those artifacts rather
+than constructing a replacement assessment.
 
-## Tool inventory
+The pure evaluator grants no access. Its callers must verify source authority;
+the public tools use `QAService`, which performs that verification. The service
+rechecks task/profile/source bindings after awaited scanning/audit/model work.
+Changes block stale reuse. A profile grant includes the SHA-256 of its parsed
+JSON, so changing rules under an old approval is denied after restart too.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `run_quality_tests` | LLM | ✅ `callLLM` | Run quality test suite against specified servers |
-| `generate_quality_report` | LLM | ✅ `callLLM` | Quality report with status, issues, recommendations |
+Work products use the existing closed 0.1.0 business envelope. Detailed domain
+results are separate private artifacts. Findings are measured only when an
+observed pass/fail has evidence; unresolved checks retain unknown basis and
+explicit reasons. Review is always `unreviewed`. The data/producing owner owns
+source repair, consequential waiver, final acceptance and publication outside
+this tool surface. Model notes cannot execute those actions.
 
-## LLM + fallback pattern
+Storage uses a private owner directory and file, hashes its bodies, scopes refs
+by customer/asset/task/employee, and preserves previous artifacts until expiry.
+Original source-grant expiry caps result retention; extending a grant does not
+extend an existing artifact. Expired records are removed on subsequent store
+access. A stopped process cannot provide scheduled deletion; operators manage
+backups and offline cleanup. The file/directory identity is checked on access.
 
-Both tools call `callLLM()` for synthesis. Falls back to `deriveDefaultQAResult()` if the API is unavailable — `accuracyThreshold >= 0.99` with multiple servers produces "WARNING"; `0.95` with one server produces "PASS".
-
-## Key exports
-
-`deriveDefaultQAResult(servers, accuracyThreshold)` — deterministic fallback, exported for anti-stub testing.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3014`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: run_quality_tests { servers, accuracyThreshold }
-  → callLLM(quality assessment prompt)
-  ↘ fallback: deriveDefaultQAResult(servers, accuracyThreshold)
-  → Return: { status, issues, recommendations }
-```
-
-## Dependencies
-
-```
-@shaleyeah/server-qa
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
-```
+MCP requests use the shared identity, scope, correlation, error and event
+adapters. Host audit export is required. Logs contain metadata and hashes rather
+than source rows or model prose. Private operator exports attest upstream rights;
+a hosted deployment must inject its authenticated live authorities and verifier.
+The operating system user who controls a local export controls its attestation.
