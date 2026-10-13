@@ -196,3 +196,8 @@ events; an unexecuted model is not logged as a success. Scoped export/restore
 preserves original expiry and current deletion markers. The adapter has a single
 native writer, owned private files and explicit expiry purge. Business schemas
 remain independent of the framework; no warehouse or coordinator is introduced.
+
+The context, provider, event, native runner and protected-review files are thin
+Geologist facades over the installed shared employee helpers. The Geologist
+factory and domain tool mappings remain in this package; the stored namespace
+and reference review behavior are preserved. No other employee is imported.

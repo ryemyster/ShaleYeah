@@ -1,34 +1,10 @@
-# Dependencies
-node_modules/
-
-# Build output
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 dist/
-*.tsbuildinfo
-
-# Environment
-.env
-.env.*
-!.env.example
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/
-
-# Coverage
-coverage/
-
-# Test artifacts
-tests/temp/
-
-# Cache
-.turbo/
+build/
+artifacts/

@@ -116,3 +116,7 @@ It binds one approved assignment with a separate private JSONL destination.
 A different deployment injects a trusted SDK event binding/export sink; it must
 qualify its own durability and retention. The launcher remains portable local
 reference evidence, not a mandatory cloud/SIEM integration.
+
+The npm SDK archive includes the shared review core and qualification launcher.
+The tool uses the portable evaluations/contracts Python environment for
+qualification; it does not install an employee brain or native ADK.

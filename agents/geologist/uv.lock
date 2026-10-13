@@ -3024,6 +3024,50 @@ dev = [
 ]
 
 [[package]]
+name = "shaleyeah-employee-runtime"
+version = "0.1.0"
+source = { editable = "../../sdk/employee" }
+dependencies = [
+    { name = "google-genai" },
+    { name = "rfc8785" },
+    { name = "shaleyeah-contracts" },
+    { name = "shaleyeah-evaluations" },
+    { name = "shaleyeah-mcp-client" },
+]
+
+[package.optional-dependencies]
+adk = [
+    { name = "anthropic" },
+    { name = "google-adk", extra = ["db", "gcp"] },
+    { name = "google-cloud-aiplatform" },
+    { name = "httpx2" },
+    { name = "sqlalchemy", extra = ["asyncio"] },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "anthropic", marker = "extra == 'adk'", specifier = "==1.13.0" },
+    { name = "google-adk", extras = ["db", "gcp"], marker = "extra == 'adk'", specifier = "==2.4.0" },
+    { name = "google-cloud-aiplatform", marker = "extra == 'adk'", specifier = "==1.160.0" },
+    { name = "google-genai", specifier = "==2.11.0" },
+    { name = "httpx2", marker = "extra == 'adk'", specifier = "==2.13.1" },
+    { name = "rfc8785", specifier = "==0.1.4" },
+    { name = "shaleyeah-contracts", editable = "../../contracts" },
+    { name = "shaleyeah-evaluations", editable = "../../evaluations" },
+    { name = "shaleyeah-mcp-client", editable = "../../sdk/python" },
+    { name = "sqlalchemy", extras = ["asyncio"], marker = "extra == 'adk'", specifier = "==2.1.4" },
+]
+provides-extras = ["adk"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=9,<10" },
+    { name = "pytest-asyncio", specifier = ">=1,<2" },
+    { name = "pytest-cov", specifier = ">=7,<8" },
+    { name = "ruff", specifier = ">=0.15,<1" },
+]
+
+[[package]]
 name = "shaleyeah-evaluations"
 version = "0.3.0"
 source = { editable = "../../evaluations" }
@@ -3060,6 +3104,7 @@ dependencies = [
     { name = "httpx2" },
     { name = "rfc8785" },
     { name = "shaleyeah-contracts" },
+    { name = "shaleyeah-employee-runtime", extra = ["adk"] },
     { name = "shaleyeah-evaluations" },
     { name = "shaleyeah-mcp-client" },
     { name = "sqlalchemy", extra = ["asyncio"] },
@@ -3094,6 +3139,7 @@ requires-dist = [
     { name = "rfc8785", specifier = "==0.1.4" },
     { name = "ruff", marker = "extra == 'lint'", specifier = ">=0.4.6,<1.0.0" },
     { name = "shaleyeah-contracts", editable = "../../contracts" },
+    { name = "shaleyeah-employee-runtime", extras = ["adk"], editable = "../../sdk/employee" },
     { name = "shaleyeah-evaluations", editable = "../../evaluations" },
     { name = "shaleyeah-mcp-client", editable = "../../sdk/python" },
     { name = "sqlalchemy", extras = ["asyncio"], specifier = "==2.1.4" },

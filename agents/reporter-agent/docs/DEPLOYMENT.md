@@ -1,19 +1,23 @@
-# Deployment — @shaleyeah/reporter-agent
+# Running Reporter
 
-> **Status: Planned** — Not yet implemented. See [#368](https://github.com/ryemyster/ShaleYeah/issues/368).
+Reporter is a portable Python package. Install its declared dependencies with
+`uv sync --locked` in this directory. The development manifest selects no hosted
+deployment target. `agents-cli info` identifies the package; it does not deploy it.
 
-## Environment variables (planned)
+For local development, provide private model profiles and a separately configured
+MCP credential, then use native ADK development tooling against `app`. Development
+sessions use the CLI's in-memory behavior. A durable embedding host opens
+`ReporterRuntime` with a scoped `ContextCatalog`, current authority callbacks and
+an owned private persistent directory. Keep this directory when restarting.
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `REPORTER_MCP_URL` | No | `http://localhost:3009` | reporter server URL |
-| `PORT` | No | `4009` | Agent endpoint port |
-| `REPORT_OUTPUT_DIR` | No | `/tmp/reports` | Where exported reports are written |
+The employee can connect to an external compatible MCP service through
+`REPORTER_MCP_URL`. The tool service must enforce source rights and exact human
+review. Production ingress, TLS, issuer verification, backup/restore and live
+model/job quality require their own qualification. No cloud deployment or public
+image release is supplied by the development manifest.
 
-## Pair ports
-
-| Service | Port |
-|---------|------|
-| reporter (Tier 1) | 3009 |
-| reporter-agent (Tier 2) | 4009 |
+The wheel includes public role evaluation configuration under `app/reference/`.
+Build clean source and qualify the separate employee/tool container pair using
+the [reference package guide](../../../docs/reference-packages.md#reporter-employee-and-tools).
+The resulting report limits support to its tested revision and architecture;
+deployment recipes alone are not execution evidence.

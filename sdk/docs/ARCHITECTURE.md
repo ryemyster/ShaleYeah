@@ -139,7 +139,7 @@ invocation completion is not completed or accepted employee work.
 
 Migration: factory analysis/file outcomes previously appeared beneath an extra
 outer `data`. Read their preserved `analysis`/`data` and metadata directly now.
-The four remaining TypeScript clients and nine other Python wrappers read the
+The three remaining TypeScript clients and nine other Python wrappers read the
 retained `content` blocks without assuming that nesting in source. They are not
 qualified fleet clients: owners in the [migration ledger](../../docs/legacy-migration-ledger.md)
 must adopt validation/status handling before release. The Geologist wrapper
@@ -222,3 +222,12 @@ records failure without exception prose. Each emitter has its own stream/sequenc
 run/trace/scope/task revision and causal parent/span IDs link producers. The
 [portable event contract](../../docs/employee-events.md) supplies bounded metadata
 and redaction; no role, ADK or SIEM dependency enters that contract.
+
+## Shared employee and review adapters
+
+`sdk/employee` is an independently installable Python helper package. Geologist
+and Reporter retain their role factories while using scoped state, providers,
+events and native adapters from that package. It imports no employee brain.
+TypeScript `employee-review.ts` shares exact revision/authority/qualification
+state and SQLite continuation. Role-owned adapters bind schemas, scopes, sources,
+action/destination and candidate checks; no model argument selects those adapters.

@@ -1,0 +1,48 @@
+[project]
+name = "shaleyeah-employee-runtime"
+version = "0.1.0"
+description = "Scoped employee state and replaceable native runtime adapters"
+requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
+dependencies = [
+  "shaleyeah-contracts==0.3.0",
+  "rfc8785==0.1.4",
+  "google-genai==2.11.0",
+  "shaleyeah-mcp-client==0.2.0",
+  "shaleyeah-evaluations==0.3.0",
+]
+
+[project.optional-dependencies]
+adk = [
+  "google-adk[db,gcp]==2.4.0",
+  "google-cloud-aiplatform==1.160.0",
+  "anthropic==1.13.0",
+  "httpx2==2.13.1",
+  "sqlalchemy[asyncio]==2.1.4",
+]
+
+[tool.uv.sources]
+shaleyeah-contracts = { path = "../../contracts", editable = true }
+shaleyeah-mcp-client = { path = "../python", editable = true }
+shaleyeah-evaluations = { path = "../../evaluations", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=9,<10", "pytest-asyncio>=1,<2", "pytest-cov>=7,<8", "ruff>=0.15,<1"]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["shaleyeah_employee"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

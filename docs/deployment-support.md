@@ -51,6 +51,13 @@ separate unit recipes and required image/journey checks. No hosted manifests or
 public image releases are supplied. Later role PRs prove their own units; source
 shape, health or an unexecuted recipe cannot expand this matrix's support claims.
 
+Reporter has its own [export and container qualification commands](reference-packages.md#reporter-employee-and-tools)
+and required CI job. It handles reviewed business artifacts with current sharing
+and separate evidence-metadata permissions. Its source/installed checks cover
+source-backed native context and private publication review; container claims
+require its own passing image/journey report. It does not expand the geological
+raw-format or hosted-deployment support claims above.
+
 ## Run the current reference locally
 
 These steps use a **checkout**, not an extracted package. Use synthetic fixtures

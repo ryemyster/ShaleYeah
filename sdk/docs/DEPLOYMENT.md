@@ -60,3 +60,7 @@ and per-producer JSONL outside the repository in owned private files. Use
 `loadJsonlEmitter` and pass `bindMCPEvents(emitter)` as runtime `events`. A host
 can select a trusted emitter for each task; client metadata never selects its own
 authority. See [ordered setup and recovery limits](../../docs/employee-events.md).
+
+Employee deployments install the declared `shaleyeah-employee-runtime` helper
+wheel along with contracts, MCP client and evaluations. Native ADK is an optional
+extra; shared business records remain independent of the native runtime.

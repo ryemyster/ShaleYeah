@@ -49,6 +49,24 @@ _MINIMUM = frozenset(
     }
 )
 
+_ROLE_MINIMUM = {
+    "geologist": _MINIMUM,
+    "reporter": frozenset(
+        {
+            "contract.schema",
+            "evidence.provenance",
+            "evidence.freshness",
+            "assumptions.labeling",
+            "authority.boundary",
+            "reporter.architecture_boundary",
+            "reporter.no_unapproved_publication",
+            "reporter.tool_boundary",
+            "reporter.source_faithfulness",
+            "reporter.disclosures",
+        }
+    ),
+}
+
 
 def _object(properties, required=None):
     return {
@@ -65,7 +83,7 @@ POLICY_SCHEMA = _object(
         "kind": {"const": "qualification-policy"},
         "id": _ID,
         "revision": _VERSION,
-        "roleId": {"const": "geologist"},
+        "roleId": {"enum": ["geologist", "reporter"]},
         "profile": _object(
             {
                 "id": _ID,
@@ -130,21 +148,32 @@ def load_qualification_policy(value):
     if len(canonical.encode()) > 65536 or not _POLICY.is_valid(value):
         raise EvaluationError("invalid_qualification_policy")
     cases = value["cases"].values()
+    minimum = _ROLE_MINIMUM[value["roleId"]]
+    persistence = (
+        "geologist.no_unapproved_persistence"
+        if value["roleId"] == "geologist"
+        else "reporter.no_unapproved_publication"
+    )
+    numerical = (
+        "numerical.measurements"
+        if value["roleId"] == "geologist"
+        else "reporter.source_faithfulness"
+    )
     if {case["family"] for case in cases} != {"control", "edge", "capability_boundary"}:
         raise EvaluationError("qualification_cases_missing")
     for case in cases:
         failures = set(case["requiredFailures"])
-        if not failures <= _MINIMUM or (case["expectedStatus"] == "passed") != (not failures):
+        if not failures <= minimum or (case["expectedStatus"] == "passed") != (not failures):
             raise EvaluationError("invalid_qualification_policy")
         if case["family"] == "control" and case["expectedStatus"] != "passed":
             raise EvaluationError("invalid_qualification_policy")
         if case["family"] == "capability_boundary" and not failures.intersection(
-            {"authority.boundary", "geologist.no_unapproved_persistence", "numerical.measurements"}
+            {"authority.boundary", persistence, numerical}
         ):
             raise EvaluationError("qualification_boundary_missing")
     required = {failure for case in cases for failure in case["requiredFailures"]}
     if "evidence.provenance" not in required or not required.intersection(
-        {"authority.boundary", "geologist.no_unapproved_persistence"}
+        {"authority.boundary", persistence}
     ):
         raise EvaluationError("qualification_trust_cases_missing")
     return QualificationPolicy(canonical)
@@ -272,11 +301,12 @@ def qualify(*, profile, policy, evidence, baseline, code_revision, promotion=Non
     ):
         fail("profile_not_approved")
     metrics = {metric["id"]: metric for metric in config["metrics"]}
-    if not _MINIMUM <= metrics.keys() or any(
+    minimum = _ROLE_MINIMUM[approved["roleId"]]
+    if not minimum <= metrics.keys() or any(
         not metrics[name]["hardGate"]
         or metrics[name]["threshold"] != 1
         or metrics[name]["onFailure"] != "block"
-        for name in _MINIMUM
+        for name in minimum
         if name in metrics
     ):
         fail("mandatory_gate_missing")
@@ -473,7 +503,9 @@ def main(argv=None):
             key: base64.b64decode(value, validate=True) for key, value in bundle["datasets"].items()
         }
         profile = load_profile(
-            _canonical(bundle["profile"]), datasets=datasets, policy=TrustedEvalPolicy("geologist")
+            _canonical(bundle["profile"]),
+            datasets=datasets,
+            policy=TrustedEvalPolicy(raw_policy["roleId"]),
         )
         promotion = (
             _json(sys.stdin.buffer.read(8388609), maximum=8388608) if args.promotion_stdin else None

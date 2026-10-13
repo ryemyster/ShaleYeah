@@ -133,3 +133,8 @@ trusted task and verified principal. Starts precede dispatch; failed handlers or
 invalid successful outputs cannot log success.
 [Event boundaries](../../../docs/employee-events.md) preserve existing source
 grants, domain logic and separate mandatory access/source audit.
+
+Geowiz owns its candidate schema, source adapter, scopes and private-save action.
+Its review facade now uses the SDK durable review core and installed qualification
+launcher. The source private-file reader shares the SDK bounded owner-only
+implementation. Existing Geowiz stored packets and review behavior remain intact.

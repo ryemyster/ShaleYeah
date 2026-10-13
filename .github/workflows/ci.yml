@@ -18,6 +18,7 @@ jobs:
     uses: ./.github/workflows/reference-qualification.yml
   pr-checks:
     name: PR checks
+    needs: reference-qualification
     runs-on: ubuntu-latest
 
     steps:
@@ -48,6 +49,8 @@ jobs:
     - run: pnpm turbo type-check
     - run: pnpm turbo lint
     - run: pnpm turbo build
+    - name: Install Reporter native runtime for protocol and context controls
+      run: uv sync --project agents/reporter-agent --locked
     - run: pnpm turbo test
     - run: pnpm --dir contracts check:isolation
     - run: pnpm --dir connectors check:isolation

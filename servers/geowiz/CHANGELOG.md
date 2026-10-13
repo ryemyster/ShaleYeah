@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- #541: reuse the shared durable review, private configuration reader and portable qualification adapter through Geowiz-specific facades. Preserve public packet/action/storage semantics and source authorization; include the employee helper wheel in standalone exports.
+
 - #674: require nonempty Docker server metadata with no reported client/server errors before image qualification. Add tests for successful CLI exits with unavailable server information; isolate the negative test's Docker context.
 
 - #674: generic fixture client refuses remote/ambiguous endpoints before reading private settings and never follows redirects; endpoint comes from the harness argument, not file content. New real redirect/refusal controls run in extraction and required CI.

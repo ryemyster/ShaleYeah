@@ -14,6 +14,7 @@ dependencies = [
   "httpx2==2.13.1",
   "rfc8785==0.1.4",
   "shaleyeah-contracts==0.3.0",
+  "shaleyeah-employee-runtime[adk]==0.1.0",
   "shaleyeah-mcp-client==0.2.0",
   "shaleyeah-evaluations==0.3.0",
   "sqlalchemy[asyncio]==2.1.4",
@@ -54,6 +55,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.sources]
+shaleyeah-employee-runtime = { path = "../../sdk/employee", editable = true }
 shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
 shaleyeah-evaluations = { path = "../../evaluations", editable = true }
 shaleyeah-contracts = { path = "../../contracts", editable = true }

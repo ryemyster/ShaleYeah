@@ -64,10 +64,6 @@ const TOOL_CLASS = new Map([
 	["quality-assurance.run_quality_tests", FAST],
 	["quality-assurance.generate_quality_report", FAST],
 
-	// reporter-agent (3 tools)
-	["reporter-agent.generate_investment_decision", MODERATE],
-	["reporter-agent.create_executive_report", MODERATE],
-	["reporter-agent.synthesize_analysis", MODERATE],
 
 	// research-analyst (2 tools)
 	["research-analyst.conduct_market_research", MODERATE],

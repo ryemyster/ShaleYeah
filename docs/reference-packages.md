@@ -29,7 +29,7 @@ or credentials. A nonempty destination is rejected. Omitting
 | Bundle item | Use |
 | --- | --- |
 | `npm/` | Geowiz and its declared SDK, contract and connector archives |
-| `wheels/` | Geologist, portable contracts, evaluations and MCP client |
+| `wheels/` | Geologist, portable contracts, evaluations, MCP client and employee helpers |
 | `requirements-employee.txt`, `requirements-tool.txt` | Locked Python dependency versions and hashes |
 | `source/geowiz/` | Independently buildable source with local tests, configuration and explicit `vendor/` archives |
 | `source/geologist/` | Python source, reviewed reference assets, build metadata and license; no root editable-source paths |
@@ -133,3 +133,44 @@ transactions, remote IAM/TLS and VM/Fly.io/Cloud Run/GKE/Agent Runtime deploymen
 need their own evidence. The reference accepts source-backed LAS for analysis;
 other advertised formats remain declined or unqualified. See the
 [support matrix](deployment-support.md) and [release gates](mvp-release-plan.md).
+
+## Reporter employee and tools
+
+Reporter prepares a private report from already reviewed specialist work. Its
+Python employee and TypeScript MCP tool service are independent units. Its source
+interface accepts canonical reviewed business artifacts, authenticated origin
+review and current recipient sharing rights. The receipt does not grant access to
+underlying raw data: context evidence metadata requires a separate current grant.
+
+From the checkout, use a new empty bundle directory:
+
+```sh
+pnpm --dir servers/reporter exec node scripts/check-extraction.mjs \
+  --bundle /tmp/reporter-bundle --report /tmp/reporter-extraction.json
+uv run --project evaluations --locked python servers/reporter/scripts/check-containers.py \
+  --bundle /tmp/reporter-bundle --report /tmp/reporter-containers.json
+```
+
+The export builds clean source and installs allowlisted archives, declared helper
+wheels and hash-locked dependencies. The employee wheel includes its role
+scorecard and six-case dataset under `app/reference/`. The tool environment
+contains the portable verifier without the employee or ADK. Required CI checks
+source fidelity, configurable metrics, actual MCP interoperability, source-backed
+native context and exact publication review. `PR checks` depends on both the
+Geologist and Reporter qualification jobs.
+
+Separate images use the same private-volume, loopback-network, non-root-user and
+immutable-base qualification rules above. The employee cannot read operator
+configuration or approve work. For both offline native providers, the controller
+checks human-requested changes, a new exact packet, missing-qualification refusal,
+qualified approval, tool/process restart, durable context recovery, private
+release, replay and source revocation. Container support requires a passing report
+on the actual revision and recorded architecture. Fixture judgments do not measure
+live reporting accuracy or professional acceptance.
+
+See the [tool integration guide](../servers/reporter/docs/INTEGRATION.md) and
+[employee context integration](../agents/reporter-agent/docs/INTEGRATION.md) for
+host-owned authority callbacks. Local exports explicitly attest authority through
+owner-only configuration; a remote host supplies its authenticated artifact
+service. Optional synthesis produces unreviewed cited notes, never permission to
+publish. External sending and professional certification require their own gates.

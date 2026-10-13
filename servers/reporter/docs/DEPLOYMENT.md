@@ -1,60 +1,16 @@
-# Deployment — @shaleyeah/server-reporter
+# Running the Reporter service
 
-## Transport modes
+Use Node 22.13 or newer and the declared package dependencies. In a checkout,
+build contracts and SDK first, then run this package's `pnpm build`. `pnpm start`
+starts stdio MCP with `REPORTER_CONFIG_FILE` pointing to owner-only configuration.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3009` | Agent fleet, Docker, Kong |
+The configured directory holds private durable review state. Keep it across
+restarts and restrict its filesystem owner and permissions. Source rights and
+configuration are re-read; approval is bound to the exact source/report/task
+revision. Missing qualification prevents approval and release.
 
-```bash
-# stdio mode
-pnpm build && pnpm start
-
-# HTTP mode
-PORT=3009 pnpm start
-```
-
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Scriptor Reporticus Maximus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3009`) |
-| `DATA_PATH` | No | `./data` | Path to report templates directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
-
-## Docker Compose (agent pair)
-
-```yaml
-services:
-  reporter:
-    image: shaleyeah/reporter:latest
-    environment:
-      PORT: "3009"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3009:3009"
-  reporter-agent:
-    image: shaleyeah/reporter-agent:latest
-    environment:
-      REPORTER_MCP_URL: http://reporter:3009
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [reporter]
-```
-
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=reporter
-curl -X POST http://kong:8001/upstreams/reporter/targets -d target=reporter:3009
-curl -X POST http://kong:8001/services -d name=reporter -d host=reporter
-curl -X POST http://kong:8001/services/reporter/routes -d paths[]=/mcp/reporter
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3009` set
-- [ ] Registered with Kong at `/mcp/reporter`
-- [ ] Paired with `reporter-agent` at port 4009
+HTTP hosts use the SDK's configured identity/scopes/audit transport with explicit
+host/origin policy and separate credentials. The employee credential cannot
+approve human reviews. Remote issuer/TLS, hosted infrastructure and live models
+need separate observed qualification. No hosted deployment is implied by a local
+package, an unexecuted container recipe or an example port.

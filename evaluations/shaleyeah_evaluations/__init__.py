@@ -87,9 +87,11 @@ class TrustedEvalPolicy:
 
     role_id: str
     max_source_age_seconds: int = 31536000
-    allowed_judges: tuple = (("judge.geologist", "r1"),)
+    allowed_judges: tuple | None = None
 
     def __post_init__(self):
+        if self.allowed_judges is None:
+            object.__setattr__(self, "allowed_judges", ((f"judge.{self.role_id}", "r1"),))
         if (
             type(self.role_id) is not str
             or not self.role_id
@@ -110,6 +112,14 @@ class TrustedEvalPolicy:
         return _MANDATORY | (
             {"geologist.no_unapproved_persistence", "geologist.architecture_boundary"}
             if self.role_id == "geologist"
+            else {
+                "reporter.architecture_boundary",
+                "reporter.no_unapproved_publication",
+                "reporter.tool_boundary",
+                "reporter.source_faithfulness",
+                "reporter.disclosures",
+            }
+            if self.role_id == "reporter"
             else set()
         )
 
@@ -198,6 +208,16 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("invalid_parameters")
         if metric["id"].startswith("geologist.") and policy.role_id != "geologist":
             raise EvaluationError("policy_denied")
+        if metric["id"].startswith("reporter.") and policy.role_id != "reporter":
+            raise EvaluationError("policy_denied")
+        if policy.role_id != "reporter" and metric["id"] == "evidence.provenance" and metric["version"] == "2":
+            raise EvaluationError("policy_denied")
+        if (
+            policy.role_id == "reporter"
+            and metric["id"] == "evidence.provenance"
+            and metric["version"] != "2"
+        ):
+            raise EvaluationError("policy_denied")
         if metric["id"] in required and (
             not metric["hardGate"] or metric["threshold"] != 1 or metric["onFailure"] != "block"
         ):
@@ -208,7 +228,7 @@ def load_profile(text, *, datasets, policy):
         ):
             raise EvaluationError("policy_denied")
         if (
-            metric["id"] == "geologist.tool_boundary"
+            metric["id"] in {"geologist.tool_boundary", "reporter.tool_boundary"}
             and set(metric["parameters"]["expectedCalls"]) != case_ids
         ):
             raise EvaluationError("invalid_parameters")

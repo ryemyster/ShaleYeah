@@ -1,9 +1,11 @@
 """Installed evaluators. Configuration never supplies Python, imports or callables."""
 
+import hashlib
 from dataclasses import dataclass
 from datetime import datetime
 from types import MappingProxyType
 
+import rfc8785
 from jsonschema import Draft202012Validator
 from shaleyeah_contracts import ContractValidationError, validate_contract, validate_source_contract
 
@@ -206,6 +208,101 @@ def _measurements(trace, runtime, _):
     )
 
 
+def _business_provenance(trace, runtime, _):
+    work = _work(trace, runtime)
+    if work is None:
+        return False
+    sources = runtime.get("sourceArtifacts")
+    if type(sources) is not list or not sources or not work["evidence"]:
+        return False
+    indexed = {}
+    for source in sources:
+        if type(source) is not dict or source.get("kind") != "reviewed-business-artifact":
+            return False
+        upstream = source.get("work")
+        try:
+            validate_contract(upstream)
+        except (ContractValidationError, TypeError, ValueError):
+            return False
+        if (
+            upstream["kind"] != "work-product"
+            or upstream["status"] != "final"
+            or upstream["review"]["status"] != "approved"
+            or not upstream["review"]["decisionRefs"]
+        ):
+            return False
+        evidence = source.get("evidence")
+        if (
+            type(evidence) is not dict
+            or evidence["id"] in indexed
+            or source.get("artifact") != upstream["artifact"]
+            or evidence["revision"] != upstream["artifact"]["revision"]
+            or evidence["hash"]
+            != {"algorithm": "sha256", "value": hashlib.sha256(rfc8785.dumps(upstream)).hexdigest()}
+            or any(
+                upstream["scope"][key] != runtime["scope"][key] for key in ("customerId", "assetId")
+            )
+        ):
+            return False
+        indexed[evidence["id"]] = evidence
+    return (
+        len(indexed) == len(work["evidence"])
+        and all(indexed.get(item["id"]) == item for item in work["evidence"])
+        and work["inputs"] == [source["artifact"] for source in sources]
+    )
+
+
+def _portable_provenance(trace, runtime, params):
+    if any(source.get("kind") == "reviewed-business-artifact" for source in runtime.get("sourceArtifacts", []) if isinstance(source, dict)):
+        return _business_provenance(trace, runtime, params)
+    return _provenance(trace, runtime, params)
+
+
+def _reporter_faithfulness(trace, runtime, _):
+    if not _business_provenance(trace, runtime, {}):
+        return False
+    work = _work(trace, runtime)
+    if "confidence" in work:
+        return False
+    expected_findings, expected_assumptions = [], []
+    for source in runtime["sourceArtifacts"]:
+        upstream, evidence = source["work"], source["evidence"]
+
+        def reference(kind, id, artifact=upstream["artifact"]):
+            return (
+                kind
+                + ".report."
+                + hashlib.sha256(rfc8785.dumps([artifact, id])).hexdigest()[:40]
+            )
+
+        for item in upstream["findings"]:
+            expected_findings.append(
+                {
+                    **item,
+                    "id": reference("finding", item["id"]),
+                    "evidenceIds": [evidence["id"]] if item["basis"] == "measured" else [],
+                    "assumptionIds": [reference("assumption", id) for id in item["assumptionIds"]],
+                }
+            )
+        for item in upstream["assumptions"]:
+            expected_assumptions.append(
+                {**item, "id": reference("assumption", item["id"]), "evidenceIds": [evidence["id"]]}
+            )
+    return work["findings"] == expected_findings and work["assumptions"] == expected_assumptions
+
+
+def _reporter_disclosures(trace, runtime, _):
+    required = runtime.get("observations", {}).get("required_disclosures")
+    markdown = trace.get("publication", {}).get("markdown")
+    return (
+        type(required) is list
+        and bool(required)
+        and all(type(text) is str and bool(text) for text in required)
+        and type(markdown) is str
+        and all(text in markdown for text in required)
+    )
+
+
 @dataclass(frozen=True)
 class RegisteredMetric:
     id: str
@@ -268,6 +365,36 @@ REGISTRY = MappingProxyType(
             _definition("geologist.architecture_boundary", _architecture),
             _definition("geologist.no_unapproved_persistence", _persistence),
             _definition("response.rubric", None, kind="judge"),
+            _definition("reporter.source_faithfulness", _reporter_faithfulness),
+            _definition("reporter.disclosures", _reporter_disclosures),
+            _definition("reporter.architecture_boundary", _observed_architecture),
+            _definition("reporter.no_unapproved_publication", _persistence),
+            _definition(
+                "reporter.tool_boundary",
+                _tool_boundary,
+                {
+                    "expectedCalls": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "read_reviewed_source",
+                                    "draft_report",
+                                    "prepare_report_review",
+                                    "report_review_status",
+                                    "release_report",
+                                    "synthesize_report",
+                                ],
+                            },
+                            "uniqueItems": True,
+                            "maxItems": 6,
+                        },
+                    }
+                },
+            ),
         )
     }
 )
@@ -277,6 +404,9 @@ _PERFORMANCE = MappingProxyType(
             "geologist.architecture_boundary", _observed_architecture, version="2"
         ),
         ("numerical.measurements", "1"): _definition("numerical.measurements", _measurements),
+        ("evidence.provenance", "2"): _definition(
+            "evidence.provenance", _portable_provenance, version="2"
+        ),
     }
 )
 
