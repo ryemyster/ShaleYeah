@@ -126,6 +126,11 @@ pnpm check:issue-template
 pnpm test:sdlc
 ```
 
+On constrained runners, use `pnpm turbo test --concurrency=2`. CI limits the
+number of package test processes so native runtime and operator CLI startup can
+finish within their existing deadlines. It runs the full suite and propagates
+failures; it does not change test assertions or replace package-local checks.
+
 Contracts have their own parity/coverage and extracted-install checks; follow
 [their README](contracts/README.md). Each other package's README declares its
 checks. No provider key is needed for the deterministic CI fixtures. A live
