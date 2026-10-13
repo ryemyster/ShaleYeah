@@ -61,7 +61,7 @@ try {
 	await run("npm", ["run", "test:coverage"], source);
 	passed("clean-source-build");
 	const tool = path.join(root, "tool");
-	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", "@modelcontextprotocol/sdk": "1.29.0" }, dependencies: Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) }));
+	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", typescript: "6.0.2", "@modelcontextprotocol/sdk": "1.29.0" }, dependencies: Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) }));
 	await run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], tool);
 	await fs.cp(path.join(source, "tests"), path.join(tool, "tests"), { recursive: true });
 	for (const [directory, prefix] of [[path.join(tool, "tests"), "../"], [path.join(tool, "tests/fixtures"), "../../"]]) {
@@ -72,6 +72,7 @@ try {
 	}
 	const installed = path.join(tool, "node_modules/@shaleyeah/server-qa");
 	for (const name of ["dist", "examples", "scripts"]) await fs.cp(path.join(installed, name), path.join(tool, name), { recursive: true });
+	await fs.copyFile(path.join(packageRoot, "scripts/build.mjs"), path.join(tool, "scripts/build.mjs"));
 	assert.equal(await hash(path.join(installed, "dist/tools/qa-rules.js")), await hash(path.join(packageRoot, "dist/tools/qa-rules.js")));
 	await run(process.execPath, ["--import", "tsx", "--test", ...(await fs.readdir(path.join(tool, "tests"))).filter((name) => name.endsWith(".test.ts")).map((name) => path.join("tests", name))], tool, { QA_TEST_ENTRY: path.join(installed, "dist/index.js") });
 	passed("installed-tool"); passed("generic-mcp"); passed("durable-observed-results");

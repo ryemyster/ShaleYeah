@@ -13,6 +13,9 @@
   SQLite artifacts retain original expiry and survive restart.
 - Reports consume exact recorded results. Optional configured native-model
   triage stays unreviewed and cannot waive, repair, approve or change a verdict.
+- The independent build invokes its declared local compiler directly, preserving
+  npm-installed archives rather than triggering a pnpm reinstall. A compiler
+  regression covers execution with no package manager available.
 - Package-owned build/settings, declared dependencies, synthetic 22-case
   scorecards, actual generic HTTP/stdio controls, independent source/archive
   verification and installed non-root Node container CI.
