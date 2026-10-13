@@ -31,8 +31,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -53,8 +53,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -75,8 +75,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -97,8 +97,8 @@ importers:
         specifier: 2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: 25.9.3
-        version: 25.9.3
+        specifier: 26.6.5
+        version: 26.6.5
       tsx:
         specifier: 4.21.0
         version: 4.21.0
@@ -119,8 +119,8 @@ importers:
         specifier: 2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: 25.9.3
-        version: 25.9.3
+        specifier: 26.6.5
+        version: 26.6.5
       json-schema-to-typescript:
         specifier: 16.0.0
         version: 16.0.0
@@ -138,8 +138,8 @@ importers:
         version: link:../sdk
     devDependencies:
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       typescript:
         specifier: ^6.0.2
         version: 6.0.3
@@ -181,8 +181,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
@@ -206,8 +206,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -228,8 +228,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -250,8 +250,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -272,8 +272,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -297,8 +297,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -340,8 +340,8 @@ importers:
         specifier: ^7946.0.16
         version: 7946.0.16
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       '@types/xml2js':
         specifier: ^0.4.14
         version: 0.4.14
@@ -365,8 +365,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -387,8 +387,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -409,8 +409,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -437,8 +437,8 @@ importers:
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -465,8 +465,8 @@ importers:
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -487,8 +487,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -509,8 +509,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -531,8 +531,8 @@ importers:
         specifier: ^2.5.0
         version: 2.5.0
       '@types/node':
-        specifier: ^25.9.3
-        version: 25.9.3
+        specifier: ^26.6.5
+        version: 26.6.5
       tsx:
         specifier: ^4.21.0
         version: 4.22.4
@@ -1388,8 +1388,8 @@ packages:
   '@types/node@14.18.63':
     resolution: {integrity: sha512-fAtCfv4jJg+ExtXhvCkCqUKZ+4ok/JQk01qDKhL5BDDoS3AxKXhV5/MAVUZyQnSEd2GT92fkgZl0pz0Q0AzcIQ==}
 
-  '@types/node@25.9.3':
-    resolution: {integrity: sha512-603BddQMv3pUcr4U2dhujk83N2tTDVr/34wII2B6bJy6g+8WD6yUb11jszNs0gdi4PesVWl7ABt8nYMVpnLUcg==}
+  '@types/node@26.6.5':
+    resolution: {integrity: sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==}
 
   '@types/retry@0.12.0':
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
@@ -2269,8 +2269,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@7.24.6:
-    resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
+  undici-types@8.9.0:
+    resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
   unpipe@1.0.0:
     resolution: {integrity: sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ==}
@@ -3794,15 +3794,15 @@ snapshots:
 
   '@types/node@14.18.63': {}
 
-  '@types/node@25.9.3':
+  '@types/node@26.6.5':
     dependencies:
-      undici-types: 7.24.6
+      undici-types: 8.9.0
 
   '@types/retry@0.12.0': {}
 
   '@types/xml2js@0.4.14':
     dependencies:
-      '@types/node': 25.9.3
+      '@types/node': 26.6.5
 
   accepts@2.0.0:
     dependencies:
@@ -4534,7 +4534,7 @@ snapshots:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.2
-      '@types/node': 25.9.3
+      '@types/node': 26.6.5
       long: 5.3.2
 
   proxy-addr@2.0.7:
@@ -4789,7 +4789,7 @@ snapshots:
 
   typescript@6.0.3: {}
 
-  undici-types@7.24.6: {}
+  undici-types@8.9.0: {}
 
   unpipe@1.0.0: {}
 
