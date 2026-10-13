@@ -1,10 +1,23 @@
 import assert from "node:assert/strict";
-import { execFile } from "node:child_process";
+import { execFile, execFileSync } from "node:child_process";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { promisify } from "node:util";
+
+test("container expiry uses the existing UTC millisecond policy representation", () => {
+	const expiry = execFileSync(
+		"python3",
+		[
+			"-B",
+			"-c",
+			"import importlib.util; from datetime import UTC, datetime; s=importlib.util.spec_from_file_location('controller', 'scripts/check-containers.py'); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); print(m.utc_timestamp(datetime(2026,10,13,3,0,0,123456,tzinfo=UTC)))",
+		],
+		{ encoding: "utf8" },
+	).trim();
+	assert.equal(expiry, "2026-10-13T03:00:00.123Z");
+});
 
 test("unavailable Docker blocks Reporter qualification instead of skipping", async () => {
 	const root = await mkdtemp(path.join(os.tmpdir(), "reporter-container-control-"));

@@ -42,6 +42,10 @@ def fingerprint(file):
     return hashlib.sha256(file.read_bytes()).hexdigest()
 
 
+def utc_timestamp(value: datetime):
+    return value.astimezone(UTC).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bundle", required=True)
@@ -271,7 +275,7 @@ def main():
                 )
 
             for provider in ("gemini", "anthropic"):
-                expiry = (datetime.now(UTC) + timedelta(hours=1)).isoformat()
+                expiry = utc_timestamp(datetime.now(UTC) + timedelta(hours=1))
                 scope = {**records["task"]["scope"], "employeeId": "employee.reporter"}
                 requester = {
                     "subjectId": "reporter-run",
