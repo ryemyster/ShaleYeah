@@ -1,6 +1,8 @@
 # Integration Guide — @shaleyeah/reservoir-engineer
 
-> **Status: Planned** — Not yet implemented. See [#365](https://github.com/ryemyster/ShaleYeah/issues/365).
+The retained TypeScript interface calls Curve Smith through the stateless MCP
+connection described in the [package README](../README.md#mcp-connection).
+The complete ADK/Python employee workflow remains assigned to #681.
 
 ## Planned interface
 

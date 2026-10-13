@@ -4,14 +4,16 @@ import { randomBytes } from "node:crypto";
 import { writeFileSync } from "node:fs";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { fixture } from "./fixtures/review-fixture.js";
 
 test("installed HTTP launcher requires complete audit settings and serves scoped tools with private configuration", async () => {
 	const f = fixture();
 	let child: ReturnType<typeof spawn> | undefined;
-	const client = new Client({ name: "reporter-bootstrap-client", version: "r1" });
+	const client = new Client(
+		{ name: "reporter-bootstrap-client", version: "r1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		const policy = await f.options.currentPolicy();
 		const token = randomBytes(32).toString("hex");

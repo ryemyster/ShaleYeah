@@ -17,14 +17,14 @@ uv venv --python 3.12 "$isolation_dir/.venv"
 uv pip install --python "$isolation_dir/.venv/bin/python" \
   -r "$isolation_dir/requirements.txt"
 uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
-  "$isolation_dir/wheels/shaleyeah_mcp_client-0.2.0-py3-none-any.whl" \
+  "$isolation_dir/wheels/shaleyeah_mcp_client-0.3.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_contracts-0.3.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_evaluations-0.3.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_employee_runtime-0.1.0-py3-none-any.whl" \
   "$isolation_dir/wheels/shaleyeah_geologist_adk-0.1.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/tests/eval" "$isolation_dir/agents/geologist/tests/eval" "$isolation_dir/servers/geowiz/tests/sample-files" "$isolation_dir/contracts/fixtures"
-cp tests/test_result_contract.py tests/test_transport_boundary.py tests/test_events.py tests/test_event_transport.py "$isolation_dir/tests/"
+cp tests/test_result_contract.py tests/test_transport_boundary.py tests/test_events.py tests/test_event_transport.py tests/test_role_configuration.py "$isolation_dir/tests/"
 cp "$geologist_root/tests/test_mcp_access_boundary.py" "$isolation_dir/tests/test_geologist_access.py"
 cp "$geologist_root/tests/test_mcp_result_contract.py" "$isolation_dir/tests/test_geologist_mapping.py"
 cp "$geologist_root/tests/test_eval_adapter.py" "$isolation_dir/agents/geologist/tests/"

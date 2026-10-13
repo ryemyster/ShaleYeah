@@ -8,7 +8,7 @@ dependencies = [
   "shaleyeah-contracts==0.3.0",
   "rfc8785==0.1.4",
   "google-genai==2.11.0",
-  "shaleyeah-mcp-client==0.2.0",
+  "shaleyeah-mcp-client==0.3.0",
   "shaleyeah-evaluations==0.3.0",
 ]
 

@@ -5,7 +5,7 @@ from app.agent import decision_backend_status, plan_decision_tool_call, root_age
 
 
 def test_python_mcp_client_module_exists_for_decision_execution() -> None:
-    assert decision_mcp.DECISION_DEFAULT_URL == "http://localhost:3013"
+    assert decision_mcp.DECISION_DEFAULT_URL == "http://localhost:3013/mcp"
     assert hasattr(decision_mcp, "call_decision_tool")
     assert hasattr(decision_mcp, "make_investment_decision")
     assert hasattr(decision_mcp, "calculate_bid_strategy")

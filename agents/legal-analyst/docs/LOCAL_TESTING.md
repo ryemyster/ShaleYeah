@@ -24,7 +24,7 @@ Then run the ADK agent:
 
 ```bash
 cd agents/legal-analyst
-LEGAL_MCP_URL=http://localhost:3006 agents-cli run \
+LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Analyze legal exposure for a Texas development project covering three Permian leases"
 ```
 

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.
+
+- #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.
+
 ### Added
 - **QA employee charter** (#538) — researched the data-quality job, independent context, eight configurable rule dimensions, observed-result evidence, human review, primary-source connector patterns and future eval cases. Assigned false PASS/coverage/report behavior to #716 before employee adoption #542; no runtime or professional qualification is delivered here.
 

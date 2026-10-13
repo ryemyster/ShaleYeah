@@ -25,7 +25,7 @@ The agent runs as a stand-alone specialist with progressive disclosure of its In
 - `estimate_costs` for pipeline, facility, compression, and SWD CAPEX.
 - `assess_compliance` for permitting, safety, environmental, ROW, and regulatory review support.
 
-The default MCP backend URL is `http://localhost:3012`. Set `INFRASTRUCTURE_MCP_URL` to point at another compatible Infrastructure MCP server.
+The default MCP backend URL is `http://localhost:3012/mcp`. Set `INFRASTRUCTURE_MCP_URL` to point at another compatible Infrastructure MCP server.
 
 ## Run Locally
 
@@ -47,7 +47,10 @@ Then run ADK or pytest commands from `agents/infrastructure-planner`.
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012` | Infrastructure MCP backend URL |
+| `INFRASTRUCTURE_MCP_URL` | No | `http://localhost:3012/mcp` | Infrastructure MCP backend URL |
+| `INFRASTRUCTURE_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
+| `INFRASTRUCTURE_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
+| `INFRASTRUCTURE_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
 | `INFRASTRUCTURE_PLANNER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model for the root agent |
 
 Provider credentials are supplied by the ADK runtime or deployment environment. Do not check secrets, proprietary midstream data, ROW terms, or confidential asset details into this package.

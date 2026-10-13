@@ -6,7 +6,7 @@ Legal Analyst deploys as an ADK/Python agent package paired with the Legal MCP b
 
 | Variable | Required | Default |
 |----------|----------|---------|
-| `LEGAL_MCP_URL` | No | `http://localhost:3006` |
+| `LEGAL_MCP_URL` | No | `http://localhost:3006/mcp` |
 | `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
 
 Set `LEGAL_MCP_URL` to the deployed `servers/legal` endpoint for non-local deployments.

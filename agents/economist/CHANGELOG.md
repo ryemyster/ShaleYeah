@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.
+
+- #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.
+
 ### Added
 - `runEconomistTask` Layer 2 execution loop — LLM-driven multi-step loop with Permission Gate via `runtime.execute()`, HITL throw when no callback provided, and max-steps synthesis (#364)
 - `executeWithRetry` — exponential backoff (500ms/1s/2s, up to 3 retries) for retryable tool failures before surfacing error to LLM (#364)

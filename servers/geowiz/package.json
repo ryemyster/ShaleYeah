@@ -1,7 +1,7 @@
 {
 	"name": "@shaleyeah/server-geowiz",
 	"version": "0.1.0",
-	"description": "Geowiz MCP server \u2014 geological analysis, LAS/GIS/seismic file processing",
+	"description": "Geowiz MCP server — geological analysis, LAS/GIS/seismic file processing",
 	"private": true,
 	"type": "module",
 	"engines": {
@@ -31,12 +31,12 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
-		"@modelcontextprotocol/sdk": "1.29.0",
 		"@types/geojson": "^7946.0.16",
 		"@types/node": "^25.9.3",
 		"@types/xml2js": "^0.4.14",
 		"tsx": "^4.21.0",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.2",
+		"@modelcontextprotocol/client": "2.3.1"
 	},
 	"license": "Apache-2.0",
 	"files": [

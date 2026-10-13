@@ -19,7 +19,7 @@ The agent does not make final investment decisions. It supports a human investme
 | Agent | `agents/investment-chair` | ADK/Python |
 | MCP backend | `servers/decision` | TypeScript/pnpm MCP server |
 
-`servers/decision` is independently runnable. The agent reaches it over MCP Streamable HTTP using `DECISION_MCP_URL`, defaulting to `http://localhost:3013`.
+`servers/decision` is independently runnable. The agent reaches it over MCP Streamable HTTP using `DECISION_MCP_URL`, defaulting to `http://localhost:3013/mcp`.
 
 ## Architecture Mode
 
@@ -37,7 +37,7 @@ PORT=3013 pnpm start
 ```bash
 cd agents/investment-chair
 uv sync
-DECISION_MCP_URL=http://localhost:3013 uv run pytest
+DECISION_MCP_URL=http://localhost:3013/mcp uv run pytest
 ```
 
 For an interactive ADK run, use the agents-cli commands from this package directory after dependencies are installed:

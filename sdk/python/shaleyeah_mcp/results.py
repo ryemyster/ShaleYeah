@@ -34,7 +34,7 @@ async def discover_tool(session: Any, name: str) -> Any:
             raise MCPClientError("ambiguous_tool")
         if matches:
             selected = matches[0]
-        cursor = getattr(page, "nextCursor", None)
+        cursor = getattr(page, "next_cursor", None)
         if cursor is None:
             if selected is not None:
                 return selected
@@ -68,14 +68,16 @@ def legacy_failure(payload: Any, depth: int = 0) -> bool:
 
 
 def read_result(result: Any, output_schema: dict[str, Any] | None) -> dict[str, Any]:
+    if getattr(result, "result_type", None) == "input_required":
+        raise MCPClientError("input_required", "user_action", effect_unknown=True)
     content = []
     for item in result.content:
-        block = item.model_dump(mode="json") if hasattr(item, "model_dump") else item
+        block = item.model_dump(mode="json", by_alias=True) if hasattr(item, "model_dump") else item
         if not isinstance(block, dict) or not isinstance(block.get("type"), str):
             raise MCPClientError("invalid_result")
         content.append(block)
-    structured = getattr(result, "structuredContent", None)
-    is_error = getattr(result, "isError", False)
+    structured = getattr(result, "structured_content", None)
+    is_error = getattr(result, "is_error", False)
     if not isinstance(is_error, bool):
         raise MCPClientError("invalid_result")
     json_values = []

@@ -6,7 +6,7 @@ The Drilling Engineer agent is a package-local ADK/Python project. It should rem
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `DRILLING_MCP_URL` | No | `http://localhost:3003` | Drilling-compatible MCP backend URL |
+| `DRILLING_MCP_URL` | No | `http://localhost:3003/mcp` | Drilling-compatible MCP backend URL |
 | `DRILLING_ENGINEER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id |
 
 ## Deployment Boundary

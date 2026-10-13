@@ -5,7 +5,7 @@ from app.agent import infrastructure_backend_status, plan_surface_tool_call, roo
 
 
 def test_python_mcp_client_module_exists_for_infrastructure_execution() -> None:
-    assert infrastructure_mcp.INFRASTRUCTURE_DEFAULT_URL == "http://localhost:3012"
+    assert infrastructure_mcp.INFRASTRUCTURE_DEFAULT_URL == "http://localhost:3012/mcp"
     assert hasattr(infrastructure_mcp, "call_infrastructure_tool")
     assert hasattr(infrastructure_mcp, "plan_pipeline")
     assert hasattr(infrastructure_mcp, "size_facilities")

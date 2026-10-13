@@ -15,7 +15,7 @@ Set `TITLE_MCP_URL` in the Title Analyst runtime to the reachable Title MCP endp
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `TITLE_MCP_URL` | No | `http://localhost:3010` | Title-compatible MCP backend URL |
+| `TITLE_MCP_URL` | No | `http://localhost:3010/mcp` | Title-compatible MCP backend URL |
 | `TITLE_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
 Provider credentials depend on the selected ADK model and deployment target.
@@ -32,7 +32,7 @@ agents-cli info
 With Title running:
 
 ```bash
-TITLE_MCP_URL=http://localhost:3010 agents-cli run \
+TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Examine ownership for Section 12 in Reeves County, Texas"
 ```
 

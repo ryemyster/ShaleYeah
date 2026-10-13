@@ -27,10 +27,10 @@ Then point the agent at it:
 
 ```bash
 cd agents/research-analyst
-RESEARCH_MCP_URL=http://localhost:3008 uv run pytest
+RESEARCH_MCP_URL=http://localhost:3008/mcp uv run pytest
 ```
 
-The default URL is already `http://localhost:3008`, so the environment variable is only needed when the backend runs elsewhere.
+The default URL is already `http://localhost:3008/mcp`, so the environment variable is only needed when the backend runs elsewhere.
 
 ## What The Tests Cover
 

@@ -4,16 +4,17 @@ import json
 import sys
 from pathlib import Path
 
-from mcp.server.fastmcp import Context, FastMCP
+from mcp.server import MCPServer
+from mcp.server.mcpserver import Context
 
 settings = json.loads(Path(sys.argv[1]).read_text())
 token = Path(settings["tokenFile"]).read_text().strip()
-server = FastMCP("external-geology-fixture", host="127.0.0.1", port=settings["port"])
+server = MCPServer("external-geology-fixture")
 
 
 @server.tool()
 def assess_quality(filePath: str, dataType: str, thresholds: dict, ctx: Context) -> dict:
-    assert ctx.request_context.request.headers.get("authorization") == "Bearer " + token
+    assert ctx.headers.get("authorization") == "Bearer " + token
     assert dataType == "las"
     return {
         "success": True,
@@ -21,4 +22,4 @@ def assess_quality(filePath: str, dataType: str, thresholds: dict, ctx: Context)
     }
 
 
-server.run(transport="streamable-http")
+server.run(transport="streamable-http", host="127.0.0.1", port=settings["port"], stateless_http=True)

@@ -30,7 +30,7 @@ The agent calls these MCP tools through Streamable HTTP:
 - `conduct_market_research`
 - `analyze_competition`
 
-Set `RESEARCH_MCP_URL` when the backend is not running at `http://localhost:3008`.
+Set `RESEARCH_MCP_URL` when the backend is not running at `http://localhost:3008/mcp`.
 
 ## Upstream And Downstream Context
 
@@ -52,3 +52,7 @@ Common downstream consumers:
 - Infrastructure, Drilling, and Reservoir specialists
 
 The agent can summarize dependencies and source gaps, but it should not claim facts unless they were provided or fetched through approved tools.
+
+## Connection profile
+
+This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.

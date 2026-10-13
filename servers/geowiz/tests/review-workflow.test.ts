@@ -6,8 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { promisify } from "node:util";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createConnectorRuntime, operatorFileAdapter } from "@shaleyeah/connectors";
 import { GeowizServer } from "../src/index.js";
 import { createQualificationGuard } from "../src/qualification-config.js";
@@ -371,7 +370,10 @@ test("real MCP command cannot bypass the separately enrolled local human review 
 	});
 	if (previousPort === undefined) delete process.env.PORT;
 	else process.env.PORT = previousPort;
-	const client = new Client({ name: "direct-mcp-fixture", version: "1" });
+	const client = new Client(
+		{ name: "direct-mcp-fixture", version: "1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	let binding: Awaited<ReturnType<typeof loadReviewBinding>> | undefined;
 	try {
 		await server.initialize();

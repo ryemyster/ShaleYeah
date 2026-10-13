@@ -15,33 +15,33 @@ def fake_transport(monkeypatch):
     opened = []
 
     class Session:
-        def __init__(self, *_args, **_kwargs):
-            pass
+        def __init__(self, transport, **_kwargs):
+            self.transport = transport
+            self.session = self
+            self.protocol_version = "2026-07-28"
 
         async def __aenter__(self):
+            await self.transport.__aenter__()
             return self
 
-        async def __aexit__(self, *_):
-            pass
-
-        async def initialize(self):
-            return SimpleNamespace(protocolVersion="2025-11-25")
+        async def __aexit__(self, *error):
+            await self.transport.__aexit__(*error)
 
         async def list_tools(self, **_):
             return SimpleNamespace(
                 tools=[
                     SimpleNamespace(
                         name="assess_quality",
-                        inputSchema={"type": "object"},
-                        outputSchema=None,
+                        input_schema={"type": "object"},
+                        output_schema=None,
                     )
                 ],
-                nextCursor=None,
+                next_cursor=None,
             )
 
         async def call_tool(self, *_args, **_kwargs):
             return SimpleNamespace(
-                content=[], structuredContent={"fixture": "transport-control"}, isError=False
+                content=[], structured_content={"fixture": "transport-control"}, is_error=False
             )
 
     @asynccontextmanager
@@ -51,8 +51,7 @@ def fake_transport(monkeypatch):
         opened.append((url, headers))
         yield None, None, lambda: None
 
-    monkeypatch.setattr(mcp, "ClientSession", Session)
-    monkeypatch.setattr(mcp.client.streamable_http, "streamablehttp_client", transport)
+    monkeypatch.setattr(mcp, "Client", Session)
     monkeypatch.setattr(mcp.client.streamable_http, "streamable_http_client", transport)
     monkeypatch.delenv("GEOWIZ_MCP_ACCESS_TOKEN_FILE", raising=False)
     monkeypatch.delenv("GEOWIZ_MCP_URL", raising=False)

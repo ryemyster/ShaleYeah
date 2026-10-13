@@ -13,8 +13,8 @@
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.29.0",
-		"@shaleyeah/sdk": "workspace:*"
+		"@shaleyeah/sdk": "workspace:*",
+		"@modelcontextprotocol/client": "2.3.1"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",

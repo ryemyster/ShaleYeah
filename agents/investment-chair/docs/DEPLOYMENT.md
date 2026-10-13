@@ -16,7 +16,7 @@ Run the agent package checks:
 ```bash
 cd agents/investment-chair
 uv sync
-DECISION_MCP_URL=http://localhost:3013 uv run pytest
+DECISION_MCP_URL=http://localhost:3013/mcp uv run pytest
 ```
 
 ## Hosted Runtime

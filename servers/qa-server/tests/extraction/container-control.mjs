@@ -2,8 +2,8 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import fs from "node:fs";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Client } from "@modelcontextprotocol/client";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { loadQABinding } from "@shaleyeah/server-qa/dist/configuration.js";
 
 const directory = "/tmp/qa-fixture";
@@ -13,7 +13,7 @@ const config = JSON.parse(fs.readFileSync(file, "utf8"));
 const meta = { "org.shaleyeah/correlation": { context: { ...config.correlation, scope: config.task.scope, taskRevision: "r1", qualification: "fixture" }, parentEventId: "container.qa", spanId: "b".repeat(16) } };
 const args = { taskRef: { id: config.task.id, revision: "r1" }, profileRef: { id: config.profile.id, revision: "r1" } };
 async function session(action) {
-	const client = new Client({ name: "container-qa-consumer", version: "r1" });
+	const client = new Client({ name: "container-qa-consumer", version: "r1" }, { versionNegotiation: { mode: { pin: "2026-07-28" } } });
 	try { await client.connect(new StdioClientTransport({ command: process.execPath, args: [entry], env: { ...process.env, QA_CONFIG_FILE: file }, stderr: "pipe" })); return await action(client); }
 	finally { await client.close(); }
 }

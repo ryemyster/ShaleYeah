@@ -207,13 +207,17 @@ Before qualifying an extracted package/container in #674:
    artifact/temp storage, timeouts, cancellation and disk-full failure. No 256MB
    production budget or horizontal-scaling guarantee is established today.
 
-Observed development evidence: macOS 26.6.2 arm64, Node 26.10.0, pnpm 11.5.1,
+Historical #578 development evidence: macOS 26.6.2 arm64, Node 26.10.0, pnpm 11.5.1,
 uv 0.12.21, Python 3.12.13, ADK 2.4.0 and Python MCP 1.28.1. One offline agent
 import took 0.99 seconds and 127,778,816 bytes maximum resident memory using
 `/usr/bin/time -l`; that is a single import measurement, **not a deployment
 capacity/minimum**. Existing CI uses Node 22/Python 3.12; no Linux image or load
 measurement is supplied by this issue. Pin dependencies/images and record the
 actual model/profile/SDK versions in qualification receipts.
+
+#722 selects the newer stateless MCP profile and owns fresh client, installed
+package and container receipts. The older import measurement above remains a
+historical observation and is not relabeled as modern protocol qualification.
 
 Geowiz's existing package tests also passed, but some processor checks use
 placeholder structures or mock validation, including a known seismic-parser

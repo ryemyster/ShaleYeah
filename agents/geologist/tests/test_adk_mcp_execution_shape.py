@@ -82,7 +82,7 @@ def test_adk_root_agent_exposes_migrated_geowiz_execution_tools() -> None:
 def test_python_project_declares_adk_and_mcp_dependencies() -> None:
     pyproject = (PACKAGE_ROOT / "pyproject.toml").read_text()
 
-    assert '"shaleyeah-mcp-client==0.2.0"' in pyproject
+    assert '"shaleyeah-mcp-client==0.3.0"' in pyproject
     assert '"google-adk[db,gcp]==2.4.0"' in pyproject
     assert '"sqlalchemy[asyncio]==2.1.4"' in pyproject
     assert '"pytest>=' in pyproject

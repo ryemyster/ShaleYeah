@@ -95,15 +95,18 @@ pnpm type-check  # type-only, no emit
 
 `LLMClient` reads `ANTHROPIC_API_KEY` for model calls. The echo example and
 transport tests need no model key. `MCPServer` uses stdio by default; setting
-`PORT` selects HTTP. Each HTTP client has its own protocol instance/transport,
-with bounded idle/request time and session capacity. See
+`PORT` selects HTTP. SDK 0.3.0 selects MCP 2026-07-28 explicitly for both
+transports. Each HTTP request has its own protocol instance, bounded execution
+time, body size and concurrency. There is no initialization handshake or
+transport session ID. Older protocol clients receive an explicit rejection;
+upgrade and pin their modern profile before connecting. See
 [HTTP configuration and lifecycle](docs/ARCHITECTURE.md#transport-modes-mcpserver)
 and [deployment settings](docs/DEPLOYMENT.md).
 
 HTTP requires explicit local/remote `http.access` configuration, a dedicated
 credential or trusted verifier, scoped policy and audit sink. Setting PORT alone
 fails before listening; use [HTTP access configuration](docs/http-access.md).
-Session IDs identify transport state, not employee memory or authority. Declared schemas,
+Employee memory and authority remain independent of the transport. Declared schemas,
 structured success and genuine tool failures are covered by #677's SDK and
 Geologist boundary checks; see [tool result compatibility](docs/ARCHITECTURE.md#tool-contracts-and-result-compatibility).
 Actual issuer/TLS deployment, source rights, review and reference qualification
@@ -115,13 +118,35 @@ numbers with an undeclared scale; an optional fifth argument declares validated
 units. Consumers must check status/scale before using a score. See
 [confidence metadata and role compatibility](docs/confidence-metadata.md).
 
+The legacy default async-job poller reports unsupported without network access.
+No backend currently declares a qualified `get_job_status` capability. A trusted
+caller can still inject its own configured bounded poller; #692 owns final
+legacy helper deletion.
+
+## Retained TypeScript client connections
+
+`loadMCPClientConnection(endpoint, prefix)` reads a dedicated private bearer
+file named by `<PREFIX>_MCP_ACCESS_TOKEN_FILE`, validates HTTPS or loopback HTTP,
+and normalizes historical bare local URLs to `/mcp`. It denies redirects and
+limits decoded response bytes to 1 MiB. `discoverMCPTool` reads a fresh catalog
+with a 32-page limit so the caller can supply the exact tool definition to the
+pinned official client. `mcpCommandFailure` emits safe permanent error categories
+without copying server messages or secret-bearing causes.
+
+Economist, Reservoir Engineer and QA use these helpers with a 30-second default
+and 120-second maximum call deadline. Failed tool results and uncertain failures
+after dispatch stop automatic retry. `input_required` requires reviewed input;
+the connection does not automatically answer it. Model credentials, employee
+context and business review authority remain separate from MCP access.
+
 ## Python employee transport
 
 [python/](python/README.md) builds the separate `shaleyeah-mcp-client` wheel.
 It provides configured Streamable HTTP, credential references, schema/results,
 safe typed failures and bounded setup retries without repeating dispatched tools.
-It does not import ADK, domain logic or this TypeScript SDK. Geologist is the first
-declared consumer; remaining role owners adopt it and delete their copied clients.
+It does not import ADK, domain logic or this TypeScript SDK. All 11 Python
+employees declare the client and use its shared configuration loader. Role
+workflow qualification remains separate from wire compatibility.
 See its package-local checks, wheel-isolation and actual-Geowiz controls.
 
 ## Reference model bindings

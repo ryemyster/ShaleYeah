@@ -78,6 +78,7 @@ export interface AuthorizedMCPRequest {
 
 const loopback = new Set(["127.0.0.1", "localhost", "[::1]"]);
 const protocolMethods = new Set([
+	"server/discover",
 	"initialize",
 	"ping",
 	"notifications/initialized",

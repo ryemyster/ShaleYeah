@@ -1,6 +1,8 @@
 # Integration Guide — @shaleyeah/economist
 
-> **Status: Planned** — Not yet implemented. See [#364](https://github.com/ryemyster/ShaleYeah/issues/364).
+The retained TypeScript interface calls Econobot through the stateless MCP
+connection described in the [package README](../README.md#mcp-connection).
+The complete ADK/Python employee workflow remains assigned to #680.
 
 ## Planned interface
 

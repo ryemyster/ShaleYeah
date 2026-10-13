@@ -27,7 +27,7 @@ sdk/src/
 ├── canonical-model.ts     Zod schemas: FormationSchema, EconomicsSchema, ProductionSchema,
 │                          RiskProfileSchema, DecisionSchema, WellAnalysisContextSchema
 ├── mcp-server.ts          MCPServer base class — all servers extend this
-├── mcp-http-sessions.ts   Internal per-client protocol/transport lifecycle
+├── mcp-http-requests.ts   Internal bounded, stateless HTTP exchange lifecycle
 ├── mcp-http-access.ts     Internal verified HTTP identity/scopes/audit/context boundary
 ├── server-factory.ts      ServerFactory — bootstraps an MCPServer from config
 ├── confidence-metadata.ts Internal score availability/range/declared-scale validation
@@ -71,8 +71,8 @@ TypeScript LLM calls flow through `callLLM()` from `llm-client.ts` — SDK consu
 `MCPServer` selects transport at startup:
 
 - **stdio** (default): when `process.env.PORT` is not set
-- **HTTP**: when `process.env.PORT` is set, with explicit `http.access` → one `StreamableHTTPServerTransport`
-  and `McpServer` protocol instance per initialized session
+- **HTTP**: when `process.env.PORT` is set, with explicit `http.access`; each
+  request receives a fresh protocol instance through the maintained SDK handler
 
 All 14 Tier 1 servers inherit this boundary. Their HTTP launchers must supply
 identity/scopes/audit configuration; setting a port alone fails before listening.
@@ -80,41 +80,40 @@ Factory constructors accept optional runtime HTTP/data-path settings. See
 [configured access and verified handler context](http-access.md) and the
 [Geowiz local launcher](../../servers/geowiz/docs/HTTP_ACCESS.md).
 
-The reference profile stays MCP SDK 1.29.0 / protocol 2025-11-25. A fresh valid
-initialization gets a cryptographic session ID; later requests route only to
-that instance. Missing IDs return 400, unknown/expired/closed IDs return 404,
-and reinitializing an existing session is rejected. Clients close sessions with
-DELETE and initialize again after 404. This follows the
-[versioned MCP session specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports#session-management).
+SDK 0.3.0 selects protocol 2026-07-28 with TypeScript server/client 2.3.1 and
+Node adapter 2.1.1. HTTP uses `createMcpHandler`/`toNodeHandler`; stdio uses
+`serveStdio`. Both explicitly reject the historical protocol profile. A plain
+library upgrade would keep the old wire behavior, so clients must also pin
+2026-07-28. See the [official migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28.html).
 
-Registered tool/resource definitions are installed on each protocol instance;
-later registrations reach existing and new sessions. Owning tool handlers/data
-remain shared server responsibilities. Sessions do not provide customer/source
-source rights or persistent employee context; #670 and #672 own those boundaries.
+HTTP requests carry their version, client capabilities and routing metadata.
+The maintained SDK validates that envelope and header/body consistency. Our
+access boundary separately verifies credentials, scopes and required audit
+before dispatch. Client metadata cannot grant authority. Transport session IDs
+are rejected. Domain stores, exact source handles, employee context and human
+review remain owned by their existing durable adapters.
 
-`MCPServerConfig.http` accepts `sessionIdleTimeoutMs`, `requestTimeoutMs` and
-`maxSessions`. Explicit values override corresponding environment settings;
-[defaults and names](DEPLOYMENT.md#environment-variables) are documented there.
-Limits must be positive finite integers within the timer range. HTTP JSON bodies
-are capped at 1 MiB; incomplete body reads and accepted POST response handling
-each have a finite deadline. Idle expiry waits for active POSTs; response timeout
-closes that session after an error result when deliverable. A tool already
-executing may finish after transport closure; this does not undo its effects or
-authorize a retry. No resumable event-store adapter is selected.
+Each protocol instance receives the current tool/resource registry. Later
+registrations are visible on subsequent discovery. `MCPServerConfig.http`
+accepts `requestTimeoutMs`, `maxConcurrentRequests` and `maxRequestBodyBytes`;
+[deployment settings](DEPLOYMENT.md#environment-variables) specify bounds.
+Incomplete bodies time out with 408. An operation deadline closes its own
+exchange and signals cancellation without aborting another request. A possible
+effect remains uncertain; transport closure never authorizes automatic replay.
 
-Shutdown closes session transports/SSE streams before draining the listener and
-removes timers/registry entries. Restart uses fresh IDs. `PORT=0` lets the OS
-choose a port; `httpPort()` returns the bound port after initialization. Health
-and configured MCP URL paths retain their current routing behavior.
+Shutdown closes in-flight exchanges before draining the listener. Restart
+creates a new handler. `PORT=0` chooses a local test port and `httpPort()` returns
+it after startup. The health and configured metadata endpoints keep their
+existing access rules. Optional MCP subscriptions, MRTR and task extensions are
+not selected role workflows; canonical employee input/review records retain
+their own business meaning.
 
-`tests/mcp-http-session.test.ts` exercises real concurrent clients, preserved
-responses/resources, DELETE/reconnect, expiry/capacity, body/response deadlines,
-bad/interrupted input, late registrations and repeated stop/start. Existing
-constructor selection tests remain. These checks qualify lifecycle, not HTTP
-authentication, tool-result schemas, professional data quality or extraction.
-The additional access suite authenticates requests before dispatch, binds
-sessions to verified ownership, tests per-tool/resource scopes and redacted
-pre-dispatch audit, and preserves session/schema controls under explicit policy.
+`mcp-stateless.test.ts` and `mcp-http-lifecycle.test.ts` cover no-handshake calls,
+separate instances, capacity/deadline/body bounds, explicit legacy rejection,
+dynamic discovery and restart. Access, tool-contract, employee-event and
+provider-cancellation controls exercise the actual modern client/server path.
+These controls do not certify professional findings or a deployment target;
+reference and fleet qualification retain their owning gates.
 
 ## Tool contracts and result compatibility
 
@@ -145,7 +144,7 @@ qualified fleet clients: owners in the [migration ledger](../../docs/legacy-migr
 must adopt validation/status handling before release. The Geologist wrapper
 validates the selected tool, preserves structured evidence, rejects conflicting
 JSON text and retains a documented text-only legacy path when no output schema
-is advertised. It now delegates those checks and configured credential/session
+is advertised. It now delegates those checks and configured credential/protocol
 handling to the installed [Python client](../python/README.md); the other role
 owners remove their copies when adopting it.
 

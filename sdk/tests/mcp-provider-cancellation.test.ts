@@ -4,8 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { z } from "zod";
 import { createModelRuntime, parseModelProfile } from "../src/model-provider.js";
 import { ServerFactory } from "../src/server-factory.js";
@@ -98,7 +97,10 @@ test("actual protected MCP cancellation aborts the selected model operation with
 	});
 	if (prior === undefined) delete process.env.PORT;
 	else process.env.PORT = prior;
-	const client = new Client({ name: "cancellation-control", version: "0.1.0" });
+	const client = new Client(
+		{ name: "cancellation-control", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const controller = new AbortController();
 	try {
 		await server.initialize();
@@ -107,7 +109,7 @@ test("actual protected MCP cancellation aborts the selected model operation with
 				requestInit: { headers: { Authorization: `Bearer ${token}` } },
 			}),
 		);
-		const request = client.callTool({ name: "model", arguments: {} }, undefined, { signal: controller.signal }).then(
+		const request = client.callTool({ name: "model", arguments: {} }, { signal: controller.signal }).then(
 			() => null,
 			(error) => error,
 		);

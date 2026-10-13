@@ -33,15 +33,19 @@ independent HTTP protocol/transport lifecycles. #677 supplies declared-schema,
 structured-result and genuine-failure boundary checks in the SDK/Geologist;
 the shared client preserves those result checks. #678 requires
 configured identity/scopes/audit at HTTP entry, including direct external clients
-and session ownership. See [HTTP access migration](../sdk/docs/http-access.md).
-Session IDs are not authority; actual role result schemas/domain qualification
+on each request. #722 replaces the session transport with explicitly selected
+stateless exchanges. See [HTTP access](../sdk/docs/http-access.md).
+Transport metadata is not authority; actual role result schemas/domain qualification
 remain owned by #671/#674 and their role peers.
 
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
-coordination. The selected reference profile is MCP 2025-11-25, with stdio and
-Streamable HTTP qualification still required in #674. Geologist's lock resolves
-ADK 2.4.0 and Python MCP 1.28.1; the TypeScript workspace resolves MCP SDK 1.29.0.
+coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
+previous 2025-11-25 receipts remain historical evidence. Geologist and Reporter
+keep ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
+remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
+same installed MCP client. Their employee workflow qualification remains pending. TypeScript
+uses server/client 2.3.1 and Node adapter 2.1.1 with explicit modern options.
 A2A remains unconfigured and unqualified. Executed external employee record cases
 prove structure/binding; future adapter scenarios define discovery, error, scope,
 review, cancellation and credential acceptance checks.
@@ -106,8 +110,9 @@ Every unit needs install/run/check docs and declared dependencies. #674 and role
 PRs verify extraction; moving a folder alone does not prove independent operation.
 The [deployment support guide](deployment-support.md) records current no-key
 reference checks, actual ports/config/data paths, durable-state/review gaps and
-optional-host qualification. Geowiz maintains transport sessions and writes
-findings; process separation does not make it stateless or prove replica safety.
+optional-host qualification. #722 removes HTTP transport sessions. Geowiz still
+owns source/review stores and writes findings; request portability does not
+qualify a shared database, replica deployment or concurrent write topology.
 
 ## Context, evaluations and trust
 
@@ -121,9 +126,10 @@ Roman display names are separate from employee, role and capability IDs.
 Geologist adopts these records in its scoped durable catalog and host-bound
 metadata hooks. Its native session adapter rechecks original history references;
 current model input comes from bounded selected records and the current turn.
-Full authenticated review/continuation remains pending.
-The package verifies structure and declared references, not reviewer identity,
-real source content/rights or execution permission.
+The Geologist reference now has enrolled backend review and exact-revision
+private save/continuation, including rejected stale/replayed decisions and
+current source grants. These technical fixture controls do not supply actual
+operator data or professional interpretation acceptance.
 [ADR 0003](../contracts/docs/0003-authority-and-review.md), delivered by #573,
 specifies trusted identity and exact-revision review. #678 supplies HTTP entry;
 #672 supplies durable context; #673 supplies enrolled exact-revision human review and transactional private save/continuation. [Evaluation profiles](../evaluations/README.md) and trusted metrics are delivered
@@ -140,8 +146,8 @@ purge and sealed full-input byte/token gates. Warehouses, vectors and
 hosted memory are optional adapters selected through measured qualification.
 
 Existing shape tests/eval assets are foundational. Configurable job scorecards are implemented in the independent
-[evaluation package](../evaluations/README.md); portable run results are implemented; promotion and fleet qualification
-gates remain #577/#691. Each role needs
+[evaluation package](../evaluations/README.md); portable run results and reference
+promotion gates from #577 are implemented. Fleet qualification remains #691. Each role needs
 professional cases and human acceptance; importing an agent is not job-quality
 evidence.
 

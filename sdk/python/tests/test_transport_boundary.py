@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from secrets import token_urlsafe
 from types import SimpleNamespace
 
-import httpx
+import httpx2 as httpx
 import mcp
 import mcp.client.streamable_http
 import pytest
@@ -28,34 +28,32 @@ def config(**options):
     )
 
 
-def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, version="2025-11-25", result_error=False):
+def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, version="2026-07-28", result_error=False):
     state = {"connections": 0, "dispatches": 0, "closes": 0, "clients": [], "metadata": []}
 
     class Session:
-        def __init__(self, *_args, **_kwargs):
-            pass
+        def __init__(self, transport, **_kwargs):
+            self.transport = transport
+            self.session = self
+            self.protocol_version = version
 
         async def __aenter__(self):
+            await self.transport.__aenter__()
             return self
 
-        async def __aexit__(self, *_):
-            pass
-
-        async def initialize(self):
-            if state["connections"] <= len(setup_errors):
-                raise setup_errors[state["connections"] - 1]
-            return SimpleNamespace(protocolVersion=version)
+        async def __aexit__(self, *error):
+            await self.transport.__aexit__(*error)
 
         async def list_tools(self, **_):
             return SimpleNamespace(
                 tools=[
                     SimpleNamespace(
                         name="echo",
-                        inputSchema=SCHEMA,
-                        outputSchema=SCHEMA,
+                        input_schema=SCHEMA,
+                        output_schema=SCHEMA,
                     )
                 ],
-                nextCursor=None,
+                next_cursor=None,
             )
 
         async def call_tool(self, _name, arguments, **_):
@@ -64,18 +62,20 @@ def backend(monkeypatch, *, setup_errors=(), call_error=None, call_delay=0, vers
             await asyncio.sleep(call_delay)
             if call_error:
                 raise call_error
-            return SimpleNamespace(content=[], structuredContent=arguments, isError=result_error)
+            return SimpleNamespace(content=[], structured_content=arguments, is_error=result_error)
 
     @asynccontextmanager
     async def transport(_url, *, http_client, **_):
         state["connections"] += 1
         state["clients"].append(http_client)
         try:
+            if state["connections"] <= len(setup_errors):
+                raise setup_errors[state["connections"] - 1]
             yield None, None, lambda: None
         finally:
             state["closes"] += 1
 
-    monkeypatch.setattr(mcp, "ClientSession", Session)
+    monkeypatch.setattr(mcp, "Client", Session)
     monkeypatch.setattr(mcp.client.streamable_http, "streamable_http_client", transport)
     return state
 
@@ -107,6 +107,9 @@ def test_invalid_destinations_are_rejected_before_any_credential_resolution(endp
         {"preflight_attempts": 4},
         {"preflight_attempts": 0},
         {"retry_delay": -1},
+        {"max_response_bytes": 0},
+        {"max_response_bytes": True},
+        {"max_response_bytes": 16_777_217},
         {"protocol_versions": ()},
         {"allow_loopback_http": "false"},
     ],
@@ -283,9 +286,14 @@ async def test_exception_group_cannot_hide_auth_failure_or_expose_credentials(mo
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("status", [307, 401, 403])
+@pytest.mark.parametrize("status,location", [
+    (307, "https://attacker.example/mcp"),
+    (307, "https://trusted.example/mcp-next"),
+    (401, "https://attacker.example/mcp"),
+    (403, "https://attacker.example/mcp"),
+])
 async def test_real_sdk_http_denials_do_not_follow_redirects_or_expose_credentials(
-    monkeypatch, status
+    monkeypatch, status, location
 ):
     original_client = httpx.AsyncClient
     requests = []
@@ -298,7 +306,7 @@ async def test_real_sdk_http_denials_do_not_follow_redirects_or_expose_credentia
         requests.append(request)
         return httpx.Response(
             status,
-            headers={"location": "https://attacker.example/mcp"},
+            headers={"location": location},
             json={"error": "untrusted server text"},
         )
 
@@ -323,6 +331,121 @@ async def test_real_sdk_http_denials_do_not_follow_redirects_or_expose_credentia
 
 
 @pytest.mark.asyncio
+async def test_real_modern_input_required_is_blocked_after_one_dispatch_without_automatic_replay(monkeypatch):
+    original_client = httpx.AsyncClient
+    dispatched = []
+
+    async def handler(request):
+        import json
+
+        message = json.loads(request.content)
+        if message["method"] == "tools/list":
+            payload = {
+                "resultType": "complete", "ttlMs": 0, "cacheScope": "private",
+                "tools": [{"name": "echo", "inputSchema": SCHEMA}],
+            }
+        else:
+            assert message["method"] == "tools/call"
+            dispatched.append(message)
+            payload = {"resultType": "input_required", "inputRequests": {}, "requestState": "untrusted-fixture-state"}
+        return httpx.Response(200, json={"jsonrpc": "2.0", "id": message["id"], "result": payload})
+
+    def configured_client(**kwargs):
+        return original_client(transport=httpx.MockTransport(handler), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", configured_client)
+    with pytest.raises(MCPClientError) as failure:
+        await call_tool(MCPClientConfig(
+            endpoint="https://trusted.example/mcp", credential=credential, preflight_attempts=3,
+        ), "echo", {"value": "kept"})
+    assert failure.value.code == "input_required"
+    assert failure.value.category == "user_action"
+    assert failure.value.effect_unknown is True
+    assert len(dispatched) == 1
+    assert "untrusted-fixture-state" not in str(failure.value)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("chunked", [False, True])
+@pytest.mark.parametrize("value_size", [128, 2048])
+async def test_real_modern_json_result_is_bounded_without_replaying_the_dispatched_call(monkeypatch, chunked, value_size):
+    import json
+
+    original_client = httpx.AsyncClient
+    dispatched = []
+
+    async def handler(request):
+        message = json.loads(request.content)
+        if message["method"] == "tools/list":
+            payload = {
+                "resultType": "complete", "ttlMs": 0, "cacheScope": "private",
+                "tools": [{"name": "echo", "inputSchema": SCHEMA}],
+            }
+        else:
+            assert message["method"] == "tools/call"
+            dispatched.append(message)
+            payload = {
+                "resultType": "complete", "content": [], "isError": False,
+                "structuredContent": {"value": "x" * value_size},
+            }
+        body = json.dumps({"jsonrpc": "2.0", "id": message["id"], "result": payload}).encode()
+        if chunked:
+            class Stream(httpx.AsyncByteStream):
+                async def __aiter__(self):
+                    for index in range(0, len(body), 4096):
+                        yield body[index:index + 4096]
+            return httpx.Response(200, headers={"content-type": "application/json"}, stream=Stream())
+        return httpx.Response(200, headers={"content-type": "application/json"}, content=body)
+
+    def configured_client(**kwargs):
+        return original_client(transport=httpx.MockTransport(handler), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", configured_client)
+    settings = MCPClientConfig(
+            endpoint="https://trusted.example/mcp", credential=credential, preflight_attempts=3,
+            max_response_bytes=1024,
+    )
+    if value_size < 1024:
+        result = await call_tool(settings, "echo", {"value": "kept"})
+        assert result["structuredContent"] == {"value": "x" * value_size}
+    else:
+        with pytest.raises(MCPClientError) as failure:
+            await call_tool(settings, "echo", {"value": "kept"})
+        assert failure.value.code == "result_limit"
+        assert failure.value.effect_unknown is True
+    assert len(dispatched) == 1
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("headers,code", [
+    ({"content-encoding": "gzip"}, "unsupported_encoding"),
+    ({"content-length": "invalid"}, "invalid_result"),
+    ({"content-length": "-1"}, "invalid_result"),
+])
+async def test_response_framing_is_rejected_before_parsing_or_dispatch(monkeypatch, headers, code):
+    original_client = httpx.AsyncClient
+    requests = []
+
+    async def handler(request):
+        requests.append(request)
+        class Stream(httpx.AsyncByteStream):
+            async def __aiter__(self):
+                yield b"untrusted-body"
+        return httpx.Response(200, headers=headers, stream=Stream())
+
+    def configured_client(**kwargs):
+        return original_client(transport=httpx.MockTransport(handler), **kwargs)
+
+    monkeypatch.setattr(httpx, "AsyncClient", configured_client)
+    with pytest.raises(MCPClientError) as failure:
+        await call_tool(MCPClientConfig(endpoint="https://trusted.example/mcp", credential=credential), "echo", {"value": "kept"})
+    assert failure.value.code == code
+    assert failure.value.effect_unknown is False
+    assert len(requests) == 1
+    assert requests[0].headers["accept-encoding"] == "identity"
+
+
+@pytest.mark.asyncio
 async def test_real_sdk_cancellation_closes_streams_and_does_not_replay(monkeypatch):
     original_client = httpx.AsyncClient
     dispatched = asyncio.Event()
@@ -339,23 +462,29 @@ async def test_real_sdk_cancellation_closes_streams_and_does_not_replay(monkeypa
         method = message["method"]
         if method.startswith("notifications/"):
             return httpx.Response(202)
-        if method == "initialize":
+        if method == "server/discover":
             payload = {
-                "protocolVersion": "2025-11-25",
+                "supportedVersions": ["2026-07-28"],
                 "capabilities": {"tools": {}},
-                "serverInfo": {"name": "cancellation-control", "version": "0.1"},
+                "ttlMs": 0,
+                "cacheScope": "private",
             }
         elif method == "tools/list":
-            payload = {"tools": [{"name": "echo", "inputSchema": SCHEMA}]}
+            payload = {
+                "tools": [{"name": "echo", "inputSchema": SCHEMA}],
+                "ttlMs": 0,
+                "cacheScope": "private",
+            }
         else:
             assert method == "tools/call"
             tool_calls.append(message)
             dispatched.set()
             await asyncio.sleep(5)
             payload = {"content": [], "structuredContent": {"value": "late"}, "isError": False}
+        payload["resultType"] = "complete"
         return httpx.Response(
             200,
-            headers={"mcp-session-id": "cancel-control"},
+            headers={"mcp-protocol-version": "2026-07-28"},
             json={"jsonrpc": "2.0", "id": message["id"], "result": payload},
         )
 

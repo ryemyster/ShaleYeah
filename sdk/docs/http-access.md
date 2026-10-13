@@ -30,18 +30,15 @@ cannot establish the honesty of a malicious operator-installed verifier.
 `policy.connectionScopes` applies to every protected request. `toolScopes` maps
 exact registered tool names to required scopes; `resourceScopes` maps exact read
 URIs. All listed scopes must be present. Missing classifications are denied.
-The fixed supported protocol methods include initialization, ping, initialized/
-cancelled/progress notifications, tool/resource discovery and responses within
-an owned session. Tool calls and resource reads receive their additional checks.
+The selected profile includes server discovery, ping and tool/resource
+discovery. Tool calls and resource reads receive their additional checks.
 Discovery permits metadata enumeration within connection authority; it does not
 grant execution of the listed operations.
 
-Each session is bound to issuer/operator, subject, customer and employee. POST,
-SSE GET and DELETE authenticate again; a valid ID alone grants nothing. Updated
-credentials can change scopes for the same owner, while another owner cannot
-reuse that session. Revocation is checked through the verifier on each request;
-an existing SSE stream is not continuously introspected. Reinitialize after the
-normal session-expiry/termination behavior.
+Every exchange verifies issuer/operator, subject, customer and employee.
+Revocation and scopes are checked independently on each request. Modern HTTP
+keeps no transport session authority; a supplied session ID is rejected with
+400. Client capability/identity metadata remains untrusted connection data.
 
 Tool/resource handlers receive an optional second `MCPExecutionContext` argument.
 It contains immutable `principal` (`subjectId`, `customerId`, `employeeId`,
@@ -97,18 +94,19 @@ configured resource metadata and supported scopes. A safe bearer challenge
 points to that metadata. An actual OAuth issuer's discovery, grant/registration
 flow, TLS, revocation and real-client conformance require separate deployment
 qualification; deterministic injected-verifier tests do not certify them.
-The selected [MCP 2025-11-25 authorization profile](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization)
-defines per-request credentials and intended-resource validation. The SDK pin
-remains 1.29.0; no newer profile is claimed.
+The selected [MCP 2026-07-28 profile](https://modelcontextprotocol.io/specification/2026-07-28)
+uses self-contained requests. This adapter supports the configured bearer
+verifier and intended-resource checks; it does not implement every OAuth
+authorization-server or interactive client-registration flow.
 
 ## Failure, audit and limits
 
 | Outcome | HTTP result before a handler runs |
 | --- | --- |
 | Missing/invalid/expired identity, wrong issuer/audience | 401 |
-| Verified insufficient scope/ownership, stolen session, forbidden host/origin, unclassified operation | 403 |
+| Verified insufficient scope/ownership, forbidden host/origin, unclassified operation | 403 |
 | Required audit unavailable/timed out | 503 |
-| Unknown route/session or normal protocol/body error | Existing bounded HTTP/protocol failure, without tool execution |
+| Unsupported session/protocol, malformed routing/body or unknown route | Bounded HTTP/protocol failure, without tool execution |
 
 The endpoint is `/mcp`. Header credentials are required; query-string tokens and
 other URL paths do not authorize access. Minimal `/health` and configured remote
@@ -143,9 +141,9 @@ handling; role/reference qualification is
 ## Verification
 
 `tests/mcp-http-access.test.ts` uses generic clients and direct HTTP with an
-injected synthetic verifier: identity/scopes/ownership/session theft/revocation,
+injected synthetic verifier: identity/scopes/ownership/forged handles/revocation,
 concurrency, model-claim bypass, audit/verifier failure, expiry during audit,
-local restrictions and metadata. Existing session/schema/stdio checks remain.
+local restrictions and metadata. Modern exchange, schema and stdio checks remain.
 Geowiz's `tests/http-access.test.ts` runs the actual backend and local launcher.
 No live IAM credentials, professional quality acceptance or release support is
 implied by these tests.

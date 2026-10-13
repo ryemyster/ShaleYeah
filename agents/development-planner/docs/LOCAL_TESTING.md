@@ -27,10 +27,10 @@ Then point the agent at it:
 
 ```bash
 cd agents/development-planner
-DEVELOPMENT_MCP_URL=http://localhost:3011 uv run pytest
+DEVELOPMENT_MCP_URL=http://localhost:3011/mcp uv run pytest
 ```
 
-The default URL is already `http://localhost:3011`, so the environment variable is only needed when the backend runs elsewhere.
+The default URL is already `http://localhost:3011/mcp`, so the environment variable is only needed when the backend runs elsewhere.
 
 ## What The Tests Cover
 

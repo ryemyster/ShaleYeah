@@ -5,8 +5,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createConnectorRuntime, operatorFileAdapter } from "@shaleyeah/connectors";
 import type { MCPHttpAccessConfig, MCPHttpSecurityEvent } from "@shaleyeah/sdk";
 import { GeowizServer } from "../src/index.js";
@@ -37,7 +36,10 @@ function localPolicy(token: string, audit: (event: MCPHttpSecurityEvent) => void
 }
 
 async function control(url: URL, token: string) {
-	const client = new Client({ name: "outside-shaleyeah", version: "0.1.0" });
+	const client = new Client(
+		{ name: "outside-shaleyeah", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const transport = new StreamableHTTPClientTransport(url, {
 		requestInit: { headers: { Authorization: `Bearer ${token}` } },
 	});
@@ -54,7 +56,9 @@ async function control(url: URL, token: string) {
 			method: "POST",
 			headers: {
 				Authorization: `Bearer ${token}`,
-				"MCP-Session-Id": transport.sessionId!,
+				"MCP-Protocol-Version": "2026-07-28",
+				"Mcp-Method": "tools/call",
+				"Mcp-Name": "save_finding",
 				"Content-Type": "application/json",
 				Accept: "application/json, text/event-stream",
 			},
@@ -62,12 +66,19 @@ async function control(url: URL, token: string) {
 				jsonrpc: "2.0",
 				id: 9,
 				method: "tools/call",
-				params: { name: "save_finding", arguments: { approved: true, scopes: ["all"] } },
+				params: {
+					name: "save_finding",
+					arguments: { approved: true, scopes: ["all"] },
+					_meta: {
+						"io.modelcontextprotocol/protocolVersion": "2026-07-28",
+						"io.modelcontextprotocol/clientInfo": { name: "outside-shaleyeah", version: "0.1.0" },
+						"io.modelcontextprotocol/clientCapabilities": {},
+					},
+				},
 			}),
 		});
 		assert.equal(denied.status, 403);
 		await denied.body?.cancel();
-		await transport.terminateSession();
 	} finally {
 		await client.close();
 	}

@@ -6,7 +6,7 @@ Integrate with Title Analyst through the ADK project in `agents/title-analyst`.
 
 ```bash
 cd agents/title-analyst
-TITLE_MCP_URL=http://localhost:3010 agents-cli run \
+TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Trace chain of title for Section 3 in Weld County, Colorado over 40 years"
 ```
 
@@ -28,3 +28,7 @@ Future orchestration should call the ADK agent as a standalone unit. Keep task r
 ## Server Integration
 
 Claude Desktop and other MCP clients can connect directly to `servers/title` for Tier 1 tool access. The Tier 2 Title Analyst behavior remains in ADK and uses the same backend URL.
+
+## Connection profile
+
+This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.

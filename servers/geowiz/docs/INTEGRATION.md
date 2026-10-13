@@ -2,7 +2,9 @@
 
 Geowiz is a separate MCP tool backend. The Geologist is an ADK/Python employee;
 a generic compatible MCP client can also call granted tools. The reference
-profile is MCP 2025-11-25 with TypeScript SDK 1.29.0.
+profile is MCP 2026-07-28, explicitly selected through the shared SDK 0.3.0
+stateless adapter. Clients pin that revision and authenticate every request;
+older initialization/session clients are rejected.
 
 ## HTTP client boundary
 

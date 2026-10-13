@@ -14,7 +14,7 @@ Deploy the Research Analyst as a Python ADK app from `agents/research-analyst`. 
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `RESEARCH_MCP_URL` | No | `http://localhost:3008` | Research MCP backend URL |
+| `RESEARCH_MCP_URL` | No | `http://localhost:3008/mcp` | Research MCP backend URL |
 | `RESEARCH_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK root-agent model |
 
 ## Deployment Targets

@@ -5,7 +5,7 @@ from app.agent import plan_research_tool_call, research_backend_status, root_age
 
 
 def test_python_mcp_client_module_exists_for_research_execution() -> None:
-    assert research_mcp.RESEARCH_DEFAULT_URL == "http://localhost:3008"
+    assert research_mcp.RESEARCH_DEFAULT_URL == "http://localhost:3008/mcp"
     assert hasattr(research_mcp, "call_research_tool")
     assert hasattr(research_mcp, "conduct_market_research")
     assert hasattr(research_mcp, "analyze_competition")

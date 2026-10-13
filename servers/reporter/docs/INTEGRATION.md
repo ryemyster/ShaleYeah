@@ -5,6 +5,11 @@ source IDs and the configured requirements to `draft_report`. The result include
 canonical private work, Markdown, source revisions and disclosure requirements.
 No tool accepts filesystem output paths or caller-supplied authority receipts.
 
+Pin MCP 2026-07-28 for the shared SDK 0.3.0 transport. Every HTTP request is
+self-contained and authenticated; initialization and transport session IDs are
+rejected. Private work and human-review handles persist independently of the
+connection. Discover the current tool schemas before calling them.
+
 Trusted hosts configure `ReviewedSources.current` to authenticate origin review
 and current recipient read/export rights. The service validates exact work, task,
 request and decision bindings. Local owner-only exports provide an explicitly
@@ -24,3 +29,10 @@ The human owner uses the separate enrolled review interface to inspect, request
 changes, reject or approve that packet. `get_review_status` supplies a durable
 checkpoint; `release_report` commits its exact grant to private reviewed reports
 once. Source, task, template or qualification changes block continuation.
+
+The standalone extraction check installs its independent MCP consumer from an
+explicit production dependency. It removes development packages and verifies
+the consumer can still import the maintained client before container checks.
+Test runners remain development dependencies. This qualifies the fixture
+connection environment; it does not add a client dependency to the tool server
+or replace its source and human-review boundaries.

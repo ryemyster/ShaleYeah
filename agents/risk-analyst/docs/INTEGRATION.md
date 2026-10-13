@@ -6,7 +6,7 @@ Integrate with Risk Analyst through the ADK project in `agents/risk-analyst`.
 
 ```bash
 cd agents/risk-analyst
-RISK_ANALYSIS_MCP_URL=http://localhost:3005 agents-cli run \
+RISK_ANALYSIS_MCP_URL=http://localhost:3005/mcp RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Run a Monte Carlo simulation for price, production, decline, and capex uncertainty"
 ```
 
@@ -26,3 +26,7 @@ Future orchestration should call the ADK agent as a standalone unit. Keep task r
 ## Server Integration
 
 Claude Desktop and other MCP clients can connect directly to `servers/risk-analysis` for Tier 1 tool access. The Tier 2 Risk Analyst behavior remains in ADK and uses the same backend URL.
+
+## Connection profile
+
+This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.

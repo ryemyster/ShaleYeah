@@ -69,32 +69,27 @@ separately evidenced choice under #578/#674.
 
 ## Selected versions and research evidence
 
-The implementation baseline is develop `4eccc57752dbc0b4f35a461bbbdcee45860e5d04`,
-inspected on 2026-10-08. Dependency ranges and installed protocol constants are
-different facts; this table records both. Re-check locks/constants on upgrades.
+The original #572/#674 selection used the initialized 2025-11-25 protocol.
+Those accepted receipts remain historical evidence. The maintainer's #722
+explicitly replaces that profile with 2026-07-28 before further employee
+migrations. Re-check locks, actual wire behavior and qualification on upgrades;
+changing a library version alone does not change its selected protocol era.
 
 | Boundary | Selected profile / repository evidence | Qualification limit |
 | --- | --- | --- |
 | Employee records | Canonical JSON Schema 2020-12, `contractVersion: "0.1.0"`; [schema](../shaleyeah_contracts/schemas/employee-0.1.0.schema.json) and both validators | Only this exact employee version is implemented; structural comparisons do not authenticate or execute |
-| MCP tool protocol | `2025-11-25`, initialized connection; stdio and Streamable HTTP reference profiles | Both need real client/server conformance in #674; legacy SSE, alternative revisions and MCP task features are not selected |
-| TypeScript MCP | [sdk/package.json](../../sdk/package.json) declares `^1.29.0`; [workspace lock](../../pnpm-lock.yaml) resolves 1.29.0; installed `dist/esm/types.js` declares latest 2025-11-25 | SDK-supported historical revisions are not automatically qualified SHALE YEAH profiles |
-| Python reference MCP | [Geologist metadata](../../agents/geologist/pyproject.toml) declares `>=1.13.0,<2`; [lock](../../agents/geologist/uv.lock) resolves 1.28.1; installed `mcp/types.py` declares latest 2025-11-25 | Other agents have their own locks; this evidence is for the reference package |
+| MCP tool protocol | `2026-07-28`, self-contained requests; stdio and Streamable HTTP | #722 owns actual modern client/server, protected workflow and extraction receipts; initialized legacy protocols and optional extensions are not selected |
+| TypeScript MCP | [sdk/package.json](../../sdk/package.json) pins server/client 2.3.1 and Node adapter 2.1.1; [workspace lock](../../pnpm-lock.yaml) records exact dependencies | Explicit modern serving/client options required; supported SDK legacy modes do not qualify our profile |
+| Python MCP callers | [client metadata](../../sdk/python/pyproject.toml) pins MCP 2.3.0 and HTTPX2 2.13.1; all 11 Python employees declare client 0.3.0 directly or through employee helpers; the nine basic callers use its shared configuration loader | Connection compatibility does not qualify a job; each adoption issue must establish its own source/context/review, independent operation and job-quality proof |
 | Reference ADK | Same Geologist lock resolves `google-adk` 2.4.0 | ADK is our authoring choice, not a requirement imposed on external employees |
 | A2A | Deferred: no configured `RemoteA2aAgent`/`to_a2a` path or `a2a-sdk` in the reference lock | No A2A transport/version is certified by this PR |
 
-The [versioned MCP lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle)
-defines initialization, capability/version agreement and shutdown. The
-[transport specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports)
-defines stdio and Streamable HTTP. These are the sources for the selected tool
-profile. Our current Python wrapper initializes before calling tools; the shared
-TypeScript base has both transports; #668 replaced its shared HTTP transport with
-tested per-session protocol instances and finite lifecycle cleanup. That
-evidence does not establish HTTP authority, result conformance or extraction.
-
 [MCP's official 2026-07-28 migration guide](https://ts.sdk.modelcontextprotocol.io/v2/migration/support-2026-07-28)
-describes a different per-request model. It is an optional future adapter profile;
-do not mix its lifecycle with a pinned 2025-11-25 client or infer support from
-new documentation. Its adoption needs an explicit versioned conformance change.
+defines the explicit per-request serving entries. #722 removes the hidden HTTP
+session registry and initialization dependency, while retaining independent
+authentication, source checks, business context and exact human review. Generic
+clients and installed/native employees must prove that actual wire profile.
+No existing receipt is relabeled as modern protocol evidence.
 
 [A2A 1.0.0](https://a2a-protocol.org/v1.0.0/specification/) provides discovery,
 task/artifact operations and interrupted states. Its wire version is `1.0`;
@@ -108,18 +103,20 @@ advertising A2A. No guessed Agent Card or custom universal RPC is introduced her
 
 ## MCP tool conformance requirements
 
-1. Connect only to an operator-configured permitted endpoint/process. Complete
-   `initialize`, agree an enabled protocol version/capabilities, then send
-   `notifications/initialized`. Unsupported agreement closes without a tool call.
-   Any allowed fallback needs its own explicit profile and cases; never choose
-   “latest” or silently drop a required capability.
+1. Connect only to an operator-configured permitted endpoint/process. Pin
+   2026-07-28 and carry the required version/capability/routing metadata per
+   request. Discovery may establish capabilities; it never grants authority.
+   Send no initialization handshake or transport session ID. Unsupported
+   revision/routing/capability claims fail before action dispatch, with no
+   silent downgrade or automatic replay of an interrupted command.
 2. Discover all required tools through bounded `tools/list` pagination. Compare
    required names, input/output schemas and explicitly configured role-capability
    mappings. Descriptions and matching Roman names do not prove compatibility.
    Validate actual arguments/results against advertised schemas. Revalidate on
-   reconnect or an advertised list-change notification; do not cache indefinitely.
+   reconnect and schema changes; partition any cache by trusted authorization
+   or disable it. The installed Python adapter discovers each call anew.
 3. Preserve structured success and error results through the client/employee
-   path. The [MCP tools specification](https://modelcontextprotocol.io/specification/2025-11-25/server/tools)
+   path. The [selected MCP specification](https://modelcontextprotocol.io/specification/2026-07-28)
    distinguishes protocol errors from tool failures and defines `isError`,
    `structuredContent` and output schemas. This reference profile requires an
    output schema and structured success for its mapped tools, with consistent
@@ -135,11 +132,11 @@ advertising A2A. No guessed Agent Card or custom universal RPC is introduced her
 5. Stdio stdout carries protocol messages only; diagnostics go through a redacted
    stderr/log sink. The launching operator supplies only necessary process
    credentials. Remote HTTP uses the authenticated boundary in ADR 0003 and the
-   [selected authorization specification](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
+   [selected MCP specification](https://modelcontextprotocol.io/specification/2026-07-28).
    No token passthrough: each remote/source connection gets an intended-audience
    credential from its own trusted resolver. Model keys never become operator
    rights or agent payload fields. Authenticate each request independently of
-   transport session IDs; retain correct profile headers and session cleanup.
+   transport metadata; retain correct profile headers and bounded exchange cleanup.
 6. Isolate clients and close/recover their transports without reusing another
    client's state. Declared optional resources/prompts/sampling/elicitation/MCP
    tasks are negotiated explicitly; none is required for the bounded reference

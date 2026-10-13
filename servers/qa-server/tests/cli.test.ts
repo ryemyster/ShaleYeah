@@ -4,8 +4,8 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { Client } from "@modelcontextprotocol/client";
+import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import QAServer, { evaluateQARules } from "../src/index.js";
 
 test("public entry exports the real engine and unconfigured stdio supports discovery but blocks evaluation", async () => {
@@ -16,7 +16,10 @@ test("public entry exports the real engine and unconfigured stdio supports disco
 	const env = Object.fromEntries(
 		Object.entries(process.env).filter(([name, value]) => value !== undefined && !/^(PORT|QA_CONFIG_FILE)$/.test(name)),
 	) as Record<string, string>;
-	const client = new Client({ name: "generic-qa-stdio", version: "r1" });
+	const client = new Client(
+		{ name: "generic-qa-stdio", version: "r1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const transport = new StdioClientTransport({
 		command: process.execPath,
 		args: [entry],
@@ -53,7 +56,10 @@ test("private configured stdio bootstrap runs eight checks and exports their rec
 	const env = Object.fromEntries(
 		Object.entries(process.env).filter(([name, value]) => value !== undefined && name !== "PORT"),
 	) as Record<string, string>;
-	const client = new Client({ name: "qa-private-bootstrap", version: "r1" });
+	const client = new Client(
+		{ name: "qa-private-bootstrap", version: "r1" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const transport = new StdioClientTransport({
 		command: process.execPath,
 		args: [path.resolve(process.env.QA_TEST_ENTRY ?? "dist/index.js")],

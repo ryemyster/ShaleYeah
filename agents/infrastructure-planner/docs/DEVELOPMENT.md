@@ -18,7 +18,7 @@ cd servers/infrastructure
 PORT=3012 pnpm start
 ```
 
-The agent reads `INFRASTRUCTURE_MCP_URL`, defaulting to `http://localhost:3012`.
+The agent reads `INFRASTRUCTURE_MCP_URL`, defaulting to `http://localhost:3012/mcp`.
 
 ## Development Rules
 

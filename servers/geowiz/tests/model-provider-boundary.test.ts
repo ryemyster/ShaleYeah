@@ -5,8 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createModelRuntime, type MCPHttpAccessConfig, parseModelProfile } from "@shaleyeah/sdk";
 import { GeowizServer, performFormationAnalysis } from "../src/index.js";
 
@@ -144,7 +143,10 @@ test("authenticated employee cannot discover or execute another owner's synthesi
 	const server = new GeowizServer({ dataPath: directory, modelRuntime: runtime, http: { access } });
 	if (prior === undefined) delete process.env.PORT;
 	else process.env.PORT = prior;
-	const client = new Client({ name: "owner-control", version: "0.1.0" });
+	const client = new Client(
+		{ name: "owner-control", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		await server.initialize();
 		const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${server.httpPort()}/mcp`), {

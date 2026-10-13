@@ -1,6 +1,8 @@
 # @shaleyeah/reservoir-engineer
 
-> **Status: Stub** — implementation tracked in [#365](https://github.com/ryemyster/ShaleYeah/issues/365). Reference implementation: `agents/geologist/`.
+The current TypeScript runtime delegates tools to Curve Smith. Its full employee
+workflow is tracked in [#681](https://github.com/ryemyster/ShaleYeah/issues/681),
+after the backend repair in [#712](https://github.com/ryemyster/ShaleYeah/issues/712).
 
 The reservoir engineer agent characterizes reservoirs, builds production forecasts, runs decline curve analysis, and estimates ultimate recoveries. It pairs with the **curve-smith** Tier 1 MCP server (port 3004).
 
@@ -11,20 +13,29 @@ The reservoir engineer agent characterizes reservoirs, builds production forecas
 | Tier 1 (tools) | `@shaleyeah/server-curve-smith` | 3004 |
 | Tier 2 (agent) | `@shaleyeah/reservoir-engineer` | 4004 |
 
-## Quick start (once implemented)
+## Package checks
 
 ```bash
-# Terminal 1 — Tier 1 server
-cd servers/curve-smith && PORT=3004 pnpm start
-
-# Terminal 2 — Tier 2 agent
 cd agents/reservoir-engineer
-ANTHROPIC_API_KEY=sk-ant-... CURVE_SMITH_MCP_URL=http://localhost:3004 pnpm test
+pnpm build
+pnpm test
 ```
 
-## Implementing this agent
+## MCP connection
 
-See `.claude/rules/agent-template.md` for the full copy-paste template. The geologist agent (`agents/geologist/src/agent/index.ts`) is the reference — copy it, rename `geologist` → `reservoirEngineer` and `geowiz` → `curveSmith`.
+Configure Curve Smith's identity, scopes and audit sink using the
+[HTTP access guide](../../sdk/docs/http-access.md); `PORT` alone does not enroll
+an HTTP server. Set `CURVE_SMITH_MCP_URL` to the configured `/mcp` endpoint and
+`CURVE_SMITH_MCP_ACCESS_TOKEN_FILE` to its dedicated owner-readable credential
+file (mode `0600`, separate from the model key). Historical bare local URLs are
+normalized to `/mcp`.
+
+Each call uses the pinned stateless protocol, a fresh bounded tool catalog,
+a 30-second default deadline (maximum 120 seconds) and a 1 MiB response limit.
+Redirects are denied. Genuine tool errors and failures after command dispatch
+stop automatic retry; inspect the outcome before repeating a command. Transport
+compatibility does not qualify professional recommendations, employee context
+or revision-bound human review; those remain assigned to the role issue.
 
 ## Docs
 

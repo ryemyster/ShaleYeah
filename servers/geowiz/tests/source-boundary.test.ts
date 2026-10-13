@@ -5,8 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { createConnectorRuntime, operatorFileAdapter } from "@shaleyeah/connectors";
 import type { MCPHttpAccessConfig, ModelRuntime } from "@shaleyeah/sdk";
 import { GeowizServer } from "../src/index.js";
@@ -52,7 +51,10 @@ test("protected Geowiz denies a readable source without a server-owned data gran
 	const server = new GeowizServer({ dataPath: directory, modelRuntime: runtime, http: { access } });
 	if (prior === undefined) delete process.env.PORT;
 	else process.env.PORT = prior;
-	const client = new Client({ name: "source-control", version: "0.1.0" });
+	const client = new Client(
+		{ name: "source-control", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		await server.initialize();
 		await client.connect(
@@ -132,7 +134,10 @@ test("actual Geowiz binds LAS analysis and discovery to source bytes and denies 
 	});
 	if (prior === undefined) delete process.env.PORT;
 	else process.env.PORT = prior;
-	const client = new Client({ name: "source-contract", version: "0.1.0" });
+	const client = new Client(
+		{ name: "source-contract", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		await server.initialize();
 		await client.connect(

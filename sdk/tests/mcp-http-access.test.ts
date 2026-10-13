@@ -5,8 +5,7 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { z } from "zod";
 import {
 	type MCPExecutionContext,
@@ -166,7 +165,10 @@ async function fixture(options: FixtureOptions = {}) {
 		access,
 		verifications: () => verifications,
 		async peer(credential = token) {
-			const client = new Client({ name: "external-client", version: "0.1.0" });
+			const client = new Client(
+				{ name: "external-client", version: "0.1.0" },
+				{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+			);
 			const transport = new StreamableHTTPClientTransport(url, {
 				requestInit: { headers: { Authorization: `Bearer ${credential}` } },
 			});
@@ -182,12 +184,7 @@ async function fixture(options: FixtureOptions = {}) {
 	};
 }
 
-const initialize = {
-	jsonrpc: "2.0",
-	id: 1,
-	method: "initialize",
-	params: { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "direct-http", version: "0.1.0" } },
-};
+const discover = { jsonrpc: "2.0", id: 1, method: "server/discover", params: {} };
 async function rpc(
 	app: Awaited<ReturnType<typeof fixture>>,
 	body: unknown,
@@ -196,17 +193,32 @@ async function rpc(
 	method = "POST",
 	extra: Record<string, string> = {},
 ) {
+	const message = body as { method: string; params?: Record<string, unknown> };
+	const name = message.params?.name ?? message.params?.uri;
+	const framed = {
+		...message,
+		params: {
+			...message.params,
+			_meta: {
+				"io.modelcontextprotocol/protocolVersion": "2026-07-28",
+				"io.modelcontextprotocol/clientInfo": { name: "direct-http", version: "0.1.0" },
+				"io.modelcontextprotocol/clientCapabilities": {},
+			},
+		},
+	};
 	return fetch(app.url, {
 		method,
 		headers: {
 			Accept: "application/json, text/event-stream",
 			"Content-Type": "application/json",
-			"MCP-Protocol-Version": "2025-11-25",
+			"MCP-Protocol-Version": "2026-07-28",
+			"Mcp-Method": message.method,
+			...(typeof name === "string" ? { "Mcp-Name": name } : {}),
 			...(token ? { Authorization: `Bearer ${token}` } : {}),
 			...(session ? { "MCP-Session-Id": session } : {}),
 			...extra,
 		},
-		...(method === "POST" ? { body: JSON.stringify(body) } : {}),
+		...(method === "POST" ? { body: JSON.stringify(framed) } : {}),
 	});
 }
 async function status(response: Response) {
@@ -234,7 +246,7 @@ async function rawHostStatus(app: Awaited<ReturnType<typeof fixture>>, host: str
 			},
 		);
 		request.once("error", reject);
-		request.end(JSON.stringify(initialize));
+		request.end(JSON.stringify(discover));
 	});
 }
 const call = { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "echo", arguments: {} } };
@@ -254,6 +266,7 @@ test("generic MCP client receives only immutable verified execution context", as
 	const app = await fixture();
 	try {
 		const peer = await app.peer();
+		const verifiedBeforeCall = app.verifications();
 		const result = await peer.client.callTool({
 			name: "echo",
 			arguments: { identity: { subjectId: "forged", scopes: ["all"] }, approved: true },
@@ -264,7 +277,7 @@ test("generic MCP client receives only immutable verified execution context", as
 		assert.equal(data.frozen, true);
 		assert.deepEqual(data.contextKeys, ["policyId", "policyVersion", "principal", "requestId"]);
 		assert.deepEqual(data.principalKeys, ["customerId", "employeeId", "scopes", "subjectId"]);
-		assert.ok(app.verifications() >= 3);
+		assert.equal(app.verifications(), verifiedBeforeCall + 1, "the tool request independently verifies its identity");
 	} finally {
 		await app.close();
 	}
@@ -280,10 +293,10 @@ test("missing, forged, expired and incorrectly targeted identities fail before h
 		]) {
 			const credential = randomUUID();
 			app.tokens.set(credential, { ...app.identity, ...change });
-			assert.equal(await status(await rpc(app, initialize, credential)), 401);
+			assert.equal(await status(await rpc(app, discover, credential)), 401);
 		}
-		assert.equal(await status(await rpc(app, initialize)), 401);
-		assert.equal(await status(await rpc(app, initialize, randomUUID())), 401);
+		assert.equal(await status(await rpc(app, discover)), 401);
+		assert.equal(await status(await rpc(app, discover, randomUUID())), 401);
 		assert.equal(app.server.calls, 0);
 	} finally {
 		await app.close();
@@ -296,7 +309,7 @@ test("verified identity with wrong customer or employee has no ownership authori
 		for (const change of [{ customerId: "customer-b" }, { employeeId: "employee-b" }]) {
 			const credential = randomUUID();
 			app.tokens.set(credential, { ...app.identity, ...change });
-			assert.equal(await status(await rpc(app, initialize, credential)), 403);
+			assert.equal(await status(await rpc(app, discover, credential)), 403);
 		}
 		assert.equal(app.server.calls, 0);
 	} finally {
@@ -327,13 +340,13 @@ test("connection scope does not grant a tool or resource scope", async () => {
 	}
 });
 
-test("stolen session IDs confer no POST, GET or DELETE authority", async () => {
+test("forged transport handles confer no POST, GET or DELETE authority", async () => {
 	const app = await fixture();
 	try {
 		const peer = await app.peer();
 		for (const method of ["POST", "GET", "DELETE"]) {
-			assert.equal(await status(await rpc(app, call, undefined, peer.transport.sessionId, method)), 401);
-			assert.equal(await status(await rpc(app, call, app.otherToken, peer.transport.sessionId, method)), 403);
+			assert.equal(await status(await rpc(app, call, undefined, "forged-transport-handle", method)), 401);
+			assert.equal(await status(await rpc(app, call, app.otherToken, "forged-transport-handle", method)), 400);
 		}
 		const result = await peer.client.callTool({ name: "echo", arguments: {} });
 		assert.equal((result.structuredContent?.data as Record<string, unknown>).subjectId, "alice");
@@ -342,7 +355,7 @@ test("stolen session IDs confer no POST, GET or DELETE authority", async () => {
 	}
 });
 
-test("each request revalidates a revoked identity rather than trusting initialization", async () => {
+test("each request revalidates a revoked identity rather than trusting discovery", async () => {
 	const app = await fixture();
 	try {
 		const peer = await app.peer();
@@ -355,7 +368,7 @@ test("each request revalidates a revoked identity rather than trusting initializ
 	}
 });
 
-test("concurrent sessions cannot swap principal context", async () => {
+test("concurrent requests cannot swap principal context", async () => {
 	const app = await fixture();
 	try {
 		const [alice, bob] = await Promise.all([app.peer(), app.peer(app.otherToken)]);
@@ -402,7 +415,7 @@ test("security events exclude raw credentials, arguments, identity text and veri
 				peer.transport.sessionId,
 			),
 		);
-		await status(await rpc(app, initialize, canary));
+		await status(await rpc(app, discover, canary));
 		await peer.client.callTool({ name: "echo", arguments: { password: canary } });
 		assert.ok(app.events.some((event) => event.decision === "deny"));
 		assert.ok(app.events.some((event) => event.decision === "allow"));
@@ -431,7 +444,7 @@ test("verifier and audit failures/timeouts prevent effects with a safe denial", 
 	]) {
 		const app = await fixture(options);
 		try {
-			const response = await rpc(app, initialize, app.token);
+			const response = await rpc(app, discover, app.token);
 			const body = await response.text();
 			assert.ok([401, 503].includes(response.status));
 			assert.equal(body.includes("unsafe"), false);
@@ -445,11 +458,9 @@ test("verifier and audit failures/timeouts prevent effects with a safe denial", 
 test("local mode requires its dedicated credential and rejects hostile host/origin", async () => {
 	const app = await fixture({ local: true });
 	try {
-		assert.equal(await status(await rpc(app, initialize)), 401);
+		assert.equal(await status(await rpc(app, discover)), 401);
 		assert.equal(
-			await status(
-				await rpc(app, initialize, app.token, undefined, "POST", { Origin: "https://hostile.example.test" }),
-			),
+			await status(await rpc(app, discover, app.token, undefined, "POST", { Origin: "https://hostile.example.test" })),
 			403,
 		);
 		assert.equal(await rawHostStatus(app, "hostile.example.test"), 403);
@@ -492,7 +503,7 @@ test("configured public resource metadata and bearer challenges work without too
 			scopes_supported: ["mcp:connect", "fixture:read"],
 			bearer_methods_supported: ["header"],
 		});
-		const denied = await rpc(app, initialize);
+		const denied = await rpc(app, discover);
 		assert.equal(denied.status, 401);
 		assert.match(denied.headers.get("www-authenticate") ?? "", /Bearer.*resource_metadata=/);
 		await denied.body?.cancel();

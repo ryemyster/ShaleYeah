@@ -4,8 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { z } from "zod";
 import { classifyToolError, isToolFailure, PermanentToolError, RetryableToolError } from "../src/errors.js";
 import { buildMutualExclusivityError } from "../src/mutual-exclusivity.js";
@@ -56,7 +55,10 @@ async function fixture(tools: ServerToolTemplate[]) {
 	}
 	server.dataPath = await fs.mkdtemp(path.join(os.tmpdir(), "shale-mcp-contract-"));
 	await server.initialize();
-	const client = new Client({ name: "contract-client", version: "0.1.0" });
+	const client = new Client(
+		{ name: "contract-client", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	const transport = new StreamableHTTPClientTransport(new URL(`http://127.0.0.1:${server.httpPort()}/mcp`), {
 		requestInit: { headers: { Authorization: `Bearer ${token}` } },
 	});
@@ -64,7 +66,6 @@ async function fixture(tools: ServerToolTemplate[]) {
 	return {
 		client,
 		async close() {
-			await transport.terminateSession();
 			await client.close();
 			await server.stop();
 			await fs.rm(server.dataPath, { recursive: true, force: true });

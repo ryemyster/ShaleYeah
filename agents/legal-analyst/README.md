@@ -26,7 +26,7 @@ At runtime:
 ```bash
 cd agents/legal-analyst
 agents-cli install
-LEGAL_MCP_URL=http://localhost:3006 agents-cli run \
+LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Analyze regulatory exposure for a Texas development project covering three Permian leases"
 ```
 
@@ -36,6 +36,8 @@ Start the Legal MCP server separately when you want live backend execution:
 cd servers/legal
 PORT=3006 pnpm start
 ```
+
+The backend uses the selected MCP 2026-07-28 profile. Replace `/path/to/private/mcp-token` with an operator-issued credential file owned by your account and readable/writable only by you. Credentials are resolved when a tool runs and stay outside prompts. Use HTTPS for a remote endpoint; local HTTP is limited to loopback. Missing or denied credentials stop the call. An HTTP server needs explicit identity/scope and audit configuration; setting `PORT` alone does not supply that setup. The role-specific operator workflow and source qualification remain pending in the linked employee adoption issue.
 
 ## Tools
 
@@ -53,7 +55,10 @@ The agent may support diligence. It must defer to human/legal review for legal o
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `LEGAL_MCP_URL` | No | `http://localhost:3006` | Legal Tier 1 server URL |
+| `LEGAL_MCP_URL` | No | `http://localhost:3006/mcp` | Legal Tier 1 server URL |
+| `LEGAL_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
+| `LEGAL_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
+| `LEGAL_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
 | `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
 ## Build, Test, And Use
@@ -66,7 +71,7 @@ Run these from `agents/legal-analyst`.
 | Test package behavior | `uv run pytest` |
 | Build/syntax check | `uv run python -m py_compile app/agent.py app/legal_mcp.py` |
 | Inspect ADK project | `agents-cli info` |
-| Run a local task | `LEGAL_MCP_URL=http://localhost:3006 agents-cli run "Analyze legal exposure for a Texas development project"` |
+| Run a local task | `LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run "Analyze legal exposure for a Texas development project"` |
 | Run evals | `agents-cli eval run` |
 
 ## Key Files

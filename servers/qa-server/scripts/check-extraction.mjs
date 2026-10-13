@@ -61,7 +61,7 @@ try {
 	await run("npm", ["run", "test:coverage"], source);
 	passed("clean-source-build");
 	const tool = path.join(root, "tool");
-	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", typescript: "6.0.2", "@modelcontextprotocol/sdk": "1.29.0" }, dependencies: Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) }));
+	await fs.writeFile(path.join(tool, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { tsx: "4.21.0", typescript: "6.0.2" }, dependencies: { "@modelcontextprotocol/client": "2.3.1", ...Object.fromEntries(Object.entries(artifacts).map(([name, file]) => [name, `file:${path.relative(tool, file)}`])) } }));
 	await run("npm", ["install", "--ignore-scripts", "--no-audit", "--no-fund"], tool);
 	await fs.cp(path.join(source, "tests"), path.join(tool, "tests"), { recursive: true });
 	for (const [directory, prefix] of [[path.join(tool, "tests"), "../"], [path.join(tool, "tests/fixtures"), "../../"]]) {
@@ -77,6 +77,8 @@ try {
 	await run(process.execPath, ["--import", "tsx", "--test", ...(await fs.readdir(path.join(tool, "tests"))).filter((name) => name.endsWith(".test.ts")).map((name) => path.join("tests", name))], tool, { QA_TEST_ENTRY: path.join(installed, "dist/index.js") });
 	passed("installed-tool"); passed("generic-mcp"); passed("durable-observed-results");
 	await run("npm", ["ci", "--ignore-scripts", "--omit=dev", "--no-audit", "--no-fund"], tool);
+	await run(process.execPath, ["--input-type=module", "-e", 'await import("@modelcontextprotocol/client"); await import("@modelcontextprotocol/client/stdio")'], tool);
+	passed("production-independent-client");
 	await run(process.execPath, ["scripts/qualify.mjs", "--report", path.join(root, "qualification.json")], tool);
 	const qualification = JSON.parse(await fs.readFile(path.join(root, "qualification.json"), "utf8"));
 	assert.equal(qualification.status, "passed");

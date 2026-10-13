@@ -26,7 +26,7 @@ At runtime:
 ```bash
 cd agents/title-analyst
 agents-cli install
-TITLE_MCP_URL=http://localhost:3010 agents-cli run \
+TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
   "Examine ownership for Section 12, T2N, R4E in Reeves County, Texas"
 ```
 
@@ -36,6 +36,8 @@ Start the Title MCP server separately when you want live backend execution:
 cd servers/title
 PORT=3010 pnpm start
 ```
+
+The backend uses the selected MCP 2026-07-28 profile. Replace `/path/to/private/mcp-token` with an operator-issued credential file owned by your account and readable/writable only by you. Credentials are resolved when a tool runs and stay outside prompts. Use HTTPS for a remote endpoint; local HTTP is limited to loopback. Missing or denied credentials stop the call. An HTTP server needs explicit identity/scope and audit configuration; setting `PORT` alone does not supply that setup. The role-specific operator workflow and source qualification remain pending in the linked employee adoption issue.
 
 ## Tools
 
@@ -54,7 +56,10 @@ The agent must not present final clean-title or legal approval without human rev
 
 | Variable | Required | Default | Purpose |
 |----------|----------|---------|---------|
-| `TITLE_MCP_URL` | No | `http://localhost:3010` | Title Tier 1 server URL |
+| `TITLE_MCP_URL` | No | `http://localhost:3010/mcp` | Title Tier 1 server URL |
+| `TITLE_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
+| `TITLE_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
+| `TITLE_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
 | `TITLE_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
 
 ## Build, Test, And Use
@@ -67,7 +72,7 @@ Run these from `agents/title-analyst`.
 | Test package behavior | `uv run pytest` |
 | Build/syntax check | `uv run python -m py_compile app/agent.py app/title_mcp.py` |
 | Inspect ADK project | `agents-cli info` |
-| Run a local task | `TITLE_MCP_URL=http://localhost:3010 agents-cli run "Examine ownership for a tract"` |
+| Run a local task | `TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run "Examine ownership for a tract"` |
 | Run evals | `agents-cli eval run` |
 
 ## Key Files

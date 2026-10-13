@@ -7,6 +7,11 @@ adapter with a real bearer verifier, issuer/audience checks, explicit operation
 scopes and required audit. A local principal is for private stdio operation;
 it never substitutes for a missing HTTP identity.
 
+Pin the MCP 2026-07-28 profile. The shared SDK 0.3.0 serves self-contained HTTP
+requests and modern stdio messages; older initialization/session clients are
+rejected. Discover current input/output schemas through the maintained client.
+Result and task handles retain their own durable ownership and expiry.
+
 For a private operator export, run the fixture generator in the README, then
 read your owner-only `qa.json`. Build correlation metadata from its `correlation`,
 `task.scope`, `task.revision` and `qualification` fields:
@@ -60,3 +65,10 @@ cannot pass new rules, grants, thresholds, approval flags, output paths or scrip
 Changing source content requires a new source revision/hash and task references;
 the resulting artifact has a new immutable reference. Previous artifacts are
 unchanged and cannot be exported under mismatched current authority.
+
+The standalone extraction check installs its independent MCP consumer from an
+explicit production dependency. It removes development packages and verifies
+the consumer can still import the maintained client before container checks.
+Test runners remain development dependencies. This qualifies the fixture
+connection environment; it does not add a client dependency to the tool server
+or replace its source and human-review boundaries.

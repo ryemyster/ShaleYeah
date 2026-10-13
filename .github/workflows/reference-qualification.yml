@@ -7,6 +7,32 @@ permissions:
   contents: read
 
 jobs:
+  protocol-callers:
+    name: Python caller compatibility (${{ matrix.role }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        role: [development-planner, drilling-engineer, infrastructure-planner, investment-chair, legal-analyst, market-analyst, research-analyst, risk-analyst, title-analyst]
+    defaults:
+      run:
+        working-directory: agents/${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - name: Locked package and connection shape controls
+        run: |
+          uv run --locked --extra lint ruff check app tests
+          uv run --locked pytest -q
+      - name: Native authoring imports and selected protocol dependencies
+        run: |
+          uv run --locked python -c 'from app.agent import root_agent; assert root_agent.name; print(root_agent.name)'
+          uv run --locked python -c 'from importlib.metadata import version; assert version("mcp") == "2.3.0"; assert version("shaleyeah-mcp-client") == "0.3.0"'
   reference:
     name: Geologist and Geowiz qualification
     runs-on: ubuntu-latest

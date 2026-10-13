@@ -5,6 +5,10 @@ independent SHALE YEAH employees. It imports no employee brain or matching tool
 server. Each role supplies its own agent factory, source/review authority,
 credential resolver and MCP endpoint.
 
+The declared MCP client 0.3.0 pins the stateless 2026-07-28 profile. Connection
+changes preserve scoped employee context and exact human-review records;
+transport metadata or interrupted tool calls cannot create approval.
+
 `context.ContextCatalog` stores private scoped tasks, evidence, drafts and pending
 review references. Current authority is checked before reading or writing;
 restoration preserves retention and cannot resurrect newly denied source data.

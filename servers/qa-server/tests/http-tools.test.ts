@@ -2,8 +2,7 @@ import assert from "node:assert/strict";
 import { randomBytes } from "node:crypto";
 import path from "node:path";
 import { test } from "node:test";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/client";
 import { bindMCPEvents, type EmployeeEvent, EventEmitter } from "@shaleyeah/sdk";
 import { QAServer } from "../src/server.js";
 import { fixture } from "./fixtures/qa-fixture.js";
@@ -76,7 +75,10 @@ test("generic HTTP MCP client executes real rules with verified identity, correl
 	});
 	if (previous === undefined) delete process.env.PORT;
 	else process.env.PORT = previous;
-	const client = new Client({ name: "external-qa-client", version: "0.1.0" });
+	const client = new Client(
+		{ name: "external-qa-client", version: "0.1.0" },
+		{ versionNegotiation: { mode: { pin: "2026-07-28" } } },
+	);
 	try {
 		await server.initialize();
 		const endpoint = new URL(`http://127.0.0.1:${server.httpPort()}/mcp`);

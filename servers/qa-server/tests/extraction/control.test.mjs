@@ -17,6 +17,6 @@ test("QA source and installed production archive run outside the checkout", asyn
 		assert.equal(code, 0, output);
 		const report = JSON.parse(await readFile(reportFile, "utf8"));
 		assert.equal(report.status, "passed"); assert.equal(report.professionalAcceptance, false);
-		for (const id of ["clean-source-build", "installed-tool", "archive-allowlist", "generic-mcp", "durable-observed-results"]) assert.equal(report.controls.find((control) => control.id === id)?.status, "passed", id);
+		for (const id of ["clean-source-build", "installed-tool", "archive-allowlist", "generic-mcp", "durable-observed-results", "production-independent-client"]) assert.equal(report.controls.find((control) => control.id === id)?.status, "passed", id);
 	} finally { await rm(directory, { recursive: true, force: true }); }
 });

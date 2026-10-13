@@ -44,7 +44,7 @@ agents/legal-analyst/
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `LEGAL_MCP_URL` | `http://localhost:3006` | Legal MCP backend URL |
+| `LEGAL_MCP_URL` | `http://localhost:3006/mcp` | Legal MCP backend URL |
 | `LEGAL_ANALYST_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
 
 ## HITL Boundary

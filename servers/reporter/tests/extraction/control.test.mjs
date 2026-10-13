@@ -33,6 +33,7 @@ test("Reporter source, installed employee and installed tool work outside the ch
 			"clean-source-build",
 			"installed-employee",
 			"installed-tool",
+			"production-independent-client",
 			"source-context-review-restart",
 			"source-revocation",
 			"external-mcp",
