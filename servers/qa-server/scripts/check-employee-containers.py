@@ -403,11 +403,13 @@ def main():
                         "dataPath": "/run/operator/transport-" + provider,
                     },
                 )
+                stage = "tool_container_start_failed"
                 endpoint = start()
                 assert (
                     int(invoke("docker", "exec", "--user", uid, name, "id", "-u").strip())
                     == os.getuid()
                 )
+                stage = "employee_import_failed"
                 invoke(
                     "docker",
                     "run",
@@ -419,6 +421,7 @@ def main():
                     "-c",
                     "import os; assert not os.path.exists('/run/operator'); from app.agent import root_agent; assert root_agent.name == 'quality_assurance'",
                 )
+                stage = "observed_rules_failed"
                 observed = protocol(
                     "run_quality_tests",
                     {
@@ -434,6 +437,7 @@ def main():
                     "repairOwner": "data-owner",
                     "expiresAt": timestamp(datetime.now(UTC) + timedelta(minutes=5)),
                 }
+                stage = "source_bound_draft_failed"
                 draft = protocol(
                     "draft_disposition",
                     {"resultRef": observed["resultRef"], "proposal": proposal, "revision": "r1"},
@@ -468,10 +472,12 @@ def main():
                     "expiresAt": expiry,
                     "expectedHead": None,
                 }
+                stage = "native_employee_prepare_failed"
                 employee("pair", "prepared-" + provider + ".json")
                 pending = json.loads((state / ("prepared-" + provider + ".json")).read_text())[
                     "pending"
                 ]
+                stage = "forged_disposition_guard_failed"
                 protocol(
                     "record_disposition",
                     {
@@ -483,11 +489,13 @@ def main():
                     True,
                 )
                 packet = "/run/operator/packet-" + provider + ".json"
+                stage = "owner_inspection_failed"
                 review("inspect", pending["reviewId"], packet)
                 owned(
                     operator / "reason.json",
                     {"reason": "Fixture human review; original failed source stays failed"},
                 )
+                stage = "unqualified_approval_guard_failed"
                 review(
                     "decide",
                     pending["reviewId"],
@@ -496,6 +504,7 @@ def main():
                     "/run/operator/reason.json",
                     expected=1,
                 )
+                stage = "installed_qualification_failed"
                 invoke(
                     "docker",
                     "exec",
@@ -514,6 +523,7 @@ def main():
                     "--code-revision",
                     manifest["codeRevision"],
                 )
+                stage = "qualified_owner_approval_failed"
                 review(
                     "decide",
                     pending["reviewId"],
@@ -522,11 +532,14 @@ def main():
                     "/run/operator/reason.json",
                 )
                 job["reviewId"] = pending["reviewId"]
+                stage = "tool_restart_failed"
                 stop()
                 endpoint = start()
+                stage = "native_employee_resume_failed"
                 employee("resume", "completed-" + provider + ".json")
                 completed = json.loads((state / ("completed-" + provider + ".json")).read_text())
                 assert completed["state"] == "completed" and completed["outcome"]["stored"] is True
+                stage = "original_failure_retention_failed"
                 report = protocol(
                     "generate_quality_report",
                     {"resultRef": observed["resultRef"]},
@@ -535,12 +548,14 @@ def main():
                 assert report["summary"]["status"] == "FAIL"
                 source["grant"]["current"] = False
                 owned(operator / "qa.json", configuration)
+                stage = "revoked_disposition_guard_failed"
                 protocol(
                     "record_disposition",
                     {key: completed[key] for key in ("reviewId", "packetDigest", "grantId")},
                     "revoked-" + provider + ".json",
                     True,
                 )
+                stage = "native_source_revocation_failed"
                 employee("revoked", "unused-" + provider + ".json")
                 stop()
                 decision["controls"].append(
