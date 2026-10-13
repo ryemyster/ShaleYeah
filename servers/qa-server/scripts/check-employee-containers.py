@@ -24,6 +24,9 @@ def invoke(*command, expected=0, timeout=600):
         check=False,
     )
     if result.returncode != expected:
+        for line in result.stderr.splitlines():
+            if re.fullmatch(r"Fixture client blocked: [A-Za-z]+Error/[-A-Z0-9_a-z]{1,64}", line):
+                print(line, file=sys.stderr)
         raise RuntimeError(f"{command[0]} returned {result.returncode}; expected {expected}")
     return result.stdout
 

@@ -46,8 +46,12 @@ try {
 	} finally {
 		await file.close();
 	}
-} catch {
-	console.error("Fixture client blocked: explicit loopback MCP endpoint and current scoped authority required");
+} catch (error) {
+	const name = error instanceof Error && /^[A-Za-z]+Error$/.test(error.name) ? error.name : "Error";
+	const code = error && typeof error === "object" && "code" in error && /^[-A-Z0-9_]{1,64}$/.test(String(error.code))
+		? String(error.code)
+		: "unclassified";
+	console.error(`Fixture client blocked: ${name}/${code}`);
 	process.exitCode = 1;
 } finally {
 	await client?.close();
