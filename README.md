@@ -63,6 +63,10 @@ The reference fleet covers 14 business concerns:
 | Investment decision | Augustus Decidius Maximus | `servers/decision` |
 
 Each corresponding agent lives under `agents/<role>/` when implemented or migrated.
+[Econobot](servers/econobot/README.md) calculates explicit periodic cash flows,
+with declared currency, timing, source revisions and unavailable metrics. Its
+numerical results remain unreviewed; Economist employee adoption is tracked in
+[#680](https://github.com/ryemyster/ShaleYeah/issues/680).
 The [Reporter employee](agents/reporter-agent/README.md) prepares source-linked
 private reports with an exact human publication gate and configurable scorecard.
 The [QA server](servers/qa-server/README.md) runs configurable observed data

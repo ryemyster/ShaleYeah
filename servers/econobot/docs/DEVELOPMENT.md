@@ -1,61 +1,22 @@
-# Development — @shaleyeah/server-econobot
+# Developing Econobot
 
-## Setup
-
-```bash
-cd servers/econobot
-pnpm install
+```sh
 pnpm build
+pnpm type-check
+pnpm lint
+pnpm test
 ```
 
-## Test commands
+Run these inside servers/econobot. Test coverage must stay at least 90%.
+The test command runs numerical fixtures, actual tool handlers and a generic
+MCP client against the built entry from an independent working directory.
 
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-econobot
-```
+Write a failing numerical or protocol test before behavior changes. Add new
+math to the single cash-flow calculator, retaining explicit units and
+availability states. Check NPV at a reported IRR and use independent published
+examples. Never weaken error cases to accept a guessed successful result.
 
-## TDD workflow
-
-1. Write a failing test in `tests/server.test.ts` that calls the tool via MCP
-2. Add the tool to `src/index.ts` in the `tools:` array using `ServerFactory.createAnalysisTool()`
-3. Implement handler + `synthesize*WithLLM()` + deterministic fallback
-4. Add anti-stub test entry to prove `callLLM()` is actually called
-
-## LLM wiring checklist
-
-- [ ] `synthesize<Domain>WithLLM(input)` — calls `callLLM()` from `@shaleyeah/sdk`
-- [ ] `deriveDefault<Domain>()` — deterministic math, no `Math.random()`
-- [ ] Handler wraps with try/catch and falls back on any error
-- [ ] `EconomicsSchema` used to validate LLM output (from `@shaleyeah/sdk`)
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
-
-## Key constraints
-
-- No `Math.random()` — use real DCF formulas in fallback
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- No governance logic (HITL, audit) — that lives in the `economist` agent
-- Tools return structured JSON, not prose strings
-
-## Adding a new financial tool
-
-```typescript
-ServerFactory.createAnalysisTool(
-    "my_financial_tool",
-    "Description",
-    z.object({ cashFlows: z.array(z.number()) }),
-    async (args) => {
-        try {
-            return await synthesizeWithLLM(args);
-        } catch (_err) {
-            return deriveDefault(args);
-        }
-    },
-),
-```
-
-## Linting
-
-```bash
-cd servers/econobot && npx biome check src/
-```
+Keep optional model interpretation outside numerical truth. Tests inject the
+shared call interface for successful/failing provider responses and exercise
+the actual adapter's missing-credential guard without paid keys or live requests.
+Human review and investment authority cannot be granted through model prose.

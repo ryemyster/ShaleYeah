@@ -1,63 +1,31 @@
-# Integration — @shaleyeah/server-econobot
+# Integration contract
 
-## Who calls econobot?
+Use the pinned MCP 2026-07-28 profile and the full request in the
+[README](../README.md). Tool names stay calculate_dcf, analyze_economics and
+sensitivity_analysis; their input/output shapes now require explicit periodic
+cash-flow data.
 
-The `economist` agent (`agents/economist/`) is the primary consumer. It connects to econobot over HTTP using `StreamableHTTPClientTransport` from `@shaleyeah/sdk`.
+calculate_dcf returns metric objects, not bare numeric IRR/payback scalars.
+The IRR is a decimal per declared period; payback counts period ends.
+Every unavailable metric has null value and a reason. A successful MCP response
+means the calculation executed, not that every metric exists or a human
+approved the investment.
 
-## Connection pattern (agent side)
+analyze_economics accepts a complete input contract and optionally requests
+separate unreviewed interpretation. sensitivity_analysis accepts explicit
+scenario contracts in the same period/currency, with unique scenario IDs.
+Legacy filePath/dataType, inferred prices/costs/production, arbitrary outputPath
+and variance-generated scenarios are rejected. The tools do not read or write
+caller-selected files.
 
-```typescript
-import { callEconobotTool } from "./econobot-client.js";
+The current Economist TypeScript delegation surface is historical; its full
+contract adoption is issue 680. Callers must update request shapes rather than
+supply silent defaults. Source integrations prepare reviewed cash-flow revisions
+outside this calculator. References identify those revisions but do not
+substitute for current source rights or actual human approval.
 
-const result = await callEconobotTool(
-    "http://localhost:3002",
-    "analyze_economics",
-    {
-        filePath: "/data/economics/JONES_1H_DCF.xlsx",
-        dataType: "mixed",
-        discountRate: 0.1,
-        analysisType: "comprehensive",
-    },
-);
-```
-
-## Tool call reference
-
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `analyze_economics` | `filePath`, `dataType` | `EconomicAnalysis` |
-| `calculate_dcf` | `cashFlows`, `discountRate` | DCF result with NPV/IRR |
-| `sensitivity_analysis` | `baseCase`, `ranges` | Scenario sensitivity table |
-
-## Upstream dependencies
-
-Econobot reads files from the filesystem and calls the Anthropic API directly. No upstream MCP servers.
-
-```
-Filesystem (Excel, CSV)
-  ↓
-econobot (port 3002)
-  ↓ callLLM()
-Anthropic API
-```
-
-## Downstream consumers
-
-```
-econobot (port 3002)
-  ↑ MCP over HTTP
-economist agent (port 4002)
-  ↑ LocalAgentRuntime
-Orchestrator / API client
-```
-
-## Error types
-
-```json
-{ "error_type": "retryable", "message": "LLM timeout — retry in 5s" }
-{ "error_type": "permanent", "message": "Unsupported file format: .pdf" }
-```
-
-## MCP protocol version
-
-Declares `mcp: "2025-03"`. Agents must connect with a compatible MCP client version.
+For HTTP, the embedding host provides identity, scopes and audit using the
+[SDK access contract](../../../sdk/docs/http-access.md). Employee context,
+qualification, exact human review and restart-safe approved continuation remain
+the responsibility of the independently deployed employee and its executing
+backend, to be adopted in issue 680.
