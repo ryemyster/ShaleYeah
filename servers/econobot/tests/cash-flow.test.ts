@@ -112,3 +112,11 @@ test("monthly rates remain monthly and results cannot mutate caller data", () =>
 	result.cashFlows[0] = 99;
 	assert.deepEqual(request, original);
 });
+
+test("payback at exact integer recovery does not inherit normalization rounding", () => {
+	assert.equal(calculateCashFlows(input([-100, 70, 30])).payback.value, 2);
+	assert.equal(
+		calculateCashFlows(input([-Number.MAX_VALUE, -Number.MAX_VALUE, Number.MAX_VALUE])).payback.reason,
+		"numeric_range",
+	);
+});

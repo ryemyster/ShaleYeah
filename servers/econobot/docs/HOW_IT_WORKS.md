@@ -26,6 +26,9 @@ period, without invented within-period interpolation. No initial investment and
 no recovery have separate unavailable states. Later cash outflows can reverse a
 previous recovery; payback does not certify permanent profitability.
 
+Payback accumulates the supplied money units with compensation. If its running
+total overflows, payback is explicitly unavailable rather than guessed.
+
 Scenarios are supplied by the operator, not generated from invented commodity
 prices. Each must use the base case's currency and period. No exchange rate,
 annualization or price-to-production model is inferred.

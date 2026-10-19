@@ -72,10 +72,15 @@ function irr(flows: number[], maxIterations: number): IRRMetric {
 
 function payback(flows: number[]): Metric {
 	if (flows[0] >= 0) return unavailable("no_initial_investment");
-	const scale = Math.max(...flows.map(Math.abs));
-	let cumulative = 0;
+	let cumulative = 0,
+		correction = 0;
 	for (let period = 0; period < flows.length; period++) {
-		cumulative += flows[period] / scale;
+		// Keep the supplied money units: normalization can turn exact recovery into a tiny debt.
+		const term = flows[period] - correction;
+		const next = cumulative + term;
+		if (!Number.isFinite(next)) return unavailable("numeric_range");
+		correction = next - cumulative - term;
+		cumulative = next;
 		if (cumulative >= 0) return available(period);
 	}
 	return unavailable("not_recovered");
