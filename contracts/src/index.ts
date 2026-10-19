@@ -24,6 +24,10 @@ const sourceSchema = JSON.parse(
 	readFileSync(new URL("../shaleyeah_contracts/schemas/data-connectors-0.1.0.schema.json", import.meta.url), "utf8"),
 );
 const checkSource = ajv.compile<SourceContract>(sourceSchema);
+const jsonSourceSchema = JSON.parse(
+	readFileSync(new URL("../shaleyeah_contracts/schemas/data-connectors-0.2.0.schema.json", import.meta.url), "utf8"),
+);
+const checkJsonSource = ajv.compile<SourceContract>(jsonSourceSchema);
 const checkConnector = ajv.compile<ConnectorConfiguration>({
 	$ref: `${sourceSchema.$id}#/$defs/ConnectorConfiguration`,
 });
@@ -221,13 +225,17 @@ export function validateSourceContract(value: unknown, options: ValidationOption
 		typeof value === "object" &&
 		"contractVersion" in value &&
 		typeof value.contractVersion === "string" &&
-		value.contractVersion !== CONTRACT_VERSION
+		!["0.1.0", "0.2.0"].includes(value.contractVersion)
 	)
 		fail("unsupported_version", "/contractVersion", "supportedVersion");
-	if (!checkSource(value))
+	const validator =
+		value && typeof value === "object" && "contractVersion" in value && value.contractVersion === "0.2.0"
+			? checkJsonSource
+			: checkSource;
+	if (!validator(value))
 		throw new ContractValidationError(
 			"invalid_contract",
-			(checkSource.errors ?? []).map((error) => ({ path: error.instancePath, keyword: error.keyword })),
+			(validator.errors ?? []).map((error) => ({ path: error.instancePath, keyword: error.keyword })),
 		);
 	if (!checkOptions(options)) fail("invalid_contract", "/options", "validationOptions");
 	checkSourceSemantics(value);

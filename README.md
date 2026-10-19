@@ -67,6 +67,9 @@ The [Reporter employee](agents/reporter-agent/README.md) prepares source-linked
 private reports with an exact human publication gate and configurable scorecard.
 The [QA server](servers/qa-server/README.md) runs configurable observed data
 checks and reports their recorded results, with optional unreviewed model notes.
+The [QA employee](agents/quality-assurance/README.md) preserves those observations,
+uses its own scoped context and configurable scorecard, and prepares exact private
+dispositions for an authenticated human owner. An exception retains the original failure.
 
 ## Start Here
 

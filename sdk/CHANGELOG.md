@@ -4,6 +4,9 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+- #542: propagate optional prepare cancellation to source reads and reject a cancelled request before the review packet transaction. Existing callers retain the same signature behavior.
+
+
 - #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.
 
 - #722: complete the retained TypeScript connection sweep with private MCP credential files, bounded discovery and 1 MiB responses, redirect refusal and safe permanent post-dispatch/tool-failure errors; preserve all three role brains until their owning employee migrations.

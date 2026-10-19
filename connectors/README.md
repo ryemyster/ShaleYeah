@@ -108,3 +108,7 @@ These are design choices, not OSDU compatibility or live-vendor certifications.
 Geowiz is the first consumer. See its [source setup](../servers/geowiz/docs/DATA_SOURCES.md).
 Professional LAS/QC repair, durable context, protected human continuation and
 reference deployment remain in their respective plan issues.
+
+The implemented LAS/CSV adapters issue source profile `0.1.0` artifacts. The
+separately selected JSON-source `0.2.0` metadata profile does not add JSON parsing
+to these adapters or change their permitted formats.

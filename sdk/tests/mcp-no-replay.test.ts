@@ -6,13 +6,11 @@ import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
 import { callEconobotTool } from "../../agents/economist/src/agent/econobot-client.js";
-import { callQAServerTool } from "../../agents/quality-assurance/src/agent/qa-server-client.js";
 import { callCurveSmithTool } from "../../agents/reservoir-engineer/src/agent/curve-smith-client.js";
 
 for (const [name, call, prefix] of [
 	["Economist", callEconobotTool, "ECONOBOT"],
 	["Reservoir engineer", callCurveSmithTool, "CURVE_SMITH"],
-	["QA", callQAServerTool, "QA_SERVER"],
 ] as const) {
 	for (const scenario of ["header-mismatch", "input-required", "invalid-output", "success"] as const) {
 		test(`${name} temporary adapter preserves ${scenario} with exactly one command dispatch`, async () => {

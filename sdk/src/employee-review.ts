@@ -434,8 +434,9 @@ export class EmployeeReviewWorkflow {
 		else if (!equal(context.selectedEvidence, work.evidence) || context.sharedKnowledge.length)
 			deny("unverified_inputs");
 	}
-	async prepare(input: unknown, who: ReviewPrincipal, expectedHead: string | null) {
+	async prepare(input: unknown, who: ReviewPrincipal, expectedHead: string | null, signal?: AbortSignal) {
 		return this.guarded("prepare", who, async () => {
+			if (signal?.aborted) deny("cancelled");
 			const policy = await this.policy();
 			this.identity(who, policy, false);
 			if (Buffer.byteLength(reviewJson(input)) > policy.maxPacketBytes) deny("packet_limit");
@@ -459,7 +460,7 @@ export class EmployeeReviewWorkflow {
 				expired(context.retention.expiresAt, this.now())
 			)
 				deny("unverified_inputs");
-			const sources = await this.sources(work, policy);
+			const sources = await this.sources(work, policy, signal);
 			this.validateContext(
 				context,
 				work,
@@ -520,6 +521,7 @@ export class EmployeeReviewWorkflow {
 			if (Buffer.byteLength(bytes) > policy.maxPacketBytes) deny("packet_limit");
 			if (!(await this.options.contentGuard(bytes))) deny("unsafe_content");
 			if (!equal(await this.policy(), policy)) deny("revision_mismatch");
+			if (signal?.aborted) deny("cancelled");
 			return this.transaction("prepare", () => {
 				const namespace = this.namespace(policy);
 				if (this.head(namespace) !== expectedHead) deny("revision_mismatch");

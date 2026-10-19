@@ -72,3 +72,15 @@ the consumer can still import the maintained client before container checks.
 Test runners remain development dependencies. This qualifies the fixture
 connection environment; it does not add a client dependency to the tool server
 or replace its source and human-review boundaries.
+
+With review configured, `draft_disposition` takes an exact `resultRef`,
+`proposal: {action, reason, repairOwner, expiresAt}` and work `revision`. The
+backend returns a new unreviewed `work` and `disposition`; callers must preserve
+both exactly. Native QA supplies its host-owned context manifest during
+`prepare_review`, which takes `{candidate, expectedHead}`. The candidate binds
+work/context/evaluations/disposition. `get_review_status` returns the scoped
+checkpoint; `record_disposition` requires its exact reviewId/packetDigest/grantId
+under current `qa:review` and `qa:disposition` authority. A separate enrolled
+operator supplies the human decision through `examples/review.mjs`, never an
+MCP tool or approval boolean. Metadata-only context verification uses
+`get_context_source_metadata` under current task/profile/source read/export rights.

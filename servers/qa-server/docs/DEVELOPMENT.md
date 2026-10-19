@@ -13,7 +13,8 @@ owning data adapter. Use canonical closed contracts without adding undeclared
 fields. Keep unknowns and assumptions separate from measured observations.
 
 Run build, type-check, lint, coverage, configured qualification and extraction
-before shipping. CI also checks the installed Node 22 container. Preserve
+before shipping. CI also checks the installed Node 22 tool and separate native Python employee
+containers, including qualified owner review and restart continuation. Preserve
 meaningful source/policy failures and generic-client regressions. A new rule or
 format needs a separately reviewed outcome with independently labeled good,
 bad, unavailable and authority cases; documentation alone is not qualification.

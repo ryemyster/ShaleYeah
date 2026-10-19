@@ -179,3 +179,7 @@ and protected review continuation. Role factories supply persona and tools.
 The TypeScript SDK now shares the durable review store, owner-only JSON reader
 and installed qualification launcher; role adapters own action, destination,
 source interface and exact candidate validation.
+
+Review preparation accepts an optional cancellation signal. It propagates to
+source reads and is checked before the packet transaction, so a timed-out
+request cannot create a late successful checkpoint.

@@ -10,6 +10,16 @@ import {
 
 const records = JSON.parse(readFileSync(new URL("../fixtures/data-connectors.json", import.meta.url), "utf8"));
 
+test("JSON source 0.2.0 is explicit; old LAS/CSV 0.1.0 and employee records remain closed", () => {
+	const record = { ...structuredClone(records.artifact), format: "json" };
+	assert.throws(() => validateSourceContract(record), ContractValidationError);
+	record.contractVersion = "0.2.0";
+	assert.deepEqual(validateSourceContract(record), record);
+	assert.throws(() => validateContract(record), ContractValidationError);
+	assert.throws(() => validateSourceContract({ ...record, format: "csv" }), ContractValidationError);
+	assert.throws(() => validateSourceContract({ ...record, contractVersion: "0.3.0" }), ContractValidationError);
+});
+
 test("existing employee 0.1.0 profile remains closed when a separate connector profile is introduced", () => {
 	assert.throws(() => validateContract(records.manifest), ContractValidationError);
 });

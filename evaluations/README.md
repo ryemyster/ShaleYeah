@@ -191,3 +191,11 @@ source reconciliation and disclosure coverage. Its mandatory publication,
 architecture and tool gates are installed role metrics. Qualification policy
 selects a supported role; Geologist and Reporter retain separate required gates.
 Operator configuration can change cases and rubrics but cannot waive trust floors.
+
+The quality-assurance role requires `qa.observed_faithfulness`,
+`qa.architecture_boundary`, `qa.tool_boundary` and
+`qa.no_unapproved_disposition` in addition to the shared trust floor. The host
+reads the immutable QA report under current authority; the grader compares
+actual output with that report and retains verdicts, counts, source and result
+revisions. Reporting a real failed data check is correct employee behavior.
+Role configuration and model judges cannot remove these gates.
