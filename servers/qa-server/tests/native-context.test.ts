@@ -112,6 +112,32 @@ test("own native Gemini/Anthropic employee reads actual protected FAIL, resumes 
 			assert.equal(actual.observedStatus, "FAIL");
 			assert.equal(actual.context.selectedEvidence.length, 1);
 			assert.ok(!JSON.stringify(actual).includes(token));
+			await f.workflow.decide(
+				actual.pending.reviewId,
+				actual.pending.packetDigest,
+				"approve",
+				"Reviewed bounded fixture exception; original FAIL remains",
+				f.reviewer,
+			);
+			const completedOutput = path.join(f.directory, `${provider}-completed.json`);
+			writeFileSync(input, JSON.stringify({ ...settings, mode: "resume", reviewId: actual.pending.reviewId }), {
+				mode: 0o600,
+			});
+			await promisify(execFile)(
+				process.env.QA_TEST_PYTHON ?? path.resolve("../../agents/quality-assurance/.venv/bin/python"),
+				[
+					"-I",
+					process.env.QA_CONTEXT_STEP ?? path.resolve("../../agents/quality-assurance/tests/fixtures/context-step.py"),
+					input,
+					completedOutput,
+					`http://127.0.0.1:${server.httpPort()}/mcp`,
+				],
+			);
+			const completed = JSON.parse(readFileSync(completedOutput, "utf8"));
+			assert.equal(completed.state, "completed");
+			assert.equal(completed.outcome.stored, true);
+			assert.equal(f.workflow.findingCount(), provider === "gemini" ? 1 : 2);
+			assert.equal((await f.service.report(f.report.resultRef, f.principal)).summary.status, "FAIL");
 			f.source.grant.current = false;
 			writeFileSync(input, JSON.stringify({ ...settings, mode: "revoked" }));
 			await execute();

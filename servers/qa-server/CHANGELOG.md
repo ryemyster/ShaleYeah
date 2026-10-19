@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 - #542: wire observed reports into a separate exact human disposition workflow and context metadata authority; installable qualification binds the packet, protected operator CLI stays outside MCP tools, and recorded failures remain immutable. Reject self approval, policy/source changes, expiry and post-timeout preparation. Correct canonical unknown finding evidence links so actual UNTESTED/ERROR reports preserve their reasons instead of failing record validation; rule algorithms and counts are unchanged.
+- Export the required independent protocol client explicitly and check its syntax before accepting a bundle. Native provider controls also resume the actual retained owner review, execute once, and preserve the original failure.
 
 
 - #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
