@@ -60,7 +60,9 @@ try {
 	await run("uv", ["build", "--wheel", "--out-dir", path.join(root, "wheels")], agentSource);
 	await copyEmployee("tests/eval", path.join(root, "checks/eval"));
 	await copyEmployee("tests/fixtures/context-step.py", path.join(root, "checks/context-step.py"));
-	await copy("tests/extraction/generic-client.mjs", path.join(root, "checks/generic-client.mjs"));
+	// This fixture lives in the otherwise excluded authoring-only extraction directory.
+	await fs.copyFile(path.join(packageRoot, "tests/extraction/generic-client.mjs"), path.join(root, "checks/generic-client.mjs"));
+	await run(process.execPath, ["--check", path.join(root, "checks/generic-client.mjs")]);
 	const code = (await run("git", ["rev-parse", "HEAD"])).trim();
 	for (const [unit, name] of [["agents/quality-assurance", "employee"], ["evaluations", "tool"]]) {
 		const requirements = path.join(root, `requirements-${name}.txt`);
