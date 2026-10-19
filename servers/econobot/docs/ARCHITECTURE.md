@@ -1,49 +1,25 @@
-# Architecture — @shaleyeah/server-econobot
+# Econobot architecture
 
-## Role
+Mode: shared contract/process only. This package is a bounded TypeScript MCP
+tool server. The Economist employee, its context and human review remain
+separate responsibilities.
 
-Tier 1 MCP tool server. Provides financial modeling tools — discounted cash flow, IRR, NPV, sensitivity analysis, and investment screening. Paired with the `economist` agent (port 4002).
+`src/cash-flow.ts` validates one versioned periodic cash-flow contract and owns
+all numerical calculations. `src/index.ts` exposes three tool entry points
+through the shared SDK. Analysis and scenario comparisons call the same
+calculator; a model cannot supply or replace NPV, IRR or payback.
 
-## Tool inventory
+The default CLI uses deterministic tools without a provider key or file access.
+A host may explicitly configure the existing shared `callLLM` adapter for an
+unreviewed explanation. Provider failure leaves the original calculations intact.
+Model text is returned as text, never parsed as numerical truth or approval.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `analyze_economics` | `performEconomicAnalysis()` | ✅ `callLLM` | Full economic analysis: NPV, IRR, payback, breakeven |
-| `calculate_dcf` | direct | ✅ `callLLM` | Discounted cash flow with multiple periods |
-| `sensitivity_analysis` | `performSensitivityAnalysis()` | ✅ `callLLM` | Oil/gas price and production variance scenarios |
+Inputs carry currency, period, discount convention and revision references.
+References are provenance labels, not an authority grant. Outputs always remain
+unreviewed and cannot authorize spending. Authentication, scopes and audit for
+HTTP are enforced by the shared SDK configuration. Full employee review/context
+adoption is owned by issue 680.
 
-## LLM + fallback pattern
-
-Each tool constructs a prompt with the raw financial inputs (oil price, gas price, production forecast, costs) and calls `callLLM()` once. Fallback: `EconomicsSchema` (from `@shaleyeah/sdk`) validates the LLM output; if parsing fails, deterministic DCF math is returned directly.
-
-Uses `EconomicsSchema` from `@shaleyeah/sdk` canonical model to validate and normalize LLM output before returning to callers.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3002`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-Transport selection is automatic at startup via `MCPServer` in `@shaleyeah/sdk` — no per-server code change needed.
-
-## Data flow
-
-```
-MCP tool call: analyze_economics { filePath, dataType, discountRate }
-  → performEconomicAnalysis(args)
-  → read file (Excel / CSV)
-  → callLLM(prompt with financial data)
-    → Claude: EconomicAnalysis JSON
-  ↘ fallback: generateDefaultAnalysis()
-```
-
-## File parsing
-
-Supports `.xlsx`, `.xls` (via `exceljs`) and `.csv`. Raw data is extracted into a uniform `Record<string, unknown>` before being passed to the LLM prompt.
-
-## Dependencies
-
-```
-@shaleyeah/server-econobot
-  ├── @shaleyeah/sdk   (MCPServer, callLLM, EconomicsSchema)
-  └── exceljs          (Excel file parsing)
-```
+The package depends on the SDK and Zod. There is no mandatory model, database,
+warehouse or orchestrator. Its generic-client test runs the built server from a
+separate directory and verifies actual calculations and schema failures.

@@ -7,17 +7,17 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"start": "tsx src/index.ts",
-		"test": "bash ../../scripts/run-tests.sh",
+		"start": "node dist/index.js",
+		"test": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@shaleyeah/sdk": "workspace:*",
-		"exceljs": "^4.4.0",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {
+		"@modelcontextprotocol/client": "2.3.1",
 		"@biomejs/biome": "^2.5.0",
 		"@types/node": "^25.9.3",
 		"tsx": "^4.21.0",

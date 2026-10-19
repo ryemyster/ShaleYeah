@@ -1,54 +1,48 @@
-# How Econobot Works — @shaleyeah/server-econobot
+# Calculation rules
 
-## Plain language (12-year-old version)
+NPV discounts the supplied cash flow at period t by `(1 + rate)^t`, including
+the initial flow at t=0. All periods are equally spaced. The rate is effective
+per declared month, quarter or year. Dated irregular flows and XIRR are not
+supported. Input allows 2–601 finite cash flows and a finite rate greater than -1.
 
-Imagine you're deciding whether to spend $10 million drilling a well. Econobot is the financial expert who takes your spreadsheet of oil prices, production forecasts, and drilling costs, and tells you: "Here's your NPV, here's what happens if oil prices drop 20%, and here's when you'll break even."
+IRR is a decimal rate that makes the same NPV zero. The solver uses bisection in
+log discount space, bounded to rates [-0.999999, 1000000] and at most 160
+iterations by default (host maximum 512). A returned rate must have a relative
+zero-NPV residual no greater than 1e-10 after conversion back to a rate.
+This residual divides the absolute discounted sum by the sum of absolute
+discounted terms. Log scaling and compensated summation reduce overflow and
+cancellation; these remain floating-point calculations, not exact decimal
+accounting. NPV outside finite numeric range is explicitly unavailable.
 
-You hand Econobot a file. It reads the numbers, asks Claude to interpret the financial picture, and returns a structured analysis. If the AI is unavailable, it falls back to running the math directly — discounted cash flow is just arithmetic.
+Zero cash flows remain zero. All-zero IRR is indeterminate; one-sign cash flows
+have no solution. More than one sign change is conservatively marked
+ambiguous_series: this is a root-selection deferral, not a claim that every such
+series has multiple roots. A root outside the declared range or failure to
+converge returns null with a reason. Rates are never clipped to look plausible.
 
-## Technical explanation
+Payback is the first undiscounted period-end at which cumulative cash flow
+recovers the negative initial investment. It is an integer count of the declared
+period, without invented within-period interpolation. No initial investment and
+no recovery have separate unavailable states. Later cash outflows can reverse a
+previous recovery; payback does not certify permanent profitability.
 
-Econobot is a **Tier 1 MCP tool server** — stateless, no session memory. It exposes 3 financial modeling tools via the Model Context Protocol.
+Payback accumulates the supplied money units with compensation. If its running
+total overflows, payback is explicitly unavailable rather than guessed.
 
-### Tool inventory
+Scenarios are supplied by the operator, not generated from invented commodity
+prices. Each must use the base case's currency and period. No exchange rate,
+annualization or price-to-production model is inferred.
 
-| Tool | What it does |
-|------|-------------|
-| `analyze_economics` | Reads Excel/CSV, runs DCF, NPV, IRR, payback, breakeven analysis |
-| `calculate_dcf` | Takes raw cash flow arrays and computes NPV/IRR directly |
-| `sensitivity_analysis` | Varies oil price, gas price, and production across a scenario range |
+Independent references checked 2026-10-19:
+[NumPy-financial NPV](https://numpy.org/numpy-financial/latest/_api_stubs/numpy_financial.npv.html)
+defines t=0 and matching periods;
+[NumPy-financial IRR](https://numpy.org/numpy-financial/latest/_api_stubs/numpy_financial.irr.html)
+provides the zero-NPV definition and published examples;
+[Microsoft IRR](https://support.microsoft.com/en-us/excel/functions/irr-function)
+documents periodic cash flows and iterative failure. These are test oracles,
+not production dependencies. Tests include the published 8% NPV example
+3065.22267, IRR about 0.28095, negative IRR and analytical two-flow cases.
 
-### Request lifecycle
-
-```
-Agent (economist)
-  → MCP tool call: analyze_economics { filePath, dataType, discountRate }
-      ↓
-  Econobot (src/index.ts)
-      ↓
-  1. Read file (exceljs for .xlsx/.xls, custom parser for .csv)
-  2. Build prompt with raw financial data
-  3. callLLM(prompt)          → Anthropic API
-     OR fallback: generateDefaultAnalysis() → deterministic DCF math
-  4. Validate output against EconomicsSchema (from @shaleyeah/sdk)
-  5. Return EconomicAnalysis JSON
-```
-
-### LLM + fallback pattern
-
-```typescript
-try {
-  return await analyzeEconomicData(economicData, args);  // calls callLLM()
-} catch (_error) {
-  return generateDefaultAnalysis();  // pure arithmetic fallback
-}
-```
-
-The fallback produces real DCF math — not placeholder values. A result is always returned even with no API key.
-
-### Transport modes
-
-- **stdio** (default): pipe-based, used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3002`): `StreamableHTTPServerTransport` — used by the economist agent fleet
-
-Transport is selected automatically at startup based on whether `process.env.PORT` is set.
+These checks establish bounded numerical behavior. They do not validate a
+petroleum forecast, tax/fiscal model, professional assumptions or capital
+decision. Those remain human responsibilities.
