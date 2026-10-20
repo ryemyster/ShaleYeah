@@ -1,0 +1,35 @@
+[project]
+name = "shaleyeah-economist-adk"
+version = "0.1.0"
+description = "Independent financial-scenario employee with exact human review"
+requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
+dependencies = [
+  "shaleyeah-contracts==0.3.0", "shaleyeah-evaluations==0.3.0",
+  "shaleyeah-mcp-client==0.3.0", "shaleyeah-employee-runtime[adk]==0.1.0",
+  "httpx==0.28.1",
+]
+
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.uv.sources]
+shaleyeah-employee-runtime = { path = "../../sdk/employee", editable = true }
+shaleyeah-contracts = { path = "../../contracts", editable = true }
+shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
+shaleyeah-evaluations = { path = "../../evaluations", editable = true }
+[dependency-groups]
+dev = ["pytest>=9,<10", "pytest-asyncio>=1,<2", "pytest-cov>=7,<8", "ruff>=0.15,<1"]
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_default_fixture_loop_scope = "function"
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]

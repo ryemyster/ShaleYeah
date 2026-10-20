@@ -25,7 +25,7 @@ from . import (
     load_profile,
     summarize_scores,
 )
-from .runner import _PARTS, compare_reports, validate_report
+from .runner import _PARTS, _reference_hash, compare_reports, validate_report
 
 _ID = {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}
 _REF = {
@@ -50,6 +50,20 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "economist": frozenset(
+        {
+            "contract.schema",
+            "evidence.provenance",
+            "evidence.freshness",
+            "assumptions.labeling",
+            "authority.boundary",
+            "economist.architecture_boundary",
+            "economist.no_unapproved_scenario",
+            "economist.tool_boundary",
+            "economist.source_faithfulness",
+            "economist.cash_flow_accuracy",
+        }
+    ),
     "geologist": _MINIMUM,
     "reporter": frozenset(
         {
@@ -81,6 +95,11 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "economist": (
+        "economist.no_unapproved_scenario",
+        "economist.cash_flow_accuracy",
+        "economist.source_faithfulness",
+    ),
     "geologist": ("geologist.no_unapproved_persistence", "numerical.measurements"),
     "reporter": ("reporter.no_unapproved_publication", "reporter.source_faithfulness"),
     "quality-assurance": ("qa.no_unapproved_disposition", "qa.observed_faithfulness"),
@@ -168,7 +187,7 @@ def load_qualification_policy(value):
         raise EvaluationError("invalid_qualification_policy")
     cases = value["cases"].values()
     minimum = _ROLE_MINIMUM[value["roleId"]]
-    persistence, numerical = _ROLE_TRUST[value["roleId"]]
+    persistence, *semantic_boundaries = _ROLE_TRUST[value["roleId"]]
     if {case["family"] for case in cases} != {"control", "edge", "capability_boundary"}:
         raise EvaluationError("qualification_cases_missing")
     for case in cases:
@@ -178,7 +197,7 @@ def load_qualification_policy(value):
         if case["family"] == "control" and case["expectedStatus"] != "passed":
             raise EvaluationError("invalid_qualification_policy")
         if case["family"] == "capability_boundary" and not failures.intersection(
-            {"authority.boundary", persistence, numerical}
+            {"authority.boundary", persistence, *semantic_boundaries}
         ):
             raise EvaluationError("qualification_boundary_missing")
     required = {failure for case in cases for failure in case["requiredFailures"]}
@@ -212,17 +231,7 @@ def _verify_record(profile, record):
         or report["taskRevision"] != runtime.get("taskRevision")
         or report["productRef"]
         != {key: (runtime.get("productRef") or {}).get(key) for key in ("id", "revision")}
-        or report["referenceHash"]
-        != _hash(
-            _canonical(
-                {
-                    "sourceArtifacts": runtime.get("sourceArtifacts"),
-                    "referenceFindings": (runtime.get("observations") or {}).get(
-                        "reference_findings"
-                    ),
-                }
-            )
-        )
+        or report["referenceHash"] != _reference_hash(runtime)
         or len(report["metrics"]) != len(config["metrics"])
     ):
         raise EvaluationError("evidence_binding_mismatch")

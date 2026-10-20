@@ -1,25 +1,36 @@
 # Econobot architecture
 
-Mode: shared contract/process only. This package is a bounded TypeScript MCP
-tool server. The Economist employee, its context and human review remain
-separate responsibilities.
+Mode: shared contract/process only. This package is a deterministic TypeScript
+MCP tool server, independently usable by the Economist or another compatible
+agent. The employee's reasoning and own context remain separate.
 
-`src/cash-flow.ts` validates one versioned periodic cash-flow contract and owns
-all numerical calculations. `src/index.ts` exposes three tool entry points
-through the shared SDK. Analysis and scenario comparisons call the same
-calculator; a model cannot supply or replace NPV, IRR or payback.
+`src/cash-flow.ts` owns the qualified periodic net-cash-flow calculations.
+`src/scenario-service.ts` reads exact authorized operator exports and preserves
+financial assumptions, source/as-of revisions, currency and timing. Every basis
+reference must resolve; ownership and price dates are reconciled with actual
+source evidence. It does not reconstruct proprietary fiscal models.
 
-The default CLI uses deterministic tools without a provider key or file access.
-A host may explicitly configure the existing shared `callLLM` adapter for an
-unreviewed explanation. Provider failure leaves the original calculations intact.
-Model text is returned as text, never parsed as numerical truth or approval.
+`src/configuration.ts` binds private host files to the installed connector runtime,
+current grants, read/export rights, content scanner and required audit sink.
+Source IDs are not credentials. Changing bytes, task/source revisions or current
+rights invalidates earlier work. The default local file mode attests operator
+rights; enterprise hosts must supply their own authoritative identity/permissions.
 
-Inputs carry currency, period, discount convention and revision references.
-References are provenance labels, not an authority grant. Outputs always remain
-unreviewed and cannot authorize spending. Authentication, scopes and audit for
-HTTP are enforced by the shared SDK configuration. Full employee review/context
-adoption is owned by issue 680.
+`src/review-workflow.ts` specializes the installed review state machine. It
+rederives current work/scenario on prepare, inspection, human decision and private
+save. Full source text is available to the enrolled human; model tools receive
+bounded pages and canonical computed objects. No human approval tool is exposed
+through MCP. Installed qualification and exact-revision grants are required;
+transactional private storage and replay return the same completed outcome.
 
-The package depends on the SDK and Zod. There is no mandatory model, database,
-warehouse or orchestrator. Its generic-client test runs the built server from a
-separate directory and verifies actual calculations and schema failures.
+`src/employee-tools.ts` supplies bounded query/command mappings and safe errors.
+Cancellation reaches source reads and review preparation. `src/source-hooks.ts`
+normalizes explicitly supplied EIA APIv2-shaped observations; it does not fetch
+live prices, infer forecasts or grant redistribution rights.
+
+`src/index.ts` retains the three direct calculation tools. Without private
+configuration they require no model, source files or database. Optional host
+synthesis uses the shared model adapter and remains unreviewed text. It cannot
+change calculations or authorize spending. A configured employee workflow adds
+its own private SQLite review store and portable installed evaluation verifier.
+No warehouse, orchestrator or single cloud is required.

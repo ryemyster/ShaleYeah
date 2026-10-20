@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #680: install the strict financial employee-output parser for both native grading and independent executing-tool verification; reject malformed, mixed, oversized, duplicate-key and nonfinite outputs without importing an employee app.
+
+- #680: add Economist source-faithfulness, independent decimal NPV/IRR/payback and reported-finding checks, role architecture/tool/authority gates and trusted qualification floors. Financial tolerances remain configurable within installed limits; fixture labels and model judgments cannot waive source or human authority requirements.
+- #680: bind host financial references into report comparison hashes and installed frozen-evidence verification. Existing reference hashes remain unchanged for reports without financial references.
+
 - #542: add QA observed-fidelity, topology, tool and protected-disposition metrics plus trusted role qualification floors. Configuration cannot remove these or select arbitrary evaluator code.
 
 

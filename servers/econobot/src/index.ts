@@ -1,10 +1,21 @@
 #!/usr/bin/env node
-import { callLLM, type LLMCallOptions, runMCPServer, ServerFactory, type ServerTemplate } from "@shaleyeah/sdk";
+import { pathToFileURL } from "node:url";
+import {
+	callLLM,
+	type LLMCallOptions,
+	type MCPServer,
+	runMCPServer,
+	ServerFactory,
+	type ServerRuntimeOptions,
+	type ServerTemplate,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 import { calculateCashFlows, cashFlowInputSchema } from "./cash-flow.js";
+import { loadEconomicBinding } from "./configuration.js";
+import { type EconomicEmployeeOptions, economicEmployeeTools } from "./employee-tools.js";
 
 export { calculateCashFlows, cashFlowInputSchema } from "./cash-flow.js";
-export interface EconobotOptions {
+export interface EconobotOptions extends ServerRuntimeOptions, EconomicEmployeeOptions {
 	/** Host configuration, never tool arguments. No ambient provider is enabled by default. */
 	synthesis?: Pick<LLMCallOptions, "apiKey" | "model" | "maxTokens">;
 	invokeLLM?: typeof callLLM;
@@ -91,10 +102,31 @@ export function createEconobotTemplate(options: EconobotOptions = {}): ServerTem
 					};
 				},
 			),
+			...economicEmployeeTools(options),
 		],
 	};
 }
 
-export const EconobotServer = ServerFactory.createServer(createEconobotTemplate());
+export const EconobotServer = function (options: EconobotOptions = {}) {
+	if (!new.target) throw new Error("Econobot requires constructor invocation");
+	const instance = new (ServerFactory.createServer(createEconobotTemplate(options)))(options);
+	const stop = instance.stop.bind(instance);
+	instance.stop = async () => {
+		try {
+			await stop();
+		} finally {
+			options.close?.();
+		}
+	};
+	return instance;
+} as unknown as { new (options?: EconobotOptions): MCPServer };
 export default EconobotServer;
-if (import.meta.url === `file://${process.argv[1]}`) runMCPServer(new EconobotServer());
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+	try {
+		const file = process.env.ECONOBOT_CONFIG_FILE;
+		runMCPServer(new EconobotServer(file ? await loadEconomicBinding(file) : {}));
+	} catch {
+		console.error("Econobot startup blocked: private source/task/review configuration unavailable");
+		process.exitCode = 1;
+	}
+}

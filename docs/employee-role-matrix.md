@@ -44,8 +44,8 @@ to leave shared research only in issue comments. QA's detailed
 research deliverable from [#538](https://github.com/ryemyster/ShaleYeah/issues/538).
 
 The coverage table links actual agent packages and registered server tools.
-Ten agents currently use Python and Google's Agent Development Kit (ADK).
-Economist, Reservoir Engineer, Reporter and QA still use TypeScript. Tool names
+Thirteen agents use Python and Google's Agent Development Kit (ADK).
+Reservoir Engineer retains its TypeScript employee surface. Tool names
 describe present interfaces, not verified professional capability. Roman
 personas remain display names; the explicit package role identifies the job.
 Versioned capability IDs will be published in #568.
@@ -54,7 +54,7 @@ Versioned capability IDs will be published in #568.
 | --- | --- | --- | --- |
 | Geologist | [geologist](../agents/geologist/README.md) | [geowiz](../servers/geowiz/src/index.ts): `process_well_logs`, `analyze_formation`, `assess_quality` and six other tools | #671–#674 |
 | Reservoir Engineer | [reservoir-engineer](../agents/reservoir-engineer/src/agent/index.ts) | [curve-smith](../servers/curve-smith/src/index.ts): `analyze_decline_curve`, `generate_type_curve`, `calculate_eur`, `assess_curve_quality` | #681 |
-| Economist | [economist](../agents/economist/README.md) | [econobot](../servers/econobot/src/index.ts): `analyze_economics`, `calculate_dcf`, `sensitivity_analysis` | #680 |
+| Economist | [economist](../agents/economist/README.md) | [econobot](../servers/econobot/src/index.ts): explicit cash-flow calculation, source-linked scenarios and exact private human review | #680 |
 | Risk Analyst | [risk-analyst](../agents/risk-analyst/README.md) | [risk-analysis](../servers/risk-analysis/src/index.ts): `assess_investment_risk`, `monte_carlo_simulation` | #682 |
 | Legal Analyst | [legal-analyst](../agents/legal-analyst/README.md) | [legal](../servers/legal/src/index.ts): `analyze_legal_framework`, `review_contract`, `assess_compliance` | #683 |
 | Market Analyst | [market-analyst](../agents/market-analyst/README.md) | [market](../servers/market/src/index.ts): `analyze_market_conditions`, `competitive_analysis` | #684 |
@@ -130,7 +130,7 @@ are separate composition choices governed by #568, #572 and #573.
 - **Sources and hooks:** Operator spreadsheets/CSV first; EIA [S03](#s03-eia-public-energy-series) for selected market assumptions; PHDwin/ARIES-related exports [S11](#s11-proprietary-economics) and Quorum [S12](#s12-proprietary-planning-and-land) are optional customer integrations. Market owns interpretation of regional pricing.
 - **Configurable evaluation:** Cash-flow/NPV recomputation, IRR undefined/multiple-root handling, sign/unit/timing correctness, ownership reconciliation and scenario coverage. Domain thresholds and required fiscal fields vary by assignment.
 - **Human decisions:** Approve financial assumptions and scenario basis. An attractive NPV or bid calculation is advisory; only authorized humans commit capital or offers.
-- **Unresolved validation:** Petroleum economist supplies reference calculations and edge cases, chooses conventions and validates taxes/royalties by jurisdiction. Owner #680.
+- **Unresolved validation:** Native Economist uses own context, independent financial checks and exact human scenario review. Initial Codex research labels are provisional. Operator forecasts, live/paid integrations, jurisdiction-specific fiscal correctness and professional materiality remain unverified; qualified reviewers and contributors can refine labels. Human effort improvements require measurement.
 
 ### Risk Analyst
 
@@ -610,7 +610,7 @@ The [delivery ledger](mvp-release-plan.md) retains the sequential order.
 
 | Evidence or open question | Keep / change / cut decision | Owner and required evidence |
 | --- | --- | --- |
-| Original four TypeScript employee implementations; Reporter and QA replaced by their owning migrations | Retain behavior needed during migration; replace the employee surface and delete displaced runtime/docs in its own PR | #680, #681 remain; #541/#542 delete their displaced employee surfaces; #576 inventories callers, #692 performs final shared-runtime deletion |
+| Original four TypeScript employee implementations; Economist, Reporter and QA replaced by their owning migrations | Retain behavior needed during migration; replace the remaining Reservoir surface and delete displaced runtime/docs in its own PR | #681 remains; #680/#541/#542 delete their displaced employee surfaces; #576 inventories callers, #692 performs final shared-runtime deletion |
 | [Title ownership](../servers/title/src/tools/ownership.ts) estimates interests from description/basin or model output | Replace unsupported estimates as ownership facts; retain verifiable arithmetic under supplied terms | #685: instrument-backed interests, missing-chain and conflicting-record cases; cut displaced guesses |
 | [QA tool](../servers/qa-server/README.md) replaces unobserved estimates in #716 | Source/profile/version-linked rule results, actual denominators and explicit untested/error states; professional/operator and employee qualification remain separate | #538 charter; #716 observed server checks before #542 employee adoption; expert labels and actual operator evidence remain required |
 | [Research fallbacks](../servers/research/src/tools/market-research.ts) include generic competitors/source labels | Retain useful collection/parsing behavior; replace unsupported claims with missing-evidence results | #688: source-resolvable findings, untrusted/stale/denied data cases; cut generic claims presented as collected facts |

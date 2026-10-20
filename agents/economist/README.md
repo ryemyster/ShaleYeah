@@ -1,55 +1,76 @@
-# @shaleyeah/economist
+# Economist employee
 
-The current TypeScript runtime delegates tools to Econobot. Its full employee
-workflow is tracked in [#680](https://github.com/ryemyster/ShaleYeah/issues/680),
-after the backend repair in [#711](https://github.com/ryemyster/ShaleYeah/issues/711).
+Caesar Augustus Economicus helps an economist compare financial scenarios from
+reviewed forecasts and explicit assumptions. It retains source revisions,
+net ownership, taxes/royalties, currency, timing and uncertainty so a human can
+review the actual basis behind the numbers.
 
-The economist agent analyzes the financial viability of oil & gas projects — NPV, IRR, break-even prices, sensitivity tables, and capital budgeting decisions. It pairs with the **econobot** Tier 1 MCP server (port 3002).
+The employee uses Google's Agent Development Kit (ADK) for Python. Its mode is
+**Stand-alone Agent with Progressive Disclosure (Skills)**: one specialist loads
+bounded evidence when needed. It calls a separately configured
+[Econobot tool server](../../servers/econobot/README.md) through MCP (Model Context
+Protocol). Other compatible agents can use that same server; this employee can
+use a compatible external MCP implementation.
 
-## Pair
+## Run and configure
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-econobot` | 3002 |
-| Tier 2 (agent) | `@shaleyeah/economist` | 4002 |
+From this directory:
 
-## Package checks
-
-```bash
-cd agents/economist
-pnpm build
-pnpm test
+```sh
+uv sync --locked
+agents-cli info
+export ECONOMIST_MODEL_CONFIG_FILE=/absolute/private/models.json
+export ECONOBOT_MCP_URL=http://127.0.0.1:3002/mcp
+export ECONOBOT_MCP_ACCESS_TOKEN_FILE=/absolute/private/tool-token
+agents-cli run
 ```
 
-## MCP connection
+The private model file selects provider/model, revision, credential references
+and limits for each purpose. See [provider configuration](../../docs/model-providers.md).
+Gemini and Anthropic are explicit choices, with separate agent, optional synthesis
+and judge credentials. Tool access uses its own private credential. Files must
+belong to the operating user with mode `0600`; keep them outside the checkout.
 
-Configure Econobot's identity, scopes and audit sink using the
-[HTTP access guide](../../sdk/docs/http-access.md); `PORT` alone does not enroll
-an HTTP server. Set `ECONOBOT_MCP_URL` to the configured `/mcp` endpoint and
-`ECONOBOT_MCP_ACCESS_TOKEN_FILE` to its dedicated owner-readable credential
-file (mode `0600`, separate from the model key). Historical bare local URLs are
-normalized to `/mcp`.
+For retained work, the host opens `EconomistRuntime` with its own `ContextCatalog`,
+current source/context authority and model settings. The runtime restores this
+employee's exact task, evidence, work and pending-review references after restart.
+The CLI is an authoring interface; the scoped runtime and executing review backend
+provide the durable employee workflow. See [integration](docs/INTEGRATION.md).
 
-Each call uses the pinned stateless protocol, a fresh bounded tool catalog,
-a 30-second default deadline (maximum 120 seconds) and a 1 MiB response limit.
-Redirects are denied. Genuine tool errors and failures after command dispatch
-stop automatic retry; inspect the outcome before repeating a command. Transport
-compatibility does not qualify professional recommendations, employee context
-or revision-bound human review; those remain assigned to the role issue.
+## Work and human decisions
 
-## Runtime
+The employee may retrieve permitted inputs, calculate and compare explicit net
+cash-flow scenarios, and prepare a source-linked review packet. The final analysis
+is canonical JSON containing `work` and `scenario`; missing authorized inputs
+produce a `deferred` reason. Net present value (NPV) discounts future money to
+its present value. Internal rate of return (IRR) is the rate at which NPV is zero.
+Unavailable or ambiguous results stay unavailable with a reason.
 
-The agent exports `createEconomistRuntime()`, `createEconomistEndpoint()`, `runEconomistTask()`, and `callEconobotTool()`. Agent tools delegate to the Tier 1 `econobot` MCP server over HTTP:
+A separately enrolled human inspects all inputs and approves, rejects or requests
+changes to the exact scenario revision. The backend rechecks current source
+rights, qualification and the bound review before saving a private scenario.
+Restart and repeated continuation cannot create a second save. Native tool
+confirmation is an interaction pause; it does not grant business authority.
+No capital commitment, bid submission, external publication or reserves/fiscal
+certification is supported.
 
-- `economist.analyze_economics` -> `analyze_economics`
-- `economist.calculate_dcf` -> `calculate_dcf`
-- `economist.sensitivity_analysis` -> `sensitivity_analysis`
+## Check and build
 
-## Docs
+```sh
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+uv run --locked python tests/eval/run_fixture_evals.py \
+  --output artifacts/evals/economist.json --code-revision "$(git rev-parse HEAD)"
+uv build --wheel
+```
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [How It Works](docs/HOW_IT_WORKS.md)
-- [Development](docs/DEVELOPMENT.md)
-- [Integration Guide](docs/INTEGRATION.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Local Testing](docs/LOCAL_TESTING.md)
+Tune the [performance profile](tests/eval/performance_profile.json),
+[case dataset](tests/eval/datasets/economist-performance.json) and approved optional
+rubrics through configuration. Required financial, source and authority gates
+cannot be removed by configuration or a model judge. The
+[evaluation guide](docs/EVALUATIONS.md) explains initial research labels and their
+limits. Offline fixtures do not measure professional accuracy or time saved.
+
+See [architecture](docs/ARCHITECTURE.md), [development](docs/DEVELOPMENT.md),
+[local tests](docs/LOCAL_TESTING.md), [workflow](docs/HOW_IT_WORKS.md) and
+[deployment](docs/DEPLOYMENT.md).

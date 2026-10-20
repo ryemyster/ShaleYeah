@@ -423,7 +423,7 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](model-providers.md).
 
-The Geologist and Reporter factories use installable `sdk/employee` helpers for
+The Geologist, Reporter, QA and Economist factories use installable `sdk/employee` helpers for
 scoped state, providers/events, optional native ADK and protected continuation.
 Role code owns persona and tool mappings; the helper imports no employee. The
 TypeScript SDK review core accepts trusted role-owned source/action/schema
@@ -435,3 +435,11 @@ remain 0.1.0. Scope, exact-byte evidence, current source rights and human review
 retain their own boundaries; format metadata alone grants no access or parsing
 capability. The native QA unit uses installed helpers and independently qualified
 source/archive/container checks around that selected profile.
+
+Economist uses the existing CSV source profile for explicit operator net cash
+flows and all supporting financial basis inputs. The tool retains the qualified
+periodic calculator; native employee context, actual-output grading and exact
+human scenario review reuse installed helpers. Private checkpoint lineage allows
+review completion without reactivating retired context. Independent employee/tool
+containers and archives use declared dependencies; fixture qualification does not
+certify forecasts, live feeds, fiscal models or capital decisions.

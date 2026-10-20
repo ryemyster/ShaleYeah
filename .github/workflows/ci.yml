@@ -103,6 +103,8 @@ jobs:
       run: uv sync --project agents/reporter-agent --locked
     - name: Install QA native runtime for observed-result context and disposition controls
       run: uv sync --project agents/quality-assurance --locked
+    - name: Install Economist native runtime for source and human-review controls
+      run: uv sync --project agents/economist --locked
     - name: Workspace tests on the constrained runner
       run: pnpm turbo test --concurrency=2
     - run: pnpm --dir contracts check:isolation

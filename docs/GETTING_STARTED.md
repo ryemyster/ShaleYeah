@@ -50,9 +50,9 @@ instructions stay local; contributors do not need the maintainer's ignored
 | Shared TypeScript helpers | [sdk/README.md](../sdk/README.md) | SDK scripts and checks for affected consumers |
 | Optional coordination | [orchestrator/README.md](../orchestrator/README.md) | Its documented runtime/dependencies and package scripts |
 
-Four employees still have temporary TypeScript implementations. The
-[migration ledger](legacy-migration-ledger.md) names their owners; use those
-packages' current instructions while migrating them. New employee code belongs
+Reservoir Engineer still has a temporary TypeScript implementation. The
+[migration ledger](legacy-migration-ledger.md) names its owner; use that
+package's current instructions while migrating it. New employee code belongs
 in a package-local ADK/Python project, never a root scaffold or a new npm agent.
 
 ## Check an ADK employee

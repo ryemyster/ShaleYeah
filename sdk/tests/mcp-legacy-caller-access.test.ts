@@ -5,13 +5,9 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { test } from "node:test";
-import { callEconobotTool } from "../../agents/economist/src/agent/econobot-client.js";
 import { callCurveSmithTool } from "../../agents/reservoir-engineer/src/agent/curve-smith-client.js";
 
-for (const [role, call, prefix] of [
-	["Economist", callEconobotTool, "ECONOBOT"],
-	["Reservoir engineer", callCurveSmithTool, "CURVE_SMITH"],
-] as const) {
+for (const [role, call, prefix] of [["Reservoir engineer", callCurveSmithTool, "CURVE_SMITH"]] as const) {
 	for (const scenario of [
 		"success",
 		"disconnect",

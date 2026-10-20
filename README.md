@@ -65,8 +65,9 @@ The reference fleet covers 14 business concerns:
 Each corresponding agent lives under `agents/<role>/` when implemented or migrated.
 [Econobot](servers/econobot/README.md) calculates explicit periodic cash flows,
 with declared currency, timing, source revisions and unavailable metrics. Its
-numerical results remain unreviewed; Economist employee adoption is tracked in
-[#680](https://github.com/ryemyster/ShaleYeah/issues/680).
+numerical results remain advisory. The [Economist employee](agents/economist/README.md)
+adds its own durable context, configurable actual-output scorecard and exact
+human scenario review before private storage. It cannot commit capital.
 The [Reporter employee](agents/reporter-agent/README.md) prepares source-linked
 private reports with an exact human publication gate and configurable scorecard.
 The [QA server](servers/qa-server/README.md) runs configurable observed data
@@ -95,11 +96,10 @@ dispositions for an authenticated human owner. An exception retains the original
 
 ## Project Status
 
-Geologist and Reporter have implemented reference employee workflows with
+Geologist, Reporter, QA and Economist have implemented reference employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. Nine other roles have basic ADK definitions and three retain
-older TypeScript employee loops; their full workflows are still pending. The
-QA tool server runs observed rules, while its employee integration is pending.
+package checks. Nine other roles have basic ADK definitions and Reservoir Engineer
+retains its TypeScript employee loop; their full workflows are still pending.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
 

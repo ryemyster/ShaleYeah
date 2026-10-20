@@ -41,7 +41,7 @@ remain owned by #671/#674 and their role peers.
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
-previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter and QA
+previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA and Economist
 use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
@@ -84,6 +84,14 @@ packet-bound qualification before authenticated owner approval can execute.
 An accepted exception retains the failed result and cannot repair data or certify
 a release. Native confirmation alone grants no authority.
 
+The [Economist](../agents/economist/README.md) preserves exact financial source,
+assumption and scenario revisions in its own scoped context. Econobot owns the
+qualified cash-flow solver and exact human scenario-review/private-save gate.
+The installed evaluator grades the employee's actual returned JSON against
+independent financial references and current backend observations. It does not
+certify a forecast, fiscal model or capital decision. Private checkpoint lineage
+preserves completed review history across restart without reviving a retired record.
+
 ## Packages and dependency boundaries
 
 | Area | Current responsibility | Target boundary |
@@ -97,13 +105,13 @@ a release. Native confirmation alone grants no authority.
 | `sdk/employee/` | Installed scoped context, providers/events, native runtime and protected review client; role factories own persona/tool selection | Independently installable helpers with optional ADK adapter and no employee imports |
 | `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
-Twelve agents have ADK manifests: Geologist, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
+Thirteen agents have ADK manifests: Geologist, Economist, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
-Infrastructure Planner and Investment Chair. Economist and Reservoir Engineer
-retain TypeScript implementations.
+Infrastructure Planner and Investment Chair. Reservoir Engineer retains its
+TypeScript implementation.
 See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
 
-Those TypeScript agents use `LocalAgentRuntime` and copied task loops.
+The remaining TypeScript employee uses `LocalAgentRuntime` and a copied task loop.
 `sdk/src/service.ts` supplies an endpoint facade, not an implemented universal
 HTTP employee service. `sdk/src/agent-loop.ts` exports a shared loop with tests
 but no internal production caller. #576 verifies caller/public API implications;

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #680: migrate Economist to native ADK/Python with its own source-bound context, configurable independent financial scorecard, actual returned-output grading and exact enrolled human scenario review/resume. Add seven-source operator exports and optional offline EIA mapping, external/generic MCP and independent source/wheel/archive/container controls. Delete displaced TypeScript loop/client/config/tests and importer; preserve qualified #711 mathematics. Fixture evidence does not certify forecasts, fiscal assumptions, capital decisions or professional accuracy.
+
+- #680: preserve private employee checkpoint lineage when an approved review clears its pending reference, retaining idempotence, stale-write checks and current write authority.
+
 - #711: qualify Econobot's explicit periodic cash-flow NPV/IRR/payback path with independent numerical fixtures and residual checks. Remove guessed spreadsheet economics, fabricated success/confidence/breakeven and synthetic price sensitivity. Keep optional unreviewed model interpretation separate from calculation truth; reject legacy requests missing units/references.
 
 - #542: replace the QA employee loop with native ADK, own scoped context and configurable observed-fidelity evaluations; exact owner dispositions retain immutable failures, support restart and reject stale/revoked/expired grants. Add explicit JSON-source 0.2.0 with old source/employee profiles preserved; carry prepare cancellation through the installed review helper. Delete displaced QA TypeScript surfaces and require independent employee/tool qualification. Preserve current connector output versions and pass only UV cache/offline build settings through workspace checks. Use native Node/tsx imports for the unchanged shared test/generation programs, avoiding unnecessary CLI IPC startup.

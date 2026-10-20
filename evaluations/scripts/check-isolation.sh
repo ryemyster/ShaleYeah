@@ -13,11 +13,14 @@ uv pip install --python "$isolation_dir/.venv/bin/python" --no-deps \
   "$isolation_dir/wheels/shaleyeah_evaluations-0.3.0-py3-none-any.whl"
 uv pip check --python "$isolation_dir/.venv/bin/python"
 mkdir -p "$isolation_dir/evaluations/tests" "$isolation_dir/evaluations/fixtures" "$isolation_dir/agents/geologist/tests/eval/datasets"
+mkdir -p "$isolation_dir/agents/economist/tests/eval/fixtures"
 cp tests/*.py "$isolation_dir/evaluations/tests/"
 cp fixtures/frozen-trace.json "$isolation_dir/evaluations/fixtures/"
 cp fixtures/reporter-work-products.json "$isolation_dir/evaluations/fixtures/"
 cp ../agents/geologist/tests/eval/eval_config.json "$isolation_dir/agents/geologist/tests/eval/"
 cp ../agents/geologist/tests/eval/datasets/geologist-adk-reference.json "$isolation_dir/agents/geologist/tests/eval/datasets/"
+cp ../agents/economist/tests/eval/fixtures/economic-oracles.json "$isolation_dir/agents/economist/tests/eval/fixtures/"
+cp ../agents/economist/tests/eval/fixtures/observed-scenarios.json "$isolation_dir/agents/economist/tests/eval/fixtures/"
 cd "$isolation_dir/evaluations"
 env -u PYTHONPATH -u PYTHONHOME "$isolation_dir/.venv/bin/python" -I -c '
 from importlib.metadata import distributions

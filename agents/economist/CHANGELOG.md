@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #680: replace the copied TypeScript loop/private client and npm/config/tests with native ADK/Python, own durable source-bound context, editable job scorecard and actual returned-output grading. Reuse installed helpers; add exact separate human scenario review/resume, independent external MCP and source/wheel/archive/container controls. No capital authority or professional certification.
+
 - #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.
 
 - #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.

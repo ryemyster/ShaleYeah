@@ -27,6 +27,18 @@ _REPORT = Draft202012Validator(REPORT_SCHEMA)
 _PARTS = {key: Draft202012Validator(value) for key, value in REPORT_SCHEMA["$defs"].items()}
 
 
+def _reference_hash(runtime):
+    observed = runtime.get("observations") or {}
+    references = {
+        "sourceArtifacts": runtime.get("sourceArtifacts"),
+        "referenceFindings": observed.get("reference_findings"),
+    }
+    # Preserve existing report bindings when no financial reference set is used.
+    if "economic_references" in observed:
+        references["economicReferences"] = observed["economic_references"]
+    return _hash(_canonical(references))
+
+
 @dataclass(frozen=True)
 class JudgeBackend:
     """Host-installed asynchronous qualitative judge, never loaded from profile code."""
@@ -243,16 +255,7 @@ async def run_case(
         ],
         "traceHash": receipts[0].trace_hash,
         "runtimeHash": receipts[0].runtime_hash,
-        "referenceHash": _hash(
-            _canonical(
-                {
-                    "sourceArtifacts": runtime.get("sourceArtifacts"),
-                    "referenceFindings": (runtime.get("observations") or {}).get(
-                        "reference_findings"
-                    ),
-                }
-            )
-        ),
+        "referenceHash": _reference_hash(runtime),
         "scope": runtime.get("scope"),
         "taskRevision": runtime.get("taskRevision"),
         "productRef": {key: product.get(key) for key in ("id", "revision")},
