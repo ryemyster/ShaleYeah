@@ -199,3 +199,27 @@ reads the immutable QA report under current authority; the grader compares
 actual output with that report and retains verdicts, counts, source and result
 revisions. Reporting a real failed data check is correct employee behavior.
 Role configuration and model judges cannot remove these gates.
+
+The economist role requires `economist.cash_flow_accuracy`,
+`economist.source_faithfulness`, `economist.architecture_boundary`,
+`economist.tool_boundary` and `economist.no_unapproved_scenario`, in addition to
+the shared trust floor. Independent decimal arithmetic checks source-bound NPV,
+the IRR residual, payback, sign, declared units and timing. It checks both the
+scenario object and reported findings. Forecast-derived findings retain an
+assumed basis; `numerical.measurements` is not used for these financial outputs.
+Undefined or ambiguous IRR and unrecovered payback remain unavailable.
+
+The host supplies exact backend work/scenario observations and independently
+frozen reference values separately from the candidate. Missing source evidence,
+changed assumptions or reported output that differs from the backend blocks
+qualification. Numeric tolerance parameters are editable within installed upper
+bounds; the profile and an optional judge cannot disable these requirements.
+The [Economist evaluation guide](../agents/economist/docs/EVALUATIONS.md) records
+the provisional starter labels, frozen hashes, benchmark and native-trace limits.
+
+The installed `economist_output.parse_response` contract reads the candidate's
+actual final text parts. It rejects malformed/mixed/oversized output, duplicate
+keys and nonfinite numbers, and accepts only work/scenario or explicit deferral.
+Both the employee grader and independent tool verifier use this contract without
+the verifier importing an employee app. Correct backend objects cannot substitute
+for incorrect returned employee work.

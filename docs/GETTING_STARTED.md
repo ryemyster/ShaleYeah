@@ -50,9 +50,9 @@ instructions stay local; contributors do not need the maintainer's ignored
 | Shared TypeScript helpers | [sdk/README.md](../sdk/README.md) | SDK scripts and checks for affected consumers |
 | Optional coordination | [orchestrator/README.md](../orchestrator/README.md) | Its documented runtime/dependencies and package scripts |
 
-Four employees still have temporary TypeScript implementations. The
-[migration ledger](legacy-migration-ledger.md) names their owners; use those
-packages' current instructions while migrating them. New employee code belongs
+Reservoir Engineer still has a temporary TypeScript implementation. The
+[migration ledger](legacy-migration-ledger.md) names its owner; use that
+package's current instructions while migrating it. New employee code belongs
 in a package-local ADK/Python project, never a root scaffold or a new npm agent.
 
 ## Check an ADK employee
@@ -117,8 +117,8 @@ pnpm turbo test
 pnpm --dir contracts check:isolation
 ```
 
-For a small machine or hosted CI runner, use `pnpm turbo test --concurrency=2`
-for the workspace test command. It schedules fewer packages at once while
+For a small machine or hosted CI runner, use `pnpm turbo test --concurrency=1`
+for the workspace test command. It schedules one package at a time while
 keeping the full suite and its existing time limits. Native and installed-unit
 qualification still use their owning package commands.
 

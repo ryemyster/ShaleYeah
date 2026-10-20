@@ -1,40 +1,20 @@
-# Development — @shaleyeah/economist
+# Developing the Economist
 
-> **Status: Planned** — Not yet implemented. See [#364](https://github.com/ryemyster/ShaleYeah/issues/364).
+Use Python 3.12 and `uv sync --locked` in this package. `agents-cli info` inspects
+the own code-only ADK project. Configure private model and MCP credentials from
+the README before using `agents-cli run` for interactive authoring.
 
-## Implementation checklist
+Write failing behavior controls before changing prompts, tool mappings or state.
+Use `uv run --locked ruff check app tests` and
+`uv run --locked pytest -q --cov=app --cov-fail-under=90` for package checks.
+Keep role-specific reasoning and mappings here; share only reusable contracts
+and runtime services through declared installed packages.
 
-Follow the exact sequence used for the geologist agent (the reference):
+The scorecard, datasets, optional rubrics and numeric settings are configuration.
+A changed label or profile needs a reviewed revision/hash; preserve prior results.
+Financial and authority floors remain trusted code. See [evaluations](EVALUATIONS.md).
+Do not change labels or lower gates to hide a failed model output.
 
-1. Write failing tests first (`tests/agent.test.ts`, `tests/mcp-client.test.ts`) — copy from `agents/geologist/tests/` and rename
-2. Create `src/agent/index.ts` from `.claude/rules/agent-template.md` — fill in manifest, config, handlers
-3. Create `src/agent/econobot-client.ts` — copy `agents/geologist/src/agent/geowiz-client.ts`, rename `callGeowizTool` → `callEconobotTool`
-4. Run tests until green: `npx tsx tests/agent.test.ts && npx tsx tests/mcp-client.test.ts`
-5. Update `src/index.ts` — uncomment `export * from "./agent/index.js"`
-6. Run `/pre-commit` gate
-
-## Key files to create
-
-```
-agents/economist/
-  src/agent/
-    index.ts              ← economist manifest + config + runEconomistTask
-    econobot-client.ts    ← callEconobotTool
-  tests/
-    agent.test.ts         ← contract tests (copy + rename from geologist)
-    mcp-client.test.ts    ← integration tests (copy + rename from geologist)
-```
-
-## Running tests
-
-```bash
-cd agents/economist
-npx tsx tests/agent.test.ts
-npx tsx tests/mcp-client.test.ts
-```
-
-## Reference
-
-- Agent template: `.claude/rules/agent-template.md`
-- Reference implementation: `agents/geologist/src/agent/index.ts`
-- SDK contracts: `sdk/src/contracts.ts`
+The matching backend retains its qualified cash-flow solver. Changes to domain
+algorithms need their own issue. Remove displaced code when its replacement is
+accepted and update this package's documentation and changelog with the change.

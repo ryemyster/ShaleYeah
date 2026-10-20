@@ -292,7 +292,7 @@ whose upgrades must rerun applicable conformance and role checks.
 
 #576 commits the [caller-backed inventory](legacy-migration-ledger.md) before broad source deletion. Delete
 each role's displaced runtime/adapters in its adoption PR, after replacement
-tests pass. #541/#542 replace their employee surfaces; #680/#681 own the remaining TypeScript migrations.
+tests pass. #541/#542/#680 replace their employee surfaces; #681 owns the remaining TypeScript migration.
 #679 owns duplicated Python transport consolidation. #692 deletes shared custom
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.

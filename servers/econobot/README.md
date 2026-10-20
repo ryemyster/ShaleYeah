@@ -57,10 +57,20 @@ Optional interpretation requires host configuration through
 shared `callLLM` adapter, stays separate from numerical truth and returns an
 explicit unavailable state on failure. The default CLI does not enable it.
 
-The request and output shapes replace the old inferred spreadsheet API. Legacy
-price/cost/production files, bare cash-flow arrays without units/references,
-percentage IRR scalars, invented breakeven/confidence and generated price
-scenarios are unsupported. The [Economist migration](https://github.com/ryemyster/ShaleYeah/issues/680)
-will adopt this contract; its current TypeScript wrapper is not a qualified
-employee workflow. Data ingestion must prepare explicit cash flows before
-calling these tools.
+For source-backed employee work, set `ECONOBOT_CONFIG_FILE` to an owner-only
+operator binding. It selects the exact task, seven financial source exports,
+scenario definitions, current read/export rights and a separate enrolled reviewer.
+See [financial inputs](docs/EMPLOYEE_INPUTS.md). Source identities are checked
+against actual authorized bytes; missing or changed basis blocks the scenario.
+
+Configured tools add `read_scenario_inputs`, paginated `read_scenario_source`,
+`get_context_source_metadata`, `calculate_scenario`, `compare_scenarios`,
+`draft_scenario`, `prepare_review`, `get_review_status` and `record_scenario`.
+The human uses `examples/review.mjs` to inspect, approve, reject or request changes.
+Installed qualification and current rights bind private storage to that exact
+packet. Approval never commits capital or certifies the upstream fiscal model.
+
+The independent [Economist employee](../../agents/economist/README.md) consumes
+these same tools; other compatible agents can also use them. The server remains
+usable without an employee, model key, orchestrator or warehouse. See
+[deployment](docs/DEPLOYMENT.md) for source/archive checks and separate containers.

@@ -52,6 +52,79 @@ async def no_source(*_):
 
 
 @pytest.mark.asyncio
+async def test_review_completion_can_revisit_state_without_reactivating_an_old_checkpoint(tmp_path):
+    scope, principal, task = employee("economist")
+    writable = True
+
+    async def grant(who, requested, operation):
+        assert who == principal and requested == scope
+        return {
+            "subjectId": principal["subjectId"],
+            "scope": scope,
+            "policy": policy()["contextPolicy"],
+            "operations": ["read", "write", "assemble", "delete"] if writable else ["read"],
+            "revoked": False,
+            "expiresAt": (NOW + timedelta(hours=1)).isoformat(),
+        }
+
+    async def opened():
+        return await ContextCatalog.open(
+            tmp_path / "private",
+            scope,
+            principal,
+            policy(),
+            grant_provider=grant,
+            source_authority=no_source,
+            clock=lambda: NOW,
+        )
+
+    catalog = await opened()
+    try:
+        await catalog.put_task(task)
+
+        async def checkpoint(pending, expected=None):
+            return await catalog.checkpoint(
+                work_refs=[],
+                pending_review_refs=pending,
+                questions=[],
+                conflicts=[],
+                expected=expected,
+            )
+
+        initial = await checkpoint([])
+        pending = await checkpoint(
+            [{"id": "review.pending", "revision": "r1"}], initial["revision"]
+        )
+        completed = await checkpoint([], pending["revision"])
+        assert completed["revision"] != initial["revision"]
+        assert completed["previousRevision"] == pending["revision"]
+        assert await checkpoint([], completed["revision"]) == completed
+        with pytest.raises(ContextError, match="revision_mismatch"):
+            await checkpoint([], initial["revision"])
+        writable = False
+        with pytest.raises(ContextError, match="access_denied"):
+            await checkpoint([], completed["revision"])
+    finally:
+        await catalog.close()
+    writable = True
+    catalog = await opened()
+    try:
+        assert (await catalog.current_checkpoint())["revision"] == completed["revision"]
+        assert (
+            await catalog.checkpoint(
+                work_refs=[],
+                pending_review_refs=[],
+                questions=[],
+                conflicts=[],
+                expected=completed["revision"],
+            )
+            == completed
+        )
+    finally:
+        await catalog.close()
+
+
+@pytest.mark.asyncio
 async def test_distinct_employees_restore_only_their_own_checkpoint(tmp_path):
     for role in ("reporter", "geologist"):
         scope, principal, task = employee(role)

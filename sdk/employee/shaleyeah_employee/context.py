@@ -636,21 +636,35 @@ class ContextCatalog:
             "questions": questions,
             "conflicts": conflicts,
         }
-        revision = hashlib.sha256(canonical(value)).hexdigest()
         id = "checkpoint." + hashlib.sha256(canonical(self.scope)).hexdigest()[:32]
         current = self._head(id)
         if expected is not None and current != expected:
             raise ContextError("revision_mismatch")
+        record = None
+        if current is not None:
+            row = self._metadata({"id": id, "revision": current})
+            if row["status"] == "current" and _timestamp(row["expires_at"]) > self.clock():
+                previous = self._body(row)
+                if all(previous.get(key) == item for key, item in value.items()):
+                    record = previous
+        if record is None:
+            # A -> pending review -> A is a new transition, not permission to
+            # reactivate A's retired revision. The private lineage preserves that.
+            value["previousRevision"] = current
+            revision = hashlib.sha256(canonical(value)).hexdigest()
+            record = {**value, "id": id, "revision": revision}
+        else:
+            revision = current
         await self._write(
             id,
             revision,
             "checkpoint",
-            {**value, "id": id, "revision": revision},
+            record,
             [],
             [{"id": task["id"], "revision": task["revision"]}, *task["inputs"], *work_refs],
             current,
         )
-        return {**copy.deepcopy(value), "id": id, "revision": revision}
+        return copy.deepcopy(record)
 
     async def current_checkpoint(self, operation="read"):
         await self._authorize(operation)

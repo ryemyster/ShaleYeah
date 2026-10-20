@@ -12,6 +12,9 @@ transport metadata or interrupted tool calls cannot create approval.
 `context.ContextCatalog` stores private scoped tasks, evidence, drafts and pending
 review references. Current authority is checked before reading or writing;
 restoration preserves retention and cannot resurrect newly denied source data.
+Changed checkpoints bind their previous revision so completing a review can
+return to the same task state without reactivating an older record. Repeating
+the current state is idempotent and still requires current write authority.
 `models` contains the qualified configurable Gemini/Anthropic native adapters.
 `events.EmployeeEvents` emits correlated metadata with exact record bindings.
 `native.EmployeeRuntime` uses ADK's runner and durable session service.

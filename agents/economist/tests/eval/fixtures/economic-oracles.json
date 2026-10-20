@@ -1,0 +1,21 @@
+{
+  "version": "0.1.0",
+  "labelAuthority": "provisional-codex-research-review",
+  "reviewedAt": "2026-10-19T00:00:00Z",
+  "convention": "Initial cash flow at zero; equal period ends; effective rate per declared period; first undiscounted period-end payback",
+  "sources": [
+    "https://numpy.org/numpy-financial/latest/_api_stubs/numpy_financial.irr.html",
+    "https://numpy.org/numpy-financial/latest/_api_stubs/numpy_financial.npv.html",
+    "https://www.phdwin.com/wp-content/uploads/2017/03/Economics-Basics.pdf"
+  ],
+  "professionalAcceptance": false,
+  "references": {
+    "base": {"id":"base","revision":"r1","cashFlows":[-100,110],"discountRate":0.1,"currency":"USD","periodUnit":"year","npv":0,"irr":{"status":"available","value":0.1},"payback":{"status":"available","value":1}},
+    "negative": {"id":"negative","revision":"r1","cashFlows":[-100,90],"discountRate":0.1,"currency":"USD","periodUnit":"year","npv":-18.181818181818183,"irr":{"status":"available","value":-0.1},"payback":{"status":"unavailable","reason":"not_recovered"}},
+    "monthly": {"id":"monthly","revision":"r1","cashFlows":[-100,110],"discountRate":0.1,"currency":"USD","periodUnit":"month","npv":0,"irr":{"status":"available","value":0.1},"payback":{"status":"available","value":1}},
+    "zero": {"id":"zero","revision":"r1","cashFlows":[-100,0,110],"discountRate":0,"currency":"USD","periodUnit":"year","npv":10,"irr":{"status":"available","value":0.04880884817015163},"payback":{"status":"available","value":2}},
+    "ambiguous": {"id":"ambiguous","revision":"r1","cashFlows":[-100,230,-132],"discountRate":0.1,"currency":"USD","periodUnit":"year","npv":0,"irr":{"status":"unavailable","reason":"ambiguous_series"},"payback":{"status":"available","value":1}},
+    "none": {"id":"none","revision":"r1","cashFlows":[-100,-10],"discountRate":0,"currency":"USD","periodUnit":"year","npv":-110,"irr":{"status":"unavailable","reason":"no_solution"},"payback":{"status":"unavailable","reason":"not_recovered"}}
+  },
+  "rationale": "One-period controls solve algebraically. Multi-period IRR satisfies zero discounted NPV. Ambiguous sign-changing flows defer under the declared product policy. These synthetic technical labels do not validate petroleum forecasts, fiscal models, source rights or professional materiality."
+}

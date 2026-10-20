@@ -9,6 +9,8 @@ import rfc8785
 from jsonschema import Draft202012Validator
 from shaleyeah_contracts import ContractValidationError, validate_contract, validate_source_contract
 
+from .economics import cash_flow_accuracy
+
 
 def _work(trace, runtime):
     try:
@@ -325,6 +327,19 @@ def _qa_faithfulness(trace, runtime, _):
     )
 
 
+def _economist_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, scenario = observed.get("economic_work"), observed.get("economic_scenario")
+    return (
+        _provenance(trace, runtime, {})
+        and type(work) is dict
+        and type(scenario) is dict
+        and scenario.get("authorizesInvestment") is False
+        and trace.get("economicScenario") == scenario
+        and trace.get("workProduct") == work
+    )
+
+
 @dataclass(frozen=True)
 class RegisteredMetric:
     id: str
@@ -394,6 +409,46 @@ REGISTRY = MappingProxyType(
             _definition("qa.observed_faithfulness", _qa_faithfulness),
             _definition("qa.architecture_boundary", _observed_architecture),
             _definition("qa.no_unapproved_disposition", _persistence),
+            _definition("economist.architecture_boundary", _observed_architecture),
+            _definition("economist.no_unapproved_scenario", _persistence),
+            _definition("economist.source_faithfulness", _economist_faithfulness),
+            _definition(
+                "economist.cash_flow_accuracy",
+                cash_flow_accuracy,
+                {
+                    "npvAbsoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.01},
+                    "irrAbsoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.000001},
+                    "irrResidualTolerance": {"type": "number", "minimum": 1e-14, "maximum": 1e-8},
+                },
+            ),
+            _definition(
+                "economist.tool_boundary",
+                _tool_boundary,
+                {
+                    "expectedCalls": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "read_scenario_inputs",
+                                    "read_scenario_source",
+                                    "calculate_scenario",
+                                    "compare_scenarios",
+                                    "draft_scenario",
+                                    "prepare_scenario_review",
+                                    "scenario_review_status",
+                                    "record_scenario",
+                                ],
+                            },
+                            "uniqueItems": True,
+                            "maxItems": 8,
+                        },
+                    },
+                },
+            ),
             _definition(
                 "qa.tool_boundary",
                 _tool_boundary,

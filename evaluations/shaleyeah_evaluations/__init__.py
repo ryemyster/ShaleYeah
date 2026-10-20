@@ -127,6 +127,14 @@ class TrustedEvalPolicy:
                 "qa.observed_faithfulness",
             }
             if self.role_id == "quality-assurance"
+            else {
+                "economist.architecture_boundary",
+                "economist.no_unapproved_scenario",
+                "economist.tool_boundary",
+                "economist.source_faithfulness",
+                "economist.cash_flow_accuracy",
+            }
+            if self.role_id == "economist"
             else set()
         )
 
@@ -219,6 +227,8 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("qa.") and policy.role_id != "quality-assurance":
             raise EvaluationError("policy_denied")
+        if metric["id"].startswith("economist.") and policy.role_id != "economist":
+            raise EvaluationError("policy_denied")
         if (
             policy.role_id != "reporter"
             and metric["id"] == "evidence.provenance"
@@ -242,7 +252,12 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("policy_denied")
         if (
             metric["id"]
-            in {"geologist.tool_boundary", "reporter.tool_boundary", "qa.tool_boundary"}
+            in {
+                "geologist.tool_boundary",
+                "reporter.tool_boundary",
+                "qa.tool_boundary",
+                "economist.tool_boundary",
+            }
             and set(metric["parameters"]["expectedCalls"]) != case_ids
         ):
             raise EvaluationError("invalid_parameters")
