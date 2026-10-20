@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #680: pin the agents-cli 1.3.1 grading SDK compatibility set independently from production runtime dependencies. Keep actual native trace grading mandatory when upstream SDK releases change.
+
 - #680: replace the copied TypeScript loop/private client and npm/config/tests with native ADK/Python, own durable source-bound context, editable job scorecard and actual returned-output grading. Reuse installed helpers; add exact separate human scenario review/resume, independent external MCP and source/wheel/archive/container controls. No capital authority or professional certification.
 
 - #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.

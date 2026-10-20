@@ -135,9 +135,11 @@ The native service test writes actual fixture-model traces to
 checks exact output fidelity and the native source/draft/review trajectory.
 Agent Platform has a narrower event schema than ADK, so the export adapter keeps
 actual authors/content while excluding ADK-only event metadata. Raw traces remain
-available. From this employee package, with agents-cli 1.3.1 installed:
+available. From this employee package, install the compatible grading SDK set
+separately from the employee's locked runtime:
 
 ```sh
+uv tool install google-agents-cli==1.3.1 --with-requirements tests/eval/cli-requirements.txt
 uv run --locked python tests/eval/export_cli_traces.py \
   ../../servers/econobot/artifacts/native-traces /absolute/new/cli-traces
 agents-cli eval grade --traces /absolute/cli-traces \
@@ -148,3 +150,6 @@ uv run --locked python tests/eval/verify_cli_grade.py /absolute/cli-grade
 The final check requires two valid provider traces, no metric errors and exact
 fidelity. This compatibility metric supplements the installed independent
 financial/source/authority scorecard; it cannot replace it or authorize a save.
+Changing the external grading SDK set requires rerunning this compatibility gate.
+Pinning only the CLI leaves its broad SDK dependency free to select an incompatible
+major version; the employee's production dependencies retain their own lock.
