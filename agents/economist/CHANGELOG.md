@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #680: run Google's real local custom-metric handler without its credential-dependent cloud facade. Keep the strict two-provider gate, reject remote metrics, pin the private test-only SDK seam and record input hashes. Actual hosted traces pass without credentials; a changed returned value is rejected.
+
 - #680: pin the agents-cli 1.3.1 grading SDK compatibility set independently from production runtime dependencies. Keep actual native trace grading mandatory when upstream SDK releases change.
 
 - #680: replace the copied TypeScript loop/private client and npm/config/tests with native ADK/Python, own durable source-bound context, editable job scorecard and actual returned-output grading. Reuse installed helpers; add exact separate human scenario review/resume, independent external MCP and source/wheel/archive/container controls. No capital authority or professional certification.

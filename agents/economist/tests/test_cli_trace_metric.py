@@ -2,6 +2,9 @@ import copy
 import importlib.util
 import json
 from pathlib import Path
+from types import SimpleNamespace
+
+import pytest
 
 
 def test_cli_metric_checks_returned_work_and_required_native_calls():
@@ -44,3 +47,16 @@ def test_cli_report_requires_two_valid_perfect_native_traces(tmp_path):
         assert module.verify(tmp_path) is False
     (tmp_path / "results_stale.json").write_text(json.dumps(report))
     assert module.verify(tmp_path) is False
+
+
+def test_key_free_google_adapter_refuses_cloud_or_unrecognized_metrics():
+    file = Path(__file__).parent / "eval/grade_local_google.py"
+    spec = importlib.util.spec_from_file_location("economist_local_google", file)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    metric = SimpleNamespace(name="native_contract_fidelity", custom_function=lambda _: 1)
+    module.require_local([metric], 1, 0)
+    for metrics, local, remote in (([metric], 0, 1), ([], 0, 0),
+                                   ([SimpleNamespace(name="safety", custom_function=None)], 0, 0)):
+        with pytest.raises(ValueError, match="local_metric_required"):
+            module.require_local(metrics, local, remote)

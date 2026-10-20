@@ -39,12 +39,15 @@ jobs:
           ECONOMIST_TEST_CODE_REVISION: ${{ github.sha }}
           ECONOMIST_TEST_TRACE_DIRECTORY: ${{ runner.temp }}/economist-traces
         run: pnpm --dir servers/econobot test
-      - name: Grade native traces with agents-cli
+      - name: Grade native traces with Google's key-free local handler
         working-directory: agents/economist
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/intentionally-unavailable-google-credentials.json
         run: |
           uv tool install google-agents-cli==1.3.1 --with-requirements tests/eval/cli-requirements.txt
           uv run --locked python tests/eval/export_cli_traces.py "$RUNNER_TEMP/economist-traces" "$RUNNER_TEMP/economist-cli-traces"
-          agents-cli eval grade --traces "$RUNNER_TEMP/economist-cli-traces" --config tests/eval/eval_config.json --output "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
+          grading_tools_dir="$(uv tool dir)"
+          "$grading_tools_dir/google-agents-cli/bin/python" tests/eval/grade_local_google.py --traces "$RUNNER_TEMP/economist-cli-traces" --config tests/eval/eval_config.json --output "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
           uv run --locked python tests/eval/verify_cli_grade.py "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
       - name: Source, wheel and production archive isolation
         run: node servers/econobot/scripts/check-extraction.mjs --bundle "$RUNNER_TEMP/economist-bundle" --report "$RUNNER_TEMP/economist-extraction.json"

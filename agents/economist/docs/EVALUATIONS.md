@@ -131,7 +131,7 @@ and canonical profile hash is
 `4e14724b138c5d6b16ed1dc82c1c109303fa85c53553f8a14bb84ca545e2c377`.
 
 The native service test writes actual fixture-model traces to
-`servers/econobot/artifacts/native-traces`. The supplementary agents-cli metric
+`servers/econobot/artifacts/native-traces`. The supplementary Google custom metric
 checks exact output fidelity and the native source/draft/review trajectory.
 Agent Platform has a narrower event schema than ADK, so the export adapter keeps
 actual authors/content while excluding ADK-only event metadata. Raw traces remain
@@ -142,9 +142,11 @@ separately from the employee's locked runtime:
 uv tool install google-agents-cli==1.3.1 --with-requirements tests/eval/cli-requirements.txt
 uv run --locked python tests/eval/export_cli_traces.py \
   ../../servers/econobot/artifacts/native-traces /absolute/new/cli-traces
-agents-cli eval grade --traces /absolute/cli-traces \
+grading_tools_dir="$(uv tool dir)"
+"$grading_tools_dir/google-agents-cli/bin/python" tests/eval/grade_local_google.py \
+  --traces /absolute/new/cli-traces \
   --config tests/eval/eval_config.json --output /absolute/new/cli-grade
-uv run --locked python tests/eval/verify_cli_grade.py /absolute/cli-grade
+uv run --locked python tests/eval/verify_cli_grade.py /absolute/new/cli-grade
 ```
 
 The final check requires two valid provider traces, no metric errors and exact
@@ -153,3 +155,18 @@ financial/source/authority scorecard; it cannot replace it or authorize a save.
 Changing the external grading SDK set requires rerunning this compatibility gate.
 Pinning only the CLI leaves its broad SDK dependency free to select an incompatible
 major version; the employee's production dependencies retain their own lock.
+
+The pinned CLI's `eval grade` command initializes a Google cloud client even for
+a local custom metric. CI instead calls the same SDK's local custom-metric
+handler through `grade_local_google.py`, which prepares the CLI configuration,
+accepts only the callable `native_contract_fidelity` metric, and runs Google's
+actual scoring and aggregation. It constructs no cloud client and rejects remote
+metrics. CI supplies an unavailable credentials path to prove it needs no Google
+credentials. No placeholder identity or project is supplied.
+
+This adapter uses a private SDK interface and is isolated in test tooling behind
+exact version checks. An SDK change requires requalifying it. Its output includes
+the real SDK report and a companion record of versions, configuration and trace
+hashes. Developers with Google cloud enrollment may optionally use `agents-cli
+eval grade` on the same traces; that cloud facade is not the credential-free CI
+path. Neither path certifies professional performance or live provider behavior.

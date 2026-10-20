@@ -1,4 +1,4 @@
-"""Turn an agents-cli summary into a strict two-provider fixture CI decision."""
+"""Turn a Google local-handler/CLI summary into a strict two-provider CI decision."""
 
 import argparse
 import json
@@ -21,6 +21,6 @@ def verify(directory):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("directory", help="One fresh agents-cli grading output directory")
+    parser.add_argument("directory", help="One fresh Google grading output directory")
     args = parser.parse_args()
     raise SystemExit(0 if verify(args.directory) else 1)
