@@ -24,7 +24,7 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "node dist/index.js",
-		"test": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
+		"test": "node --import tsx --test --test-concurrency=1 --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit",
 		"test:extraction": "node --test tests/extraction/control.test.mjs tests/extraction/container-report.test.mjs"

@@ -171,6 +171,11 @@ def main():
                 assert actual["grade"]["status"] == "passed"
                 assert actual["grade"]["candidate"]["model"]["provider"] == provider
                 pending = actual["pending"]
+                job["reviewId"] = pending["reviewId"]
+                stage = "native_pending_review_restart_failed"
+                restored = employee("verify_restart", provider + "-restored.json")
+                assert restored["status"] == "ready"
+                assert restored["pendingReviewRefs"] == [{"id": pending["reviewId"], "revision": "r1"}]
                 stage = "forged_save_guard_failed"
                 protocol("record_scenario", {"reviewId": pending["reviewId"], "packetDigest": pending["packetDigest"],
                                              "grantId": "grant.forged"}, provider + "-forged.json", True)

@@ -20,6 +20,9 @@ From the repository root, build the declared tool dependencies with
 Gemini and Anthropic adapters against the actual protected service, separate human
 inspection/qualification/approval, restart, exactly-once save and revoked access.
 No paid key is required. It does not measure live model reasoning quality.
+The package runs test files serially, and verifies pending-review restart in a
+separate bounded process. Each subprocess keeps its deadline; slow aggregate
+fixture setup cannot consume another business phase's budget.
 
 For independent source, wheels and archives, run:
 

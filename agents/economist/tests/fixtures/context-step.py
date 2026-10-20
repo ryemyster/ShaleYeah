@@ -17,7 +17,7 @@ from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, call_tool
 from shaleyeah_mcp.events import EventEmitter, create_jsonl_sink
 
 from app.context_runtime import EconomistRuntime
-from app.evaluation import grade_case, observe_economist
+from app.evaluation import grade_case, observe_economist, parse_response
 from app.review_supervision import ReviewSupervisor
 
 
@@ -244,12 +244,32 @@ async def main():
         ),
     }
     catalog = await opened()
-    if settings.get("mode") not in {"revoked", "resume"}:
+    if settings.get("mode") not in {"revoked", "resume", "verify_restart"}:
         await catalog.put_task(task)
         for source in draft["sourceArtifacts"]:
             await catalog.put_source(source)
     runtime = await EconomistRuntime.open(catalog, models, **options)
     try:
+        if settings.get("mode") == "verify_restart":
+            checkpoint = await catalog.current_checkpoint()
+            assert checkpoint["workRefs"] == [work["artifact"]]
+            assert checkpoint["pendingReviewRefs"] == [{"id": settings["reviewId"], "revision": "r1"}]
+            generations = len(sequence)
+            restored = await runtime.run("Resume the same financial review after restart")
+            assert restored["status"] == "ready", restored.get("code")
+            final = next(
+                event.content for event in reversed(restored["events"])
+                if event.content and any(part.text for part in event.content.parts or [])
+            )
+            assert parse_response(final.model_dump(mode="json", exclude_none=True)) == {
+                "work": work, "scenario": draft["scenario"]
+            }
+            assert set(purposes) == {"agent"} and key not in json.dumps(requests[-1])
+            write_output(output_file, {
+                "status": "ready", "context": restored["context"]["manifest"],
+                "pendingReviewRefs": checkpoint["pendingReviewRefs"],
+            })
+            return
         if settings.get("mode") == "revoked":
             result = await runtime.run("Continue with revoked economics source")
             assert result["status"] == "blocked" and requests == []
@@ -301,13 +321,9 @@ async def main():
         actual = next(item for item in analyses if "work" in item)
         pending = next(item for item in analyses if item.get("state") == "awaiting-review")
         assert actual["work"] == work and actual["scenario"] == draft["scenario"]
-        await runtime.close()
-        runtime = await EconomistRuntime.open(await opened(), models, **options)
         checkpoint = await runtime.catalog.current_checkpoint()
         assert checkpoint["workRefs"] == [work["artifact"]]
         assert checkpoint["pendingReviewRefs"] == [{"id": pending["reviewId"], "revision": "r1"}]
-        second = await runtime.run("Resume the same financial review after restart")
-        assert second["status"] == "ready", second.get("code")
         assert set(purposes) == {"agent"} and key not in json.dumps(requests[-1])
         final = next(
             event.content
@@ -383,7 +399,7 @@ async def main():
                 "candidate": identity,
                 "grade": grade,
                 "pending": pending,
-                "context": second["context"]["manifest"],
+                "context": first["context"]["manifest"],
                 "native": native,
             },
         )

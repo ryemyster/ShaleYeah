@@ -113,6 +113,19 @@ test("native economists return graded work and resume exact human-approved priva
 				),
 			);
 			assert.ok(!JSON.stringify(actual).includes(token));
+			await fs.writeFile(
+				input,
+				JSON.stringify({ ...settings, mode: "verify_restart", reviewId: actual.pending.reviewId }),
+				{
+					mode: 0o600,
+				},
+			);
+			const restoredFile = path.join(f.root, `${provider}-restored.json`);
+			await execute(restoredFile);
+			const restored = JSON.parse(await fs.readFile(restoredFile, "utf8"));
+			assert.equal(restored.status, "ready");
+			assert.equal(restored.context.selectedEvidence.length, 7);
+			assert.deepEqual(restored.pendingReviewRefs, [{ id: actual.pending.reviewId, revision: "r1" }]);
 			{
 				const directory = process.env.ECONOMIST_TEST_TRACE_DIRECTORY ?? path.resolve("artifacts/native-traces");
 				await fs.mkdir(directory, { recursive: true, mode: 0o700 });

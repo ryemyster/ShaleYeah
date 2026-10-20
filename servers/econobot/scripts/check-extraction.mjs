@@ -123,7 +123,7 @@ try {
 	const installed = path.join(tool, "node_modules/@shaleyeah/server-econobot");
 	for (const name of ["dist", "examples"]) await fs.cp(path.join(installed, name), path.join(tool, name), { recursive: true });
 	assert.equal(await hash(path.join(installed, "dist/cash-flow.js")), await hash(path.join(packageRoot, "dist/cash-flow.js")));
-	await run(process.execPath, ["--import", "tsx", "--test", ...(await fs.readdir(path.join(tool, "tests"))).filter((name) => name.endsWith(".test.ts")).map((name) => path.join("tests", name))], tool, testEnv);
+	await run(process.execPath, ["--import", "tsx", "--test", "--test-concurrency=1", ...(await fs.readdir(path.join(tool, "tests"))).filter((name) => name.endsWith(".test.ts")).map((name) => path.join("tests", name))], tool, testEnv);
 	passed("installed-tool"); passed("generic-mcp"); passed("actual-output-grading");
 	passed("source-context-review-restart"); passed("source-revocation"); passed("installed-exact-qualification");
 	await fs.copyFile(path.join(packageRoot, "tests/extraction/pair-fixture.ts"), path.join(tool, "tests/pair-fixture.ts"));
