@@ -106,7 +106,7 @@ jobs:
     - name: Install Economist native runtime for source and human-review controls
       run: uv sync --project agents/economist --locked
     - name: Workspace tests on the constrained runner
-      run: pnpm turbo test --concurrency=2
+      run: pnpm turbo test --concurrency=1
     - run: pnpm --dir contracts check:isolation
     - run: pnpm --dir connectors check:isolation
     - name: Native model adapter coverage

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #680: serialize workspace test packages on the constrained CI runner after the native Economist fixture exhausted its deadline under concurrent package load. Retain every package/control, coverage threshold and existing subprocess deadline.
+
 - #680: isolate supplementary Google trace grading behind a pinned local-handler adapter, retaining actual scoring, strict two-provider checks and credential-free CI; remote metrics are rejected. Production financial and source-authority gates remain independent.
 
 - #680: migrate Economist to native ADK/Python with its own source-bound context, configurable independent financial scorecard, actual returned-output grading and exact enrolled human scenario review/resume. Add seven-source operator exports and optional offline EIA mapping, external/generic MCP and independent source/wheel/archive/container controls. Delete displaced TypeScript loop/client/config/tests and importer; preserve qualified #711 mathematics. Fixture evidence does not certify forecasts, fiscal assumptions, capital decisions or professional accuracy.

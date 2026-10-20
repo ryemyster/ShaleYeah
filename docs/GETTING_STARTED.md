@@ -117,8 +117,8 @@ pnpm turbo test
 pnpm --dir contracts check:isolation
 ```
 
-For a small machine or hosted CI runner, use `pnpm turbo test --concurrency=2`
-for the workspace test command. It schedules fewer packages at once while
+For a small machine or hosted CI runner, use `pnpm turbo test --concurrency=1`
+for the workspace test command. It schedules one package at a time while
 keeping the full suite and its existing time limits. Native and installed-unit
 qualification still use their owning package commands.
 

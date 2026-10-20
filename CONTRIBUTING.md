@@ -126,8 +126,8 @@ pnpm check:issue-template
 pnpm test:sdlc
 ```
 
-On constrained runners, use `pnpm turbo test --concurrency=2`. CI limits the
-number of package test processes so native runtime and operator CLI startup can
+On constrained runners, use `pnpm turbo test --concurrency=1`. CI runs one
+package test process at a time so native runtime and operator CLI startup can
 finish within their existing deadlines. It runs the full suite and propagates
 failures; it does not change test assertions or replace package-local checks.
 
