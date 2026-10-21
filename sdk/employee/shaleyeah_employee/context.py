@@ -998,18 +998,33 @@ class ContextCatalog:
     async def export_state(self):
         task, checkpoint, records, omitted = await self._snapshot("export")
         phase = _Traversal()
-        expirations = [_timestamp(self._metadata(task)["expires_at"])]
+        task_row = self._metadata(task)
+        checkpoint_row = self._metadata(checkpoint) if checkpoint.get("id") else None
+        roots = [(task, task_row)]
+        # Other records depend on the task, but not on the checkpoint export root.
+        # An already-invalidated checkpoint contains only its verified projection.
+        if checkpoint.get("id") and not checkpoint.get("invalidated"):
+            roots.append((checkpoint, checkpoint_row))
+        for body, row in roots:
+            await self._eligible(row, "export", phase)
+            if hashlib.sha256(canonical(body)).hexdigest() != row["digest"]:
+                raise ContextError("integrity_failure")
+        expirations = [_timestamp(task_row["expires_at"])]
         if checkpoint.get("id"):
-            expirations.append(_timestamp(self._metadata(checkpoint)["expires_at"]))
+            if checkpoint_row is None:
+                raise ContextError("missing_input")
+            expirations.append(_timestamp(checkpoint_row["expires_at"]))
         for entry in records.values():
-            await self._eligible(self._record_metadata(entry["body"]), "export", phase)
+            # Bind the captured selection even when a dependency was already visited.
+            self._current(entry["row"])
+            await self._eligible(entry["row"], "export", phase)
             expirations.append(_timestamp(entry["row"]["expires_at"]))
             for evidence in json.loads(entry["row"]["sources"]):
                 receipt = await self._source(evidence, "export")
                 phase.source(evidence, receipt, self.policy["maxSourceAgeSeconds"])
                 expirations.append(_timestamp(receipt["retentionExpiresAt"]))
-        self._finish_traversal(phase)
         await self._authorize("export")
+        self._finish_traversal(phase)
         return {
             "version": _VERSION,
             "scope": copy.deepcopy(self.scope),
