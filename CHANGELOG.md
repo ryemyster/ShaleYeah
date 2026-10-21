@@ -46,9 +46,10 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
   task/checkpoint/record metadata after the final authority await and reject
   expired, changed, corrupt or rebound content. (#755, #757)
 - **Source and numerical fidelity:** replace geological guesses, invented
-  confidence, estimated QA passes and fabricated economic results with explicit
-  observations, unavailable states and independently checked calculations.
-  (#671, #710, #711, #716)
+  confidence, estimated QA passes, fabricated economic results and type-curve
+  percentiles with observations, unavailable states and independently checked
+  calculations.
+  (#671, #710–#712, #716)
 - **SDK and runtime safety:** bounded fenced-JSON parsing, explicit protocol/tool
   failures, current checkpoint lineage and removal of the anonymous job poller.
   (#571, #677, #680, #722)

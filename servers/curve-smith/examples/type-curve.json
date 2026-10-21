@@ -1,0 +1,25 @@
+{
+  "contractVersion": "0.1.0",
+  "formation": "Synthetic example formation",
+  "product": "oil",
+  "rateUnit": "bbl/day",
+  "timeBasis": { "unit": "year", "daysPerUnit": 365 },
+  "horizon": 5,
+  "economicLimitRate": 0,
+  "forecastTimes": [0, 1, 5],
+  "inputRef": { "id": "example.synthetic-cohort", "revision": "r1" },
+  "assumptionRefs": [{ "id": "example.fixed-b-and-time", "revision": "r1" }],
+  "basis": {
+    "kind": "analog-history",
+    "bFactor": 1,
+    "analogWells": [{
+      "wellRef": { "id": "example.synthetic-well", "revision": "r1" },
+      "evidenceKind": "synthetic",
+      "observations": [
+        { "elapsedTime": 0, "rate": 100 },
+        { "elapsedTime": 1, "rate": 90.9090909090909 },
+        { "elapsedTime": 2, "rate": 83.33333333333333 }
+      ]
+    }]
+  }
+}

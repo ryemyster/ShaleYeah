@@ -8,11 +8,11 @@
 import fs from "node:fs/promises";
 import {
 	callLLM,
+	type MCPServer,
 	normalizeIdentifier,
 	runMCPServer,
 	ServerFactory,
 	type ServerTemplate,
-	ServerUtils,
 } from "@shaleyeah/sdk";
 import { z } from "zod";
 import {
@@ -22,6 +22,9 @@ import {
 	type ProductionData,
 	parseProductionData,
 } from "./tools/decline-curve-analysis.js";
+import { type CurveSmithOptions, typeCurveTools } from "./type-curve-tools.js";
+
+export type { CurveSmithOptions } from "./type-curve-tools.js";
 
 interface DeclineCurveAnalysis {
 	initialRate: {
@@ -45,173 +48,100 @@ interface DeclineCurveAnalysis {
 	};
 }
 
-interface TypeCurveAnalysis {
-	curveType: string;
-	tier: number;
-	analogWells: number;
-	statistics: {
-		p10: number;
-		p50: number;
-		p90: number;
-	};
-	formation: string;
-}
+export function createCurveSmithTemplate(options: CurveSmithOptions = {}): ServerTemplate {
+	return {
+		name: "curve-smith",
+		description: "Reservoir Engineering MCP Server",
+		persona: {
+			name: "Lucius Technicus Engineer",
+			role: "Master Reservoir Engineer",
+			expertise: [
+				"Decline curve analysis and modeling",
+				"EUR estimation and validation",
+				"Type curve development",
+				"Reservoir characterization",
+				"Production optimization",
+			],
+		},
+		directories: ["curves", "type-curves", "production", "models", "reports"],
+		tools: [
+			ServerFactory.createAnalysisTool(
+				"analyze_decline_curve",
+				"Analyze production decline curves and estimate EUR",
+				z.object({
+					filePath: z.string().describe("Path to production data file"),
+					curveType: z.enum(["exponential", "hyperbolic", "harmonic"]).default("hyperbolic"),
+					minMonths: z.number().min(3).default(6).describe("Minimum months of data required"),
+					formation: z.string().optional().describe("Formation name for interpretation context"),
+					outputPath: z.string().optional(),
+					// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
+					matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
+				}),
+				async (args) => {
+					const rawFormation = args.formation;
+					const normalizedFormation = rawFormation ? normalizeIdentifier(rawFormation) : rawFormation;
+					const matchInfo =
+						rawFormation && normalizedFormation !== rawFormation
+							? { matchedAs: normalizedFormation, matchScore: 1.0 }
+							: {};
+					const analysis = await performDeclineCurveAnalysis({ ...args, formation: normalizedFormation });
 
-const curveSmithTemplate: ServerTemplate = {
-	name: "curve-smith",
-	description: "Reservoir Engineering MCP Server",
-	persona: {
-		name: "Lucius Technicus Engineer",
-		role: "Master Reservoir Engineer",
-		expertise: [
-			"Decline curve analysis and modeling",
-			"EUR estimation and validation",
-			"Type curve development",
-			"Reservoir characterization",
-			"Production optimization",
+					if (args.outputPath) {
+						await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
+					}
+
+					return { ...analysis, ...matchInfo };
+				},
+			),
+			...typeCurveTools(options),
+			ServerFactory.createAnalysisTool(
+				"assess_curve_quality",
+				"Assess quality of decline curve analysis",
+				z.object({
+					curveData: z
+						.object({
+							initialRate: z.object({ oil: z.number(), gas: z.number(), water: z.number() }),
+							declineRate: z.number(),
+							bFactor: z.number(),
+							eur: z.object({ oil: z.number(), gas: z.number() }),
+							typeCurve: z.string(),
+							confidence: z.number(),
+							qualityGrade: z.enum(["Excellent", "Good", "Fair", "Poor"]),
+						})
+						.describe("Decline curve analysis data"),
+					thresholds: z
+						.object({
+							minR2: z.number().min(0).max(1).default(0.8),
+							minDataPoints: z.number().default(6),
+						})
+						.optional(),
+				}),
+				async (args) => {
+					// Derive R² from confidence (0–100 → 0.0–1.0 scale)
+					// confidence already reflects data quality from the curve fit
+					const r2 = Math.min(0.99, args.curveData.confidence / 100);
+					// Estimate data points from qualityGrade — proxy for production history length
+					const gradeDataPoints: Record<string, number> = {
+						Excellent: 24,
+						Good: 12,
+						Fair: 8,
+						Poor: 4,
+					};
+					const dataPoints = gradeDataPoints[args.curveData.qualityGrade] ?? 6;
+
+					return {
+						r2,
+						dataPoints,
+						passesThresholds:
+							r2 >= (args.thresholds?.minR2 || 0.8) && dataPoints >= (args.thresholds?.minDataPoints || 6),
+						qualityGrade: determineQualityGrade(r2, dataPoints),
+						recommendations: generateQualityRecommendations(r2, dataPoints),
+					};
+				},
+			),
 		],
-	},
-	directories: ["curves", "type-curves", "production", "models", "reports"],
-	tools: [
-		ServerFactory.createAnalysisTool(
-			"analyze_decline_curve",
-			"Analyze production decline curves and estimate EUR",
-			z.object({
-				filePath: z.string().describe("Path to production data file"),
-				curveType: z.enum(["exponential", "hyperbolic", "harmonic"]).default("hyperbolic"),
-				minMonths: z.number().min(3).default(6).describe("Minimum months of data required"),
-				formation: z.string().optional().describe("Formation name for context-aware fallback (e.g. 'Wolfcamp A')"),
-				tier: z.number().min(1).max(3).optional().describe("Formation tier for fallback (1=best, 3=lowest)"),
-				outputPath: z.string().optional(),
-				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
-				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
-			}),
-			async (args) => {
-				const rawFormation = args.formation;
-				const normalizedFormation = rawFormation ? normalizeIdentifier(rawFormation) : rawFormation;
-				const matchInfo =
-					rawFormation && normalizedFormation !== rawFormation
-						? { matchedAs: normalizedFormation, matchScore: 1.0 }
-						: {};
-				const analysis = await performDeclineCurveAnalysis({ ...args, formation: normalizedFormation });
-
-				if (args.outputPath) {
-					await fs.writeFile(args.outputPath, JSON.stringify({ ...analysis, ...matchInfo }, null, 2));
-				}
-
-				return { ...analysis, ...matchInfo };
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"generate_type_curve",
-			"Generate type curve from analog well data",
-			z.object({
-				formation: z.string().describe("Target formation"),
-				analogWells: z.array(z.string()).describe("Analog well identifiers"),
-				tier: z.number().min(1).max(3).default(1).describe("Type curve tier (1=best)"),
-				lateral_length: z.number().optional().describe("Lateral length in feet"),
-				// Arcade #42: Fuzzy Match Threshold — similarity cutoff for identifier normalization (0–1, default 0.8).
-				matchThreshold: z.number().min(0).max(1).default(0.8).optional(),
-			}),
-			async (args) => {
-				const rawFormation = args.formation;
-				const normalizedFormation = normalizeIdentifier(rawFormation);
-				const normalizedWells = args.analogWells.map(normalizeIdentifier);
-				const wellsChanged = args.analogWells.some((a: string) => normalizeIdentifier(a) !== a);
-				const matchInfo =
-					normalizedFormation !== rawFormation || wellsChanged
-						? { matchedAs: normalizedFormation, matchScore: 1.0 }
-						: {};
-				const result = performTypeCurveAnalysis({
-					...args,
-					formation: normalizedFormation,
-					analogWells: normalizedWells,
-				});
-				return { ...result, ...matchInfo };
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"calculate_eur",
-			"Calculate Estimated Ultimate Recovery",
-			z.object({
-				initialRateOil: z.number().describe("Initial oil rate (bopd)"),
-				initialRateGas: z.number().describe("Initial gas rate (mcfd)"),
-				declineRate: z.number().min(0).max(1).describe("Annual decline rate"),
-				bFactor: z.number().min(0).max(2).default(1).describe("Decline exponent"),
-				economicLimit: z.number().default(10).describe("Economic limit (bopd)"),
-			}),
-			async (args) => {
-				const eurOil = calculateHyperbolicEUR(args.initialRateOil, args.declineRate, args.bFactor, args.economicLimit);
-
-				const eurGas = calculateHyperbolicEUR(
-					args.initialRateGas,
-					args.declineRate,
-					args.bFactor,
-					args.economicLimit * 6, // Assume 6 mcf/bbl GOR
-				);
-
-				return {
-					eur: {
-						oil: eurOil,
-						gas: eurGas,
-					},
-					parameters: {
-						initialRateOil: args.initialRateOil,
-						initialRateGas: args.initialRateGas,
-						declineRate: args.declineRate,
-						bFactor: args.bFactor,
-						economicLimit: args.economicLimit,
-					},
-				};
-			},
-		),
-		ServerFactory.createAnalysisTool(
-			"assess_curve_quality",
-			"Assess quality of decline curve analysis",
-			z.object({
-				curveData: z
-					.object({
-						initialRate: z.object({ oil: z.number(), gas: z.number(), water: z.number() }),
-						declineRate: z.number(),
-						bFactor: z.number(),
-						eur: z.object({ oil: z.number(), gas: z.number() }),
-						typeCurve: z.string(),
-						confidence: z.number(),
-						qualityGrade: z.enum(["Excellent", "Good", "Fair", "Poor"]),
-					})
-					.describe("Decline curve analysis data"),
-				thresholds: z
-					.object({
-						minR2: z.number().min(0).max(1).default(0.8),
-						minDataPoints: z.number().default(6),
-					})
-					.optional(),
-			}),
-			async (args) => {
-				// Derive R² from confidence (0–100 → 0.0–1.0 scale)
-				// confidence already reflects data quality from the curve fit
-				const r2 = Math.min(0.99, args.curveData.confidence / 100);
-				// Estimate data points from qualityGrade — proxy for production history length
-				const gradeDataPoints: Record<string, number> = {
-					Excellent: 24,
-					Good: 12,
-					Fair: 8,
-					Poor: 4,
-				};
-				const dataPoints = gradeDataPoints[args.curveData.qualityGrade] ?? 6;
-
-				return {
-					r2,
-					dataPoints,
-					passesThresholds:
-						r2 >= (args.thresholds?.minR2 || 0.8) && dataPoints >= (args.thresholds?.minDataPoints || 6),
-					qualityGrade: determineQualityGrade(r2, dataPoints),
-					recommendations: generateQualityRecommendations(r2, dataPoints),
-				};
-			},
-		),
-	],
-};
+	};
+}
 
 // Domain-specific reservoir engineering functions
 async function performDeclineCurveAnalysis(args: {
@@ -219,63 +149,33 @@ async function performDeclineCurveAnalysis(args: {
 	minMonths: number;
 	curveType: string;
 	formation?: string;
-	tier?: number;
 }): Promise<DeclineCurveAnalysis> {
-	try {
-		const csvData = await fs.readFile(args.filePath, "utf8");
-		const productionData: ProductionData[] = parseProductionData(csvData);
+	const csvData = await fs.readFile(args.filePath, "utf8");
+	const productionData: ProductionData[] = parseProductionData(csvData);
 
-		if (productionData.length < args.minMonths) {
-			throw new Error(`Insufficient data: ${productionData.length} months, minimum ${args.minMonths} required`);
-		}
-
-		// Analyze both oil and gas if available
-		const oilResult = await fitDeclineCurve(productionData, "oil", args.curveType);
-		const gasResult = await fitDeclineCurve(productionData, "gas", args.curveType);
-
-		// Convert to DeclineCurveAnalysis format
-		const analysis = convertToDeclineAnalysis(oilResult, gasResult, productionData);
-
-		// LLM synthesis — Lucius Technicus Engineer interprets the curve parameters
-		const interpretation = await synthesizeInterpretationWithLLM({
-			qi: analysis.initialRate.oil,
-			Di: analysis.declineRate,
-			b: analysis.bFactor,
-			eur: Math.round(analysis.eur.oil / 1000), // convert bbl → Mbbl for prompt
-			curveType: analysis.typeCurve,
-			confidence: analysis.confidence,
-			formation: args.formation ?? "Unknown Formation",
-		});
-
-		return { ...analysis, interpretation };
-	} catch (_error) {
-		// Fallback when CSV parsing or curve fitting fails — derive from formation context
-		const tierQi: Record<number, number> = { 1: 750, 2: 450, 3: 250 };
-		const resolvedTier = args.tier ?? 1;
-		const qi = tierQi[resolvedTier] ?? 750;
-		const Di = 0.075; // conservative hyperbolic initial decline (industry reference)
-		const b = 1.2; // hyperbolic exponent (industry reference)
-		const eurOil = calculateHyperbolicEUR(qi, Di, b, 10);
-		const eurGas = calculateHyperbolicEUR(qi * 2, Di, b, 60); // ~2 mcf/bbl GOR
-		const formationLabel = args.formation ? `${args.formation} Tier ${resolvedTier}` : `Tier ${resolvedTier} Analog`;
-
-		return {
-			initialRate: {
-				oil: qi,
-				gas: qi * 2,
-				water: Math.round(qi * 0.07), // typical WOR for reference tier
-			},
-			declineRate: Di,
-			bFactor: b,
-			eur: {
-				oil: eurOil,
-				gas: eurGas,
-			},
-			typeCurve: formationLabel,
-			confidence: ServerUtils.calculateConfidence(0.6, 0.8), // lower confidence for fallback
-			qualityGrade: "Fair",
-		};
+	if (productionData.length < args.minMonths) {
+		throw new Error(`Insufficient data: ${productionData.length} months, minimum ${args.minMonths} required`);
 	}
+
+	// Analyze both oil and gas if available
+	const oilResult = await fitDeclineCurve(productionData, "oil", args.curveType);
+	const gasResult = await fitDeclineCurve(productionData, "gas", args.curveType);
+
+	// Convert to DeclineCurveAnalysis format
+	const analysis = convertToDeclineAnalysis(oilResult, gasResult, productionData);
+
+	// LLM synthesis — Lucius Technicus Engineer interprets the curve parameters
+	const interpretation = await synthesizeInterpretationWithLLM({
+		qi: analysis.initialRate.oil,
+		Di: analysis.declineRate,
+		b: analysis.bFactor,
+		eur: Math.round(analysis.eur.oil / 1000), // convert bbl → Mbbl for prompt
+		curveType: analysis.typeCurve,
+		confidence: analysis.confidence,
+		formation: args.formation ?? "Unknown Formation",
+	});
+
+	return { ...analysis, interpretation };
 }
 
 async function fitDeclineCurve(
@@ -375,38 +275,6 @@ function selectBestQualityGrade(grade1: string, grade2: string): "Excellent" | "
 		1: "Poor",
 	};
 	return (reverseOrder[maxScore] || "Poor") as "Excellent" | "Good" | "Fair" | "Poor";
-}
-
-function performTypeCurveAnalysis(args: {
-	formation: string;
-	tier: number;
-	analogWells: unknown[];
-}): TypeCurveAnalysis {
-	// Derive base EUR from formation tier using industry-standard Arps constants
-	const tierQi: Record<number, number> = { 1: 750, 2: 450, 3: 250 };
-	const qi = tierQi[args.tier] ?? 250;
-	const baseEUR = calculateHyperbolicEUR(qi, 0.075, 1.2, 10);
-
-	return {
-		curveType: `${args.formation} Type Curve`,
-		tier: args.tier,
-		analogWells: args.analogWells.length,
-		statistics: {
-			p10: Math.round(baseEUR * 1.5), // P10 high case: 1.5× base (industry-standard Arps multiplier)
-			p50: baseEUR, // P50 base case: 1.0× base
-			p90: Math.round(baseEUR * 0.6), // P90 low case: 0.6× base (industry-standard Arps multiplier)
-		},
-		formation: args.formation,
-	};
-}
-
-function calculateHyperbolicEUR(qi: number, di: number, b: number, qecon: number): number {
-	// Simplified hyperbolic decline calculation
-	if (b === 1) {
-		return (qi - qecon) / di;
-	}
-
-	return Math.round((qi ** b - qecon ** b) / (b * di));
 }
 
 function determineQualityGrade(r2: number, dataPoints: number): "Excellent" | "Good" | "Fair" | "Poor" {
@@ -527,7 +395,10 @@ flags: note any anomalies (very high Di, b>2, very low confidence, qi/EUR ratio 
 }
 
 // Create the server using factory
-export const CurveSmithServer = ServerFactory.createServer(curveSmithTemplate);
+export const CurveSmithServer = function (options: CurveSmithOptions = {}) {
+	if (!new.target) throw new Error("Curve-smith requires constructor invocation");
+	return new (ServerFactory.createServer(createCurveSmithTemplate(options)))(options);
+} as unknown as { new (options?: CurveSmithOptions): MCPServer };
 export default CurveSmithServer;
 
 // Run server if called directly

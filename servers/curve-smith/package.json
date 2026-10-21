@@ -8,7 +8,8 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/index.ts",
-		"test": "bash ../../scripts/run-tests.sh",
+		"test": "node --import tsx --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=src/arps.ts --test-coverage-include=src/type-curve.ts --test-coverage-include=src/type-curve-tools.ts --test-coverage-lines=90 tests/*.test.ts",
+		"test:coverage": "pnpm test",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
 	},
@@ -18,6 +19,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.5.0",
+		"@modelcontextprotocol/client": "2.3.1",
 		"@types/node": "^25.9.3",
 		"tsx": "^4.21.0",
 		"typescript": "^6.0.2"

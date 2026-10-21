@@ -173,7 +173,7 @@ independent algorithm defects get their own repair PR before role qualification.
 | --- | --- | --- |
 | [servers/geowiz/src/](../servers/geowiz/src/) | Well-log/file handling and formation analysis | #671 input provenance; #670 connectors; #674 extraction/format limits |
 | [servers/econobot/src/](../servers/econobot/src/) | Explicit cash-flow NPV/IRR/payback and scenarios | #711 numerical/missing-input repair, then #680 economist/expert cases |
-| [servers/curve-smith/src/](../servers/curve-smith/src/) | Decline fitting/history and forecast calculations | #712 type-curve repair, then #681 fitting/unit/forecast expert cases |
+| [servers/curve-smith/src/](../servers/curve-smith/src/) | Versioned finite Arps volume and actual analog/scenario type curves; existing file-fitting tools remain separately owned | #712 replaces fabricated type-curve/EUR paths; #681 still qualifies file parsing/fitting/quality and the employee |
 | [servers/risk-analysis/src/](../servers/risk-analysis/src/) | Named Monte Carlo samplers and risk analysis | #682 validates distribution/seed/assumption limits and human risk decisions; random sampling is not fixture fabrication |
 | [servers/legal/src/](../servers/legal/src/) | Contract/regulatory/compliance analysis hooks | #683 source/jurisdiction/effective-date fixtures; licensed legal judgment stays human |
 | [servers/market/src/](../servers/market/src/) | Valid EIA retrieval and commercial interpretation | #708 unsupported fallback repair, then #684 freshness/assumption cases |
@@ -197,7 +197,7 @@ only behind explicit labeling and cannot become measured or approved evidence.
 | [Private context export](../sdk/employee/shaleyeah_employee/context.py) could return checkpoint questions after expiry or revision changes during an authority await | Bind captured roots and records through the final grant; deny stale/corrupt content while preserving permitted projections, retention and #755 source-call bounds | #757 before #712/#681; all employee consumers retain the helper controls |
 | Geowiz LAS formation/depth/default-pay/TOC heuristics | #671 deletes these on the initial LAS path; observations, explicit density assumptions, unknown conclusions and pinned independent controls replace them | Other format helpers remain outside the current reference path; #674 must qualify declared support |
 | Econobot's guessed DCF/default-success and synthetic price paths are removed in #711 | One source-linked periodic cash-flow contract, independently checked NPV/IRR, residual and non-solution states; unreviewed interpretation cannot replace numbers | #711 numerical repair; #680 owns employee contract/context/review adoption |
-| Curve-smith `performTypeCurveAnalysis` counts analogs but uses fixed tier rates and 1.5/0.6 factors labeled P10/P90 | Actual analog evidence or labeled scenarios, independently checked volume/units and justified uncertainty method | #712 before #681 |
+| Curve-smith fixed-tier type curves, 1.5/0.6 percentile factors, wrong cumulative helper and its outer file-error tier fallback are removed in #712 | Strict source/unit/time/horizon/cutoff contract, actual per-well fixed-b fit or explicit scenario, independent quadrature, unavailable uncertainty and unreviewed interpretation; wider old file-fit/quality assumptions remain unqualified | #712 numerical repair before #681; #681 replaces/qualifies the remaining file-fit/quality paths and legacy employee caller |
 | Market `deriveDefaultCompetitorProfile` makes production/cost/share from name length; `fetchEiaPrices` returns stub prices with a fresh retrieval timestamp on missing/failed API | No fabricated metrics; observation date distinct from fetch date; missing/stale source deferral | #708 before #684 |
 | Research `deriveDefaultCompetitorEntry` derives activity/threat from region/index; default summaries have no claim-level source check | Cited findings or explicit missing coverage; variation/source count cannot substitute for evidence | #709 before #688 |
 | SDK invented-confidence fallback removed in #710; existing role callers remain undeclared or mixed-scale | [Metadata contract and 47-call inventory](../sdk/docs/confidence-metadata.md) preserve zero and distinguish absence/invalid/unscaled scores; roles must declare tested scales and qualify score meaning | #710 qualifies the wrapper; listed role owners still required before #674/#691 |
@@ -209,9 +209,21 @@ For numerical acceptance, the
 [NumPy Financial IRR definition](https://numpy.org/numpy-financial/latest/_api_stubs/numpy_financial.irr.html)
 provides an independent zero-NPV equation and examples for #711. Using that
 reference does not mandate a new dependency or establish petroleum-economic
-fitness. The unreviewed type-curve code/comments supply no evidence that fixed
-multipliers are industry-standard statistical percentiles; #712 must establish
-the method and reservoir-expert limitations rather than repeat that claim.
+fitness. The previous fixed-tier type-curve comments supplied no evidence that fixed
+multipliers are industry-standard statistical percentiles. #712 deletes that
+claim and records its limited fixed-b method and provisional numerical evidence;
+#681 still owns real-field fitting/model applicability and employee acceptance.
+
+### Curve-smith repair decisions (#712)
+
+| Surface | Decision | Evidence or remaining owner |
+| --- | --- | --- |
+| Fixed-tier type curve, identifier counting, fixed percentiles, wrong EUR helper and implicit GOR | Cut | Replaced in the actual tool template; legacy requests fail, independent numeric/stdio controls exercise the replacement |
+| Finite modeled volume, actual analog histories and explicit scenarios | Refactor | `arps.ts`, `type-curve.ts`, `type-curve-tools.ts`; declared units/assumptions, diagnostics, source/synthetic labels and unavailable uncertainty |
+| Configured `callLLM` interpretation | Keep with a constrained role | Optional host settings; numeric-only summary, unreviewed text and provider-failure controls; no numeric or approval authority |
+| Existing `analyze_decline_curve`, `assess_curve_quality`, `tools/decline-curve-analysis.ts` and legacy Reservoir Engineer caller | Retain until #681 replaces/qualifies their still-used file-fit/quality behavior | Parser/time/integral/fallback/quality issues are not qualified by the new type-curve tests; they cannot serve as evidence of professional correctness |
+| Copied prompt/direct SDK anti-stub tests and parent-relative test runner | Cut/refactor | Actual handler/numerical/native stdio tests and a package-local Node test command replace them |
+| Full model selection, calibrated uncertainty, real-field/professional/whole-pair acceptance | Defer to named owners | #681, #693 and final human acceptance #694; no measured 80% accuracy or certification |
 
 ## Tests, scripts, documentation and optional coordination
 
