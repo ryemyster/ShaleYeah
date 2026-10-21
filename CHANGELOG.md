@@ -1,161 +1,69 @@
 # Changelog
 
-All notable changes to SHALE YEAH will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This log separates changes awaiting a merge to `main` from changes already in
+`main`. Detailed implementation history remains in the linked issues, pull
+requests and [previous full changelog](https://github.com/ryemyster/ShaleYeah/blob/07d0efc5a97c1e0f1e126c974bac5a3a3e4ed7ac/CHANGELOG.md).
 
 ## [Unreleased]
 
+Changes after the latest `main` merge. The remaining employee migrations and
+MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md).
+
 ### Added
 
-- **Dependency Hints** (`src/kernel/types.ts`, `src/shared/mcp-server.ts`, `src/kernel/registry.ts`) — Implements the Dependency Hint pattern so tools can declare prerequisite relationships and the registry exposes the full execution graph. `ToolDescriptor` and `MCPTool` gain `dependsOn: string[]` (tools that must complete first) and `providesFor: string[]` (tools that consume this output). `Registry.setToolDependencies()` wires these hints after registration. `Registry.getDependencies()` / `getDependents()` traverse the graph; `validateExecutionOrder()` checks a set of completed tools against a tool's prerequisites and returns `{ valid, missing }`; `getExecutionGraph()` returns the full adjacency map for dry-run visualization and agent planning. 18 tests in `tests/kernel-dependency-hints.test.ts`. (closes #198)
+- **Employee contracts and delivery plan:** independently installable task,
+  evidence, context and review contracts; role charters; separate BYO model-key
+  and external-agent requirements; ordered issue-to-develop delivery commands
+  and Git guards. (#567, #568, #571–#573, #664, #665, #675, #696, #698)
+- **Configurable evaluations:** versioned profiles and frozen datasets, independent
+  financial checks, observed QA results, and required reference qualification.
+  Technical fixture results and professional acceptance are recorded separately.
+  (#577, #666, #667, #711, #716)
 
-- **Resource Reference** (`src/kernel/types.ts`, `src/kernel/context.ts`, `src/kernel/executor.ts`) — Implements the Resource Reference pattern so tools can pass lightweight tickets instead of copying large payloads through every tool call. `ResourceRef` type carries a `resourceId`, `mimeType`, and `sizeBytes`. `Session.storeResource()` saves any JSON-serializable payload and returns a ticket; `Session.getResource()` retrieves it by ID. `SessionManager.resolveResource()` looks up a resource by session ID + resource ID. The executor auto-resolves any `ResourceRef` values in tool args before dispatch — tool authors never have to handle refs themselves. `Session.exportResources()` preserves the store across session serialization. 14 tests in `tests/kernel-resource-reference.test.ts`. (closes #204)
+### Changed
 
-- **Canonical Tool Model** (`src/kernel/canonical-model.ts`, `src/kernel/context.ts`, `src/kernel/types.ts`, `src/servers/risk-analysis.ts`, `src/servers/decision.ts`) — Defines Zod schemas (`FormationSchema`, `EconomicsSchema`, `ProductionSchema`, `RiskProfileSchema`, `DecisionSchema`, `WellAnalysisContextSchema`) as the shared contract between all 14 servers. Eliminates silent `?.field || 0` defaults and `z.any()` inputs: `risk-analysis` now validates upstream geological/economic data against canonical schemas at intake; `decision` surfaces missing economic data explicitly instead of defaulting NPV/IRR to 0. `SessionManager` gains `mergeCanonical(sessionId, section, data)` and `getCanonical(sessionId)` so servers write validated sections and downstream tools read from a single accumulated context. `AgentOSResponse` gets `canonicalOutput?: Partial<WellAnalysisContext>` so the kernel can accumulate sections from tool responses. 26 tests in `tests/canonical-model.test.ts`. (closes #208)
-
-- **`/code-review` skill** (`.claude/skills/code-review.md`) — New self-audit skill to run after implementation and before `/pre-commit`. Checks scope alignment against issue acceptance criteria, runs anti-pattern greps (`z.any()`, `Math.random()`, `?.field || 0`, direct SDK imports), verifies primary symbols exist in source (ghost-close guard), confirms test coverage for new exports, and flags what-not-why comments. Prevents scope drift before it reaches a commit.
-
-- **Anti-pattern greps in `/pre-commit`** (`.claude/skills/pre-commit.md`) — Two fast greps now run before the compile steps: detects direct `@anthropic-ai/sdk` imports in `src/servers/` (must route through `llm-client.ts`) and `Math.random()` in business logic outside the approved Monte Carlo samplers. Either violation fails the pre-commit gate with a clear file:line message.
-
-- **Test auto-discovery** (`scripts/run-tests.sh`, `package.json`) — Replaces the 38-suite `&&`-chain in the `test` script with a shell script that auto-discovers all `tests/*.test.ts` files. New test suites are picked up automatically; no `package.json` edit required. Eliminates the primary source of `develop → main` merge conflicts. Two signal-handling suites (`mcp-integration`, `mcp-server-infrastructure`) remain explicitly excluded in the script. Also adds `/sync-main post-merge` mode to the existing skill — run after every release merge to keep develop in sync and prevent conflict accumulation.
-
-- **Token-Efficient Response** (`src/kernel/middleware/output.ts`, `src/kernel/types.ts`) — Extends the existing Progressive Detail system with three new options on `OutputShaper.shape()`: `fields?: string[]` returns only the requested top-level fields (unknown fields silently ignored); `stripNulls?: boolean` recursively removes null/undefined fields while preserving falsy-but-valid values like `0` and `false`; `maxTokenHint?: number` records the caller's advisory token budget in response metadata (best-effort, not enforced). Field projection runs before null stripping so the two compose correctly. 7 new tests in `tests/kernel-output.test.ts`. (closes #201)
-
-- **Fallback Tool** (`src/kernel/registry.ts`, `src/kernel/executor.ts`, `src/kernel/middleware/audit.ts`, `src/kernel/types.ts`, `src/kernel/index.ts`) — When a primary tool fails after all retries are exhausted, the kernel automatically routes through an ordered fallback chain. `registry.registerFallback(primaryTool, fallbackTool | fallbackTool[])` accepts a single fallback or a priority-ordered list; `registry.getFallbacks()` returns the full chain; `registry.getFallback()` remains as a compatibility alias returning the first entry. The executor iterates the chain in order and stops on first success. Result metadata flags `usedFallback: true`, `originalTool`, and `fallbackTool` so callers always know when a substitute was used. Every fallback attempt is appended to `executor.getFallbackUsage()` with primary tool, fallback tool, reason, and timestamp. The audit middleware gains a new `logFallback()` method and `AuditEntry.action` gains `"fallback_used"` so substitutions appear in the JSONL audit trail independently from normal responses. Three representative default fallback chains are registered at kernel initialization (`risk-analysis` → `[decision, econobot]`, `geowiz` → `[curve-smith]`, `econobot` → `[risk-analysis]`). 10 new tests across `tests/kernel-registry.test.ts` and `tests/kernel-executor.test.ts`. (closes #149)
-- **Biome bump** — `@biomejs/biome` updated from 2.4.9 to 2.4.11; `biome.json` schema URL updated to match.
-
-- **Secret Injection** (`src/kernel/secrets.ts`, `src/kernel/index.ts`, `src/shared/llm-client.ts`) — `SecretsStore` on the kernel manages API keys without exposing them in args or logs. Supports static values, async resolvers (vault rotation), and a `.env` file dev bypass (`secrets.envFile` in `KernelConfig`). `resolve(key)` checks the injected store first, then falls back to `process.env`. `callLLM()` accepts an optional `apiKey` param so keys never have to be in the environment during tests or multi-tenant runs. `AuditMiddleware.logSecretAccess()` records key name + source (`store` vs `env`) to the audit trail — never the value. `SecretsStore.toJSON()` redacts all values so secrets can't leak via `JSON.stringify`. 14 tests in `tests/kernel-secrets.test.ts`. (closes #205)
-
-- **E2E Production Validation test suite** (`tests/e2e-production.test.ts`) — 15-test suite covering: fixture file existence, real LAS 2.0 parsing (curves, depth range, GR/ILD value ranges), fallback determinism, LLM graceful degradation without API key, and demo smoke test (all 14 servers, INVESTMENT_DECISION.md generated, <30s). Key-gated LLM quality tests (2) skip in CI unless `ANTHROPIC_API_KEY` is set. Includes `data/samples/real-test.las`: 401-sample anonymized Wolfcamp/Bone Spring LAS 2.0 file, Midland County TX, 7500–7700 ft, 6 curves (GR, NPHI, RHOB, PEF, ILD) with realistic pay zone signatures. (closes #218)
-
-- **Support Servers LLM Integration** (`legal`, `market`, `title`, `drilling`, `infrastructure`, `development`, `research`, `test`) — all 8 remaining servers now call `callLLM()`. Each adds a `synthesize*WithLLM()` function that sends domain-specific inputs to Claude and returns structured JSON; each falls back to a `deriveDefault*()` rule-based function that still uses real input values (no hardcoded constants) when the API is unavailable. Specific changes: legal assesses real regulatory exposure by jurisdiction; market interprets live EIA prices into trend/volatility/outlook; title evaluates realistic county-level title risk; drilling interprets program risk from well type and formation; infrastructure assesses takeaway constraints and midstream risk; development assesses schedule and budget risk from project parameters; research synthesizes fetched web content into market intelligence; test validates QA configuration and flags inconsistencies. 11 tests in `tests/support-servers-anti-stub.test.ts`. (closes #217)
-- **Reporter LLM Integration** (`src/servers/reporter.ts`) — replaces the template-generated executive summary with `synthesizeReportWithLLM()`: Scriptor Reporticus Maximus receives the full investment verdict (NPV, IRR, payback, confidence, risk factors, next steps, key findings) and writes a professional analyst narrative under 500 words. Falls back to `deriveDefaultExecutiveSummary()` — a rule-based summary that still includes real numbers — when the API is unavailable. Exports `countWordsInSummary()` and `deriveDefaultExecutiveSummary()` for testing. 5 tests in `tests/reporter-anti-stub.test.ts`. (closes #216)
-- **Decision LLM Integration** (`src/servers/decision.ts`) — replaces the rule-based INVEST/PASS/CONDITIONAL verdict with `synthesizeDecisionWithLLM()`: Augustus Decidius Maximus receives all upstream numbers (NPV, IRR, payback, risk score, geological confidence, oil/gas price) and returns `{ verdict, biggestRisk, biggestUpside, rationale }` — the LLM can upgrade or downgrade the rule-based preliminary call. Confidence score now scales with upstream input completeness: 50% base + 10% per domain present (geological, economic, curve, risk), so a sparse input yields lower confidence than a full analysis. Falls back to `deriveDefaultDecisionInterpretation()` when the API is unavailable. `InvestmentDecision` interface gains optional `interpretation` field. 5 tests in `tests/decision-anti-stub.test.ts`. (closes #215)
-- **Risk Analysis LLM Integration** (`src/servers/risk-analysis.ts`) — replaced four hardcoded stub values with input-derived computation and `callLLM()`-driven synthesis: (1) `environmental: 0.25` stub replaced by `assessEnvironmentalRisk()` — derives score from jurisdiction and permit status; (2) `operational: 0.35` stub replaced by `assessOperationalRisk()` — derives score from well type and formation type; (3) `assessTechnicalRisk()` `return 0.3` constant replaced with well-type and depth scoring (horizontal/deep = higher risk); (4) `assessRegulatoryRisk()` `return 0.2` constant replaced with jurisdiction lookup (Texas/Oklahoma = low, California/Colorado = high). Adds `synthesizeRiskInterpretationWithLLM()` — Gaius Probabilis Assessor returns `{ topRisk, mitigationPriority, riskNarrative }` from computed risk scores and Monte Carlo p-values; falls back to `deriveDefaultRiskInterpretation()` on any LLM error. `RiskAssessment` interface gains optional `interpretation` field. 7 tests in `tests/risk-analysis-anti-stub.test.ts`. (closes #214)
-
-- **Curve-Smith LLM Integration** (`src/servers/curve-smith.ts`) — replaced three stub categories with real computation and `callLLM()`-driven synthesis: (1) `Math.random()` P10/P50/P90 in `performTypeCurveAnalysis()` replaced with deterministic Arps percentile multipliers (P10 = EUR × 1.5, P50 = EUR × 1.0, P90 = EUR × 0.6); (2) hardcoded fallback (qi=750, Di=0.075, b=1.2, EUR=85,000 bbl) in `performDeclineCurveAnalysis()` replaced with formation-tier-derived qi and EUR computed via `calculateHyperbolicEUR()`; (3) `r2=0.92` and `dataPoints=12` quality stubs in `assess_curve_quality` replaced with values derived from `curveData.confidence` and `curveData.qualityGrade`. Adds `synthesizeInterpretationWithLLM()` — Lucius Technicus Engineer returns `{ declineCharacter, basinAnalog, flags }` from fitted parameters; falls back to `deriveDefaultInterpretation()` on any LLM error. `DeclineCurveAnalysis` interface gains optional `interpretation` field. 4 tests in `tests/curve-smith-anti-stub.test.ts`. (closes #213)
-
-- **Econobot LLM Integration** (`src/servers/econobot.ts`) — replaced hardcoded `generateDefaultAnalysis()` stub (fixed NPV $4.5M, IRR 22.5%, payback 14 months) with `callLLM()`-driven synthesis. `analyzeEconomicData()` is now async and calls `synthesizeRecommendationWithLLM()` with computed DCF metrics (NPV, IRR, payback, ROI multiple, breakeven prices, confidence) to produce a reasoned PROCEED/CONDITIONAL/DECLINE recommendation. Falls back to rule-based `deriveRecommendation()` when LLM is unavailable (demo mode, no API key). `generateDefaultAnalysis()` also uses LLM synthesis instead of fixed stubs. 4 tests in `tests/econobot-anti-stub.test.ts`. (closes #212)
-
-- **Geowiz LLM Integration** (`src/servers/geowiz.ts`) — replaced hardcoded `estimateTOC()` stub (returned 4.2) with `callLLM()`-driven synthesis. `analyzeGeologicalData()` now calls `synthesizeAnalysisWithLLM()` to derive TOC and the investment recommendation from real petrophysical context (porosity, depth, net pay, data quality). Falls back to depth-derived defaults (`deriveDefaultTOC()`) and computed recommendation when LLM is unavailable (no API key / demo mode). `performFormationAnalysis()` also uses LLM synthesis in the LAS-parse-failure path. 4 tests in `tests/geowiz-anti-stub.test.ts` (Test 2 updated to assert prompt divergence for different formations). (closes #211)
-
-- **Fixture Injection for Demo Mode** (`src/fixtures/demo-data.ts`, `src/demo-runner.ts`, `src/mcp-client.ts`) — deleted `generateMockAnalysis()` from `mcp-client.ts`; demo mode now passes static, deterministic fixture args to real server tool handlers rather than bypassing execution entirely. `src/fixtures/demo-data.ts` exports `DEMO_FIXTURE_ARGS` (typed fixture inputs for all 14 servers) and `DEMO_SERVER_NAMES`. The demo mode bypass branch (`request.mode === "demo"` → mock) is removed; `executeServerAnalysis()` always calls `client.callTool()`. `AnalysisRequest` gains optional `fixtureArgs` field so callers can inject server-specific args. `npm run demo` now exercises real code paths. `tests/demo.test.ts` updated to check model structure (not a specific NPV value) since real servers return deterministic data, not random mocks. 6 tests in `tests/demo-fixture-injection.test.ts`. (closes #225)
-
-- **Agent OS Rearchitecture** (`src/kernel/executor.ts`, `src/kernel/index.ts`, `src/kernel/bundles.ts`, `src/kernel/types.ts`) — all five structural gaps in the kernel are now implemented and verified: (1) `storeResult()` called inside `executeBundle()` after every successful step; (2) `_context` (including `availableResults`) injected into each tool's args; (3) `BundleStep.condition` predicate skips steps when false, marking them `SKIPPED` not `FAILED`; (4) `shouldWeInvest()` runs the pre-decision bundle once then applies the confirmation gate — no double-execution; (5) all bundle definitions consolidated in `bundles.ts` — none remain in `executor.ts`. Tests in `tests/kernel-executor.test.ts` (Tests A–H) verify each criterion. (closes #209)
-
-- **Anti-Stub Test Pattern** (`tests/geowiz-anti-stub.test.ts`, `CONTRIBUTING.md`) — reference implementation of the three-part server test standard: (1) Mock-SDK test asserting `messages.create` is reached (not just that the server responds), (2) determinism test asserting different inputs produce different outputs, (3) demo-fallback test asserting `callLLM` throws a clear error without `ANTHROPIC_API_KEY`. Pattern documented in `CONTRIBUTING.md` under "Testing Standards". Ghost-close guard added to `/finish-issue` and `/create-issue` skills. 4 tests in `tests/geowiz-anti-stub.test.ts`. (closes #245)
-
-- **Partial Success** (`src/kernel/executor.ts`, `src/kernel/middleware/output.ts`, `src/kernel/types.ts`) — `PartialSuccessResult` schema with `succeeded[]`, `failed[]`, and `errors[]` arrays (flat, no Map iteration needed). `toPartialSuccessResult(gathered)` and `toBundlePartialSuccessResult(bundle)` convert `GatheredResponse`/`BundleResponse` into `PartialSuccessResult` — each `FailedItem` includes `errorType`, `message`, and `recoveryHint` for direct agent retry logic. `OutputShaper` gains `shapeGathered(gathered, detailLevel)` and `shapeBundle(bundle, detailLevel)` — natural language summaries at summary/standard/full levels. All types and helpers exported from the kernel barrel. 15 tests in `tests/kernel-partial-success.test.ts`. (closes #148)
-
-- **Graceful Degradation** (`src/kernel/executor.ts`, `src/kernel/types.ts`) — `executeParallel()` and `executeBundle()` now populate `degraded: true` and a `degradationManifest` (with `missingSections`, `reasons`, and `completeness`) whenever any tool fails but the operation still returns partial results. `ExecutionOptions` gains `minSuccessRatio?: number` — when the success ratio falls below this threshold, `overallFailure: true` is also set. All methods remain backward compatible when no failures occur. 10 tests in `tests/kernel-graceful-degradation.test.ts`. (closes #147)
-
-- **Timeout Boundary** (`src/kernel/executor.ts`, `src/kernel/types.ts`) — per-server timeout overrides via `serverTimeouts: Record<string, number>` in `Executor` constructor; `KERNEL_TIMEOUT_MS` env var sets the default `toolTimeoutMs` when no explicit option is provided; aggregate timeout for `executeParallel()` and `executeBundle()` via `ExecutionOptions.aggregateTimeoutMs` — checks fire both before and after each chunk/phase, returning completed results with `timedOut: true` when the deadline passes. `GatheredResponse` and `BundleResponse` gain an optional `timedOut` flag. All methods remain backward compatible. 11 tests in `tests/kernel-timeout-boundary.test.ts`. (closes #146)
-
-- **Cancellation Tokens** (`src/kernel/executor.ts`, `src/kernel/types.ts`) — `CancellationToken` class with `cancel()`, `isCancelled`, and `throwIfCancelled()`. `execute()`, `executeParallel()`, and `executeBundle()` each accept an optional `token?: CancellationToken`. Pre-cancelled tokens fast-fail immediately; tokens cancelled between chunks or phases stop the next unit from starting while preserving already-completed results. `GatheredResponse` and `BundleResponse` gain an optional `cancelled` flag. All methods remain backward compatible when no token is supplied. 13 tests in `tests/kernel-cancellation.test.ts`. (closes #130)
-
-- **Session Persistence** (`src/kernel/context.ts`) — pluggable storage backend for sessions that survive kernel restarts. `SessionStorageBackend` interface (`save`, `load`, `loadAll`, `delete`) with a `FileSessionStorage` implementation (one JSON file per session, configurable directory, auto-created on first use). `Session` gains `exportResults()` and a `fromSerialized()` static factory. `SessionManager` accepts an optional backend; `createSession()` and `destroySession()` fire best-effort persistence saves on every lifecycle event; `recoverSessions()` reloads all sessions from storage on startup. `Kernel` exposes `recoverSessions()` and reads `KernelConfig.sessionStorage.path` to auto-configure `FileSessionStorage`. No backend = identical in-memory-only behavior. `KernelConfig` extended with optional `sessionStorage: { path: string }`. `FileSessionStorage`, `SessionStorageBackend`, and `SerializedSession` exported from the kernel barrel. 14 tests in `tests/kernel-session-persistence.test.ts`. (closes #114)
-
-- **Result Caching with Idempotency Keys** (`src/kernel/result-cache.ts`) — TTL-based in-memory result cache keyed by the deterministic SHA-256 idempotency keys already generated by `Executor.generateIdempotencyKey()`. Query tools are cacheable; command tools (`reporter`, `decision`) are never cached. Cache hits return the stored `ToolResponse` with `metadata.fromCache: true` set; misses fall through to normal execution and populate the cache on success. `invalidate(key)` / `invalidateAll()` for programmatic eviction. `metrics` property exposes `{ hits, misses, size }` (size counts only live, non-expired entries). TTL defaults to `KernelConfig.execution.idempotencyTtlMs` (5 minutes). Exposed on `Kernel` as `kernel.resultCache` (direct access) and `kernel.invalidateCache(key?)`. `ResponseMetadata` extended with optional `fromCache` field. 16 tests in `tests/kernel-result-cache.test.ts`. (closes #113)
-
-- **Server Health Check Monitoring** (`src/kernel/health-monitor.ts`) — proactive per-server health probing that updates `Registry` server status before requests are routed. `HealthMonitor` accepts an injected `ProbeFn` (returns `"up" | "down"`), a configurable probe interval (default 60s), and a per-probe timeout (default 5s — slow probes counted as `"down"`). `probeNow(name)` / `probeAll()` for manual probing; `start()` / `stop()` for periodic monitoring; `getStatus(name)` and `listHealthy()` for observability. Integrated into `Kernel` as `kernel.healthMonitor` (public) and `kernel.getServerHealth(name)` / `kernel.startHealthMonitor(probeFn)`. Configurable via `KernelConfig.resilience.healthCheck`. Complements the reactive circuit breaker (#111) with a proactive health layer. 19 tests in `tests/kernel-health-monitor.test.ts`. (closes #112)
-
-- **EIA API Integration** (`src/servers/market.ts`) — `analyze_market_conditions` now fetches live WTI crude and Henry Hub natural gas spot prices from the U.S. EIA Open Data API. Falls back to documented stub constants (`$75/bbl`, `$3.50/MMBtu`) when `EIA_API_KEY` is absent or the request fails. Response includes `dataSource: 'eia'` or `dataSource: 'stub'` for provenance transparency. Prices are cached in-memory for 1 hour (2 API calls per analysis run). See `docs/EIA_API_SETUP.md` for key registration. 7 tests in `tests/market-eia.test.ts` (mocked fetch — no key required in CI). (closes #223)
-
-- **Real Monte Carlo Simulation** (`src/servers/risk-analysis.ts`) — `performMonteCarloAnalysis()` now runs true probabilistic sampling using three distribution types: triangular (inverse-CDF), normal (Box-Muller transform), and uniform. Each variable (`oilPrice`, `initialProduction`, `declineRate`, `capex`) is independently sampled from its specified distribution; p10/p50/p90 statistics converge for large iteration counts; 10,000 iterations completes in <500ms. Replaces the deterministic linear spread stub. Three samplers exported for unit testing: `sampleUniform`, `sampleTriangular`, `sampleNormal`. 15 tests in `tests/kernel-monte-carlo.test.ts`. (closes #224)
-
-- **Shared LLM Client** (`src/shared/llm-client.ts`) — `callLLM(options)` is the single entry point for all Anthropic API calls in SHALE YEAH. Accepts `prompt`, optional `system`, `model` (default `claude-opus-4-6`), and `maxTokens` (default 4096). Uses adaptive thinking on Opus 4.6 for best reasoning quality. Throws a descriptive `Error` when `ANTHROPIC_API_KEY` is absent. 6 tests in `tests/llm-client.test.ts`. (closes #222)
-- **Circuit Breaker Pattern** (`src/kernel/middleware/circuit-breaker.ts`) — per-server state machine (closed → open → half-open) that automatically excludes repeatedly-failing servers from scatter-gather and bundle execution. Configurable failure threshold (default 3 consecutive RETRYABLE failures), reset timeout (default 30s), and half-open probe attempts (default 1). Only RETRYABLE errors trip the breaker — PERMANENT, AUTH_REQUIRED, and USER_ACTION errors are request-level issues and do not affect server health. Integrated into `Executor` (fast-fail + outcome recording) and `Registry` (`listServers()` filters open-circuit servers). Exposed on `Kernel` via `getCircuitState(serverName)` for observability. Configurable via `KernelConfig.resilience.circuitBreaker`. 43 tests in `tests/kernel-circuit-breaker.test.ts`. (issue #111)
-- **Retry with Exponential Backoff** (`src/kernel/executor.ts`) — automatic retry for retryable errors (rate limit, timeout, connection) using existing `ResilienceMiddleware.classifyError()` classification. Exponential backoff with jitter (`baseDelay * 2^attempt + 0-30% jitter`) prevents thundering herd. Base delays from resilience recommendations (rate limit: 5s, timeout: 2s, connection: 1s). Configurable via `KernelConfig.resilience.maxRetries` (default 2) and `retryBackoffMs` (default 1000ms). Permanent, auth, and user_action errors are never retried. Retry metadata (`retryAttempts`, `totalRetryDelayMs`) attached to responses.
+- **Independent packages:** separate specialist agents and MCP tool servers in
+  the monorepo, ADK/Python agent authoring, and package-local setup, source/wheel/
+  archive exports and container verification. Orchestration remains optional.
+  (#385, #498, #527–#543, #578, #597, #674, #679)
+- **Reviewed employee workflows:** Geologist, Reporter, QA and Economist now have
+  source-bound private context, configurable scorecards, human review and
+  restart/resume paths. Displaced TypeScript agent paths were removed for these
+  migrations. (#541, #542, #669, #671–#674, #680)
+- **MCP interoperability and trust:** stateless MCP 2026-07-28 clients, explicit
+  identities/scopes, schema and error validation, bounded discovery/preflight retries,
+  cancellation, current source grants and redacted correlated events.
+  (#574, #668, #670, #677–#679, #722)
+- **Contributor and CI workflow:** package-local verification, isolated reference
+  checks, required native trace grading, affected-unit PR qualification, early
+  workspace feedback and full merge/manual checks with serialized workspace
+  tests on the constrained runner. (#498, #674, #680, #744, #754)
 
 ### Fixed
 
-- **Demo bypass removed** (`src/mcp-client.ts`) — `createExecutorFn()` no longer hardcodes `mode: "demo"` as the fallback default; production mode is now the default when no `currentRequest` is set. Demo mode remains valid but is explicitly opt-in via `mode: "demo"` on the `AnalysisRequest`. (closes #221)
+- **Employee context:** shared dependencies are checked once per authorization
+  phase, with fresh checks across delivery boundaries. Exports validate captured
+  task/checkpoint/record metadata after the final authority await and reject
+  expired, changed, corrupt or rebound content. (#755, #757)
+- **Source and numerical fidelity:** replace geological guesses, invented
+  confidence, estimated QA passes, fabricated economic results and type-curve
+  percentiles with observations, unavailable states and independently checked
+  calculations.
+  (#671, #710–#712, #716)
+- **SDK and runtime safety:** bounded fenced-JSON parsing, explicit protocol/tool
+  failures, current checkpoint lineage and removal of the anonymous job poller.
+  (#571, #677, #680, #722)
 
-### Security
+## In main — 2026-04-17
 
-- **Clear-text logging of sensitive field** (`tools/access-processor.ts`) — removed `hasPassword` from the summary object logged to stdout. The boolean indicated whether an Access database is password-protected and was flowing into `console.log(JSON.stringify(summary))`, triggering CodeQL `js/clear-text-logging` (CWE-532). The field is no longer needed in the CLI summary output. (fixes CodeQL alert #39)
-- **CI/CD Supply Chain Hardening** — all GitHub Actions pinned to full commit SHAs (previously used mutable tags like `@v6`/`@v4`/`@v3`); added `permissions: contents: read` default to `ci.yml` and `demo.yml` to prevent over-privileged tokens on PR/push runs; added `environment: production` gate (requires reviewer approval) to `release` and `sign` jobs in `release.yml`; pinned SLSA generator to SHA; removed lint-suppression hacks (`|| echo ...`) from `ci.yml` and `release.yml`; renamed `gitleaks.yml` → `codeql.yml` to match its actual content (CodeQL, not Gitleaks)
+Verified at [merge commit 6a23be1](https://github.com/ryemyster/ShaleYeah/commit/6a23be132ee099cb48f566a7f31d3549c80cf40c)
+([PR #291](https://github.com/ryemyster/ShaleYeah/pull/291)). This snapshot has no
+version tag; the former provisional `2.1.0 — TBD` heading has been retired.
 
-### Changed
-
-- **`demo.yml` workflow trimmed** — removed redundant steps (triple demo runs, performance timeout test, doc file checks); workflow now runs `npm run demo` once and verifies outputs. (closes #221)
-- **README.md**: Full rewrite from 2,401 to ~360 lines targeting O&G investment professionals — removed ~1,200 lines of TypeScript code examples, aspirational features (Docker, WebSocket, SIEM), duplicate sections, and developer implementation guides; fixed factual errors (server counts, output paths, persona names, non-existent npm scripts)
-- **ARCHITECTURE.md**: Integrated kernel as main narrative instead of appendix — removed outdated "two-tier" / "6 agents" framing, duplicate "Composition — Abstraction Ladder" section, jest test examples, and aspirational Docker/Kubernetes deployment claims
-- **API_REFERENCE.md**: Removed duplicate "Composition — High-Level Tools" section and non-existent community links (GitHub Discussions, Discord, examples directory)
-- **CONTRIBUTING.md**: Fixed demo command (`bash scripts/demo.sh` → `npm run demo`), removed Python reference (TypeScript only), removed non-existent `specs/` directory and `npm run gen` command references, removed `scripts/verify-branding.sh` from PR checklist
-- **GETTING_STARTED.md**: Fixed clone URL (`your-org` → `rmcdonald`), removed non-existent GitHub Discussions reference
-- **DEMO_VS_PRODUCTION.md**: Updated roadmap to reflect kernel v2.0.0 completions (RBAC, audit logging, session management, composable bundles now marked complete)
-
-## [2.0.0] - 2026-02-14
-
-**SHALE YEAH is now an Agent OS.** The 14 MCP domain servers are unchanged, but they now run through a kernel runtime layer that provides dynamic tool discovery, parallel scatter-gather execution, identity-anchored sessions, role-based access control, audit logging, error intelligence, and composable task bundles. Based on [Arcade.dev's 52 Agentic Tool Patterns](https://www.arcade.dev/patterns), this release moves pattern coverage from ~8% (4.5/52) to ~56% (29/52).
-
-### Added
-
-#### Kernel Runtime (`src/kernel/`)
-- **Kernel** (`src/kernel/index.ts`) — unified entry point for the Agent OS runtime with discovery, execution, session management, and middleware pipeline
-- **Tool Registry** (`src/kernel/registry.ts`) — central index of all 14 servers and their tools with capability matching, server routing, and tool type classification (12 query + 2 command)
-- **Execution Engine** (`src/kernel/executor.ts`) — single, parallel (scatter-gather via `Promise.allSettled`), and bundled tool execution with dependency-ordered phases, timeout handling, `maxParallel` concurrency control, and confirmation gates
-- **Session & Context** (`src/kernel/context.ts`) — `SessionManager` with identity anchoring, context injection, result storage/retrieval, and session isolation
-- **Task Bundles** (`src/kernel/bundles.ts`) — 4 pre-built bundles: `QUICK_SCREEN` (4 servers), `FULL_DUE_DILIGENCE` (14 servers), `GEOLOGICAL_DEEP_DIVE` (3 servers), `FINANCIAL_REVIEW` (3 servers)
-- **Type System** (`src/kernel/types.ts`) — foundation types for tool classification, detail levels, error classification, response envelopes, user identity, permissions, audit entries, and kernel configuration
-
-#### Middleware Pipeline (`src/kernel/middleware/`)
-- **Auth** (`auth.ts`) — RBAC permission gates with hierarchical role model (analyst → engineer → executive → admin) and env-var toggle (`KERNEL_AUTH_ENABLED`)
-- **Audit** (`audit.ts`) — append-only JSONL audit trail with sensitive value redaction and env-var toggle (`KERNEL_AUDIT_ENABLED`)
-- **Resilience** (`resilience.ts`) — error classification (retryable/permanent/auth_required/user_action), recovery guides, alternative tool suggestions, and graceful degradation assessment
-- **Output Shaping** (`output.ts`) — progressive detail levels (summary/standard/full) with per-domain field rules
-
-#### High-Level Composition API
-- `kernel.quickScreen(tract)` — 4 core servers in 1 parallel phase
-- `kernel.fullAnalysis(tract)` — 14 servers in 4 dependency-ordered phases
-- `kernel.geologicalDeepDive(tract)` — geowiz + curve-smith + research
-- `kernel.financialReview(tract)` — econobot + risk-analysis + market
-- `kernel.shouldWeInvest(tract)` — full due diligence with confirmation-gated investment decision
-- `kernel.confirmAction(id)` / `kernel.cancelAction(id)` — human-in-the-loop confirmation gate
-
-#### Discovery API
-- `kernel.listServers()` — enumerate all registered MCP servers
-- `kernel.describeTools(server)` — list tools for a specific server
-- `kernel.findCapability(keyword)` — search tools by capability
-- `kernel.whoAmI()` — return current session identity
-
-#### Test Suites (8 new files, 627 tests)
-- `tests/kernel-registry.test.ts` — 60 tests
-- `tests/kernel-output.test.ts` — 56 tests
-- `tests/kernel-executor.test.ts` — 83 tests
-- `tests/kernel-context.test.ts` — 87 tests
-- `tests/kernel-resilience.test.ts` — 108 tests
-- `tests/kernel-auth.test.ts` — 63 tests
-- `tests/kernel-audit.test.ts` — 58 tests
-- `tests/kernel-bundles.test.ts` — 112 tests
-
-### Changed
-- `ShaleYeahMCPClient` now wraps `Kernel` internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()` for parallel, dependency-ordered execution (replaces sequential for-loop)
-- `demo-runner.ts` and `main.ts` create kernel sessions with identity anchoring for each analysis run
-- `MCPServer.formatResult()` accepts optional `detailLevel` parameter (backward compatible)
-- `MCPServer.formatError()` includes `error_type` field for error classification (backward compatible)
-- `MCPTool` and `ServerToolTemplate` interfaces have optional `type` and `detailLevel` fields (backward compatible)
-- `package.json` version aligned to 2.0.0, description updated to reflect Agent OS architecture
-- README architecture diagram updated to show kernel layer
-
-### Documentation
-- Consolidated 18 markdown files to 9 — relocated unique content, deleted duplicates and stale docs
-- Added testing, release process, and pre-commit sections to `CONTRIBUTING.md` (from `DEVELOPMENT.md`)
-- Added sample file specs, LAS/CSV format examples, and troubleshooting to `docs/GETTING_STARTED.md` (from `DIRECTORY_STRUCTURE.md`)
-- Added file format licensing section to `SECURITY.md` (from `FILE_FORMAT_LEGAL.md`)
-- Deleted: `DEMO_VS_PRODUCTION.md` (root duplicate), `docs/DEVELOPMENT.md`, `docs/DIRECTORY_STRUCTURE.md`, `docs/WORKSPACE_MANAGEMENT.md`, `docs/FILE_FORMAT_LEGAL.md`, `docs/JUNIOR_DEVELOPER_GUIDE.md`, `tests/COVERAGE_PLAN.md`, `tests/COVERAGE_STATUS.md`
-- Fixed all cross-references in remaining docs
-
-### Infrastructure
-- Created `biome.json` — lint/format config with project-specific rule overrides
-- Fixed 200+ lint and formatting issues across all source and test files
-- Added 8 kernel test scripts to `npm run test` (627 additional tests now in CI)
-- Removed `|| true` from lint script — lint errors now fail the build
-- Added `data/audit/` to `.gitignore` to prevent audit logs from being committed
-- Added GitHub issue templates (bug report, feature request) and PR template
-- Updated `LICENSE` copyright to `2025 Ryan McDonald / Ascendvent LLC`
-
-## [Unreleased]
+- Kernel execution, dependency hints, resource references, canonical data,
+  session persistence, caching, circuit breakers, retries, cancellation and
+  partial-result handling were already merged.
+- Shared LLM integration, EIA access, Monte Carlo sampling, demo fixture handling
+  and the associated documentation/security changes were already merged.
+- The recorded `2.0.0` history and full main-branch notes are preserved in the
+  [changelog at that merge](https://github.com/ryemyster/ShaleYeah/blob/6a23be132ee099cb48f566a7f31d3549c80cf40c/CHANGELOG.md).

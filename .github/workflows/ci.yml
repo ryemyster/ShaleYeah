@@ -1,30 +1,167 @@
 name: CI
 
 on:
-  push:
-    branches: [ main, develop ]
   pull_request:
     branches: [ main, develop ]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  push:
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 permissions:
   contents: read
+  issues: read
+  pull-requests: read
 
 jobs:
-  ci:
+  impact:
+    name: CI impact decision
+    runs-on: ubuntu-latest
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
+      geologist: ${{ steps.plan.outputs.geologist }}
+      reporter: ${{ steps.plan.outputs.reporter }}
+      economist: ${{ steps.plan.outputs.economist }}
+      qa: ${{ steps.plan.outputs.qa }}
+      callers: ${{ steps.plan.outputs.callers }}
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+    - name: Select affected qualification with full fallback
+      id: plan
+      run: node scripts/ci-impact.mjs --output "$RUNNER_TEMP/ci-plan.json"
+    - name: Publish revision-bound selection
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: ci-impact-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/ci-plan.json
+        if-no-files-found: error
+        retention-days: 14
+  reference-qualification:
+    needs: impact
+    uses: ./.github/workflows/reference-qualification.yml
+    with:
+      plan: ${{ needs.impact.outputs.plan }}
+      geologist: ${{ needs.impact.outputs.geologist == 'true' }}
+      reporter: ${{ needs.impact.outputs.reporter == 'true' }}
+      economist: ${{ needs.impact.outputs.economist == 'true' }}
+      callers: ${{ needs.impact.outputs.callers }}
+  qa-observed-qualification:
+    name: QA observed result qualification
+    needs: impact
+    if: needs.impact.outputs.qa == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+        cache: 'pnpm'
+    - run: pnpm install --frozen-lockfile
+    - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+      with:
+        version: '0.12.21'
+        python-version: '3.12'
+    - name: Native QA employee lint, coverage and frozen qualification
+      working-directory: agents/quality-assurance
+      env:
+        QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+      run: |
+        uv run --locked ruff check app tests
+        uv run --locked pytest -q --cov=app --cov-fail-under=90
+        uv run --locked python tests/eval/run_fixture_evals.py --output /tmp/qa-employee-scorecard.json --code-revision "$QUALIFICATION_CODE_REVISION"
+    - run: pnpm --dir contracts build
+    - run: pnpm --dir sdk build
+    - run: pnpm --dir servers/qa-server build
+    - run: pnpm --dir servers/qa-server type-check
+    - run: pnpm --dir servers/qa-server lint
+    - run: pnpm --dir servers/qa-server test:coverage
+    - name: Configured observed-result scorecard
+      run: pnpm --dir servers/qa-server qualify --report /tmp/qa-scorecard.json
+    - name: Independent source and installed archive
+      run: node servers/qa-server/scripts/check-extraction.mjs --bundle "$RUNNER_TEMP/qa-bundle" --report /tmp/qa-extraction.json
+    - name: Installed non-root Node container
+      run: node servers/qa-server/scripts/check-containers.mjs --report /tmp/qa-container.json
+    - name: Separate QA employee and tool images with protected review continuation
+      run: uv run --project evaluations --locked python servers/qa-server/scripts/check-employee-containers.py --bundle "$RUNNER_TEMP/qa-bundle" --report /tmp/qa-employee-containers.json
+    - name: Publish QA decision metadata
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: qa-observed-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+        path: |
+          /tmp/qa-scorecard.json
+          /tmp/qa-extraction.json
+          /tmp/qa-container.json
+          /tmp/qa-employee-scorecard.json
+          /tmp/qa-employee-containers.json
+        if-no-files-found: error
+        retention-days: 14
+  workspace:
+    name: Workspace checks
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10  # v6.0.3
+
+    - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093  # v6.0.8
 
     - name: Setup Node.js
       uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f  # v6.3.0
       with:
         node-version: '22.x'
-        cache: 'npm'
+        cache: 'pnpm'
 
-    - run: npm ci --legacy-peer-deps
-    - run: npm run type-check
-    - run: npm run lint
-    - run: npm run test
-    - run: npm run build
-    - run: npm run demo
+    - run: pnpm install --frozen-lockfile
+    - name: Setup uv for contract parity checks
+      uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9  # v9.0.0
+      with:
+        version: '0.12.21'
+        python-version: '3.12'
+    - run: pnpm check:issue-template
+    - run: pnpm test:sdlc
+    - run: pnpm test:ci
+    - name: Sequential develop delivery
+      if: github.event_name == 'pull_request' && github.base_ref == 'develop'
+      env:
+        GH_TOKEN: ${{ github.token }}
+        SDLC_PR: ${{ github.event.pull_request.number }}
+      run: node scripts/sdlc.mjs ci "$SDLC_PR"
+    - run: pnpm turbo type-check
+    - run: pnpm turbo lint
+    - run: pnpm turbo build
+    - name: Install Reporter native runtime for protocol and context controls
+      run: uv sync --project agents/reporter-agent --locked
+    - name: Install QA native runtime for observed-result context and disposition controls
+      run: uv sync --project agents/quality-assurance --locked
+    - name: Install Economist native runtime for source and human-review controls
+      run: uv sync --project agents/economist --locked
+    - name: Workspace tests on the constrained runner
+      run: pnpm turbo test --concurrency=1
+    - run: pnpm --dir contracts check:isolation
+    - run: pnpm --dir connectors check:isolation
+    - name: Native model adapter coverage
+      working-directory: sdk
+      run: pnpm exec tsx --test --experimental-test-coverage --test-coverage-include=src/model-provider.ts --test-coverage-lines=90 tests/model-provider.test.ts
+  pr-checks:
+    name: PR checks
+    if: always()
+    needs: [impact, workspace, reference-qualification, qa-observed-qualification]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+    - name: Validate every selected result
+      env:
+        CI_GATE_SCOPE: final
+        CI_PLAN_JSON: ${{ needs.impact.outputs.plan }}
+        CI_NEEDS_JSON: ${{ toJSON(needs) }}
+      run: node scripts/ci-gates.mjs

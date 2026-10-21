@@ -1,0 +1,274 @@
+name: Reference qualification
+
+on:
+  workflow_call:
+    inputs:
+      plan:
+        type: string
+        default: ''
+      geologist:
+        type: boolean
+        default: true
+      reporter:
+        type: boolean
+        default: true
+      economist:
+        type: boolean
+        default: true
+      callers:
+        type: string
+        default: '["development-planner","drilling-engineer","infrastructure-planner","investment-chair","legal-analyst","market-analyst","research-analyst","risk-analyst","title-analyst"]'
+
+permissions:
+  contents: read
+
+jobs:
+  economist:
+    name: Economist employee and Econobot qualification
+    if: inputs.economist
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Native Economist, external MCP and frozen financial qualification
+        working-directory: agents/economist
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked ruff check app tests
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+          uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/economist.json --code-revision "$QUALIFICATION_CODE_REVISION"
+      - run: pnpm turbo build --filter=@shaleyeah/server-econobot...
+      - run: pnpm --dir servers/econobot type-check
+      - run: pnpm --dir servers/econobot lint
+      - name: Native protected source, actual output and human approval journey
+        env:
+          ECONOMIST_TEST_CODE_REVISION: ${{ github.sha }}
+          ECONOMIST_TEST_TRACE_DIRECTORY: ${{ runner.temp }}/economist-traces
+        run: pnpm --dir servers/econobot test
+      - name: Grade native traces with Google's key-free local handler
+        working-directory: agents/economist
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/intentionally-unavailable-google-credentials.json
+        run: |
+          uv tool install google-agents-cli==1.3.1 --with-requirements tests/eval/cli-requirements.txt
+          uv run --locked python tests/eval/export_cli_traces.py "$RUNNER_TEMP/economist-traces" "$RUNNER_TEMP/economist-cli-traces"
+          grading_tools_dir="$(uv tool dir)"
+          "$grading_tools_dir/google-agents-cli/bin/python" tests/eval/grade_local_google.py --traces "$RUNNER_TEMP/economist-cli-traces" --config tests/eval/eval_config.json --output "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
+          uv run --locked python tests/eval/verify_cli_grade.py "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Source, wheel and production archive isolation
+        run: node servers/econobot/scripts/check-extraction.mjs --bundle "$RUNNER_TEMP/economist-bundle" --report "$RUNNER_TEMP/economist-extraction.json"
+      - name: Container denial controls
+        run: pnpm --dir servers/econobot exec node --test tests/extraction/container-report.test.mjs
+      - name: Separate non-root employee and tool containers
+        run: python3 servers/econobot/scripts/check-containers.py --bundle "$RUNNER_TEMP/economist-bundle" --report "$RUNNER_TEMP/economist-containers.json"
+      - name: Publish Economist decisions
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: economist-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/economist-extraction.json
+            ${{ runner.temp }}/economist-containers.json
+            ${{ runner.temp }}/economist-traces
+            ${{ runner.temp }}/economist-cli-traces
+            agents/economist/artifacts/evals/economist.json
+            agents/economist/artifacts/grade_results
+          if-no-files-found: error
+          retention-days: 14
+  protocol-callers:
+    name: Python caller compatibility
+    if: inputs.callers != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - name: Locked package and connection shape controls
+        env:
+          CI_CALLER_ROLES_JSON: ${{ inputs.callers }}
+        run: node scripts/ci-python-callers.mjs
+  reference:
+    name: Geologist and Geowiz qualification
+    if: inputs.geologist
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Build reference tool dependencies
+        run: pnpm turbo build --filter=@shaleyeah/server-geowiz...
+      - name: Evaluation lint, controls and installed isolation
+        working-directory: evaluations
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_evaluations --cov-fail-under=90
+          bash scripts/check-isolation.sh
+      - name: Python client controls
+        working-directory: sdk/python
+        run: |
+          uv run --locked ruff check .
+          uv run --locked pytest -q --cov=shaleyeah_mcp --cov-fail-under=90
+      - name: Geologist package and project-shape controls
+        working-directory: agents/geologist
+        run: |
+          uv run --locked --extra lint ruff check app tests/eval/run_fixture_evals.py
+          uv run --locked pytest tests ../../sdk/employee/tests -q --cov=app --cov=shaleyeah_employee --cov-fail-under=90
+      - name: Source access, human approval and protected continuation
+        working-directory: servers/geowiz
+        run: |
+          pnpm test:las
+          pnpm test:review
+      - name: Installed client and Geologist wheels
+        run: bash sdk/python/scripts/check-isolation.sh
+      - name: Actual protected Geowiz interoperability
+        run: uv run --project agents/geologist --locked python sdk/python/scripts/check_geowiz.py
+      - name: Clean reference exports and installed pair
+        run: |
+          pnpm --dir servers/geowiz exec node --test \
+            tests/extraction/container-control.test.mjs \
+            tests/extraction/generic-client-control.test.mjs
+          pnpm --dir servers/geowiz exec node scripts/check-extraction.mjs \
+            --bundle "$RUNNER_TEMP/shale-reference-bundle" \
+            --report "$RUNNER_TEMP/reference-extraction.json"
+      - name: Separate container images and protected pair
+        run: |
+          uv run --project evaluations --locked python servers/geowiz/scripts/check-containers.py \
+            --bundle "$RUNNER_TEMP/shale-reference-bundle" \
+            --report "$RUNNER_TEMP/reference-containers.json"
+      - name: Publish extraction and image decisions
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-extraction-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/reference-extraction.json
+            ${{ runner.temp }}/reference-containers.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Frozen baseline regression qualification
+        working-directory: agents/geologist
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked python tests/eval/run_fixture_evals.py \
+            --output artifacts/evals/reference-qualification.json \
+            --qualification-policy tests/eval/qualification_policy.json \
+            --baseline tests/eval/fixtures/baseline-reports.json \
+            --code-revision "$QUALIFICATION_CODE_REVISION"
+      - name: Publish decision metadata
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reference-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: agents/geologist/artifacts/evals/reference-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+  reporter:
+    name: Reporter employee and tool qualification
+    if: inputs.reporter
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Build Reporter and the existing Geowiz regression service
+        run: pnpm turbo build --filter=@shaleyeah/server-reporter... --filter=@shaleyeah/server-geowiz...
+      - name: Reporter Python authoring and coverage controls
+        working-directory: agents/reporter-agent
+        run: |
+          uv run --locked ruff check app tests
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+      - name: Shared employee controls and existing Geologist conformance
+        env:
+          COVERAGE_FILE: ${{ runner.temp }}/employee.coverage
+        run: |
+          uv run --project sdk/employee --locked --extra adk ruff check sdk/employee
+          uv run --project agents/geologist --locked pytest agents/geologist/tests -q --cov=shaleyeah_employee
+          uv run --project sdk/employee --locked --extra adk pytest sdk/employee/tests -q --cov=shaleyeah_employee --cov-append --cov-fail-under=90
+      - name: Reporter MCP and protected continuation coverage
+        working-directory: servers/reporter
+        run: pnpm test:coverage
+      - name: Shared executing review, qualification and private configuration coverage
+        run: pnpm --dir sdk test:employee-review
+      - name: Extraction controls and installed independent pair
+        run: |
+          pnpm --dir servers/reporter test:extraction
+          pnpm --dir servers/reporter exec node scripts/check-extraction.mjs \
+            --bundle "$RUNNER_TEMP/reporter-bundle" \
+            --report "$RUNNER_TEMP/reporter-extraction.json"
+      - name: Separate Reporter containers and protected continuation
+        run: |
+          uv run --project evaluations --locked python servers/reporter/scripts/check-containers.py \
+            --bundle "$RUNNER_TEMP/reporter-bundle" \
+            --report "$RUNNER_TEMP/reporter-containers.json"
+      - name: Frozen source-fidelity and authority qualification
+        working-directory: agents/reporter-agent
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked python tests/eval/run_fixture_evals.py \
+            --output artifacts/evals/reference-qualification.json \
+            --code-revision "$QUALIFICATION_CODE_REVISION"
+      - name: Publish Reporter decision metadata
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: reporter-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/reporter-extraction.json
+            ${{ runner.temp }}/reporter-containers.json
+            agents/reporter-agent/artifacts/evals/reference-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+  qualification-gate:
+    name: Selected reference qualification
+    if: always()
+    needs: [economist, protocol-callers, reference, reporter]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
+      - name: Validate every selected child and its effective inputs
+        env:
+          CI_GATE_SCOPE: reference
+          CI_PLAN_JSON: ${{ inputs.plan }}
+          CI_NEEDS_JSON: ${{ toJSON(needs) }}
+          CI_INPUTS_JSON: ${{ toJSON(inputs) }}
+        run: node scripts/ci-gates.mjs

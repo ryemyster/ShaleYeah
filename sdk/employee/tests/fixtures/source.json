@@ -1,0 +1,58 @@
+{
+  "kind": "source-artifact",
+  "contractVersion": "0.1.0",
+  "scope": {
+    "customerId": "operator-demo",
+    "assetId": "well-demo-1",
+    "taskId": "task-geology-1",
+    "employeeId": "employee.geologist"
+  },
+  "taskRevision": "r1",
+  "connectorRef": {
+    "id": "connector.operator",
+    "revision": "r1"
+  },
+  "adapterRef": {
+    "id": "operator-file",
+    "version": "0.1.0"
+  },
+  "sourceKind": "operator-file",
+  "evidence": {
+    "id": "evidence.log-1",
+    "uri": "urn:example:well-log:1",
+    "hash": {
+      "algorithm": "sha256",
+      "value": "1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "revision": "r1",
+    "asOf": "2026-10-07T12:00:00Z",
+    "accessClassification": "restricted",
+    "usagePolicy": {
+      "id": "policy.operator-data",
+      "version": "r1"
+    }
+  },
+  "artifact": {
+    "id": "evidence.log-1",
+    "revision": "1111111111111111111111111111111111111111111111111111111111111111",
+    "uri": "urn:sha256:1111111111111111111111111111111111111111111111111111111111111111"
+  },
+  "retrievedAt": "2026-10-07T12:30:00Z",
+  "format": "las",
+  "parserRef": {
+    "id": "las-shape",
+    "version": "0.1.0"
+  },
+  "jurisdiction": "US-TX",
+  "units": [
+    {
+      "field": "DEPT",
+      "unit": "FT",
+      "origin": "header"
+    }
+  ],
+  "byteLength": 100,
+  "accessNotes": "Operator-only input",
+  "licenseNotes": "Operator supplied; no redistribution",
+  "revisionOrigin": "operator-declared"
+}

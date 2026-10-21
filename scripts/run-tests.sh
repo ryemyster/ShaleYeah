@@ -10,17 +10,23 @@
 #
 # To skip a test file permanently, add its basename to EXCLUDED below.
 
-# No set -e: we handle failures manually via the if/else around npx tsx.
+# No set -e: we handle failures manually via the if/else around the Node runner.
 # set -e would kill the script on ((passed++)) when passed=0, since ((0)) is
 # falsy in bash arithmetic — and on any individual test failure we want to
 # continue running remaining suites, not abort.
 set -uo pipefail
 
-TESTS_DIR="$(cd "$(dirname "$0")/../tests" && pwd)"
+# Run from the calling package's directory (supports monorepo workspace packages)
+TESTS_DIR="$(cd "${PWD}/tests" && pwd 2>/dev/null)" || {
+  echo "No tests/ directory found in $(pwd)"
+  exit 0
+}
 
 EXCLUDED=(
   "mcp-integration.test.ts"
   "mcp-server-infrastructure.test.ts"
+  # Renamed in monorepo — same signal-handling test, excluded for same reason
+  "server-signal.test.ts"
 )
 
 passed=0
@@ -43,7 +49,7 @@ for test_file in "$TESTS_DIR"/*.test.ts; do
 
   echo ""
   echo "▶  $(basename "$test_file")"
-  if npx tsx "$test_file"; then
+  if node --import tsx "$test_file"; then
     passed=$((passed + 1))
   else
     failed=$((failed + 1))

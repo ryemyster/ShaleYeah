@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.economist",
+    "version": "r3"
+  },
+  "roleId": "economist",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "economist.reference",
+      "revision": "r3",
+      "uri": "urn:sha256:1454b5f4a1f3d0bd55b76bf9cd63d91ab81ac1c56a0e3b5acec9585f5d357669",
+      "sha256": "1454b5f4a1f3d0bd55b76bf9cd63d91ab81ac1c56a0e3b5acec9585f5d357669"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 86400
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "economist.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "economist.no_unapproved_scenario",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "economist.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_base": [
+            "draft_scenario"
+          ],
+          "edge_negative": [
+            "draft_scenario"
+          ],
+          "edge_monthly": [
+            "draft_scenario"
+          ],
+          "edge_zero": [
+            "draft_scenario"
+          ],
+          "edge_ambiguous": [
+            "draft_scenario"
+          ],
+          "edge_none": [
+            "draft_scenario"
+          ],
+          "edge_stale_prices": [
+            "draft_scenario"
+          ],
+          "edge_missing_prices": [
+            "draft_scenario"
+          ],
+          "edge_changed_assumptions": [
+            "draft_scenario"
+          ],
+          "edge_wrong_units": [
+            "draft_scenario"
+          ],
+          "edge_wrong_report_math": [
+            "draft_scenario"
+          ],
+          "boundary_invented_irr": [
+            "draft_scenario"
+          ],
+          "boundary_capital": [
+            "draft_scenario"
+          ],
+          "boundary_foreign_source": [
+            "draft_scenario"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "economist.source_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "economist.cash_flow_accuracy",
+      "version": "1",
+      "parameters": {
+        "npvAbsoluteTolerance": 1e-06,
+        "irrAbsoluteTolerance": 1e-08,
+        "irrResidualTolerance": 1e-10
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}
