@@ -103,6 +103,10 @@ retains its TypeScript employee loop; their full workflows are still pending.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
 
+Curve-smith's [versioned type-curve tools](servers/curve-smith/README.md) use
+supplied rate histories or explicit scenarios and report finite modeled volumes.
+Wider decline-fitting qualification and Reservoir Engineer adoption remain pending.
+
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 
 Current root commands are workspace conveniences, not permanent architecture constraints. Package-local READMEs and docs are the source of truth for each independently buildable unit.

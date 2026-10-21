@@ -1,68 +1,49 @@
-# Deployment — @shaleyeah/server-curve-smith
+# Running Curve-smith
 
-## Transport modes
+Complete the repository's [locked workspace setup](../../../docs/GETTING_STARTED.md),
+then run these commands from the repository root:
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3004` | Agent fleet, Docker, Kong |
-
-```bash
-# stdio mode
-pnpm build && pnpm start
-
-# HTTP mode
-PORT=3004 pnpm start
+```sh
+pnpm --dir servers/curve-smith build
+pnpm --dir servers/curve-smith start
 ```
 
-## Environment variables
+The build writes `dist/`. With `PORT` unset the server uses stdio; setting a
+port enables HTTP through the shared SDK. Configure the SDK's identity/scopes
+and network boundary for access-sensitive HTTP use. This numerical repair does
+not add a production deployment, publish an image or qualify the whole
+Reservoir Engineer pair for extraction/container operation.
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Lucius Technicus Engineer) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3004`) |
-| `DATA_PATH` | No | `./data` | Path to production data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+The versioned calculation tools require no model key. Optional type-curve
+interpretation is configured explicitly by embedding host code:
 
-## Build and run
+```ts
+import { CurveSmithServer } from "./dist/index.js";
 
-```bash
-cd servers/curve-smith
-pnpm install && pnpm build
-PORT=3004 ANTHROPIC_API_KEY=sk-... pnpm start
+const server = new CurveSmithServer({
+  synthesis: { apiKey: operatorSecret, model: operatorSelectedModel }
+});
 ```
 
-## Docker Compose (agent pair)
+`operatorSecret` and `operatorSelectedModel` come from the host's private
+configuration. Pass the instance to the usual SDK runner. A request must also
+set `includeInterpretation: true`; no ambient provider is enabled for this
+versioned path. Never put credentials in tool arguments, histories or reference
+records. The older `analyze_decline_curve` interpretation still uses its existing
+`ANTHROPIC_API_KEY` configuration; its broader fit behavior remains outside the
+new numerical qualification.
 
-```yaml
-services:
-  curve-smith:
-    image: shaleyeah/curve-smith:latest
-    environment:
-      PORT: "3004"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3004:3004"
-  reservoir-engineer:
-    image: shaleyeah/reservoir-engineer:latest
-    environment:
-      CURVE_SMITH_MCP_URL: http://curve-smith:3004
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [curve-smith]
+Run package-local verification after building:
+
+```sh
+pnpm --dir servers/curve-smith type-check
+pnpm --dir servers/curve-smith lint
+pnpm --dir servers/curve-smith test
+pnpm --dir servers/curve-smith test:coverage
 ```
 
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=curve-smith
-curl -X POST http://kong:8001/upstreams/curve-smith/targets -d target=curve-smith:3004
-curl -X POST http://kong:8001/services -d name=curve-smith -d host=curve-smith
-curl -X POST http://kong:8001/services/curve-smith/routes -d paths[]=/mcp/curve-smith
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3004` set
-- [ ] Registered with Kong at `/mcp/curve-smith`
-- [ ] Paired with `reservoir-engineer` agent at port 4004
+Tests include an actual stdio child process and require no live keys. Coverage
+is explicitly limited to the repaired numerical/interpretation modules, with
+90% required. Existing file-fit/quality paths and professional/whole-pair
+acceptance remain assigned to #681. No specific cloud, warehouse or orchestrator
+is required for these calculations.

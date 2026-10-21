@@ -1,62 +1,51 @@
-# Integration — @shaleyeah/server-curve-smith
+# Calling the versioned Curve-smith tools
 
-## Who calls curve-smith?
+Use any client supporting the repository's pinned MCP (Model Context Protocol)
+profile. `generate_type_curve` accepts the committed
+[synthetic request](../examples/type-curve.json) as tool arguments. That file is
+validated in the tests; it is not field data or an approved forecast.
 
-The `reservoir-engineer` agent (`agents/reservoir-engineer/`) connects over HTTP.
+Both numerical tools require `contractVersion: 0.1.0`, product and daily-rate
+units, explicit `timeBasis`, finite `horizon`, `economicLimitRate`, ordered
+`forecastTimes`, an `inputRef` and at least one `assumptionRefs` entry. Each
+reference has an exact `id` and `revision`. Oil uses `bbl/day`; gas uses `Mcf/day`.
+No other rate/volume unit or implicit gas/oil conversion is accepted.
 
-## Example call (agent side)
+Work is bounded to 64 wells, 1,200 observations per well and 601 forecast times.
+The exponent is 0–2; nominal decline is 0–1,000,000 per declared period and the
+finite horizon is at most 1,000,000 periods. These are computational bounds,
+not recommendations about reservoir applicability.
 
-```typescript
-import { callCurveSmithTool } from "./curve-smith-client.js";
+`generate_type_curve` also requires a formation label and one of:
 
-const result = await callCurveSmithTool(
-    "http://localhost:3004",
-    "analyze_decline_curve",
-    {
-        productionData: {
-            wellName: "JONES 1H",
-            dates: ["2024-01", "2024-02", "2024-03"],
-            oilProduction: [850, 780, 710],
-            gasProduction: [4200, 3900, 3550],
-        },
-        curveType: "hyperbolic",
-        outputPath: "/data/curves/JONES_1H_decline.json",
-    },
-);
-```
+- `basis: { kind: "analog-history", bFactor, analogWells }`. Each well contains
+  `wellRef`, `evidenceKind: "observed" | "synthetic"` and an `observations` array
+  of `{ elapsedTime, rate }`. All histories use the request's common units/time.
+- `basis: { kind: "scenario", initialRate, nominalDecline, bFactor }`. These are
+  explicit assumptions, not observed analogs.
 
-## Tool call reference
+`calculate_eur` uses the same common fields plus top-level `initialRate`,
+`nominalDecline` and `bFactor`; it takes no formation or `basis`. Its result is
+finite modeled volume, not certified ultimate recovery. The
+[method guide](HOW_IT_WORKS.md) defines time zero, integration and limits.
 
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `analyze_decline_curve` | `productionData`, `curveType` | Arps parameters, EUR, interpretation |
-| `generate_type_curve` | `wellData`, `basin` | Normalized type curve |
-| `calculate_eur` | `declineParams` | EUR estimate with confidence range |
-| `assess_curve_quality` | `productionData`, `curveParams` | Quality grade + fit metrics |
+## Results and failures
 
-## Upstream dependencies
+The SDK wraps a successful calculation in `{ success: true, analysis, metadata }`.
+Check `analysis.status` and `analysis.cumulativeProduction.status`: a valid
+request with no usable analog cohort or nonrepresentable volume can return an
+explicit unavailable analysis. Do not treat wrapper success as an available
+forecast. Confidence metadata is unavailable for these tools.
 
-No upstream MCP servers — reads from Anthropic API only.
+Available type-curve results include each well's source/revision/evidence label,
+fit diagnostics, interval and modeled volume, plus the equal-well forecast.
+Uncertainty stays unavailable and professional acceptance stays false. Invalid
+schema inputs are MCP tool errors. The retained old identifier-only/tier and
+undeclared two-product EUR requests are rejected; clients must supply the actual
+versioned contract. Reservoir Engineer caller adoption is tracked in #681.
 
-```
-curve-smith (port 3004)
-  ↓ callLLM()
-Anthropic API
-```
-
-## Downstream consumers
-
-```
-curve-smith (port 3004)
-  ↑ MCP over HTTP
-reservoir-engineer agent (port 4004)
-  ↑ LocalAgentRuntime
-Orchestrator / API client
-```
-
-## Error types
-
-```json
-{ "error_type": "retryable", "message": "LLM timeout" }
-{ "error_type": "permanent", "message": "Insufficient data points for curve fitting" }
-```
+`includeInterpretation: true` is optional on `generate_type_curve`. Host code
+must separately configure synthesis. Its absence/failure is explicit and does
+not alter the calculation. Credential and approval fields are not tool inputs.
+The new tools return no human-approved state; external clients must preserve
+that boundary rather than infer approval from a useful-looking explanation.
