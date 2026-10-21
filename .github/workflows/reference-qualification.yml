@@ -128,7 +128,7 @@ jobs:
         working-directory: agents/geologist
         run: |
           uv run --locked --extra lint ruff check app tests/eval/run_fixture_evals.py
-          uv run --locked pytest -q --cov=app --cov-fail-under=90
+          uv run --locked pytest tests ../../sdk/employee/tests -q --cov=app --cov=shaleyeah_employee --cov-fail-under=90
       - name: Source access, human approval and protected continuation
         working-directory: servers/geowiz
         run: |

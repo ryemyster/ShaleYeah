@@ -15,6 +15,38 @@ restoration preserves retention and cannot resurrect newly denied source data.
 Changed checkpoints bind their previous revision so completing a review can
 return to the same task state without reactivating an older record. Repeating
 the current state is idempotent and still requires current write authority.
+
+Shared dependencies are checked once per authorization phase. Each distinct
+record-to-source binding still calls the current source authority. After token
+counting, at model/history delivery and across writes, content checks, review,
+restart and export, a new phase performs fresh checks. No source permission
+receipt is cached across these boundaries. Before a phase finishes, the helper
+rechecks local revisions, deletion, expiry and body integrity so changes during
+an asynchronous source check cannot hide behind a previously visited record.
+
+For `V` reachable records, `E` dependency edges and `B` record-to-source bindings,
+one phase takes `O(V + E + B)` traversal work and at most `B` source checks.
+Assembly uses two phases, before and after token counting; dispatch/history use
+one. Selection records use a fresh dispatch phase and a write phase. Export
+checks its snapshot and selected records and obtains source retention receipts,
+for at most three binding passes. An installed content guard adds a fresh write
+phase after that callback. These limits preserve every source and permission
+boundary; they do not change financial or professional evaluation standards.
+
+The seven-source regression uses four shared work layers, with two records per
+layer (15 source/work records in total). Public API source-call counts are:
+
+| Operation | Before phase traversal | With phase traversal |
+| --- | ---: | ---: |
+| Assemble, including the check after token counting | 2,324 | 126 |
+| Authorize model dispatch | 1,162 | 63 |
+| Record the selected context | 1,897 | 126 |
+| Export permitted context | 1,960 | 189 |
+
+These are deterministic authority-call counts, not model quality or HTTP timing
+measurements. The owning tests also compare parallel chains and a deeper chain,
+retain all seven sources, and test revocation and record changes between phases.
+
 `models` contains the qualified configurable Gemini/Anthropic native adapters.
 `events.EmployeeEvents` emits correlated metadata with exact record bindings.
 `native.EmployeeRuntime` uses ADK's runner and durable session service.

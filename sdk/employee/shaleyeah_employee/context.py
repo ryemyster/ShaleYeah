@@ -171,6 +171,21 @@ def private_file(root, name):
     return file
 
 
+class _Traversal:
+    """Completed records belong to one authorization phase, never an invocation."""
+
+    def __init__(self):
+        self.active = set()
+        self.done = {}
+        self.deadlines = []
+
+    def source(self, evidence, receipt, max_age):
+        self.deadlines.append((_timestamp(receipt["retentionExpiresAt"]), "expired"))
+        self.deadlines.append(
+            (_timestamp(evidence["asOf"]) + timedelta(seconds=max_age), "stale_evidence")
+        )
+
+
 class ContextCatalog:
     @classmethod
     async def open(
@@ -363,39 +378,87 @@ class ContextCatalog:
             is not None
         )
 
-    async def _eligible(self, row, operation="read", trail=None):
-        trail = set() if trail is None else set(trail)
+    def _current(self, row, *, metadata=True):
         if row is None:
             raise ContextError("missing_input")
         key = (row["id"], row["revision"])
-        if key in trail:
-            raise ContextError("invalid_dependency")
-        trail.add(key)
         if self._deleted(*key):
             raise ContextError("deleted")
         if row["status"] != "current" or self._head(row["id"]) != row["revision"]:
             raise ContextError("revision_mismatch")
         if _timestamp(row["expires_at"]) <= self.clock():
             raise ContextError("expired")
-        for source in json.loads(row["sources"]):
-            await self._source(source, operation)
-        for dependency in json.loads(row["dependencies"]):
-            await self._eligible(self._metadata(dependency), operation, trail)
-        if row["kind"] == "shared":
-            if self.review_authority is None:
-                raise ContextError("approval_required")
-            await self._review({"id": row["id"], "revision": row["revision"]})
-        if self._head(row["id"]) != row["revision"] or self._deleted(*key):
-            raise ContextError("revision_mismatch")
+        if metadata:
+            current = self._metadata({"id": row["id"], "revision": row["revision"]})
+            if current is None or dict(current) != dict(row):
+                raise ContextError("revision_mismatch")
 
-    def _body(self, row):
+    def _finish_traversal(self, phase):
+        # An earlier dependency may change while a later authority call awaits.
+        for row in phase.done.values():
+            self._current(row)
+            self._checked_bytes(row)
+        for deadline, reason in phase.deadlines:
+            now = self.clock()
+            if deadline < now or (reason != "stale_evidence" and deadline == now):
+                raise ContextError(reason)
+
+    async def _eligible(self, row, operation="read", phase=None):
+        own_phase = phase is None
+        phase = _Traversal() if own_phase else phase
+        self._current(row, metadata=False)
+        key = (row["id"], row["revision"], operation)
+        if key in phase.active:
+            raise ContextError("invalid_dependency")
+        if key in phase.done:
+            return
+        self._current(row)
+        phase.active.add(key)
+        try:
+            for source in json.loads(row["sources"]):
+                receipt = await self._source(source, operation)
+                phase.source(source, receipt, self.policy["maxSourceAgeSeconds"])
+            for dependency in json.loads(row["dependencies"]):
+                await self._eligible(self._metadata(dependency), operation, phase)
+            if row["kind"] == "shared":
+                verified = await self._review({"id": row["id"], "revision": row["revision"]})
+                phase.deadlines.append((_timestamp(verified["expiresAt"]), "approval_required"))
+            self._current(row)
+            self._checked_bytes(row)
+            phase.done[key] = dict(row)
+        except (json.JSONDecodeError, KeyError, TypeError, RecursionError):
+            raise ContextError("integrity_failure") from None
+        finally:
+            phase.active.discard(key)
+        if own_phase:
+            self._finish_traversal(phase)
+
+    def _checked_bytes(self, row):
         body = self.db.execute(
             "SELECT body FROM records WHERE namespace=? AND id=? AND revision=?",
             (self.namespace, row["id"], row["revision"]),
         ).fetchone()["body"]
         if body is None or hashlib.sha256(body).hexdigest() != row["digest"]:
             raise ContextError("integrity_failure")
-        return json.loads(body)
+        return body
+
+    def _body(self, row):
+        return json.loads(self._checked_bytes(row))
+
+    async def _write_dependencies(self, id, sources, dependencies):
+        phase = _Traversal()
+        for source in sources:
+            receipt = await self._source(source)
+            phase.source(source, receipt, self.policy["maxSourceAgeSeconds"])
+        resolved_dependencies = []
+        for dependency in dependencies:
+            if dependency["id"] == id:
+                raise ContextError("invalid_dependency")
+            row = self._metadata(dependency)
+            await self._eligible(row, phase=phase)
+            resolved_dependencies.append({"id": row["id"], "revision": row["revision"]})
+        self._finish_traversal(phase)
+        return resolved_dependencies
 
     async def _write(self, id, revision, kind, body, sources, dependencies, expected=None):
         await self._authorize("write")
@@ -403,19 +466,14 @@ class ContextCatalog:
         if len(encoded) > self.policy["maxRecordBytes"]:
             raise ContextError("record_limit")
         _guard(body)
-        for source in sources:
-            await self._source(source)
-        resolved_dependencies = []
-        for dependency in dependencies:
-            if dependency["id"] == id:
-                raise ContextError("invalid_dependency")
-            row = self._metadata(dependency)
-            await self._eligible(row)
-            resolved_dependencies.append({"id": row["id"], "revision": row["revision"]})
+        resolved_dependencies = await self._write_dependencies(id, sources, dependencies)
         if self.content_guard is not None:
             guarded = self.content_guard(copy.deepcopy(body))
             if inspect.isawaitable(guarded):
                 await guarded
+            current_dependencies = await self._write_dependencies(id, sources, dependencies)
+            if current_dependencies != resolved_dependencies:
+                raise ContextError("revision_mismatch")
         await self._authorize("write")
         digest = hashlib.sha256(encoded).hexdigest()
         try:
@@ -490,12 +548,12 @@ class ContextCatalog:
             raise ContextError("invalid_contract")
         return await self._write(task["id"], task["revision"], "task", task, [], [], expected)
 
-    async def _task(self, operation="read"):
+    async def _task(self, operation="read", phase=None):
         await self._authorize(operation)
         row = self._metadata(
             {"id": self.scope["taskId"], "revision": self._head(self.scope["taskId"])}
         )
-        await self._eligible(row, operation)
+        await self._eligible(row, operation, phase)
         return self._body(row)
 
     async def put_source(self, artifact, expected=None):
@@ -667,12 +725,18 @@ class ContextCatalog:
         return copy.deepcopy(record)
 
     async def current_checkpoint(self, operation="read"):
+        phase = _Traversal()
+        result = await self._current_checkpoint(operation, phase)
+        self._finish_traversal(phase)
+        return result
+
+    async def _current_checkpoint(self, operation, phase):
         await self._authorize(operation)
         row = next((row for row in self._rows() if row["kind"] == "checkpoint"), None)
         if row is None:
             return {"workRefs": [], "pendingReviewRefs": [], "questions": [], "conflicts": []}
         try:
-            await self._eligible(row, operation)
+            await self._eligible(row, operation, phase)
             return self._body(row)
         except ContextError:
             # Only the separately stored reference projection may survive invalidation.
@@ -683,17 +747,19 @@ class ContextCatalog:
 
     async def _snapshot(self, operation="read"):
         await self._authorize(operation)
-        task = await self._task(operation)
-        checkpoint = await self.current_checkpoint(operation)
+        phase = _Traversal()
+        task = await self._task(operation, phase)
+        checkpoint = await self._current_checkpoint(operation, phase)
         selected, omitted = {}, []
         for row in self._rows():
             if row["kind"] in {"task", "checkpoint", "manifest"}:
                 continue
             try:
-                await self._eligible(row, "export" if operation == "export" else "read")
+                await self._eligible(row, "export" if operation == "export" else "read", phase)
                 selected[row["id"]] = {"row": dict(row), "body": self._body(row)}
             except ContextError as error:
                 omitted.append({"id": row["id"], "revision": row["revision"], "reason": error.code})
+        self._finish_traversal(phase)
         return task, checkpoint, selected, omitted
 
     async def compact(self):
@@ -849,12 +915,14 @@ class ContextCatalog:
         # Counting is an asynchronous boundary; changed rights must invalidate the assembled request.
         await self._authorize("assemble")
         if not blockers:
-            if canonical(task) != canonical(await self._task()) or canonical(
+            phase = _Traversal()
+            if canonical(task) != canonical(await self._task(phase=phase)) or canonical(
                 checkpoint
-            ) != canonical(await self.current_checkpoint()):
+            ) != canonical(await self._current_checkpoint("read", phase)):
                 raise ContextError("revision_mismatch")
             for entry in entries:
-                await self._eligible(self._record_metadata(entry["body"]))
+                await self._eligible(self._record_metadata(entry["body"]), phase=phase)
+            self._finish_traversal(phase)
         sources, working, shared = [], [], []
         for entry in entries:
             row, body = entry["row"], entry["body"]
@@ -929,16 +997,18 @@ class ContextCatalog:
 
     async def export_state(self):
         task, checkpoint, records, omitted = await self._snapshot("export")
+        phase = _Traversal()
         expirations = [_timestamp(self._metadata(task)["expires_at"])]
         if checkpoint.get("id"):
             expirations.append(_timestamp(self._metadata(checkpoint)["expires_at"]))
         for entry in records.values():
-            await self._eligible(self._record_metadata(entry["body"]), "export")
+            await self._eligible(self._record_metadata(entry["body"]), "export", phase)
             expirations.append(_timestamp(entry["row"]["expires_at"]))
             for evidence in json.loads(entry["row"]["sources"]):
-                expirations.append(
-                    _timestamp((await self._source(evidence, "export"))["retentionExpiresAt"])
-                )
+                receipt = await self._source(evidence, "export")
+                phase.source(evidence, receipt, self.policy["maxSourceAgeSeconds"])
+                expirations.append(_timestamp(receipt["retentionExpiresAt"]))
+        self._finish_traversal(phase)
         await self._authorize("export")
         return {
             "version": _VERSION,
@@ -959,12 +1029,14 @@ class ContextCatalog:
         await self._authorize("assemble")
         if packet["status"] != "ready":
             raise ContextError("context_limit")
-        if canonical(packet["task"]) != canonical(await self._task()) or canonical(
+        phase = _Traversal()
+        if canonical(packet["task"]) != canonical(await self._task(phase=phase)) or canonical(
             packet["checkpoint"]
-        ) != canonical(await self.current_checkpoint()):
+        ) != canonical(await self._current_checkpoint("read", phase)):
             raise ContextError("revision_mismatch")
         for body in packet["records"].values():
-            await self._eligible(self._record_metadata(body))
+            await self._eligible(self._record_metadata(body), phase=phase)
+        self._finish_traversal(phase)
         await self._authorize("assemble")
 
     async def record_selection(self, packet):
@@ -998,9 +1070,11 @@ class ContextCatalog:
         await self._authorize("read")
         if type(references) is not list or len(references) > self.policy["maxRecords"]:
             raise ContextError("invalid_contract")
+        phase = _Traversal()
         for ref in references:
             _ref(ref)
-            await self._eligible(self._metadata(ref))
+            await self._eligible(self._metadata(ref), phase=phase)
+        self._finish_traversal(phase)
         await self._authorize("read")
 
     async def restore_state(self, exported):
