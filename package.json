@@ -13,6 +13,7 @@
     "check:issue-template": "node scripts/check-issue-spec-template.mjs",
     "sdlc": "node scripts/sdlc.mjs",
     "test:sdlc": "node --test scripts/tests/sdlc.test.mjs",
+    "test:ci": "node --test --experimental-test-coverage --test-coverage-include='scripts/ci-*.mjs' --test-coverage-lines=90 scripts/tests/ci-impact.test.mjs scripts/tests/ci-gates.test.mjs",
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {

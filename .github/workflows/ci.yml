@@ -14,10 +14,47 @@ permissions:
   pull-requests: read
 
 jobs:
+  impact:
+    name: CI impact decision
+    runs-on: ubuntu-latest
+    outputs:
+      plan: ${{ steps.plan.outputs.plan }}
+      geologist: ${{ steps.plan.outputs.geologist }}
+      reporter: ${{ steps.plan.outputs.reporter }}
+      economist: ${{ steps.plan.outputs.economist }}
+      qa: ${{ steps.plan.outputs.qa }}
+      callers: ${{ steps.plan.outputs.callers }}
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+    - name: Select affected qualification with full fallback
+      id: plan
+      run: node scripts/ci-impact.mjs --output "$RUNNER_TEMP/ci-plan.json"
+    - name: Publish revision-bound selection
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: ci-impact-${{ github.run_id }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/ci-plan.json
+        if-no-files-found: error
+        retention-days: 14
   reference-qualification:
+    needs: impact
     uses: ./.github/workflows/reference-qualification.yml
+    with:
+      plan: ${{ needs.impact.outputs.plan }}
+      geologist: ${{ needs.impact.outputs.geologist == 'true' }}
+      reporter: ${{ needs.impact.outputs.reporter == 'true' }}
+      economist: ${{ needs.impact.outputs.economist == 'true' }}
+      callers: ${{ needs.impact.outputs.callers }}
   qa-observed-qualification:
     name: QA observed result qualification
+    needs: impact
+    if: needs.impact.outputs.qa == 'true'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
@@ -66,9 +103,8 @@ jobs:
           /tmp/qa-employee-containers.json
         if-no-files-found: error
         retention-days: 14
-  pr-checks:
-    name: PR checks
-    needs: [reference-qualification, qa-observed-qualification]
+  workspace:
+    name: Workspace checks
     runs-on: ubuntu-latest
 
     steps:
@@ -90,6 +126,7 @@ jobs:
         python-version: '3.12'
     - run: pnpm check:issue-template
     - run: pnpm test:sdlc
+    - run: pnpm test:ci
     - name: Sequential develop delivery
       if: github.event_name == 'pull_request' && github.base_ref == 'develop'
       env:
@@ -112,3 +149,19 @@ jobs:
     - name: Native model adapter coverage
       working-directory: sdk
       run: pnpm exec tsx --test --experimental-test-coverage --test-coverage-include=src/model-provider.ts --test-coverage-lines=90 tests/model-provider.test.ts
+  pr-checks:
+    name: PR checks
+    if: always()
+    needs: [impact, workspace, reference-qualification, qa-observed-qualification]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      with:
+        node-version: '22.x'
+    - name: Validate every selected result
+      env:
+        CI_GATE_SCOPE: final
+        CI_PLAN_JSON: ${{ needs.impact.outputs.plan }}
+        CI_NEEDS_JSON: ${{ toJSON(needs) }}
+      run: node scripts/ci-gates.mjs

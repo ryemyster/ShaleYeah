@@ -35,8 +35,9 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
   cancellation, current source grants and redacted correlated events.
   (#574, #668, #670, #677–#679, #722)
 - **Contributor and CI workflow:** package-local verification, isolated reference
-  checks, required native trace grading and serialized workspace tests on the
-  constrained runner. (#498, #674, #680, #744)
+  checks, required native trace grading, affected-unit PR qualification, early
+  workspace feedback and full merge/manual checks with serialized workspace
+  tests on the constrained runner. (#498, #674, #680, #744, #754)
 
 ### Fixed
 
