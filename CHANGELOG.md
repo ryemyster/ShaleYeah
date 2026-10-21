@@ -1,294 +1,66 @@
 # Changelog
 
-All notable changes to SHALE YEAH will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This log separates changes awaiting a merge to `main` from changes already in
+`main`. Detailed implementation history remains in the linked issues, pull
+requests and [previous full changelog](https://github.com/ryemyster/ShaleYeah/blob/07d0efc5a97c1e0f1e126c974bac5a3a3e4ed7ac/CHANGELOG.md).
 
 ## [Unreleased]
 
-- #755: bound employee context traversal per authorization phase while preserving current source checks, seven-source inputs, integrity and revocation boundaries. Add shared-graph growth controls and make the repair a prerequisite for further employee rollout in the 54-output MVP plan.
-
-- #680: serialize workspace test packages on the constrained CI runner after the native Economist fixture exhausted its deadline under concurrent package load. Retain every package/control, coverage threshold and existing subprocess deadline.
-
-- #680: isolate supplementary Google trace grading behind a pinned local-handler adapter, retaining actual scoring, strict two-provider checks and credential-free CI; remote metrics are rejected. Production financial and source-authority gates remain independent.
-
-- #680: migrate Economist to native ADK/Python with its own source-bound context, configurable independent financial scorecard, actual returned-output grading and exact enrolled human scenario review/resume. Add seven-source operator exports and optional offline EIA mapping, external/generic MCP and independent source/wheel/archive/container controls. Delete displaced TypeScript loop/client/config/tests and importer; preserve qualified #711 mathematics. Fixture evidence does not certify forecasts, fiscal assumptions, capital decisions or professional accuracy.
-
-- #680: preserve private employee checkpoint lineage when an approved review clears its pending reference, retaining idempotence, stale-write checks and current write authority.
-
-- #711: qualify Econobot's explicit periodic cash-flow NPV/IRR/payback path with independent numerical fixtures and residual checks. Remove guessed spreadsheet economics, fabricated success/confidence/breakeven and synthetic price sensitivity. Keep optional unreviewed model interpretation separate from calculation truth; reject legacy requests missing units/references.
-
-- #542: replace the QA employee loop with native ADK, own scoped context and configurable observed-fidelity evaluations; exact owner dispositions retain immutable failures, support restart and reject stale/revoked/expired grants. Add explicit JSON-source 0.2.0 with old source/employee profiles preserved; carry prepare cancellation through the installed review helper. Delete displaced QA TypeScript surfaces and require independent employee/tool qualification. Preserve current connector output versions and pass only UV cache/offline build settings through workspace checks. Use native Node/tsx imports for the unchanged shared test/generation programs, avoiding unnecessary CLI IPC startup.
-
-
-- #722: keep the independently executed MCP fixture client in exported production dependencies and verify its import after development packages are removed, before separate container qualification.
-
-- #722: delete the unsupported anonymous JSON-RPC job poller; retain an explicit failed default and trusted injected polling compatibility until #692.
-
-- #722: complete the retained TypeScript connection sweep with private MCP credential files, bounded discovery and 1 MiB responses, redirect refusal and safe permanent post-dispatch/tool-failure errors; preserve all three role brains until their owning employee migrations.
-
-- #722: Complete the Python caller sweep through the installable stateless client, correct `/mcp` routes and add required locked package compatibility checks; retain each role's separate employee-workflow acceptance.
-
-
-### Changed
-
-- #722: select the stateless MCP 2026-07-28 profile through shared TypeScript/Python adapters, pin maintained clients explicitly, and preserve private context, source authority and human review across transport changes. Remove displaced HTTP sessions and legacy protocol dependencies from direct Node consumers; add modern wire/interoperability and no-replay controls.
-
-- #744: bound hosted workspace test scheduling to two package processes, retaining all tests, assertions and existing deadlines. Track the repeated native/CLI startup timeout repair before further employee migrations.
-
-- #716: replace QA threshold/model pass estimates and report templates with eight configured observed-rule checks, exact authorized source/profile bindings, private immutable result reports and optional unreviewed BYO triage. Add synthetic detection scorecards, generic MCP/authority/restart controls, isolated source/archive checks and required installed Node container CI. QA employee migration remains #542.
-
-- Migrate the Reporter employee to native ADK/Python and source-faithful private reporting, with configurable role evaluations and exact human review. Reuse extracted employee/review helpers and delete the displaced TypeScript loop, fabricated reporting defaults and unreviewed path writes.
-
-- #674: validate Docker daemon information before reading the build bundle; incomplete server metadata and reported errors block as runtime unavailable even when the CLI exits successfully.
-
-- #674: constrain the generic fixture client to an explicit loopback MCP endpoint supplied separately from private settings, reject redirects and check both endpoint and authenticated-redirect boundaries in required reference CI.
-
-- #674: remove Geologist context's hidden dependency on the tool-owned synthesis key, preserving per-actor secret/refusal guards and separate mounts. Both providers reproduce the blocked employee before the repair.
-
-- #674: require an explicit installed-employee incompatible-contract denial in the extraction decision.
-
-- #674: corrected container-test readiness detection to include the tool's stderr startup diagnostic, with a subprocess stream regression test.
-
-- #674: package-owned Geowiz/SDK build settings, local Geowiz tests and allowlisted runtime archives; standalone Geologist source/wheel reference assets; clean installed source/tool/employee/pair proof and separate Python/Node container recipes with required CI receipts. Preserve source/context/qualification/human authority, actor-specific mounts and exact resume/replay behavior. Fixed generated context timestamp precision to the existing millisecond wire contract after a failing real-clock control. No live/domain or hosted-platform certification; replaced displaced parent-runner/config assumptions and stale JSON-finding/deployment claims.
-
-- #577: required Geologist/Geowiz reference qualification shared by CI and release packaging, frozen seven-case baseline and reviewed configurable regression policy, metadata-only decisions and fixture-limited release claims. Evaluation 0.3.0 recomputes mandatory checks and validates profile/dataset/candidate/evidence bindings; Geowiz requires exact private qualification on human approval and continuation with bounded installed verifier execution. Existing unqualified grants fail closed. Removed duplicate CI reference steps; initial researched benchmarks remain open to contributor refinement, with live/domain and final human MVP acceptance separate.
-
-- #673: added Geologist deterministic review supervision and Geowiz-owned immutable task/work/context/source/eval/action packets, separate enrolled operator inspection/approve/reject/request-changes, exact backend grants and transactional SQLite finding/audit/outcome replay protection. Added canonical review events with operator-reported time/corrections and backend revision counts. Actual MCP/CLI, native pinned SQLite confirmation restart, policy/source/revision/expiry/rollback/retention controls pass; deleted unguarded JSON save and inline save payload. Native confirmation remains a UI pause, reported evals do not grant authority, and complete extraction/container qualification remains #674.
-
-- #672: implemented Geologist's role-local durable context and native ADK/SQLite runtime with fresh scope/source/review checks, separate source metadata revisions, reference-preserving bounded context, pinned full-input token counters and a sealed dispatch gate. Scoped export keeps original retention; deletion/purge invalidates descendants and preserves nonresurrection markers. Added native restart, policy/byte/token/review/privacy controls and installed-wheel coverage. Business schemas and standalone architecture remain; protected human continuation and full pair/container qualification remain #673/#674.
-
-- #671: replaced LAS geological guesses and fixed quality scores with source-hashed observations, explicit density assumptions, unknown conclusions and review revisions. Added research-reviewed/pinned public lasio controls, strict null/unit/depth validation, optional cited model annotations and partial outage results. Deleted formation/depth heuristics, synthetic curve fitting and displaced tests; preserved configured provider/source/approval boundaries and synchronized Geologist fixtures. CI gates the reference LAS/source modules at 90 percent coverage; this is an initial open-source baseline, not measured field accuracy.
-
-- #574: added portable correlated employee-event profile, pre-export allowlisting/redaction, private JSONL/export adapters, native Geologist task/model/tool/eval/review hooks and trusted Geowiz correlation. Required export failures block before dispatch and report uncertain effects afterward. Removed reference MCP stdout/raw-error logging; fixture traces do not certify authenticated review or professional acceptance.
-
-
-- #667: added portable frozen-run reports, hard-failure/infrastructure states, versioned runtime-observed architecture and source-bound numeric gates, candidate comparison and the pinned Geologist ADK/agents-cli adapter with an independent BYO qualitative judge. Source-linked LAS/policy fixtures and installed SDK controls require no paid key; professional acceptance, durable review and promotion remain separate.
-
-- #666: added the independently installable evaluation-profile schema/Python loader, fixed metric registry, exact dataset and RFC 8785 configuration hashes, mandatory trust gates and frozen-observation score receipts. Geologist now selects registered evaluators from JSON; deleted embedded executable YAML. ADK run/judge/report adaptation remains #667.
-
-- #670: added separately selected connector profile 0.1.0 and extractable installed-adapter runtime, scoped current data grants, private credential/audit hooks, exact-hash LAS/CSV provenance and temporary parser snapshots. Geowiz now denies unapproved/changed/stale/revoked inputs and caller output-file writes; non-LAS processors decline until adapter qualification. Preserve employee schema 0.1.0; contracts package API advances to 0.2.0. No live vendor or professional acceptance is claimed.
-
-### Changed
-- #669: explicit Gemini/Anthropic profiles across Geologist reasoning and Geowiz formation synthesis, private credentials, capability/limit checks, provider receipts and independent judge configuration. Remove reference vendor defaults and fabricated synthesis fallback; offline native ADK/MCP conformance preserves role tools and save confirmation.
-
-Develop-only — not yet released to main.
+Changes after the latest `main` merge. The remaining employee migrations and
+MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md).
 
 ### Added
 
-- **Installed Python MCP client** (#679) — added the independent `sdk/python` package, versioned Geologist dependency, dedicated credential references, validated destinations, bounded preflight retries, safe typed failures and cancellation/cleanup without post-dispatch replay. Deleted Geologist's copied protocol/discovery/schema/result plumbing and moved useful cases into shared conformance. Shared CI checks helper coverage, first-consumer behavior, isolated wheels and the actual protected Geowiz connection; professional/source/review and complete reference qualification remain separate.
-
-- **Chief of Staff delegation and authority charter** (#675) — specified distinct coordination/investment-advice/human decision ownership, bounded supervisor state, private/delegated/shared/organization context, three operator journeys and 14 future evaluation cases. Updated ADR 0001 and selected the optional `orchestrator/` unit with ADK/Python as the preferred #676 adapter; runtime, recovery and actual human acceptance remain unqualified.
-
-- **QA employee charter and observed-check handoff** (#538) — specified the QA/data professional's workflow, private context, configurable rules, source/rights limits, defect metrics, future case specifications and exact-revision review. Filed #716 to replace configuration-based PASS, estimated coverage and template assessments before #542; the dependency ledger now contains 51 outcomes. No runtime checks or professional acceptance are claimed by this research delivery.
-
-- **Package-local contributor setup** (#498) — aligned checkout/prerequisites, ADK/Python and TypeScript verification, explicit reference eval files, tests-before-implementation and the shared sequential develop delivery flow. Removed manual branch shortcuts, root-first and Node-only test guidance, inline fake-key examples and shape-as-behavior claims; setup/eval instructions do not certify runtime or professional readiness.
-
-- **Portable support and deployment evidence** (#578) — documented current reference setup, actual credentials/ports/file locations, local smoke limits, durable context/review/export/restore and resource gates, with independent package/container targets and untested optional hosts. Replaced reference deployment examples that implied built images, fixed employee ports, stateless scaling or unsupported production sizing/settings; no container or hosted deployment is certified by this documentation delivery.
-
-- **Caller-backed migration inventory** (#576) — added the keep/refactor/adapter/delete ledger for four TypeScript employees, ten Python MCP wrappers, SDK exports, domain tools and process residue, with named replacement owners and extraction/authority gates. Verified existing Python package cleanup guards; filed separate market/research fallback, confidence metadata, economics and type-curve repairs (#708–#712) and inserted them before their qualification consumers. Runtime deletions remain in owning migration PRs and final cleanup #692.
-
-- **BYO employee and MCP composition specification** (#572) — added ADR 0004 and reference cases for mandatory employee/tool combinations, optional coordination, pinned protocol profiles, state/artifact mapping, cancellation, human review and credential/source boundaries. Transferred superseded #575 requirements; shared record cases execute in Python/TypeScript, while protocol conformance and runtime qualification remain assigned to implementation owners.
-
-- **Employee authority and human review policy** (#573) — added ADR 0003 for trusted identity/scopes, explicit local/remote modes, protected backend operations, exact input/product/action review, replay and audit failure recovery, secrets and source/file/egress controls. Added shared validator cases and future runtime acceptance scenarios; authentication, execution grants and operational enforcement remain with their implementation owners.
-
-- **Employee context lifecycle** (#571) — added ADR 0002 and synthetic reference cases for private ownership, reviewed sharing, deterministic retrieval/budgets, source-preserving compaction, invalidation, restart and export/deletion. Storage, authenticated enforcement and professional qualification remain in their implementation issues; lexical/vector/warehouse adapters are optional.
-
-- **Portable employee contracts** (#568) — added an extractable JSON Schema 0.1.0 package for charters, tasks, evidence-backed work products, bounded context and revision-bound review records; generated TypeScript types, Python/TypeScript fixture parity, scope/revision/policy comparisons, compatibility rules and isolated npm/wheel verification. Validation does not authenticate reviewers or authorize actions; employee adoption and trusted runtime enforcement remain assigned to their own issues.
-
-- **Employee role and evidence matrix** (#665) — committed workflows, required/optional inputs, handoffs, private context, configurable evaluations and human decisions for all 14 specialists plus the proposed Chief of Staff; documented primary-source access/rights limits, three Geologist connector candidates and evidence gaps owned by existing implementation issues.
-
-- **Durable employee architecture decision** (#567) — recorded language-neutral business contracts, replaceable adapters, package dependency direction, per-role operating modes, context/review ownership and controlled compatibility/upgrade rules; corrected stale TypeScript Geologist and mandatory Temporal architecture claims.
-
-- **MVP delivery and acceptance plan** (#664) — committed the dependency-ordered issue ledger for all 14 specialists and the bounded Chief of Staff pilot, with per-issue evidence, cleanup ownership, provider/deployment support limits, integrated qualification, human acceptance and release gates.
-
-- **Delivery-specific merge checks** (#698) — scoped SDLC completion to the current PR and actual merge push workflow suites, requiring CI, CodeQL and secret scans while excluding unrelated release-PR and background dependency checks sharing the commit SHA.
-
-- **Sequential issue delivery** (#696) — added `pnpm sdlc` start/status/complete commands, a receipt shared across Git worktrees, commit/push guards that preserve prior quality hooks, CI checks for current-base and single-PR delivery, and installable SDLC skills for Codex, Antigravity and Claude Code. The next issue starts only after the previous PR is merged, its CI passes and develop is synchronized.
-
-- **Investment Chair ADK migration and adapter retirement** (#539) — converted `agents/investment-chair` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Decision tools, documented the Stand-alone + Skills architecture mode and investment governance HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/decision` remains the TypeScript/pnpm MCP backend.
-- **Infrastructure Planner ADK migration and adapter retirement** (#543) — converted `agents/infrastructure-planner` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Infrastructure tools, documented the Stand-alone + Skills architecture mode and infrastructure HITL deferral boundary, removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests, and refreshed Infrastructure server docs for the current four-tool MCP surface. `servers/infrastructure` remains the TypeScript/pnpm MCP backend.
-- **Research Analyst ADK migration and adapter retirement** (#535) — converted `agents/research-analyst` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Research tools, documented the Stand-alone + Skills architecture mode and research HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/research` remains the TypeScript/pnpm MCP backend.
-- **Development Planner ADK migration and adapter retirement** (#534) — converted `agents/development-planner` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Development tools, documented the Stand-alone + Skills architecture mode and development HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/development` remains the TypeScript/pnpm MCP backend.
-- **Development Planner role research** (#533) — documented the field-development planning charter, required inputs/outputs, ADK agent vs Development MCP boundary, Stand-alone + Skills operating mode, HITL approvals, trust notes, and eval scenarios needed for the #534 migration.
-- **Drilling Engineer ADK migration and adapter retirement** (#532) — converted `agents/drilling-engineer` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Drilling tools, documented the Stand-alone + Skills architecture mode and drilling HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/drilling` remains the TypeScript/pnpm MCP backend.
-- **Agent architecture audit backfill** — added local `agent-architectural-audit` guidance and backfilled Geologist, Risk Analyst, Title Analyst, and Market Analyst specs, runtime markers, eval configs, tests, and docs with explicit Stand-alone Agent with Progressive Disclosure (Skills) architecture evidence, non-selected architecture boundaries, HITL gates, and Arcade tool-pattern audit expectations.
-- **Legal Analyst ADK migration and adapter retirement** (#531) — converted `agents/legal-analyst` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Legal tools, documented the Stand-alone + Skills architecture mode and legal HITL deferral boundary, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/legal` remains the TypeScript/pnpm MCP backend.
-- **Market Analyst ADK migration and adapter retirement** (#530) — converted `agents/market-analyst` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Market tools, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/market` remains the TypeScript/pnpm MCP backend.
-- **Title Analyst ADK migration and adapter retirement** (#528) — converted `agents/title-analyst` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for all current Title tools, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/title` remains the TypeScript/pnpm MCP backend.
-- **Risk Analyst ADK migration and adapter retirement** (#527) — converted `agents/risk-analyst` into a package-local ADK/Python project, added Python MCP wrappers and eval/pytest coverage for both current Risk Analysis tools, and removed the agent `package.json`, `tsconfig.json`, `biome.json`, `src/`, and TypeScript-only tests. `servers/risk-analysis` remains the TypeScript/pnpm MCP backend.
-- **Geologist ADK tool parity and adapter retirement** (#597) — moved every current Geowiz tool into the package-local ADK Python MCP path, including confirmed `save_finding`; added pytest/eval coverage for the migrated paths; removed the Geologist `package.json`, `tsconfig.json`, `biome.json`, `src/agent/`, and TypeScript-only agent tests so `agents/geologist` is ADK/Python-only.
-- **Spec-driven issue workflow** (#570) — added a required GitHub Implementation Spec issue form covering role, use case, operating mode, boundaries, inputs, outputs, Given/When/Then behavior, HITL, memory, runtime, tests/evals, trust notes, docs/topology impact, deletion/migration notes, non-goals, dependencies, and planning approval. Added `pnpm check:issue-template` and CI coverage to prevent the template from losing required fields, plus PR and contributor guidance for the planning gate.
-- **GUI URL — Arcade #33** (#458) — `ToolResponseEnvelope<T>` interface and `wrapWithGuiUrl<T>(data, urlPath, label?)` helper added to `sdk/src/types.ts` and exported from `@shaleyeah/sdk`. When `DASHBOARD_BASE_URL` is set, the three primary analysis tools (`geowiz.analyze_formation`, `econobot.analyze_economics`, `risk-analysis.assess_investment_risk`) wrap their response in an envelope with `{ data, viewUrl, viewLabel }` so agents can surface a clickable dashboard link. When the env var is absent the function returns `data` unchanged — no schema change for unconfigured callers. All 14 agent `executeLoop` system prompts now include: "If a tool result includes a viewUrl field, include it in your answer as a clickable link for the user." 9 new SDK tests in `sdk/tests/gui-url.test.ts` covering: passthrough without env var, full envelope shape with env var, trailing-slash normalisation, leading-slash normalisation, default and custom labels, array data.
-- **Compensation Handler — Arcade #27** (#457) — `CompensationRegistry` added to new `sdk/src/compensation.ts` and exported from `@shaleyeah/sdk`. Provides `register(toolName, fn)`, `get(toolName)`, and `clear()` (test isolation). All 14 agent `executeLoop` transactional branches now consult the registry before pushing the rollback message: if a handler is registered, it runs first so partially-written state can be cleaned up; if the handler throws, the error is surfaced to LLM history without crashing the loop. `geologist.save_finding` registered as the first compensation handler (inert stub until `delete_finding` ships with #405). 10 new tests in `agents/geologist/tests/compensation-handler.test.ts` covering: registry roundtrip, compensation fn called on transactional failure, args forwarded correctly, compensation throws → error in history + loop continues, rollback message still pushed in all cases, regression for #26 (no handler → unchanged behavior).
-- **Transactional Boundary — Arcade #26** (#456) — `transactional: boolean` optional field added to `AgentToolManifestSchema` in `sdk/src/contracts.ts`. When a tool is marked `transactional: true`, a permanent failure in `executeLoop` pushes a structured "rolled back — do not retry" message to LLM history instead of immediately exiting the loop, letting the LLM surface partial state and ask the user whether to re-attempt or discard. `geologist.save_finding` is the first tool marked `transactional: true` (only current write/command tool in the fleet). All 14 agent `executeLoop` implementations wired with the transactional check. 6 new tests in `agents/geologist/tests/transactional-boundary.test.ts`: manifest coverage (`transactional: true` on `save_finding`, absent on all read-only tools), transactional failure path (rolled-back message pushed to history, tool name included, no mention of "retryable"), and non-transactional failure path (loop exits immediately, no rolled-back message).
-- **Performance Hints — Arcade #10** (#452) — `estimatedLatencyMs: { p50, p95 }` and `complexity: "fast"|"moderate"|"slow"` added as optional fields to `AgentToolManifestSchema` in `sdk/src/contracts.ts`. All 14 agent manifests declare these fields on every tool (28 tools total). All 14 agent `executeLoop` implementations inject a "Performance hints (prefer fast tools first; slow tools may block)" section into the LLM system prompt so the reasoning loop can factor call cost into planning. Fast tier: p50 200ms / p95 800ms (deterministic rule-based tools). Moderate tier: p50 2 000ms / p95 8 000ms (LLM synthesis, file processing). Slow tier: p50 8 000ms / p95 30 000ms (heavy computation: seismic processing, Monte Carlo simulation). 22 new tests: 13 in `sdk/tests/performance-hints.test.ts` (schema validation, rejection of invalid values) and 9 in `agents/geologist/tests/performance-hints.test.ts` (manifest coverage, system prompt injection).
-- **Fuzzy Match Threshold — Arcade #42** (#451) — `normalizeIdentifier()`, `editDistance()`, and `fuzzyMatch()` added to new `sdk/src/identifier.ts` and exported from `@shaleyeah/sdk`. All 14 MCP servers now normalize natural O&G identifiers (formation names, well names, tract IDs, location names, project names, scenario names, operator names) before passing them to domain logic. Each affected tool accepts an optional `matchThreshold` param (0–1, default 0.8) and returns `matchedAs` + `matchScore: 1.0` in the response when normalization changed the raw input. Servers covered: geowiz (`formationName`, `wellName`), title (`tractId`), risk-analysis (`formation`), drilling (`formation`, 3 tools), decision (`formation` on opportunity and portfolio), legal (`assets[]`, `parties[]`), curve-smith (`formation`, `analogWells[]`), development (`project.name`, `project.location`, `projectName`), econobot (`scenarioName`), infrastructure (`location`, 4 tools), market (`region`, `market`), qa-server (`targets[]`), reporter (`tractName`, 2 tools), research (`region`). 14 SDK tests in `identifier.test.ts` cover normalization, Levenshtein distance, and fuzzy match threshold behavior.
-- **Paginated Result — Arcade #31** (#450) — `PaginatedResult<T>` interface, `encodeCursor()`, `decodeCursor()`, and `paginateArray()` helper added to `sdk/src/types.ts` and exported from `@shaleyeah/sdk`. Five data-heavy MCP tools now accept optional `cursor` and `pageSize` inputs and return paginated envelopes: `geowiz.process_well_logs` (paginates the `curves` array), `geowiz.process_access_database` (paginates the `tables` array), `title.examine_ownership`, `title.trace_chain_of_title`, and `econobot.analyze_economics`. Cursor is an opaque base64url-encoded offset; `hasMore` and `totalCount` are always present. Non-paginated callers and all other tools are unaffected. 11 new SDK tests (`paginated-result.test.ts`) cover cursor round-trips, multi-page traversal, partial last pages, clamping, and edge cases.
-- **Identity Anchor — Arcade #35** (#449) — new `SessionIdentity` interface (`userId`, `orgId`, `sessionId`, `roles`) added to `sdk/src/contracts.ts` and exported from `@shaleyeah/sdk`. `AgentExecutionRequest` gains optional `identity` field; `AuditLogEntry` gains optional `userId` field populated whenever identity is supplied. `LocalAgentRuntime.execute()` threads identity through the audit call at every exit path (scope rejection, approval-required, eval block, success, and catch). `StandaloneToolHandlerContext` exposes `identity` so tool handlers can branch on caller identity. All 14 `runXxxTask` functions and their inner `executeLoop` accept optional `identity`; ContextStore namespace is scoped to `${userId}:${agentNamespace}` when userId is present, preventing cross-user context bleed. `MCPServer` session ID generator changed from `undefined` (stateless) to `() => randomUUID()` so every HTTP transport session gets a stable, traceable ID. 4 new SDK tests (`runtime-identity.test.ts`) verify propagation and backward compatibility.
-- **Tool Chain — Arcade #21** (#455) — `ToolChainSchema` added to `@shaleyeah/sdk` contracts; optional `toolChains` field on `AgentManifestSchema`. All 14 agent `executeLoop` implementations inject declared chains into the LLM system prompt as a "Recommended workflows" section (advisory, not enforced). Five chains wired: `geological-due-diligence` (geologist), `economics-deep-dive` (economist), `risk-assessment` (risk-analyst), `investment-decision` (investment-chair), `report-generation` (reporter-agent). 5 new geologist tests (68 total, all passing). Fixes CI by syncing `turbo` specifier in root `package.json` with lockfile (`^2.5.4 → ^2.9.18`).
-- **`@anthropic-ai/sdk` 0.88.0 → 0.104.1** (#400) — dependency bump via Dependabot; adds `standardwebhooks` transitive dep.
-- **research / research-analyst pair** (#369) — Tier 1 split (market-research, competitive-analysis modules; 47 tests) + Tier 2 agent (2 tools, port 3008; 53 tests).
-- **legal / legal-analyst pair** (#370) — Tier 1 split (regulatory, contract, compliance; 32 tests) + Tier 2 agent (3 tools, port 3006; 53 tests).
-- **title / title-analyst pair** (#372) — Tier 1 split (ownership, lease-analysis, burden-check, chain-of-title; 22 tests) + Tier 2 agent (4 tools, port 3010; 44 tests).
-- **drilling / drilling-engineer pair** (#374) — Tier 1 split (program, costs, risks; 30 tests) + Tier 2 agent (3 tools, port 3003; 47 tests).
-- **infrastructure / infrastructure-planner pair** (#375) — Tier 1 split (pipeline, facilities, cost-estimation, compliance; 28 tests) + Tier 2 agent (4 tools, port 3012; 43 tests).
-- **development-planner pair** (#373) — Tier 1 split + Tier 2 agent (3 tools: create_development_plan, estimate_project_timeline, monitor_development_progress; port 3011; 54 tests).
-- **qa-server Tier 1 split** (#411) — monolithic index split into validation + reporting domain modules; 23 tests.
-- **quality-assurance Tier 2 agent** (#376) — `runQAAssuranceTask()` Layer 2 loop, 2 tools (run_quality_tests, generate_quality_report), port 3014; 42 tests.
-- **economist Tier 2 agent** (#364) — `runEconomistTask()` Layer 2 loop, MCP HTTP client; 34 tests.
-- **geologist foundation fixes** (#402–#407) — model routing wired, scope enforcement, blocking eval halt, `executeWithRetry`, `geologist.save_finding` write tool, `/health` endpoint on all 14 MCP servers.
-- **Level 2 batch — investment-chair, market-analyst, reporter-agent, reservoir-engineer, risk-analyst** (#439–#443) — all 5 remaining stub agents fully implemented: `runXxxTask` Layer 2 loop with `executeWithRetry` (3-attempt exponential backoff) + permanent halt guard (`!retryable` → return immediately); MCP HTTP clients wired to ports 3013/3007/3009/3004/3005; Arcade-compliant manifests + runtime configs; 265 tests total across all 5 agents (contract + MCP client suites).
-- **Context injection — `ContextStore` Phase 1** (#395) — new `sdk/src/context-store.ts` process-level singleton; all 14 agent `executeLoop` functions now read prior findings from their memory namespace before building the system prompt and write synthesized results on successful completion. Permanent failures (blocking evals, scope rejections) do not write. 28 new tests across all agents verify read-inject and write-after-run behavior.
-- **Async Job polling — Arcade #24** (#396) — new `sdk/src/async-job.ts` defines `AsyncJobPoller`, `AsyncJobPollResult`, `ASYNC_THRESHOLD_MS = 10_000`, `ASYNC_POLL_INTERVAL_MS = 2_000`, and `defaultAsyncJobPoller` (polls `get_job_status` via MCP JSON-RPC). All 14 agent `executeLoop` functions now detect pending job responses from long-running tools (`timeoutMs > 10s`) and poll until completion or timeout. `risk-analyst.monte_carlo_simulation` gets `timeoutMs: 60_000` as the first live async tool. Poller and poll interval are injectable for tests.
-- **Mutual Exclusivity — Arcade #9** (#453) — new `sdk/src/mutual-exclusivity.ts` exports `checkMutualExclusivity(args, groups)` and `buildMutualExclusivityError(group, provided)`. `AgentToolManifestSchema` gains an optional `mutuallyExclusive` field. Four priority tools wired: `geowiz.analyze_formation` (`formationName`/`formationId` XOR), `geowiz.process_well_logs` (`wellName`/`wellId` XOR), `title.examine_ownership` (`propertyDescription`/`tractId` XOR), `econobot.analyze_economics` (`scenarioName`/`scenarioConfig` XOR). XOR violations return `{error_type: "permanent", error, hint}` so the LLM knows to remove one param rather than retry. 10 SDK utility tests added.
-- **Dependency Hints — Arcade #14** (#448) — `AgentToolManifestSchema` gains optional `dependsOn: string[]` and `provides: string[]` fields on each tool entry. All 14 agent `executeLoop` functions now compute a `depSection` from tools that declare these fields and append a "Tool ordering constraints" block to the system prompt. Ordering declarations wired across all agents: geologist tools provide `geological-analysis`, `well-log-data`, `seismic-data`, etc.; economist declares `dependsOn: ["geologist.analyze_formation"]`; investment-chair requires economist + geologist + title; reporter-agent chains from investment-chair; title-analyst establishes its own ordering from `examine_ownership`. 6 new geologist tests verify schema validation and system prompt injection.
-- **Fallback Tool — Arcade #44** (#454) — `AgentToolManifestSchema` gains optional `fallbackTo: string` field. All 14 agent `executeLoop` functions now check `toolManifest.fallbackTo` on permanent failure (`retryable: false`) and attempt the fallback tool with the same args before returning an error. Successful fallback results are tagged `{ usedFallback: true, primaryTool }` in the history so the LLM knows which tool delivered the answer. Five fallback chains declared: `geologist.process_seismic_data` → `geologist.analyze_formation`, `geologist.process_access_database` → `geologist.assess_quality`, `risk-analyst.monte_carlo_simulation` → `risk-analyst.assess_investment_risk`, `economist.calculate_dcf` → `economist.analyze_economics`, `market-analyst.competitive_analysis` → `market-analyst.analyze_market_conditions`. 2 new geologist agent tests cover the fallback-fires and no-fallback paths.
+- **Employee contracts and delivery plan:** independently installable task,
+  evidence, context and review contracts; role charters; separate BYO model-key
+  and external-agent requirements; ordered issue-to-develop delivery commands
+  and Git guards. (#567, #568, #571–#573, #664, #665, #675, #696, #698)
+- **Configurable evaluations:** versioned profiles and frozen datasets, independent
+  financial checks, observed QA results, and required reference qualification.
+  Technical fixture results and professional acceptance are recorded separately.
+  (#577, #666, #667, #711, #716)
 
 ### Changed
 
-- **Agent Zero reference package removal** (#608) — removed the obsolete TypeScript `agents/agent-zero` reference-contract package now that real ADK reference pairs exist, and cleaned up root TypeScript, lockfile, and architecture references.
-- **Converted ADK agent docs clarity** (#608) — rewrote the converted Geologist, Market Analyst, Legal Analyst, Risk Analyst, Title Analyst, and Drilling Engineer README/docs language so beginner-facing pages explain what each agent does, why it exists, how it works, how to run/test/build/use it, and where human review is required. Migration/deletion evidence stays in specs, changelogs, tests, issue comments, and PR bodies.
-- **Monorepo conversion** (#385) — restructured from single npm package to pnpm workspace + Turborepo. `sdk/`, `servers/*/` (14), `agents/*/` (14), `orchestrator/`. Kernel deleted. CI updated to pnpm + Turborepo.
-- **HTTP transport** (#363) — `MCPServer` gains `StreamableHTTPServerTransport` when `PORT` is set; geologist wired to geowiz over HTTP via `callGeowizTool()`.
-- **Model routing into `callLLM`** (#402) — all agents resolve `config.modelRouting["standard-analysis"].model` on every LLM call; injectable `callLLM` option added to all `runTask` functions for test capture without real API calls.
+- **Independent packages:** separate specialist agents and MCP tool servers in
+  the monorepo, ADK/Python agent authoring, and package-local setup, source/wheel/
+  archive exports and container verification. Orchestration remains optional.
+  (#385, #498, #527–#543, #578, #597, #674, #679)
+- **Reviewed employee workflows:** Geologist, Reporter, QA and Economist now have
+  source-bound private context, configurable scorecards, human review and
+  restart/resume paths. Displaced TypeScript agent paths were removed for these
+  migrations. (#541, #542, #669, #671–#674, #680)
+- **MCP interoperability and trust:** stateless MCP 2026-07-28 clients, explicit
+  identities/scopes, schema and error validation, bounded discovery/preflight retries,
+  cancellation, current source grants and redacted correlated events.
+  (#574, #668, #670, #677–#679, #722)
+- **Contributor and CI workflow:** package-local verification, isolated reference
+  checks, required native trace grading and serialized workspace tests on the
+  constrained runner. (#498, #674, #680, #744)
 
 ### Fixed
 
-- **MCP HTTP identity and scopes** (#678) — replaced unauthenticated entry with explicit trusted local/remote configuration, per-request identity/ownership/session checks and exact tool/resource scopes. Required safe pre-dispatch audit and isolated credential-free execution context. Added a private-file Geowiz local launcher and real external-client checks; removed displaced anonymous/legacy connection instructions. Professional/source/review and live issuer/TLS qualification remain with their owners.
+- **Employee context traversal:** shared dependencies are checked once per
+  authorization phase, with fresh authority across delivery boundaries and
+  rejection of corrupt, expired, revoked or rebound dependencies. (#755)
+- **Source and numerical fidelity:** replace geological guesses, invented
+  confidence, estimated QA passes and fabricated economic results with explicit
+  observations, unavailable states and independently checked calculations.
+  (#671, #710, #711, #716)
+- **SDK and runtime safety:** bounded fenced-JSON parsing, explicit protocol/tool
+  failures, current checkpoint lineage and removal of the anonymous job poller.
+  (#571, #677, #680, #722)
 
-- **Truthful confidence metadata** (#710) — removed the shared invented-confidence fallback; preserved zero, added explicit missing/invalid/undeclared status and nullable scale, and validated optional trusted scale configuration. Recorded compatibility and all 47 MCP callers without converting mixed role scores or rewriting calculations. Shared-wrapper/real-HTTP checks do not certify domain calibration or professional acceptance.
+## In main — 2026-04-17
 
-- **MCP schema/error boundary** (#677) — preserved complete declared schemas and metadata, matching structured/JSON results, native failure classifications and existing analysis/file/XOR error records; removed factory/transport success masking. Geologist validates discovery/arguments/results and preserves structured-only evidence with bounded legacy compatibility. Deterministic protocol/fake-client evidence does not certify actual role calculations, source rights, authenticated review or fleet adoption.
+Verified at [merge commit 6a23be1](https://github.com/ryemyster/ShaleYeah/commit/6a23be132ee099cb48f566a7f31d3549c80cf40c)
+([PR #291](https://github.com/ryemyster/ShaleYeah/pull/291)). This snapshot has no
+version tag; the former provisional `2.1.0 — TBD` heading has been retired.
 
-- **Independent MCP HTTP sessions** (#668) — removed the shared transport that rejected a second client; isolated protocol state and concurrent responses, bounded lifecycle/resources, and cleaned up expiry/DELETE/timeout/shutdown/restart and listener callbacks. Added real HTTP regressions; scopes/authentication, result schemas and professional qualification remain separately owned.
-
-- **SDK fenced-JSON parsing** (#571, CodeQL alert #51) — replaced polynomial whitespace regex cleanup with outer-marker string operations; preserved literal fence text inside JSON values and added a killable 250,000-space stress regression. Removed the stale mandatory Supabase/vector Phase 2 promise from the existing context-store documentation.
-
-- **Level 2 parity — 9 agents** (#403, #404, #423–#430) — `executeWithRetry` (3-attempt exponential backoff) and permanent halt guard (`!execResult.retryable`) applied to geologist, economist, quality-assurance, title-analyst, research-analyst, development-planner, drilling-engineer, infrastructure-planner, legal-analyst. Each gains 2 contract tests verifying a blocking eval halts the loop.
-- **`LocalAgentRuntime.execute()` scope audit** (#403) — scope rejections now written to audit trail before returning.
-- **Security: CodeQL high alerts** — insecure temp files (`fs.mkdtemp`), ReDoS (`\d{1,4}` bound in lease regexes), `security-events: write` added to CodeQL workflow.
-- **CI: pnpm/action-setup SHA** (#409) — replaced non-existent `fe02b74` with correct v4.1.0 SHA `a7487c7e`.
-- **Biome v2 migration** — `biome.json` added per-package across all 30 packages; lint errors resolved.
-
----
-
-## [2.1.0] - TBD
-
-Kernel additions built on top of 2.0.0 — present in `main` but not yet assigned a version tag.
-
-### Added
-
-- **Dependency Hints** — tools declare `dependsOn`/`providesFor`; registry exposes full execution graph with `validateExecutionOrder()` and `getExecutionGraph()`. 18 tests. (closes #198)
-- **Resource Reference** — `ResourceRef` tickets let tools pass large payloads by reference instead of value; executor auto-resolves refs before dispatch. 14 tests. (closes #204)
-- **Canonical Tool Model** — Zod schemas (`FormationSchema`, `EconomicsSchema`, `RiskProfileSchema`, `DecisionSchema`) as the shared contract between all 14 servers; `SessionManager` accumulates canonical sections across tool calls. 26 tests. (closes #208)
-- **Fallback Tool** — when a primary tool exhausts retries, the executor routes through a configurable fallback chain; result metadata flags `usedFallback`. Three default chains registered at kernel init. 10 tests. (closes #149)
-- **Token-Efficient Response** — `OutputShaper.shape()` gains `fields?` projection, `stripNulls?`, and `maxTokenHint?`. 7 tests. (closes #201)
-- **Session Persistence** — pluggable `SessionStorageBackend` with `FileSessionStorage` implementation; sessions survive kernel restarts. 14 tests. (closes #114)
-- **Result Caching** — TTL-based in-memory cache keyed by idempotency SHA-256; query tools cacheable, command tools never cached; `fromCache: true` in metadata. 16 tests. (closes #113)
-- **Server Health Check Monitoring** — proactive per-server health probes with configurable interval/timeout; `HealthMonitor` exposed on `Kernel`. Complements the circuit breaker. 19 tests. (closes #112)
-- **Circuit Breaker** — per-server state machine (closed → open → half-open) that excludes repeatedly-failing servers from scatter-gather and bundles. Only retryable errors trip the breaker. 43 tests. (closes #111)
-- **Retry with Exponential Backoff** — automatic retry for retryable errors with jitter; configurable via `KernelConfig.resilience`. Permanent/auth/user_action errors never retried.
-- **Partial Success** — `PartialSuccessResult` schema with `succeeded[]`, `failed[]`, `errors[]`; `OutputShaper` gains natural-language summaries at all detail levels. 15 tests. (closes #148)
-- **Graceful Degradation** — `executeParallel()` and `executeBundle()` populate `degraded: true` and `degradationManifest` on partial failures; `minSuccessRatio` threshold. 10 tests. (closes #147)
-- **Timeout Boundary** — per-server timeout overrides, `KERNEL_TIMEOUT_MS` env var, aggregate timeout via `ExecutionOptions.aggregateTimeoutMs`. 11 tests. (closes #146)
-- **Cancellation Tokens** — `CancellationToken` with `cancel()`, pre-cancel fast-fail, between-chunk cancellation. 13 tests. (closes #130)
-- **Secret Injection** — `SecretsStore` manages API keys without exposing in args or logs; `callLLM()` accepts `apiKey` param; audit trail records key name + source. 14 tests. (closes #205)
-- **EIA API Integration** — `analyze_market_conditions` fetches live WTI/Henry Hub prices; 1-hour cache; falls back to documented stubs when `EIA_API_KEY` absent. 7 tests. (closes #223)
-- **Real Monte Carlo Simulation** — `performMonteCarloAnalysis()` uses triangular (inverse-CDF), normal (Box-Muller), and uniform distributions; 10,000 iterations in <500ms. Exports `sampleUniform`, `sampleTriangular`, `sampleNormal`. 15 tests. (closes #224)
-- **Shared LLM Client** — `callLLM()` is the single Anthropic API entry point for all servers. (closes #222)
-- **LLM Integration — all 14 servers** — each server calls `callLLM()` with domain-specific inputs; falls back to rule-based `deriveDefault*()` when API unavailable. (#211–#217)
-- **Fixture Injection for Demo Mode** — `generateMockAnalysis()` deleted; demo mode passes static `DEMO_FIXTURE_ARGS` to real server handlers instead of bypassing execution. (closes #225)
-- **Agent OS Rearchitecture** — kernel structural gaps closed: `storeResult()`, context injection, `BundleStep.condition` predicates, confirmation gate dedup, bundle definition consolidation. (closes #209)
-- **E2E Production Validation suite** — 15 tests covering fixture existence, real LAS parsing, fallback determinism, LLM graceful degradation; includes anonymized Wolfcamp/Bone Spring `.las` sample file. (closes #218)
-- **`/code-review` skill** — self-audit before `/pre-commit`: scope alignment, anti-pattern greps, ghost-close guard, coverage check.
-- **Anti-pattern greps in `/pre-commit`** — direct `@anthropic-ai/sdk` imports in servers and `Math.random()` in business logic now fail the gate with file:line.
-- **Test auto-discovery** — `scripts/run-tests.sh` replaces 38-suite `&&`-chain; new test files are picked up automatically.
-- **Anti-Stub Test Pattern** — three-part standard (mock-SDK reach, determinism, demo-fallback) documented in `CONTRIBUTING.md`. (closes #245)
-
-### Fixed
-
-- **Demo bypass removed** — `createExecutorFn()` no longer defaults to `mode: "demo"`; production is the default. (closes #221)
-
-### Security
-
-- **Clear-text logging** — removed `hasPassword` boolean from `console.log` summary in `tools/access-processor.ts`. (CodeQL CWE-532, alert #39)
-- **CI/CD supply chain hardening** — all Actions pinned to full SHAs; `permissions: contents: read` default added; `environment: production` gate on release jobs; `gitleaks.yml` renamed to `codeql.yml`.
-
-### Changed
-
-- `demo.yml` trimmed — single `npm run demo` run; redundant steps removed. (closes #221)
-- Docs pass — README, ARCHITECTURE.md, API_REFERENCE.md, CONTRIBUTING.md, GETTING_STARTED.md, DEMO_VS_PRODUCTION.md updated for accuracy and reduced to essential content.
-
----
-
-## [2.0.0] - 2026-02-14
-
-**SHALE YEAH is now an Agent OS.** The 14 MCP domain servers are unchanged, but they now run through a kernel runtime layer that provides dynamic tool discovery, parallel scatter-gather execution, identity-anchored sessions, role-based access control, audit logging, error intelligence, and composable task bundles. Based on [Arcade.dev's 52 Agentic Tool Patterns](https://www.arcade.dev/patterns), this release moves pattern coverage from ~8% (4.5/52) to ~56% (29/52).
-
-### Added
-
-#### Kernel Runtime (`src/kernel/`)
-- **Kernel** (`src/kernel/index.ts`) — unified entry point for the Agent OS runtime with discovery, execution, session management, and middleware pipeline
-- **Tool Registry** (`src/kernel/registry.ts`) — central index of all 14 servers and their tools with capability matching, server routing, and tool type classification (12 query + 2 command)
-- **Execution Engine** (`src/kernel/executor.ts`) — single, parallel (scatter-gather via `Promise.allSettled`), and bundled tool execution with dependency-ordered phases, timeout handling, `maxParallel` concurrency control, and confirmation gates
-- **Session & Context** (`src/kernel/context.ts`) — `SessionManager` with identity anchoring, context injection, result storage/retrieval, and session isolation
-- **Task Bundles** (`src/kernel/bundles.ts`) — 4 pre-built bundles: `QUICK_SCREEN` (4 servers), `FULL_DUE_DILIGENCE` (14 servers), `GEOLOGICAL_DEEP_DIVE` (3 servers), `FINANCIAL_REVIEW` (3 servers)
-- **Type System** (`src/kernel/types.ts`) — foundation types for tool classification, detail levels, error classification, response envelopes, user identity, permissions, audit entries, and kernel configuration
-
-#### Middleware Pipeline (`src/kernel/middleware/`)
-- **Auth** (`auth.ts`) — RBAC permission gates with hierarchical role model (analyst → engineer → executive → admin) and env-var toggle (`KERNEL_AUTH_ENABLED`)
-- **Audit** (`audit.ts`) — append-only JSONL audit trail with sensitive value redaction and env-var toggle (`KERNEL_AUDIT_ENABLED`)
-- **Resilience** (`resilience.ts`) — error classification (retryable/permanent/auth_required/user_action), recovery guides, alternative tool suggestions, and graceful degradation assessment
-- **Output Shaping** (`output.ts`) — progressive detail levels (summary/standard/full) with per-domain field rules
-
-#### High-Level Composition API
-- `kernel.quickScreen(tract)` — 4 core servers in 1 parallel phase
-- `kernel.fullAnalysis(tract)` — 14 servers in 4 dependency-ordered phases
-- `kernel.geologicalDeepDive(tract)` — geowiz + curve-smith + research
-- `kernel.financialReview(tract)` — econobot + risk-analysis + market
-- `kernel.shouldWeInvest(tract)` — full due diligence with confirmation-gated investment decision
-- `kernel.confirmAction(id)` / `kernel.cancelAction(id)` — human-in-the-loop confirmation gate
-
-#### Discovery API
-- `kernel.listServers()` — enumerate all registered MCP servers
-- `kernel.describeTools(server)` — list tools for a specific server
-- `kernel.findCapability(keyword)` — search tools by capability
-- `kernel.whoAmI()` — return current session identity
-
-#### Test Suites (8 new files, 627 tests)
-- `tests/kernel-registry.test.ts` — 60 tests
-- `tests/kernel-output.test.ts` — 56 tests
-- `tests/kernel-executor.test.ts` — 83 tests
-- `tests/kernel-context.test.ts` — 87 tests
-- `tests/kernel-resilience.test.ts` — 108 tests
-- `tests/kernel-auth.test.ts` — 63 tests
-- `tests/kernel-audit.test.ts` — 58 tests
-- `tests/kernel-bundles.test.ts` — 112 tests
-
-### Changed
-- `ShaleYeahMCPClient` now wraps `Kernel` internally — `executeAnalysis()` delegates to `kernel.fullAnalysis()` for parallel, dependency-ordered execution (replaces sequential for-loop)
-- `demo-runner.ts` and `main.ts` create kernel sessions with identity anchoring for each analysis run
-- `MCPServer.formatResult()` accepts optional `detailLevel` parameter (backward compatible)
-- `MCPServer.formatError()` includes `error_type` field for error classification (backward compatible)
-- `MCPTool` and `ServerToolTemplate` interfaces have optional `type` and `detailLevel` fields (backward compatible)
-- `package.json` version aligned to 2.0.0, description updated to reflect Agent OS architecture
-- README architecture diagram updated to show kernel layer
-
-### Documentation
-- Consolidated 18 markdown files to 9 — relocated unique content, deleted duplicates and stale docs
-- Added testing, release process, and pre-commit sections to `CONTRIBUTING.md` (from `DEVELOPMENT.md`)
-- Added sample file specs, LAS/CSV format examples, and troubleshooting to `docs/GETTING_STARTED.md` (from `DIRECTORY_STRUCTURE.md`)
-- Added file format licensing section to `SECURITY.md` (from `FILE_FORMAT_LEGAL.md`)
-- Deleted: `DEMO_VS_PRODUCTION.md` (root duplicate), `docs/DEVELOPMENT.md`, `docs/DIRECTORY_STRUCTURE.md`, `docs/WORKSPACE_MANAGEMENT.md`, `docs/FILE_FORMAT_LEGAL.md`, `docs/JUNIOR_DEVELOPER_GUIDE.md`, `tests/COVERAGE_PLAN.md`, `tests/COVERAGE_STATUS.md`
-- Fixed all cross-references in remaining docs
-
-### Infrastructure
-- Created `biome.json` — lint/format config with project-specific rule overrides
-- Fixed 200+ lint and formatting issues across all source and test files
-- Added 8 kernel test scripts to `npm run test` (627 additional tests now in CI)
-- Removed `|| true` from lint script — lint errors now fail the build
-- Added `data/audit/` to `.gitignore` to prevent audit logs from being committed
-- Added GitHub issue templates (bug report, feature request) and PR template
-- Updated `LICENSE` copyright to `2025 Ryan McDonald / Ascendvent LLC`
+- Kernel execution, dependency hints, resource references, canonical data,
+  session persistence, caching, circuit breakers, retries, cancellation and
+  partial-result handling were already merged.
+- Shared LLM integration, EIA access, Monte Carlo sampling, demo fixture handling
+  and the associated documentation/security changes were already merged.
+- The recorded `2.0.0` history and full main-branch notes are preserved in the
+  [changelog at that merge](https://github.com/ryemyster/ShaleYeah/blob/6a23be132ee099cb48f566a7f31d3549c80cf40c/CHANGELOG.md).
