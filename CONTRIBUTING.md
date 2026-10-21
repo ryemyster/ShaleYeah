@@ -124,12 +124,18 @@ pnpm turbo lint
 pnpm turbo test
 pnpm check:issue-template
 pnpm test:sdlc
+pnpm test:ci
 ```
 
 On constrained runners, use `pnpm turbo test --concurrency=1`. CI runs one
 package test process at a time so native runtime and operator CLI startup can
 finish within their existing deadlines. It runs the full suite and propagates
 failures; it does not change test assertions or replace package-local checks.
+
+[CI selection and gates](docs/ci.md) explains affected-unit PR qualification,
+early workspace feedback, the full merged-commit suite and how to extend the
+mapping when adopting another employee. The final protected `PR checks` result
+validates selected work; a skipped selected job cannot satisfy that gate.
 
 Contracts have their own parity/coverage and extracted-install checks; follow
 [their README](contracts/README.md). Each other package's README declares its

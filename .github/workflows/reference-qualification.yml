@@ -2,6 +2,22 @@ name: Reference qualification
 
 on:
   workflow_call:
+    inputs:
+      plan:
+        type: string
+        default: ''
+      geologist:
+        type: boolean
+        default: true
+      reporter:
+        type: boolean
+        default: true
+      economist:
+        type: boolean
+        default: true
+      callers:
+        type: string
+        default: '["development-planner","drilling-engineer","infrastructure-planner","investment-chair","legal-analyst","market-analyst","research-analyst","risk-analyst","title-analyst"]'
 
 permissions:
   contents: read
@@ -9,6 +25,7 @@ permissions:
 jobs:
   economist:
     name: Economist employee and Econobot qualification
+    if: inputs.economist
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -70,33 +87,26 @@ jobs:
           if-no-files-found: error
           retention-days: 14
   protocol-callers:
-    name: Python caller compatibility (${{ matrix.role }})
+    name: Python caller compatibility
+    if: inputs.callers != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    strategy:
-      fail-fast: false
-      max-parallel: 2
-      matrix:
-        role: [development-planner, drilling-engineer, infrastructure-planner, investment-chair, legal-analyst, market-analyst, research-analyst, risk-analyst, title-analyst]
-    defaults:
-      run:
-        working-directory: agents/${{ matrix.role }}
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
       - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           version: '0.12.21'
           python-version: '3.12'
       - name: Locked package and connection shape controls
-        run: |
-          uv run --locked --extra lint ruff check app tests
-          uv run --locked pytest -q
-      - name: Native authoring imports and selected protocol dependencies
-        run: |
-          uv run --locked python -c 'from app.agent import root_agent; assert root_agent.name; print(root_agent.name)'
-          uv run --locked python -c 'from importlib.metadata import version; assert version("mcp") == "2.3.0"; assert version("shaleyeah-mcp-client") == "0.3.0"'
+        env:
+          CI_CALLER_ROLES_JSON: ${{ inputs.callers }}
+        run: node scripts/ci-python-callers.mjs
   reference:
     name: Geologist and Geowiz qualification
+    if: inputs.geologist
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -181,6 +191,7 @@ jobs:
           retention-days: 14
   reporter:
     name: Reporter employee and tool qualification
+    if: inputs.reporter
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -244,3 +255,20 @@ jobs:
             agents/reporter-agent/artifacts/evals/reference-qualification.json
           if-no-files-found: error
           retention-days: 14
+  qualification-gate:
+    name: Selected reference qualification
+    if: always()
+    needs: [economist, protocol-callers, reference, reporter]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
+      - name: Validate every selected child and its effective inputs
+        env:
+          CI_GATE_SCOPE: reference
+          CI_PLAN_JSON: ${{ inputs.plan }}
+          CI_NEEDS_JSON: ${{ toJSON(needs) }}
+          CI_INPUTS_JSON: ${{ toJSON(inputs) }}
+        run: node scripts/ci-gates.mjs

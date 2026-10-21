@@ -109,12 +109,19 @@ and fail if the network cannot verify it. Existing quality hooks receive their
 original arguments and, for pre-push, the original ref updates on standard input.
 Git hooks run for ordinary Git operations from any coding tool.
 
-The existing `PR checks` CI job runs the script tests and validates develop PRs:
+The early `Workspace checks` CI job runs the script tests and validates develop PRs:
 one open implementation PR, a matching issue reference, a recorded current base,
 and ancestry containing current develop. PR body edits rerun the gate. Existing
 Dependabot proposals are excluded from the active implementation PR count;
 schedule their merges between issues because any develop merge invalidates an
 active issue's base. Dependabot PRs still need a current develop ancestor.
+
+The final protected `PR checks` job validates workspace, selection and all
+selected qualification results. It still runs when a dependency fails, and it
+rejects selected failures, cancellations, missing results and unexpected skips.
+PR qualification is selected conservatively from complete Git comparisons;
+develop/main pushes and manual runs keep the full suite. See the
+[CI policy](ci.md) for ownership, full fallbacks and role-adoption updates.
 
 Local hooks can be disabled by a user, and separate clones do not share the local
 receipt before a PR is opened. GitHub branch protection must require `PR checks`,
@@ -148,3 +155,5 @@ understood the issue, verified acceptance correctly or performed useful review.
 
 Run the deterministic regression suite with `pnpm test:sdlc`. It uses temporary
 repositories, local bare remotes and GitHub fixtures; no API key is required.
+Run `pnpm test:ci` for selection, result-gate and caller-driver controls with
+coverage. These commands do not merge, close an issue or replace hosted checks.
