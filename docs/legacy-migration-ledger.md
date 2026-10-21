@@ -194,6 +194,7 @@ only behind explicit labeling and cannot become measured or approved evidence.
 
 | Verified source behavior | Required replacement evidence | Owner |
 | --- | --- | --- |
+| [Private context export](../sdk/employee/shaleyeah_employee/context.py) could return checkpoint questions after expiry or revision changes during an authority await | Bind captured roots and records through the final grant; deny stale/corrupt content while preserving permitted projections, retention and #755 source-call bounds | #757 before #712/#681; all employee consumers retain the helper controls |
 | Geowiz LAS formation/depth/default-pay/TOC heuristics | #671 deletes these on the initial LAS path; observations, explicit density assumptions, unknown conclusions and pinned independent controls replace them | Other format helpers remain outside the current reference path; #674 must qualify declared support |
 | Econobot's guessed DCF/default-success and synthetic price paths are removed in #711 | One source-linked periodic cash-flow contract, independently checked NPV/IRR, residual and non-solution states; unreviewed interpretation cannot replace numbers | #711 numerical repair; #680 owns employee contract/context/review adoption |
 | Curve-smith `performTypeCurveAnalysis` counts analogs but uses fixed tier rates and 1.5/0.6 factors labeled P10/P90 | Actual analog evidence or labeled scenarios, independently checked volume/units and justified uncertainty method | #712 before #681 |

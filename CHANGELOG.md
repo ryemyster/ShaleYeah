@@ -40,9 +40,10 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Fixed
 
-- **Employee context traversal:** shared dependencies are checked once per
-  authorization phase, with fresh authority across delivery boundaries and
-  rejection of corrupt, expired, revoked or rebound dependencies. (#755)
+- **Employee context:** shared dependencies are checked once per authorization
+  phase, with fresh checks across delivery boundaries. Exports validate captured
+  task/checkpoint/record metadata after the final authority await and reject
+  expired, changed, corrupt or rebound content. (#755, #757)
 - **Source and numerical fidelity:** replace geological guesses, invented
   confidence, estimated QA passes and fabricated economic results with explicit
   observations, unavailable states and independently checked calculations.

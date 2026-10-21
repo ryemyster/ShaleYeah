@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- #757: bind exports to the captured task, raw checkpoint and record metadata;
+  finish revision, integrity and deadline checks after the final awaited grant.
+  Deny expired, replaced, deleted or corrupt checkpoint content, retain the
+  permitted invalidated projection and preserve the existing source-call bounds.
+  Add export/restore, final-callback and metadata-rebinding controls.
+
 - #755: bound shared dependency traversal within explicit authorization phases,
   checking every record-to-source binding and current metadata/integrity again
   before delivery. Start fresh after content checks, token counting and at each

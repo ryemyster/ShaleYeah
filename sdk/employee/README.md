@@ -24,6 +24,13 @@ receipt is cached across these boundaries. Before a phase finishes, the helper
 rechecks local revisions, deletion, expiry and body integrity so changes during
 an asynchronous source check cannot hide behind a previously visited record.
 
+Exports keep the captured task, raw checkpoint and selected record metadata
+bound through the final authority callback. If a checkpoint expires, changes,
+is deleted or becomes corrupt during that wait, its raw content is denied.
+The final local checks run after the last awaited grant. A checkpoint already
+marked invalid retains only its permitted reference projection, with questions
+removed. Restoring a valid export cannot extend its declared retention.
+
 For `V` reachable records, `E` dependency edges and `B` record-to-source bindings,
 one phase takes `O(V + E + B)` traversal work and at most `B` source checks.
 Assembly uses two phases, before and after token counting; dispatch/history use

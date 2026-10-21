@@ -126,6 +126,13 @@ fresh source/record authorization, integrity and revocation checks and the full
 seven-source employee journeys before further rollout. Existing deadlines,
 financial labels and coverage requirements remain in force.
 
+Export review found a checkpoint could expire during a later authority call and
+still leave the helper with its question content. Required repair
+[#757](https://github.com/ryemyster/ShaleYeah/issues/757) follows #755 and precedes
+#712/#681, bringing the plan to **55 outputs**. It binds the captured export roots
+and records through the final await while retaining reference-only invalidation,
+source-call bounds, rights and retention limits.
+
 ### Foundations and decisions
 
 | Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
@@ -181,8 +188,9 @@ Independent defects discovered during adoption receive their own repair issue.
 | 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Versioned periodic/currency/source contract, independent NPV/IRR/payback and residual fixtures, non-solution/ambiguity/convergence/zero/missing cases; synthetic success removed; old tool shapes explicitly unsupported until caller adoption |
 | 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
 | 29a | [#755](https://github.com/ryemyster/ShaleYeah/issues/755) | Bound shared context traversal while preserving current authority | #680 | develop | Linear phase bounds, unchanged seven-source journeys, revocation/integrity/restart controls, independent packages/containers and exact PR plus merge push checks |
-| 29b | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576, #755 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
-| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712, #755 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
+| 29b | [#757](https://github.com/ryemyster/ShaleYeah/issues/757) | Validate captured context at final export delivery | #755 | develop | Expiry/revision/deletion/integrity changes during awaits are denied; reference-only behavior, retention, seven-source bounds, independent packages/containers and exact PR plus merge push checks pass |
+| 29c | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576, #755, #757 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
+| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712, #755, #757 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
 | 31 | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Adopt employee contracts for Risk Analyst | #674, #665, #679 | develop | Reproducible risk cases and assumptions; common employee checks |
 | 32 | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Adopt employee contracts for Legal Analyst | #674, #665, #679 | develop | Source/jurisdiction evidence and human legal review; common employee checks |
 | 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Actual observations vs reviewed assumptions vs unavailable data; no name-derived factual metrics |
@@ -200,7 +208,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
+| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755, #757 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
 | 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
 | 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
 | 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
