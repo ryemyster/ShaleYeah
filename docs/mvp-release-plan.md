@@ -7,7 +7,7 @@ outputs and approves the decisions that require professional judgment.
 
 This is the committed delivery ledger for the minimum viable product (MVP).
 It covers all 14 existing specialists and a bounded Chief of Staff pilot. Every
-row owns one outcome and one pull request (PR). Completing the plan document in
+row owns one output and one pull request (PR). Completing the plan document in
 [#664](https://github.com/ryemyster/ShaleYeah/issues/664) establishes the ledger;
 the remaining rows establish working behavior and release evidence.
 
@@ -63,7 +63,7 @@ run from the repository root and apply to Codex, Antigravity and Claude Code:
    `pnpm sdlc start <issue-number> <slug>` to branch from freshly fetched develop.
 2. For behavior changes, write failing tests or evaluations before implementation.
    For research and documentation, define the evidence checklist before drawing
-   conclusions. Implement one outcome, delete displaced code and update affected
+   conclusions. Implement one output, delete displaced code and update affected
    docs and the changelog. Split newly discovered independent work into another
    issue and add it to this ledger.
 3. Run appropriate package checks and review. Push the registered branch and open
@@ -95,33 +95,40 @@ allows earlier drafting. Additional transport prerequisites on #673 and #674
 make the entire reference journey verifiable.
 
 Every row is required for this MVP. Initial delivery state is open for all 45
-rows; check GitHub and merged evidence for current status. Outcomes and evidence
+rows; check GitHub and merged evidence for current status. Outputs and evidence
 below are the completion minimums, supplemented by each linked issue's spec.
 
 The inventory in #576 adds five separate repair rows (#708–#712), bringing the
-delivery ledger to 50 outcomes. Lettered positions preserve the existing row
+delivery ledger to 50 outputs. Lettered positions preserve the existing row
 numbers while placing each repair before its consumer. These are required
 missing-evidence/numerical fixes, not additional employee migrations.
 
 QA research in #538 adds [#716](https://github.com/ryemyster/ShaleYeah/issues/716)
-at 27a, bringing the plan to 51 outcomes. It replaces configuration-
+at 27a, bringing the plan to 51 outputs. It replaces configuration-
 based PASS and estimated coverage with observed rule results before #542;
 independent domain algorithm work stays outside that employee migration.
 
 Repeated workspace CLI timeouts during accepted Reporter/QA delivery add
 [#744](https://github.com/ryemyster/ShaleYeah/issues/744) at 27b. The current plan
-has 52 outcomes. This bounded CI reliability repair precedes the next
+has 52 outputs. This bounded CI reliability repair precedes the next
 employee migration and preserves all required behavioral/qualification checks.
 
 The maintainer's [#722](https://github.com/ryemyster/ShaleYeah/issues/722) adds
 the explicit MCP 2026-07-28 protocol migration at 27c, bringing the plan to
-**53 outcomes**. Shared adapters and their protected reference journeys must
+**53 outputs**. Shared adapters and their protected reference journeys must
 qualify before further employee migrations. Earlier 2025-11-25 protocol evidence
 remains historical evidence; it does not qualify the new profile.
 
+Economist verification exposed repeated traversal of shared context dependencies.
+[#755](https://github.com/ryemyster/ShaleYeah/issues/755) adds a bounded helper
+repair immediately after #680, bringing the plan to **54 outputs**. It must pass
+fresh source/record authorization, integrity and revocation checks and the full
+seven-source employee journeys before further rollout. Existing deadlines,
+financial labels and coverage requirements remain in force.
+
 ### Foundations and decisions
 
-| Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
+| Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 1 | [#664](https://github.com/ryemyster/ShaleYeah/issues/664) | Commit this finite delivery and acceptance ledger | #696, #698 (accepted) | develop | All required issues and roles mapped; dependency order and release/support gates verified |
 | 2 | [#567](https://github.com/ryemyster/ShaleYeah/issues/567) | Commit the durable-contract and replaceable-adapter architecture decision | None | develop | Ownership, dependency directions, technology replacement and excluded scope are explicit |
@@ -138,7 +145,7 @@ remains historical evidence; it does not qualify the new profile.
 
 ### Shared implementation and Geologist reference
 
-| Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
+| Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 13 | [#668](https://github.com/ryemyster/ShaleYeah/issues/668) | Isolate MCP HTTP sessions and manage their lifecycle | #572 | develop | Separate clients stay isolated; restart, closure and failure do not leak or reuse another session |
 | 14 | [#677](https://github.com/ryemyster/ShaleYeah/issues/677) | Preserve MCP schemas and failure results from tool to employee | #568, #572 | develop | Schema-driven validation and structured error results survive the full call path |
@@ -161,10 +168,10 @@ remains historical evidence; it does not qualify the new profile.
 Each role PR adopts the accepted reference components, its own professional
 fixtures and the shared employee acceptance matrix below. It removes displaced
 role-local source and documents independent operation. The Geologist reference
-uses four separate outcomes above; each other role has one bounded adoption PR.
+uses four separate outputs above; each other role has one bounded adoption PR.
 Independent defects discovered during adoption receive their own repair issue.
 
-| Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
+| Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 27 | [#541](https://github.com/ryemyster/ShaleYeah/issues/541) | Migrate Reporter to the reference employee contracts | #674, #568, #571, #572, #573, #577, #679 | develop | Reporting fixtures, source-linked work product, human edits/review, isolated operation and TypeScript removal |
 | 27a | [#716](https://github.com/ryemyster/ShaleYeah/issues/716) | Replace QA pass estimates with observed rule results | #538, #568, #573, #666, #670, #677, #678, #710, #674 | develop | Eight observed dimensions, sealed profile/source/task authority, immutable recorded reports and 22 configured synthetic cases; standalone archive and non-root Node container receipts required before acceptance; #542 remains separate |
@@ -173,8 +180,9 @@ Independent defects discovered during adoption receive their own repair issue.
 | 28 | [#542](https://github.com/ryemyster/ShaleYeah/issues/542) | Migrate QA to the reference employee contracts | #674, #538, #716, #744, #722, #568, #571, #572, #573, #577, #679 | develop | Native QA preserves immutable observed failures and actual counts; own source/context/eval records, exact enrolled owner dispositions with installed qualification, external MCP and independent employee/tool source/archive/container checks; displaced TypeScript removed |
 | 28a | [#711](https://github.com/ryemyster/ShaleYeah/issues/711) | Qualify explicit Econobot cash-flow calculations and missing-input behavior | #576 | develop | Versioned periodic/currency/source contract, independent NPV/IRR/payback and residual fixtures, non-solution/ambiguity/convergence/zero/missing cases; synthetic success removed; old tool shapes explicitly unsupported until caller adoption |
 | 29 | [#680](https://github.com/ryemyster/ShaleYeah/issues/680) | Migrate Economist | #674, #665, #679, #711 | develop | Financial assumptions/calculations reviewed; common employee checks; TypeScript removal |
-| 29a | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
-| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
+| 29a | [#755](https://github.com/ryemyster/ShaleYeah/issues/755) | Bound shared context traversal while preserving current authority | #680 | develop | Linear phase bounds, unchanged seven-source journeys, revocation/integrity/restart controls, independent packages/containers and exact PR plus merge push checks |
+| 29b | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576, #755 | develop | Analog inputs or labeled scenarios, independently checked volume/units and justified uncertainty; fixed factors cannot claim statistical evidence |
+| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712, #755 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
 | 31 | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Adopt employee contracts for Risk Analyst | #674, #665, #679 | develop | Reproducible risk cases and assumptions; common employee checks |
 | 32 | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Adopt employee contracts for Legal Analyst | #674, #665, #679 | develop | Source/jurisdiction evidence and human legal review; common employee checks |
 | 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Actual observations vs reviewed assumptions vs unavailable data; no name-derived factual metrics |
@@ -189,10 +197,10 @@ Independent defects discovered during adoption receive their own repair issue.
 
 ### Coordination, qualification and release
 
-| Order | Owning issue | Single outcome | Direct prerequisites | PR base | Acceptance evidence |
+| Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
+| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
 | 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
 | 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
 | 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
@@ -204,7 +212,7 @@ These are the 14 role packages and their matching tool servers. Historical
 research issues were confirmed closed on 2026-10-07. #665 revisits their evidence
 and fills gaps before adoption; historical closure does not waive current tests.
 
-| Employee | Package | MCP server | Owning outcome(s) | Historical research input |
+| Employee | Package | MCP server | Owning output(s) | Historical research input |
 | --- | --- | --- | --- | --- |
 | Geologist | `agents/geologist` | `servers/geowiz` | #671, #672, #673, #674 | Reassessed in #665 |
 | Reporter | `agents/reporter-agent` | `servers/reporter` | #541 | [#540](https://github.com/ryemyster/ShaleYeah/issues/540) |
@@ -235,14 +243,14 @@ execution, and the role PRs supply realistic fixtures.
 
 | Capability | Required evidence | Owning work |
 | --- | --- | --- |
-| Job and work product | Versioned responsibility, explicit inputs/outputs, units, source references, assumptions and uncertainty; good/missing/invalid input cases | #568, #665, role outcome |
+| Job and work product | Versioned responsibility, explicit inputs/outputs, units, source references, assumptions and uncertainty; good/missing/invalid input cases | #568, #665, role output |
 | Configurable evaluations | Cases, rubrics and thresholds change through validated config; new executable metrics remain trusted code; profile/runtime/model/judge versions recorded | #666, #667, #577, #691 |
-| Own context | Persistent task and working state; bounded retrieval; provenance/freshness; private access and reviewed shared promotion; restart/isolation checks | #571, #672, role outcome |
-| Data hooks | Operator files plus a documented connector boundary for public, internal and licensed sources; missing/denied/malformed/stale data and source rights visible | #665, #670, #671, role outcome |
-| Human review | Authenticated reviewer sees evidence and assumptions, revises or rejects, and resumes the correct task; approvals tied to exact revision; stale/replayed decisions rejected | #573, #673, role outcome |
-| Independent operation | Package-local install/run/checks; permitted tool backend; no reliance on coordinator or hidden repo-relative runtime imports; extraction evidence | #572, #679, #674, role outcome |
-| Observable execution | Correlated task/tool/context/eval/review events; failures and denials visible; secrets redacted before logs, exports, artifacts and memory | #573, #574, #678, role outcome |
-| Safe replacement | Same contracts and professional cases pass after supported provider/runtime changes; unsupported capabilities fail explicitly | #567, #572, #669, #674, role outcome |
+| Own context | Persistent task and working state; bounded retrieval; provenance/freshness; private access and reviewed shared promotion; restart/isolation checks | #571, #672, role output |
+| Data hooks | Operator files plus a documented connector boundary for public, internal and licensed sources; missing/denied/malformed/stale data and source rights visible | #665, #670, #671, role output |
+| Human review | Authenticated reviewer sees evidence and assumptions, revises or rejects, and resumes the correct task; approvals tied to exact revision; stale/replayed decisions rejected | #573, #673, role output |
+| Independent operation | Package-local install/run/checks; permitted tool backend; no reliance on coordinator or hidden repo-relative runtime imports; extraction evidence | #572, #679, #674, role output |
+| Observable execution | Correlated task/tool/context/eval/review events; failures and denials visible; secrets redacted before logs, exports, artifacts and memory | #573, #574, #678, role output |
+| Safe replacement | Same contracts and professional cases pass after supported provider/runtime changes; unsupported capabilities fail explicitly | #567, #572, #669, #674, role output |
 
 Deterministic contract and policy checks judge structural behavior. A domain
 expert judges professional correctness. Configured model-based rubric scoring
@@ -267,11 +275,11 @@ evidence. Role PRs record their own limits; #693 reconciles release support.
 
 | Mode | MVP requirement | Current qualification | Evidence owner |
 | --- | --- | --- | --- |
-| Local package execution | Agent and MCP server install/run independently with fixture checks; orchestration optional | Requires clean isolated verification | #498, #674, role outcomes, #693 |
+| Local package execution | Agent and MCP server install/run independently with fixture checks; orchestration optional | Requires clean isolated verification | #498, #674, role outputs, #693 |
 | Container execution | Reference agent/server install and run with externalized config, review and restart behavior | Requires verified container journey; fleet claims limited to role evidence | #578, #674, #693 |
 | BYO model/key | At least two configured provider paths pass with fixture clients across the reference path; exact providers/versions selected in #669 | Fixture conformance pending; paid smoke runs are opt-in and any live-provider claim needs recorded evidence | #669, #674, #693 |
 | BYO-agent/runtime | Required composition cases selected in #572 pass with compatible fixtures; external employee replacement is explicitly classified | Conformance pending; no named alternative runtime is certified by selecting ADK | #572, #674, #693 |
-| BYO-data | Operator-supplied file adapter works; each role documents public/internal/licensed hooks and source requirements | File/reference verification and role-specific sources pending | #665, #670, #671, role outcomes |
+| BYO-data | Operator-supplied file adapter works; each role documents public/internal/licensed hooks and source requirements | File/reference verification and role-specific sources pending | #665, #670, #671, role outputs |
 | BYO-coordinator | Employees work standalone; bounded Chief of Staff pilot uses granted authority and work-product handoffs | Pilot pending; external coordinators require declared conformance | #572, #675, #676, #693 |
 | VM, Fly.io, Cloud Run, GKE, Agent Runtime or other hosted platforms | Configuration and packaging preserve portability | Platform-specific certification deferred unless added with its own issue and evidence | #578 |
 | Commercial connectors, Snowflake, hosted vector services | Keep replaceable interfaces and explicit access requirements | No mandatory service; paid connectors and deployment certification outside initial scope | #665, #670, #578 |
@@ -330,7 +338,7 @@ before qualification in #693.
 This plan, the shared sequential workflow and an approved issue scope permit
 work on the next row. Runtime implementation starts only after its prerequisite
 contracts, trust and composition decisions have acceptance evidence. A missing
-role, missing required behavior or issue containing unrelated outcomes blocks
+role, missing required behavior or issue containing unrelated outputs blocks
 that work until the gap has an owning issue or the scope is split.
 
 ### Entry to human MVP testing: #693
@@ -378,7 +386,7 @@ readiness.
 
 | Decision | Owner | Completion requirement |
 | --- | --- | --- |
-| Exact role workflows, professional thresholds, source availability and rights | #665, #538, role outcomes | Cited domain evidence, realistic cases and accountable human reviewers |
+| Exact role workflows, professional thresholds, source availability and rights | #665, #538, role outputs | Cited domain evidence, realistic cases and accountable human reviewers |
 | Exact schemas, initial versions/bindings and tested composition profiles under ADR 0001 | #568, #572 | Published schemas and explicit supported/unsupported capability behavior |
 | Context storage/retrieval, budgets, retention and reviewed knowledge promotion | #571, #672 | Policy and restart/isolation/staleness evidence |
 | Identity, scopes, reviewer enrollment and revision-bound approval | #573, #678, #673 | Trusted enforcement and negative/replay tests |

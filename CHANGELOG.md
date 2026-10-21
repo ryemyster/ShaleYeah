@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- #755: bound employee context traversal per authorization phase while preserving current source checks, seven-source inputs, integrity and revocation boundaries. Add shared-graph growth controls and make the repair a prerequisite for further employee rollout in the 54-output MVP plan.
+
 - #680: serialize workspace test packages on the constrained CI runner after the native Economist fixture exhausted its deadline under concurrent package load. Retain every package/control, coverage threshold and existing subprocess deadline.
 
 - #680: isolate supplementary Google trace grading behind a pinned local-handler adapter, retaining actual scoring, strict two-provider checks and credential-free CI; remote metrics are rejected. Production financial and source-authority gates remain independent.
