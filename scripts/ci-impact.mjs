@@ -7,17 +7,18 @@ import { parseArgs } from 'node:util';
 export const CALLER_ROLES = Object.freeze(['development-planner', 'drilling-engineer',
   'infrastructure-planner', 'investment-chair', 'legal-analyst', 'market-analyst',
   'research-analyst', 'risk-analyst', 'title-analyst']);
-export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa']);
+export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir']);
 export const PLAN_KIND = 'shaleyeah.ci-impact/v1';
 export const isRevision = (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value);
 
 const agentOwners = {
   geologist: ['geologist', 'reporter'], 'reporter-agent': ['reporter'],
   economist: ['economist'], 'quality-assurance': ['qa'],
+  'reservoir-engineer': ['reservoir'],
 };
 const serverOwners = {
   geowiz: ['geologist', 'reporter'], reporter: ['reporter'], econobot: ['economist'],
-  'qa-server': ['qa'], 'curve-smith': [],
+  'qa-server': ['qa'], 'curve-smith': ['reservoir'],
 };
 const serverCallers = {
   development: 'development-planner', drilling: 'drilling-engineer',

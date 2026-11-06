@@ -1,9 +1,10 @@
 import { callLLM, type LLMCallOptions, ServerFactory, type ServerRuntimeOptions } from "@shaleyeah/sdk";
 import { z } from "zod";
 import { calculateForecast, forecastInputSchema } from "./arps.js";
+import type { ForecastEmployeeOptions } from "./employee-tools.js";
 import { generateTypeCurve, typeCurveInputSchema } from "./type-curve.js";
 
-export interface CurveSmithOptions extends ServerRuntimeOptions {
+export interface CurveSmithOptions extends ServerRuntimeOptions, ForecastEmployeeOptions {
 	/** Host-owned settings; tool arguments cannot select credentials or turn on an ambient provider. */
 	synthesis?: Pick<LLMCallOptions, "apiKey" | "model" | "maxTokens">;
 	invokeLLM?: typeof callLLM;

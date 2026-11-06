@@ -6,7 +6,7 @@ import { loadReporterBinding } from "../src/configuration.js";
 import { fixture } from "./fixtures/review-fixture.js";
 
 test("private operator-attested source bootstrap rechecks permissions and enrolled reviewer", async () => {
-	const f = fixture();
+	const f = fixture({ now: new Date() });
 	let binding: Awaited<ReturnType<typeof loadReporterBinding>> | undefined;
 	try {
 		const policy = await f.options.currentPolicy();

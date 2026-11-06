@@ -58,6 +58,14 @@ source-backed native context and private publication review; container claims
 require its own passing image/journey report. It does not expand the geological
 raw-format or hosted-deployment support claims above.
 
+Reservoir Engineer and Curve-smith have their own
+[source/archive/wheel and container checks](../agents/reservoir-engineer/docs/DEPLOYMENT.md).
+The source/installed journey covers normalized synthetic JSON production exports,
+both native provider adapters, exact qualified human review, restart, replay and
+source revocation. Separate non-root Linux containers are a required hosted CI
+check; a local run without Docker supplies no image qualification. Other formats,
+live provider performance, field accuracy and hosted deployment remain unverified.
+
 ## Run the current reference locally
 
 These steps use a **checkout**, not an extracted package. Use synthetic fixtures

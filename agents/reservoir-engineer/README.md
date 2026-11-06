@@ -1,47 +1,74 @@
-# @shaleyeah/reservoir-engineer
+# Reservoir Engineer employee
 
-The current TypeScript runtime delegates tools to Curve Smith. Its full employee
-workflow is tracked in [#681](https://github.com/ryemyster/ShaleYeah/issues/681),
-after the backend repair in [#712](https://github.com/ryemyster/ShaleYeah/issues/712).
+Lucius Technicus Engineer helps a reservoir engineer reconcile production evidence
+and compare declared decline-curve alternatives. It preserves well/completion
+identities, operating assumptions, source revisions, units, history coverage and
+observed diagnostics for human review.
 
-The reservoir engineer agent characterizes reservoirs, builds production forecasts, runs decline curve analysis, and estimates ultimate recoveries. It pairs with the **curve-smith** Tier 1 MCP server (port 3004).
+The employee uses Google's Agent Development Kit (ADK) for Python. Its mode is
+**Stand-alone Agent with Progressive Disclosure (Skills)**: one specialist loads
+bounded evidence when needed. It calls the independently runnable
+[Curve-smith MCP server](../../servers/curve-smith/README.md). Compatible external
+MCP implementations can supply the same tools.
 
-## Pair
+## Run and configure
 
-| Layer | Package | Port |
-|-------|---------|------|
-| Tier 1 (tools) | `@shaleyeah/server-curve-smith` | 3004 |
-| Tier 2 (agent) | `@shaleyeah/reservoir-engineer` | 4004 |
+From this directory:
 
-## Package checks
-
-```bash
-cd agents/reservoir-engineer
-pnpm build
-pnpm test
+```sh
+uv sync --locked
+agents-cli info
+export RESERVOIR_ENGINEER_MODEL_CONFIG_FILE=/absolute/private/models.json
+export CURVE_SMITH_MCP_URL=http://127.0.0.1:3004/mcp
+export CURVE_SMITH_MCP_ACCESS_TOKEN_FILE=/absolute/private/tool-token
+agents-cli run
 ```
 
-## MCP connection
+The private model file selects provider/model revisions, credential references
+and limits for each purpose. See [provider configuration](../../docs/model-providers.md).
+Agent, optional synthesis and judge credentials are separate from tool access.
+Private files belong to the operating user and use mode `0600`.
 
-Configure Curve Smith's identity, scopes and audit sink using the
-[HTTP access guide](../../sdk/docs/http-access.md); `PORT` alone does not enroll
-an HTTP server. Set `CURVE_SMITH_MCP_URL` to the configured `/mcp` endpoint and
-`CURVE_SMITH_MCP_ACCESS_TOKEN_FILE` to its dedicated owner-readable credential
-file (mode `0600`, separate from the model key). Historical bare local URLs are
-normalized to `/mcp`.
+For durable work, the host opens `ReservoirEngineerRuntime` with a private
+`ContextCatalog`, current context/source authorities, model configuration and
+MCP connection. Task, evidence, work and pending-review references survive
+restart. The CLI is an authoring entrypoint; the retained runtime and executing
+backend supply the durable workflow. See [integration](docs/INTEGRATION.md).
 
-Each call uses the pinned stateless protocol, a fresh bounded tool catalog,
-a 30-second default deadline (maximum 120 seconds) and a 1 MiB response limit.
-Redirects are denied. Genuine tool errors and failures after command dispatch
-stop automatic retry; inspect the outcome before repeating a command. Transport
-compatibility does not qualify professional recommendations, employee context
-or revision-bound human review; those remain assigned to the role issue.
+## Work and human decisions
 
-## Docs
+The employee may read permitted production inputs, compare fixed-b Arps
+alternatives, calculate finite modeled and future-only volumes, and draft a
+source-linked review packet. b is a declared assumption. Training and held-out
+observations remain separate; fit statistics and history counts are observed,
+and uncertainty remains unavailable without a calibrated model. Missing, stale,
+conflicting or unsupported inputs must be surfaced. Annual totals, lease totals,
+period volumes and instantaneous daily rates are distinct inputs.
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [How It Works](docs/HOW_IT_WORKS.md)
-- [Development](docs/DEVELOPMENT.md)
-- [Integration Guide](docs/INTEGRATION.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Local Testing](docs/LOCAL_TESTING.md)
+The final analysis is canonical JSON containing `work` and `forecast`; unavailable
+authorized inputs produce a `deferred` reason. A separately enrolled human
+inspects the exact sources, assumptions, work, context and evaluation revisions,
+then approves, rejects or requests changes. The backend rechecks source rights,
+installed qualification and exact review before an idempotent private save.
+Native confirmation cannot grant that approval. Reserves certification, field
+operation, capital commitment and external publication are unsupported.
+
+## Check and build
+
+```sh
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/reservoir.json --code-revision "$(git rev-parse HEAD)"
+uv build --wheel
+```
+
+The [performance profile](tests/eval/performance_profile.json) configures freshness,
+numerical tolerances and expected tool usage over a hash-bound
+[dataset](tests/eval/datasets/reservoir-performance.json). Mandatory numerical,
+source and authority gates cannot be removed or overridden by a model judge.
+The initial synthetic labels are provisional technical controls; they do not
+measure field accuracy, professional correctness or time saved.
+
+See [architecture](docs/ARCHITECTURE.md), [development](docs/DEVELOPMENT.md),
+[local testing](docs/LOCAL_TESTING.md), [evaluations](docs/EVALUATIONS.md),
+[workflow](docs/HOW_IT_WORKS.md) and [deployment](docs/DEPLOYMENT.md).

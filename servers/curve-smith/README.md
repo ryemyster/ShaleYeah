@@ -1,70 +1,64 @@
-# @shaleyeah/server-curve-smith
+# Curve-smith MCP server
 
-Curve-smith supplies calculation tools for Lucius Technicus Engineer, the
-Reservoir Engineer employee. It is an MCP (Model Context Protocol) server: an
-agent or another compatible client sends a request and receives structured data.
+Curve-smith provides explicit fixed-b Arps calculations, source-linked production
+forecasts and observed fit/holdout diagnostics. It is an independent TypeScript
+MCP tool server. The [Reservoir Engineer employee](../../agents/reservoir-engineer/README.md)
+is one client; compatible external clients can use the same tools.
 
-The versioned tools use supplied daily production rates or explicit model
-parameters. A type curve is a representative production forecast for a group of
-wells. Its volume is the area under the modeled rate curve over a declared period.
+## Tools
 
-| Tool | Current behavior |
+| Surface | Behavior |
 | --- | --- |
-| `generate_type_curve` | Fit each supplied analog history using an assumed Arps exponent, then average the well forecasts; alternatively calculate an explicit scenario |
-| `calculate_eur` | Calculate finite modeled volume from explicit parameters, units, horizon and rate cutoff |
-| `analyze_decline_curve`, `assess_curve_quality` | Older file-fitting/quality paths; broader fitting, units and quality judgments await [Reservoir Engineer qualification](https://github.com/ryemyster/ShaleYeah/issues/681) |
+| `generate_type_curve` | Fit caller-supplied daily-rate histories with a declared fixed b, or calculate an explicit parameter scenario; retain source/synthetic labels and unavailable uncertainty |
+| `calculate_eur` | Calculate finite modeled volume over a declared interval/cutoff; the historical tool name does not certify ultimate recovery or reserves |
+| `read_forecast_inputs`, `read_forecast_source` | Discover current source identities and coverage, then retrieve bounded exact evidence pages |
+| `calculate_forecast`, `compare_forecasts`, `draft_forecast` | Use the authorized task's history, operating basis and assumptions; preserve real diagnostics and blocked work |
+| `get_context_source_metadata` | Recheck exact source access for retained employee context |
+| `prepare_review`, `get_review_status`, `record_forecast` | Persist an exact unreviewed checkpoint, read current review state, and save only its qualified human-approved private forecast |
 
-EUR means Estimated Ultimate Recovery. The retained `calculate_eur` tool name
-does not make its result an ultimate recovery or reserves classification. The
-result reports `volumeBasis: modeled-from-declared-time-zero`, with no observed
-production added. Oil and gas are calculated separately in barrels or Mcf
-(thousand cubic feet); there is no assumed gas/oil conversion.
+The first two tools are caller-supplied numerical utilities, not a trusted source
+access boundary. The employee tools are available with explicit host-owned source
+configuration. Human inspection/decision is a separate enrolled API, never a
+model tool. See [employee inputs](docs/EMPLOYEE_INPUTS.md).
 
-Routine calculations may run automatically. A human must review source rights,
-well comparability, units, assumptions and engineering applicability before
-business reliance. Results are always unreviewed and cannot certify reserves.
-Statistical uncertainty is unavailable; there are no invented percentile or
-confidence values. Source references identify caller-supplied inputs and do not
-prove source approval. See [method and limits](docs/HOW_IT_WORKS.md).
+## Run and configure
 
-## Quick start
-
-After [workspace setup](../../docs/GETTING_STARTED.md), run from the repository root:
+From this directory:
 
 ```sh
-pnpm --dir servers/curve-smith build
-pnpm --dir servers/curve-smith start
+pnpm install
+pnpm build
+pnpm type-check
+pnpm lint
+pnpm test
+node dist/index.js
 ```
 
-With `PORT` unset this starts the stdio transport. Any client supporting the
-repository's pinned MCP profile can call it. Use the [versioned request
-example](examples/type-curve.json) and [integration guide](docs/INTEGRATION.md).
+The default stdio entrypoint supplies numerical utilities without ambient model
+credentials. Set `CURVE_SMITH_CONFIG_FILE` to an absolute private operator-export
+binding to add the reviewed employee workflow. Private JSON source profile 0.2.0
+preserves exact source bytes, revisions, scope, as-of time and usage policy.
+Task/work/context records retain employee profile 0.1.0.
 
-## Verification
+For protected HTTP, supply `CURVE_SMITH_HTTP_CONFIG_FILE` and run
+`node examples/local-http.mjs`. That host configuration names the source binding,
+access-token file and required event configuration. Tool identity/scopes and
+source authority are enforced separately on each request. Keep secrets and
+operator files outside the checkout with owner-only permissions.
 
-```sh
-pnpm --dir servers/curve-smith type-check
-pnpm --dir servers/curve-smith lint
-pnpm --dir servers/curve-smith test
-pnpm --dir servers/curve-smith test:coverage
-```
+## Review and limitations
 
-Tests use explicitly synthetic histories, independent numerical integration,
-actual tool handlers and an independent stdio client. They require no live key.
-The coverage command requires 90% for the repaired Arps, type-curve and narrative
-modules. It does not qualify the older file-fitting module or professional
-accuracy. [Fixture evidence](tests/fixtures/README.md) records the initial labels.
+A separately enrolled human reviews exact sources, operating assumptions, work,
+context and evaluation revisions. Installed qualification must pass before
+approval. The backend rederives forecast truth and rechecks current rights before
+an idempotent private save, including after restart. Native client confirmation
+and model prose grant no authority.
 
-## Environment
+Finite modeled cohort volume is an equal-well mean; future-only quantities are
+per well. Neither is observed cumulative production or certified reserves.
+Unknown/missing/stale inputs and failed standards remain visible. This workflow
+does not operate field controls, commit capital or publish work.
 
-| Variable | Purpose |
-|----------|---------|
-| `PORT` | Optional HTTP transport; stdio when unset |
-| `ANTHROPIC_API_KEY` | Used by the older file-analysis interpretation path; not required for versioned numerical tools |
-
-For versioned type-curve interpretation, host code explicitly configures
-`CurveSmithServer({ synthesis: { apiKey, model } })` and the request sets
-`includeInterpretation: true`. Credentials are host settings, never tool inputs.
-The optional model receives a numerical summary, with no raw histories or source
-identifiers. Its answer remains unreviewed text and cannot change calculations,
-uncertainty or approval. See [deployment](docs/DEPLOYMENT.md).
+See [architecture](docs/ARCHITECTURE.md), [workflow](docs/HOW_IT_WORKS.md),
+[development](docs/DEVELOPMENT.md), [testing](docs/LOCAL_TESTING.md),
+[integration](docs/INTEGRATION.md) and [deployment](docs/DEPLOYMENT.md).

@@ -199,7 +199,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | 29b | [#757](https://github.com/ryemyster/ShaleYeah/issues/757) | Validate captured context at final export delivery | #755 | develop | Expiry/revision/deletion/integrity changes during awaits are denied; reference-only behavior, retention, seven-source bounds, independent packages/containers and exact PR plus merge push checks pass |
 | 29c | [#754](https://github.com/ryemyster/ShaleYeah/issues/754) | Scope PR qualification and shorten CI feedback | #757 | develop | Complete revision-bound impact, conservative dependency selection, selected-result failure controls, separate locked callers, full actual push/manual qualification and exact PR plus merge checks |
 | 29d | [#712](https://github.com/ryemyster/ShaleYeah/issues/712) | Replace unsupported type-curve percentile claims with evidence | #576, #755, #757, #754 | develop | Actual fixed-b analog fits or explicit scenarios; finite source/unit/time/horizon/cutoff volumes checked independently, unavailable uncertainty and isolated interpretation; broader old file fitting remains #681 |
-| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712, #755, #757 | develop | Curve inputs, units and forecast limitations reviewed; common checks; TypeScript removal |
+| 30 | [#681](https://github.com/ryemyster/ShaleYeah/issues/681) | Migrate Reservoir Engineer | #674, #665, #679, #712, #755, #757 | develop | Exact production/basis/assumptions sources; actual returned forecasts checked against independent synthetic references; current context, qualified human review, independent packages and containers; TypeScript removal |
 | 31 | [#682](https://github.com/ryemyster/ShaleYeah/issues/682) | Adopt employee contracts for Risk Analyst | #674, #665, #679 | develop | Reproducible risk cases and assumptions; common employee checks |
 | 32 | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Adopt employee contracts for Legal Analyst | #674, #665, #679 | develop | Source/jurisdiction evidence and human legal review; common employee checks |
 | 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Actual observations vs reviewed assumptions vs unavailable data; no name-derived factual metrics |
@@ -317,7 +317,7 @@ whose upgrades must rerun applicable conformance and role checks.
 
 #576 commits the [caller-backed inventory](legacy-migration-ledger.md) before broad source deletion. Delete
 each role's displaced runtime/adapters in its adoption PR, after replacement
-tests pass. #541/#542/#680 replace their employee surfaces; #681 owns the remaining TypeScript migration.
+tests pass. #541/#542/#680/#681 replace the four copied TypeScript employee surfaces.
 #679 owns duplicated Python transport consolidation. #692 deletes shared custom
 runtime infrastructure once the final consumer is removed. An exported API with
 no internal caller still needs compatibility and release impact reviewed.

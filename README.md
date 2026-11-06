@@ -96,16 +96,18 @@ dispositions for an authenticated human owner. An exception retains the original
 
 ## Project Status
 
-Geologist, Reporter, QA and Economist have implemented reference employee workflows with
+Geologist, Reporter, QA, Economist and Reservoir Engineer have implemented reference employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. Nine other roles have basic ADK definitions and Reservoir Engineer
-retains its TypeScript employee loop; their full workflows are still pending.
+package checks. All fourteen roles now have ADK definitions. Nine roles still
+need their full employee workflows and qualification.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
 
 Curve-smith's [versioned type-curve tools](servers/curve-smith/README.md) use
 supplied rate histories or explicit scenarios and report finite modeled volumes.
-Wider decline-fitting qualification and Reservoir Engineer adoption remain pending.
+The [Reservoir Engineer](agents/reservoir-engineer/README.md) binds three exact
+operator exports to forecast diagnostics, private context and human review.
+Its synthetic numerical fixtures do not establish field accuracy or reserves.
 
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 

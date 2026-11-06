@@ -1,35 +1,24 @@
-# Architecture — @shaleyeah/reservoir-engineer
+# Architecture
 
-> **Status: Planned** — Not yet implemented. See [#365](https://github.com/ryemyster/ShaleYeah/issues/365).
+Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**. One
+native ADK specialist reasons over bounded permitted evidence and uses an
+installed MCP client to reach an independent tool server. No child agents or
+coordinator are required.
 
-## Planned topology
+`app/agent.py` owns instructions and tool exposure. `curve_smith_mcp.py` maps
+task/source/forecast identifiers to MCP. `context_runtime.py` adds this role's
+source, work and pending-review references around the installed native employee
+runtime. `evaluation.py` grades actual final output against trusted backend
+observations and independent frozen references.
 
-```
-Orchestrator / Caller
-        │
-        ▼
-┌─────────────────────────────────┐
-│ @shaleyeah/reservoir-engineer   │  Tier 2 — ReAct loop + governance
-│ (port 4004)                     │  LocalAgentRuntime: HITL · scope · audit
-└────────────┬────────────────────┘
-             │ MCP/HTTP
-             ▼
-┌────────────────────────┐
-│ @shaleyeah/server-     │  Tier 1 — stateless tool server
-│ curve-smith (port 3004)│
-└────────────────────────┘
-```
+The MCP backend owns source mapping, fixed-b calculations, exact human review
+and private save. Its durable review adapter is a deterministic business-state
+gate. A separate enrolled human API supplies approval; neither ADK confirmation
+nor model output grants authority. Models/providers, MCP, storage and deployment
+remain replaceable adapters around the employee contracts.
 
-## Planned tools
-
-| Tool | Type | Model | Description |
-|------|------|-------|-------------|
-| `reservoir-engineer.decline_analysis` | query | standard-analysis | Arps decline curve fit and EUR |
-| `reservoir-engineer.production_forecast` | query | standard-analysis | Type-curve based production forecast |
-| `reservoir-engineer.petrophysics` | query | standard-analysis | Porosity, permeability, and water saturation from logs |
-| `reservoir-engineer.material_balance` | query | deep-reasoning | Volumetric in-place estimation |
-| `reservoir-engineer.recovery_factor` | query | standard-analysis | Expected recovery efficiency |
-
-## Arcade patterns
-
-All Tier 2 agents implement the same six Arcade governance patterns. See `agents/geologist/docs/ARCHITECTURE.md` for the complete reference.
+Private context is isolated by customer, asset, task and employee. Current grants,
+source rights, retention, reference-preserving limits and exact review bindings
+remain enforced across restart. Secrets stay host-owned; raw model output cannot
+silently become retained or shared knowledge. Redacted structured events correlate
+task, model, tool, context, evaluation and review activity.

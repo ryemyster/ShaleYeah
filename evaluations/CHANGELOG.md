@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+- #681: add Reservoir source-fidelity, independent known-parameter rate/integral/fit/holdout/finding checks and mandatory architecture/tool/authority qualification floors. Editable tolerances stay within installed bounds. Provisional synthetic labels do not certify field accuracy or reserves.
+- #681: share the strict actual-final-output parser across financial and forecast payloads; preserve the Economist parser API and malformed/duplicate/nonfinite/mixed-output denials. No employee/provider import is added.
+
 - #680: install the strict financial employee-output parser for both native grading and independent executing-tool verification; reject malformed, mixed, oversized, duplicate-key and nonfinite outputs without importing an employee app.
 
 - #680: add Economist source-faithfulness, independent decimal NPV/IRR/payback and reported-finding checks, role architecture/tool/authority gates and trusted qualification floors. Financial tolerances remain configurable within installed limits; fixture labels and model judgments cannot waive source or human authority requirements.

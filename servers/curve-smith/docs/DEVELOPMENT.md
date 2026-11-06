@@ -1,41 +1,17 @@
-# Development — @shaleyeah/server-curve-smith
+# Development
 
-## Setup
+Run package-local `pnpm build`, `pnpm type-check`, `pnpm lint` and `pnpm test`.
+All server source participates in the 90% line-coverage gate. Keep source/authority
+controls outside prompts and preserve finite numerical results and unavailable
+states. Write failing tests before behavior changes.
 
-```bash
-cd servers/curve-smith
-pnpm install && pnpm build
-```
+The initial mathematical controls use independently generated synthetic point
+rates, closed-form controls and separate numerical quadrature. Job grading uses
+installed Python checks on actual employee output, independent of this solver.
+A source change is not complete until affected role, transport, review, context
+and packaging controls pass.
 
-## Test commands
-
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-curve-smith
-```
-
-## TDD workflow
-
-1. Write a failing test in `tests/server.test.ts` using MCP tool call
-2. Add/modify tool in `src/index.ts` `tools:` array
-3. Implement handler → call local math in `src/tools/decline-curve-analysis.ts` → `callLLM()` for interpretation → fallback
-4. Confirm anti-stub test catches auth error
-
-## LLM wiring checklist
-
-- [ ] Handler calls local math first (deterministic), then `callLLM()` for interpretation
-- [ ] Fallback: return raw math result without LLM framing (no `Math.random()`)
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
-
-## Key constraints
-
-- All curve fitting math in `src/tools/decline-curve-analysis.ts` — no LLM inside
-- No `Math.random()` anywhere — Arps math is deterministic
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- Governance (HITL, audit) lives in the `reservoir-engineer` agent, not here
-
-## Linting
-
-```bash
-cd servers/curve-smith && npx biome check src/
-```
+Build the paired Python environment before running full native tests. The
+extraction checker builds independent source/wheel/archive environments; the
+container checker consumes that bundle with actor-specific mounts. These prove
+fixture execution, not live-provider competence or professional reserves judgment.

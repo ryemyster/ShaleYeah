@@ -8,7 +8,7 @@ import { ReportReviewWorkflow } from "../../src/review-workflow.js";
 import { ReviewedSources } from "../../src/reviewed-sources.js";
 
 const records = JSON.parse(readFileSync(new URL("employee.json", import.meta.url), "utf8"));
-export function fixture() {
+export function fixture(options: { now?: Date } = {}) {
 	const directory = mkdtempSync(path.join(os.tmpdir(), "reporter-review-"));
 	const scope = { ...records.task.scope, employeeId: "employee.reporter" };
 	const requester = {
@@ -25,12 +25,14 @@ export function fixture() {
 		decision: records.approveDecision,
 		recipientScope: scope,
 		current: true,
-		expiresAt: "2026-11-01T00:00:00Z",
+		expiresAt: options.now ? new Date(options.now.getTime() + 3_600_000).toISOString() : "2026-11-01T00:00:00Z",
 		operations: ["read", "export"],
 		subjectId: requester.subjectId,
 		usagePolicy: { id: "policy.reviewed-business-artifact", version: "r1" },
 		retentionPolicy: { id: "policy.retention", version: "r1" },
 	};
+	// Bootstrap processes use the real clock, so their synthetic grant and evidence must share it.
+	if (options.now) for (const evidence of receipt.work.evidence) evidence.asOf = options.now.toISOString();
 	const task = { ...records.task, scope, inputs: [receipt.work.artifact] };
 	let requirements = {
 		audience: "Owner",
@@ -42,7 +44,7 @@ export function fixture() {
 		scope,
 		current: async () => receipt,
 		contentGuard: async () => true,
-		clock: () => new Date("2026-10-13T00:00:00Z"),
+		clock: () => options.now ?? new Date("2026-10-13T00:00:00Z"),
 		maxSourceAgeSeconds: 31536000,
 	});
 	const policy = {
@@ -65,12 +67,12 @@ export function fixture() {
 		revoked: false,
 	};
 	// A trusted verifier double exercises the state machine; the installed eval producer has a separate qualification test.
-	const options = {
+	const workflowOptions = {
 		sources,
 		currentPolicy: async () => policy,
 		currentRequirements: async () => requirements,
 		contentGuard: async () => true,
-		clock: () => new Date("2026-10-13T00:00:00Z"),
+		clock: () => options.now ?? new Date("2026-10-13T00:00:00Z"),
 		qualificationGuard: async (input: QualificationInput) => ({
 			schemaVersion: "0.1.0",
 			kind: "qualification-decision",
@@ -107,11 +109,11 @@ export function fixture() {
 			publication: { markdown: result.markdown, requirements, dataSource: result.work.evidence[0].id },
 		};
 	};
-	const workflow = new ReportReviewWorkflow(directory, options);
+	const workflow = new ReportReviewWorkflow(directory, workflowOptions);
 	return {
 		directory,
 		workflow,
-		options,
+		options: workflowOptions,
 		requester,
 		reviewer,
 		receipt,

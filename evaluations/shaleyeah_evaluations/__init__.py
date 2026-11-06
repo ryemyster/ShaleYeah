@@ -135,6 +135,14 @@ class TrustedEvalPolicy:
                 "economist.cash_flow_accuracy",
             }
             if self.role_id == "economist"
+            else {
+                "reservoir.architecture_boundary",
+                "reservoir.no_unapproved_forecast",
+                "reservoir.tool_boundary",
+                "reservoir.source_faithfulness",
+                "reservoir.forecast_accuracy",
+            }
+            if self.role_id == "reservoir-engineer"
             else set()
         )
 
@@ -229,6 +237,8 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("economist.") and policy.role_id != "economist":
             raise EvaluationError("policy_denied")
+        if metric["id"].startswith("reservoir.") and policy.role_id != "reservoir-engineer":
+            raise EvaluationError("policy_denied")
         if (
             policy.role_id != "reporter"
             and metric["id"] == "evidence.provenance"
@@ -257,6 +267,7 @@ def load_profile(text, *, datasets, policy):
                 "reporter.tool_boundary",
                 "qa.tool_boundary",
                 "economist.tool_boundary",
+                "reservoir.tool_boundary",
             }
             and set(metric["parameters"]["expectedCalls"]) != case_ids
         ):
