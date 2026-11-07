@@ -1,0 +1,5080 @@
+{
+  "base": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+          "uri": "urn:sha256:c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320",
+          "uri": "urn:sha256:a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.npv",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        },
+        {
+          "id": "base.irr",
+          "basis": "assumed",
+          "value": 0.10000000000094017,
+          "unit": "fraction_per_year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        },
+        {
+          "id": "base.payback",
+          "basis": "assumed",
+          "value": 1,
+          "unit": "year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0.1,\"periodUnit\":\"year\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "base"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              110
+            ],
+            "discountRate": 0.1,
+            "currency": "USD",
+            "periodUnit": "year",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": 0
+            },
+            "irr": {
+              "status": "available",
+              "value": 0.10000000000094017,
+              "relativeResidual": 4.2721381987594275e-13,
+              "iterations": 43
+            },
+            "payback": {
+              "status": "available",
+              "value": 1
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+        "uri": "urn:sha256:c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 76,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+          "uri": "urn:sha256:c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 76,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320",
+          "uri": "urn:sha256:a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 56,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec",
+          "uri": "urn:sha256:c402db4605b1cb2d3d52a36d64ff61c8a6bc70f82700e194eae39e8944ab31ec"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320",
+          "uri": "urn:sha256:a4e521104ebd08172097e4095a97adafa83bb07aa10e020baa1201d540e3e320"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  },
+  "negative": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+          "uri": "urn:sha256:26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7",
+          "uri": "urn:sha256:b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "negative.npv",
+          "basis": "assumed",
+          "value": -18.181818181818223,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "negative.basis"
+          ]
+        },
+        {
+          "id": "negative.irr",
+          "basis": "assumed",
+          "value": -0.09999999999921297,
+          "unit": "fraction_per_year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "negative.basis"
+          ]
+        },
+        {
+          "id": "negative.payback",
+          "basis": "unknown",
+          "value": null,
+          "unit": "year",
+          "reason": "not_recovered",
+          "evidenceIds": [],
+          "assumptionIds": []
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "negative.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0.1,\"periodUnit\":\"year\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "negative"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "negative",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              90
+            ],
+            "discountRate": 0.1,
+            "currency": "USD",
+            "periodUnit": "year",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": -18.181818181818223
+            },
+            "irr": {
+              "status": "available",
+              "value": -0.09999999999921297,
+              "relativeResidual": 4.37427871702503e-13,
+              "iterations": 42
+            },
+            "payback": {
+              "status": "unavailable",
+              "value": null,
+              "reason": "not_recovered"
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+        "uri": "urn:sha256:26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 83,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+          "uri": "urn:sha256:26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 83,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7",
+          "uri": "urn:sha256:b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c",
+          "uri": "urn:sha256:26d5a8e9c6dda6a7ea911034e428924a68179c22225d0ad27e6e571cc5c5902c"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7",
+          "uri": "urn:sha256:b4e99d4b83f25b357effe49f2c3ad514601b42569b4dfe33c8bdfe52b96adcf7"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  },
+  "monthly": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+          "uri": "urn:sha256:bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507",
+          "uri": "urn:sha256:60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "monthly.npv",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "monthly.basis"
+          ]
+        },
+        {
+          "id": "monthly.irr",
+          "basis": "assumed",
+          "value": 0.10000000000094017,
+          "unit": "fraction_per_month",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "monthly.basis"
+          ]
+        },
+        {
+          "id": "monthly.payback",
+          "basis": "assumed",
+          "value": 1,
+          "unit": "month",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "monthly.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "monthly.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0.1,\"periodUnit\":\"month\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "monthly"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "monthly",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              110
+            ],
+            "discountRate": 0.1,
+            "currency": "USD",
+            "periodUnit": "month",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": 0
+            },
+            "irr": {
+              "status": "available",
+              "value": 0.10000000000094017,
+              "relativeResidual": 4.2721381987594275e-13,
+              "iterations": 43
+            },
+            "payback": {
+              "status": "available",
+              "value": 1
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+        "uri": "urn:sha256:bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 82,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+          "uri": "urn:sha256:bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 82,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507",
+          "uri": "urn:sha256:60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 59,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32",
+          "uri": "urn:sha256:bd8e2506bedd3e1e5ccab3edd80a41f6fd61186a12680f8d5bcd1d881b273e32"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507",
+          "uri": "urn:sha256:60a2c4647dce9cb8bf83e2d5c353c07ba493614985c12cabe7b1a4a1f6978507"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  },
+  "zero": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+          "uri": "urn:sha256:6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89",
+          "uri": "urn:sha256:4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "zero.npv",
+          "basis": "assumed",
+          "value": 9.999999999999993,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "zero.basis"
+          ]
+        },
+        {
+          "id": "zero.irr",
+          "basis": "assumed",
+          "value": 0.04880884817059975,
+          "unit": "fraction_per_year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "zero.basis"
+          ]
+        },
+        {
+          "id": "zero.payback",
+          "basis": "assumed",
+          "value": 2,
+          "unit": "year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "zero.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "zero.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0,\"periodUnit\":\"year\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "zero"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "zero",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              0,
+              110
+            ],
+            "discountRate": 0,
+            "currency": "USD",
+            "periodUnit": "year",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": 9.999999999999993
+            },
+            "irr": {
+              "status": "available",
+              "value": 0.04880884817059975,
+              "relativeResidual": 4.2721381987594275e-13,
+              "iterations": 44
+            },
+            "payback": {
+              "status": "available",
+              "value": 2
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+        "uri": "urn:sha256:6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 88,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+          "uri": "urn:sha256:6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 88,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89",
+          "uri": "urn:sha256:4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 56,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111",
+          "uri": "urn:sha256:6bf695c90d9323f0e20919cca11495cf1a5aa871037e7ce76789b0869ba5c111"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89",
+          "uri": "urn:sha256:4e16b81249ab2d4d0553993be3eaa738cb88d07eb1bbd2342c24c29501635b89"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  },
+  "ambiguous": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+          "uri": "urn:sha256:a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614",
+          "uri": "urn:sha256:ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "ambiguous.npv",
+          "basis": "assumed",
+          "value": 2.3213754151253295e-14,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "ambiguous.basis"
+          ]
+        },
+        {
+          "id": "ambiguous.irr",
+          "basis": "unknown",
+          "value": null,
+          "unit": "fraction_per_year",
+          "reason": "ambiguous_series",
+          "evidenceIds": [],
+          "assumptionIds": []
+        },
+        {
+          "id": "ambiguous.payback",
+          "basis": "assumed",
+          "value": 1,
+          "unit": "year",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "ambiguous.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "ambiguous.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0.1,\"periodUnit\":\"year\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "ambiguous"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "ambiguous",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              230,
+              -132
+            ],
+            "discountRate": 0.1,
+            "currency": "USD",
+            "periodUnit": "year",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": 2.3213754151253295e-14
+            },
+            "irr": {
+              "status": "unavailable",
+              "value": null,
+              "reason": "ambiguous_series"
+            },
+            "payback": {
+              "status": "available",
+              "value": 1
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+        "uri": "urn:sha256:a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 106,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+          "uri": "urn:sha256:a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 106,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614",
+          "uri": "urn:sha256:ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 61,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929",
+          "uri": "urn:sha256:a5a7d8a4863943ef7b8c49f554ee8e7511932754b421bb28f0698684f680c929"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614",
+          "uri": "urn:sha256:ad0422d43586fb3bc42d5331d859a334b25114bd0093f841944b3142f9842614"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  },
+  "none": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.economics.acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:economics:acafd5d40cd75c41517ec9fe250e8a246a3b6fcb7abfb563ddcb02516094ec0f:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+          "uri": "urn:sha256:b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0",
+          "uri": "urn:sha256:d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "none.npv",
+          "basis": "assumed",
+          "value": -110.00000000000004,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ],
+          "assumptionIds": [
+            "none.basis"
+          ]
+        },
+        {
+          "id": "none.irr",
+          "basis": "unknown",
+          "value": null,
+          "unit": "fraction_per_year",
+          "reason": "no_solution",
+          "evidenceIds": [],
+          "assumptionIds": []
+        },
+        {
+          "id": "none.payback",
+          "basis": "unknown",
+          "value": null,
+          "unit": "year",
+          "reason": "not_recovered",
+          "evidenceIds": [],
+          "assumptionIds": []
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "none.basis",
+          "statement": "Operator-declared financial scenario, not professional certification: {\"basis\":{\"assumptionsRef\":{\"id\":\"evidence.assumptions\",\"revision\":\"5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1\"},\"cashFlowBasis\":\"net-entity\",\"costRef\":{\"id\":\"evidence.costs\",\"revision\":\"abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6\"},\"forecastRef\":{\"id\":\"evidence.forecast\",\"revision\":\"1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6\"},\"limitations\":[\"Synthetic control; no fiscal certification\"],\"moneyScale\":1,\"nominalReal\":\"nominal\",\"ownershipRef\":{\"id\":\"evidence.ownership\",\"revision\":\"d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0\"},\"priceDeckAsOf\":\"2026-10-19T00:00:00Z\",\"priceDeckRef\":{\"id\":\"evidence.prices\",\"revision\":\"24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc\"},\"revenueInterest\":0.4,\"startDate\":\"2026-10-19\",\"taxRoyaltyRef\":{\"id\":\"evidence.fiscal\",\"revision\":\"0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556\"},\"version\":\"0.1.0\",\"workingInterest\":0.5},\"discountRate\":0,\"periodUnit\":\"year\"}",
+          "evidenceIds": [
+            "evidence.cash-flows",
+            "evidence.assumptions",
+            "evidence.forecast",
+            "evidence.prices",
+            "evidence.costs",
+            "evidence.ownership",
+            "evidence.fiscal"
+          ]
+        }
+      ],
+      "uncertainty": "Operator-supplied forecasts and financial assumptions require human scenario review. No capital commitment or professional/fiscal certification.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "scenario": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.economist",
+        "revision": "r1"
+      },
+      "scenarioIds": [
+        "none"
+      ],
+      "scenarios": [
+        {
+          "reference": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "basis": {
+            "version": "0.1.0",
+            "assumptionsRef": {
+              "id": "evidence.assumptions",
+              "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+            },
+            "forecastRef": {
+              "id": "evidence.forecast",
+              "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+            },
+            "priceDeckRef": {
+              "id": "evidence.prices",
+              "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+            },
+            "priceDeckAsOf": "2026-10-19T00:00:00Z",
+            "costRef": {
+              "id": "evidence.costs",
+              "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+            },
+            "ownershipRef": {
+              "id": "evidence.ownership",
+              "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+            },
+            "taxRoyaltyRef": {
+              "id": "evidence.fiscal",
+              "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+            },
+            "workingInterest": 0.5,
+            "revenueInterest": 0.4,
+            "cashFlowBasis": "net-entity",
+            "moneyScale": 1,
+            "nominalReal": "nominal",
+            "startDate": "2026-10-19",
+            "limitations": [
+              "Synthetic control; no fiscal certification"
+            ]
+          },
+          "economics": {
+            "contractVersion": "0.1.0",
+            "cashFlows": [
+              -100,
+              -10
+            ],
+            "discountRate": 0,
+            "currency": "USD",
+            "periodUnit": "year",
+            "inputRef": {
+              "id": "evidence.cash-flows",
+              "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.assumptions",
+                "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+              },
+              {
+                "id": "evidence.forecast",
+                "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+              },
+              {
+                "id": "evidence.prices",
+                "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+              },
+              {
+                "id": "evidence.costs",
+                "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+              },
+              {
+                "id": "evidence.ownership",
+                "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+              },
+              {
+                "id": "evidence.fiscal",
+                "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+              }
+            ],
+            "timing": "time-zero-then-period-end",
+            "discountRateConvention": "effective-per-period",
+            "paybackConvention": "first-undiscounted-period-end-recovery",
+            "npv": {
+              "status": "available",
+              "value": -110.00000000000004
+            },
+            "irr": {
+              "status": "unavailable",
+              "value": null,
+              "reason": "no_solution"
+            },
+            "payback": {
+              "status": "unavailable",
+              "value": null,
+              "reason": "not_recovered"
+            },
+            "solver": {
+              "id": "bounded-log-bisection",
+              "version": "1",
+              "minRate": -0.999999,
+              "maxRate": 1000000,
+              "maxIterations": 160
+            },
+            "reviewStatus": "unreviewed",
+            "authorizesInvestment": false
+          }
+        }
+      ],
+      "reviewStatus": "unreviewed",
+      "authorizesInvestment": false
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.1.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.cash-flows",
+        "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+        "uri": "urn:sha256:b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+      },
+      "evidence": {
+        "id": "evidence.cash-flows",
+        "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+        "uri": "urn:operator:cash-flows",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+        },
+        "asOf": "2026-10-19T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-10-19T12:00:00.000Z",
+      "format": "csv",
+      "parserRef": {
+        "id": "csv-parse",
+        "version": "7.0.3"
+      },
+      "jurisdiction": "US-TX",
+      "units": [
+        {
+          "field": "netCashFlow",
+          "unit": "USD",
+          "origin": "operator-declared"
+        }
+      ],
+      "byteLength": 76,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.cash-flows",
+          "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+          "uri": "urn:sha256:b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+        },
+        "evidence": {
+          "id": "evidence.cash-flows",
+          "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+          "uri": "urn:operator:cash-flows",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "netCashFlow",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 76,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 79,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        "evidence": {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:operator:forecast",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 60,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        "evidence": {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:operator:prices",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 73,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        "evidence": {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:operator:costs",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 122,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.ownership",
+          "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0",
+          "uri": "urn:sha256:d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+        },
+        "evidence": {
+          "id": "evidence.ownership",
+          "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0",
+          "uri": "urn:operator:ownership",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 56,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.1.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.economist",
+          "employeeId": "employee.economist"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        },
+        "evidence": {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:operator:fiscal",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+          },
+          "asOf": "2026-10-19T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-10-19T12:00:00.000Z",
+        "format": "csv",
+        "parserRef": {
+          "id": "csv-parse",
+          "version": "7.0.3"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 103,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "task": {
+      "contractVersion": "0.1.0",
+      "kind": "task-assignment",
+      "id": "task.economist",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.economist",
+        "employeeId": "employee.economist"
+      },
+      "outcome": "Compare explicit net cash-flow scenarios",
+      "requiredCapabilities": [
+        "economics.scenario"
+      ],
+      "inputs": [
+        {
+          "id": "evidence.cash-flows",
+          "revision": "b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857",
+          "uri": "urn:sha256:b4519c056f51f7a5d606844d12553a766c816d424e3a1182d9d2e666190ae857"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1",
+          "uri": "urn:sha256:5cb40db157d0c8ec94d45376b3a3912f17777405dfa67d8c693ddd113b05a3a1"
+        },
+        {
+          "id": "evidence.forecast",
+          "revision": "1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6",
+          "uri": "urn:sha256:1c10e2f919bd149248263011302b890a401672f29c5c2d3dc75c194050bff0a6"
+        },
+        {
+          "id": "evidence.prices",
+          "revision": "24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc",
+          "uri": "urn:sha256:24ba31613c890dc839214fa1739cf28d0cb4c95738a064b10a2399f8374408bc"
+        },
+        {
+          "id": "evidence.costs",
+          "revision": "abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6",
+          "uri": "urn:sha256:abbd0cdbc4945f54bb890590d1b4b3f1df614d60166e2f925d22a981b5f586f6"
+        },
+        {
+          "id": "evidence.ownership",
+          "revision": "d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0",
+          "uri": "urn:sha256:d8c819c368631e76db81435a5f4dcc59dca1650214d599c44c1eb77e25c1cba0"
+        },
+        {
+          "id": "evidence.fiscal",
+          "revision": "0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556",
+          "uri": "urn:sha256:0a228104883f51fd6a04b27e9f547f3a7768e738c339ccc5eb908fff18582556"
+        }
+      ],
+      "constraints": [
+        "No capital commitment"
+      ],
+      "status": "assigned",
+      "workProductRefs": [],
+      "reviewDecisionRefs": []
+    }
+  }
+}

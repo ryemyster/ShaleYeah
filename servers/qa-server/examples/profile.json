@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "profile.qa.normalized",
+  "revision": "r1",
+  "rules": [
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.completeness",
+      "type": "completeness",
+      "field": "netPay"
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.correctness",
+      "type": "correctness",
+      "field": "netPay",
+      "referenceSourceId": "source.reference",
+      "tolerance": 0
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.units",
+      "type": "units",
+      "field": "netPay",
+      "expectedUnit": "ft"
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.identity",
+      "type": "identity",
+      "expectedAssetId": "well-1",
+      "expectedWellId": "wellbore.1"
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.duplication",
+      "type": "duplication",
+      "keys": [
+        "wellId",
+        "period"
+      ]
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.freshness",
+      "type": "freshness",
+      "maxAgeSeconds": 3600
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.provenance",
+      "type": "provenance"
+    },
+    {
+      "revision": "r1",
+      "version": "1",
+      "sourceId": "source.input",
+      "severity": "major",
+      "repairOwner": "data-owner",
+      "applicable": true,
+      "id": "rule.contradiction",
+      "type": "contradiction",
+      "field": "netPay",
+      "referenceSourceId": "source.reference",
+      "tolerance": 0
+    }
+  ]
+}

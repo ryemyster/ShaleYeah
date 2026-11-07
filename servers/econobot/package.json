@@ -1,0 +1,46 @@
+{
+	"name": "@shaleyeah/server-econobot",
+	"version": "0.1.0",
+	"description": "Econobot MCP server — economic analysis, NPV, IRR, cash flow modeling",
+	"private": true,
+	"license": "Apache-2.0",
+	"type": "module",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"files": [
+		"dist",
+		"examples",
+		"LICENSE"
+	],
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/index.js",
+		"test": "node --import tsx --test --test-concurrency=1 --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit",
+		"test:extraction": "node --test tests/extraction/control.test.mjs tests/extraction/container-report.test.mjs"
+	},
+	"dependencies": {
+		"@shaleyeah/contracts": "workspace:*",
+		"@shaleyeah/connectors": "workspace:*",
+		"@shaleyeah/sdk": "workspace:*",
+		"csv-parse": "7.0.3",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@modelcontextprotocol/client": "2.3.1",
+		"@biomejs/biome": "^2.5.0",
+		"@types/node": "^25.9.3",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
+}

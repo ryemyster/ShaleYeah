@@ -1,0 +1,19 @@
+{
+	"name": "@shaleyeah/orchestrator",
+	"version": "0.1.0",
+	"description": "Orchestrator stub — Temporal workflow engine (#362)",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@shaleyeah/sdk": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/node": "^25.9.3",
+		"typescript": "^6.0.2"
+	}
+}

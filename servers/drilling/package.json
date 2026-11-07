@@ -1,0 +1,25 @@
+{
+	"name": "@shaleyeah/server-drilling",
+	"version": "0.1.0",
+	"description": "Drilling MCP server — drilling engineering analysis",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "tsx src/index.ts",
+		"test": "bash ../../scripts/run-tests.sh",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@shaleyeah/sdk": "workspace:*",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
+		"@types/node": "^25.9.3",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
+}
