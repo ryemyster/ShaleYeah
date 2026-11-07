@@ -6,7 +6,7 @@ import pytest
 
 from shaleyeah_evaluations import EvaluationError, TrustedEvalPolicy, registered_metric
 
-FIXTURES = Path(__file__).parents[2] / "agents/reservoir-engineer/tests/eval/fixtures"
+FIXTURES = Path(__file__).parents[1] / "fixtures/reservoir"
 PARAMETERS = {
     "relativeTolerance": 1e-8,
     "volumeAbsoluteTolerance": 1e-5,

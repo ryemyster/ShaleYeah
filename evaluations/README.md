@@ -240,3 +240,5 @@ delegates to it without changing its API. Neither parser imports an employee.
 The [Reservoir evaluation guide](../agents/reservoir-engineer/docs/EVALUATIONS.md)
 records the frozen 21 cases, independent references, hashes and provisional
 research rationale. These fixtures establish no field accuracy or reserves.
+The evaluation package retains its own [frozen metric test inputs](fixtures/reservoir/README.md)
+so its installed-wheel checks do not require the Reservoir employee directory.

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #681: keep Reservoir metric controls inside this package and copy their frozen data into the installed-wheel test harness. The portable test suite no longer reads the Reservoir employee directory.
+
 - #681: add Reservoir source-fidelity, independent known-parameter rate/integral/fit/holdout/finding checks and mandatory architecture/tool/authority qualification floors. Editable tolerances stay within installed bounds. Provisional synthetic labels do not certify field accuracy or reserves.
 - #681: share the strict actual-final-output parser across financial and forecast payloads; preserve the Economist parser API and malformed/duplicate/nonfinite/mixed-output denials. No employee/provider import is added.
 
