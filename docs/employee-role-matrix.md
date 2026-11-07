@@ -44,8 +44,9 @@ to leave shared research only in issue comments. QA's detailed
 research deliverable from [#538](https://github.com/ryemyster/ShaleYeah/issues/538).
 
 The coverage table links actual agent packages and registered server tools.
-Thirteen agents use Python and Google's Agent Development Kit (ADK).
-Reservoir Engineer retains its TypeScript employee surface. Tool names
+All fourteen agents use Python and Google's Agent Development Kit (ADK).
+Reservoir Engineer now uses a native ADK/Python employee and source-bound
+forecast/review tools. Nine other roles still need full employee qualification. Tool names
 describe present interfaces, not verified professional capability. Roman
 personas remain display names; the explicit package role identifies the job.
 Versioned capability IDs will be published in #568.
@@ -53,7 +54,7 @@ Versioned capability IDs will be published in #568.
 | Employee | Agent package | Current tool-server evidence | Adoption owner |
 | --- | --- | --- | --- |
 | Geologist | [geologist](../agents/geologist/README.md) | [geowiz](../servers/geowiz/src/index.ts): `process_well_logs`, `analyze_formation`, `assess_quality` and six other tools | #671–#674 |
-| Reservoir Engineer | [reservoir-engineer](../agents/reservoir-engineer/src/agent/index.ts) | [curve-smith](../servers/curve-smith/src/index.ts): `analyze_decline_curve`, `generate_type_curve`, `calculate_eur`, `assess_curve_quality` | #681 |
+| Reservoir Engineer | [reservoir-engineer](../agents/reservoir-engineer/README.md) | [curve-smith](../servers/curve-smith/src/index.ts): source discovery/read, `calculate_forecast`, `compare_forecasts`, `draft_forecast`, exact review/status and `record_forecast`; source-independent `generate_type_curve`/`calculate_eur` | #681 |
 | Economist | [economist](../agents/economist/README.md) | [econobot](../servers/econobot/src/index.ts): explicit cash-flow calculation, source-linked scenarios and exact private human review | #680 |
 | Risk Analyst | [risk-analyst](../agents/risk-analyst/README.md) | [risk-analysis](../servers/risk-analysis/src/index.ts): `assess_investment_risk`, `monte_carlo_simulation` | #682 |
 | Legal Analyst | [legal-analyst](../agents/legal-analyst/README.md) | [legal](../servers/legal/src/index.ts): `analyze_legal_framework`, `review_contract`, `assess_compliance` | #683 |
@@ -120,6 +121,13 @@ are separate composition choices governed by #568, #572 and #573.
 - **Configurable evaluation:** Recomputed forecast and recovery checks, fit residuals, held-out-period error, handling of shut-ins, uncertainty disclosure and analog relevance. Configure minimum history and error thresholds from reviewed role cases.
 - **Human decisions:** Engineer accepts method, calibration and forecast assumptions; qualified reviewers decide applicable reserve/resource treatment [S14](#s14-professional-reporting-references). The agent cannot certify reserves or change field controls.
 - **Unresolved validation:** Reservoir engineer chooses suitable methods, history windows and tolerances for each asset class, including unconventional behavior and sparse histories. Owner #681.
+
+The #681 implementation accepts three normalized JSON exports with explicit
+well/completion identity and instantaneous daily rates. Period totals, shut-ins,
+lease aggregates and vendor-native models need separately qualified mappings.
+Fixed-b training/holdout diagnostics, finite modeled volumes and independent
+synthetic references supply initial technical checks; uncertainty, field accuracy
+and reserves treatment remain unverified. See the [current input contract](../servers/curve-smith/docs/EMPLOYEE_INPUTS.md).
 
 ### Economist
 
@@ -610,7 +618,7 @@ The [delivery ledger](mvp-release-plan.md) retains the sequential order.
 
 | Evidence or open question | Keep / change / cut decision | Owner and required evidence |
 | --- | --- | --- |
-| Original four TypeScript employee implementations; Economist, Reporter and QA replaced by their owning migrations | Retain behavior needed during migration; replace the remaining Reservoir surface and delete displaced runtime/docs in its own PR | #681 remains; #680/#541/#542 delete their displaced employee surfaces; #576 inventories callers, #692 performs final shared-runtime deletion |
+| Original four TypeScript employee implementations replaced by their owning migrations | Native role factories use installed helpers; displaced employee source, configuration, tests and generated artifacts are deleted | #541/#542/#680/#681 replace employee surfaces; #576 inventories callers, #692 performs final shared-runtime/API deletion |
 | [Title ownership](../servers/title/src/tools/ownership.ts) estimates interests from description/basin or model output | Replace unsupported estimates as ownership facts; retain verifiable arithmetic under supplied terms | #685: instrument-backed interests, missing-chain and conflicting-record cases; cut displaced guesses |
 | [QA tool](../servers/qa-server/README.md) replaces unobserved estimates in #716 | Source/profile/version-linked rule results, actual denominators and explicit untested/error states; professional/operator and employee qualification remain separate | #538 charter; #716 observed server checks before #542 employee adoption; expert labels and actual operator evidence remain required |
 | [Research fallbacks](../servers/research/src/tools/market-research.ts) include generic competitors/source labels | Retain useful collection/parsing behavior; replace unsupported claims with missing-evidence results | #688: source-resolvable findings, untrusted/stale/denied data cases; cut generic claims presented as collected facts |

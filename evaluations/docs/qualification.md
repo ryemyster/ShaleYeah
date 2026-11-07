@@ -23,6 +23,14 @@ The artifact contains metadata only, is retained for 14 days, and is required
 when qualification runs. A failed earlier package step also fails the job;
 missing artifacts cannot turn that failure into a pass.
 
+The reusable workflow also selects the adopted Reporter, QA, Economist and
+Reservoir Engineer jobs and their independent package/container journeys. Each
+role retains its own profile, frozen cases, trust floors and exact output binding.
+Reservoir's installed gates require source fidelity, independent forecast
+numerics, architecture, tool boundaries and no unapproved private forecast save.
+Its synthetic references and key-free native traces do not supply field accuracy
+or professional acceptance. Operator thresholds cannot remove these floors.
+
 CI uses public demo LAS bytes, authored employee work and a scripted qualitative
 judge. Passing means **offline fixture conformance**. The release package states
 this limit in `QUALIFICATION.txt`; live models, scientific conclusions, other

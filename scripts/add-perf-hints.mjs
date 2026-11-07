@@ -69,12 +69,6 @@ const TOOL_CLASS = new Map([
 	["research-analyst.conduct_market_research", MODERATE],
 	["research-analyst.analyze_competition", MODERATE],
 
-	// reservoir-engineer (4 tools)
-	["reservoir-engineer.analyze_decline_curve", MODERATE],
-	["reservoir-engineer.generate_type_curve", MODERATE],
-	["reservoir-engineer.calculate_eur", MODERATE],
-	["reservoir-engineer.assess_curve_quality", FAST],
-
 	// risk-analyst (2 tools)
 	["risk-analyst.assess_investment_risk", MODERATE],
 	["risk-analyst.monte_carlo_simulation", SLOW], // 10 000+ Monte Carlo iterations

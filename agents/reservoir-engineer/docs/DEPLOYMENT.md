@@ -1,20 +1,21 @@
-# Deployment — @shaleyeah/reservoir-engineer
+# Deployment and packaging
 
-> **Status: Planned** — Not yet implemented. See [#365](https://github.com/ryemyster/ShaleYeah/issues/365).
+The employee is an independently installable Python wheel with declared helper
+dependencies. Its source package can use an independent lock pointing to those
+wheels. Curve-smith is a separate tool-server artifact; neither unit requires the
+optional coordinator or a particular cloud host.
 
-## Environment variables (planned)
+The [extraction checker](../../../servers/curve-smith/scripts/check-extraction.mjs)
+builds source, wheel and production tool archives outside the checkout. The
+[container checker](../../../servers/curve-smith/scripts/check-containers.py)
+uses separate employee/tool images, explicit configuration, non-root users,
+actor-specific mounts and protected review/restart/revocation journeys. Run it
+against a fresh extraction bundle and inspect exact artifact/image receipts
+before claiming an environment is qualified.
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM calls |
-| `CURVE_SMITH_MCP_URL` | No | `http://localhost:3004` | curve-smith server URL |
-| `PORT` | No | `4004` | Agent endpoint port |
-
-## Pair ports
-
-| Service | Port |
-|---------|------|
-| curve-smith (Tier 1) | 3004 |
-| reservoir-engineer (Tier 2) | 4004 |
-
-See `agents/geologist/docs/DEPLOYMENT.md` for the full deployment reference pattern.
+The Dockerfile builds from that bundle without baking source data or secrets
+into the image. The production host supplies private context storage, current
+identity/source authorities, model configuration and a separately enrolled human
+review boundary. No cloud deployment or live vendor connector is provisioned.
+See the repository [support guide](../../../docs/deployment-support.md) for
+qualification evidence and explicitly deferred targets.

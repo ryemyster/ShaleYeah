@@ -1,42 +1,16 @@
-# Local Testing — @shaleyeah/server-curve-smith
+# Local testing
 
-## Quick start
+Install the paired employee dependencies with `uv sync --locked` in
+`agents/reservoir-engineer`, then build this package and run `pnpm test`.
+The suite covers numerical kernels, current source binding, input/unit/time/grain
+failures, observed diagnostics, normalized snapshot hooks, independent stdio,
+protected HTTP, actual native output grading, separate human review and
+restart/replay/revocation. Provider responses are offline fixtures; no paid keys
+are needed. Expected denial cases emit safe failed-tool events.
 
-```bash
-cd servers/curve-smith
-pnpm build
-npx tsx tests/server.test.ts
-```
-
-## HTTP mode testing
-
-```bash
-# Terminal 1
-PORT=3004 ANTHROPIC_API_KEY=sk-... pnpm start
-
-# Terminal 2
-cd agents/reservoir-engineer
-CURVE_SMITH_MCP_URL=http://localhost:3004 npx tsx tests/mcp-client.test.ts
-```
-
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-# Expect: authentication error
-```
-
-## Test the fallback path
-
-```bash
-# No API key — deterministic Arps math still returns results
-npx tsx tests/server.test.ts
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3004` | Server not started in HTTP mode | `PORT=3004 pnpm start` |
-| `Insufficient data points` | < 3 months of production | Provide at least 3 data points |
-| Tests fail to import | Build needed | `pnpm build` first |
+Run `node scripts/check-extraction.mjs --bundle /absolute/new/empty-bundle --report /absolute/report.json`
+for independent source, wheel and production archives. Run
+`python3 scripts/check-containers.py --bundle /absolute/bundle --report /absolute/container-report.json`
+for the separate non-root images. Inspect exact receipts and limitations. A
+missing runtime, archive or selected qualification is a failure, not a skipped
+success. Build and package tests alone do not establish container support.

@@ -26,9 +26,9 @@ cannot silently turn the final gate into an accepted skip.
 | Geologist or Geowiz | Geologist and Reporter; Reporter also uses Geologist tests and Geowiz |
 | Reporter employee or server | Reporter |
 | Economist employee or Econobot | Economist |
+| Reservoir Engineer employee or Curve-smith | Reservoir Engineer |
 | QA employee or QA server | QA |
 | One of the nine current Python caller packages or its backend | That caller's locked package checks |
-| Curve-smith backend | Workspace checks; Reservoir Engineer adoption/qualification remains a separate required output |
 | Root README, architecture, contributing or changelog; reviewed CI/SDLC and MVP/legacy ledger docs | Workspace checks |
 | Shared SDK, contracts, connectors, evaluations, workflow/CI scripts, root configuration/data or unknown paths | Full qualification |
 

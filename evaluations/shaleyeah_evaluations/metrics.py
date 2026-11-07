@@ -10,6 +10,7 @@ from jsonschema import Draft202012Validator
 from shaleyeah_contracts import ContractValidationError, validate_contract, validate_source_contract
 
 from .economics import cash_flow_accuracy
+from .forecasts import forecast_accuracy
 
 
 def _work(trace, runtime):
@@ -340,6 +341,24 @@ def _economist_faithfulness(trace, runtime, _):
     )
 
 
+def _reservoir_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, forecast = observed.get("reservoir_work"), observed.get("reservoir_forecast")
+    sources = runtime.get("sourceArtifacts", [])
+    return (
+        _provenance(trace, runtime, {})
+        and type(work) is dict
+        and type(forecast) is dict
+        and forecast.get("authorizesReserves") is False
+        and len(sources) == 3
+        and len({s["artifact"]["id"] for s in sources}) == 3
+        and work.get("inputs") == [s["artifact"] for s in sources]
+        and work.get("evidence") == [s["evidence"] for s in sources]
+        and rfc8785.dumps(trace.get("reservoirForecast")) == rfc8785.dumps(forecast)
+        and rfc8785.dumps(trace.get("workProduct")) == rfc8785.dumps(work)
+    )
+
+
 @dataclass(frozen=True)
 class RegisteredMetric:
     id: str
@@ -412,6 +431,46 @@ REGISTRY = MappingProxyType(
             _definition("economist.architecture_boundary", _observed_architecture),
             _definition("economist.no_unapproved_scenario", _persistence),
             _definition("economist.source_faithfulness", _economist_faithfulness),
+            _definition("reservoir.architecture_boundary", _observed_architecture),
+            _definition("reservoir.no_unapproved_forecast", _persistence),
+            _definition("reservoir.source_faithfulness", _reservoir_faithfulness),
+            _definition(
+                "reservoir.forecast_accuracy",
+                forecast_accuracy,
+                {
+                    "relativeTolerance": {"type": "number", "minimum": 0, "maximum": 1e-6},
+                    "volumeAbsoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.1},
+                    "rateAbsoluteTolerance": {"type": "number", "minimum": 0, "maximum": 1e-6},
+                },
+            ),
+            _definition(
+                "reservoir.tool_boundary",
+                _tool_boundary,
+                {
+                    "expectedCalls": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "read_forecast_inputs",
+                                    "read_forecast_source",
+                                    "calculate_forecast",
+                                    "compare_forecasts",
+                                    "draft_forecast",
+                                    "prepare_forecast_review",
+                                    "forecast_review_status",
+                                    "record_forecast",
+                                ],
+                            },
+                            "uniqueItems": True,
+                            "maxItems": 8,
+                        },
+                    },
+                },
+            ),
             _definition(
                 "economist.cash_flow_accuracy",
                 cash_flow_accuracy,

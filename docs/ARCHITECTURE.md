@@ -41,7 +41,7 @@ remain owned by #671/#674 and their role peers.
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
-previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA and Economist
+previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA, Economist and Reservoir Engineer
 use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
@@ -92,32 +92,42 @@ independent financial references and current backend observations. It does not
 certify a forecast, fiscal model or capital decision. Private checkpoint lineage
 preserves completed review history across restart without reviving a retired record.
 
+The [Reservoir Engineer](../agents/reservoir-engineer/README.md) retains its own
+source-bound production context. Curve-smith reconciles exact history, operating
+basis and forecast-assumption JSON exports using source profile 0.2.0, while
+employee work/context remains 0.1.0. Existing qualified Arps/type-curve kernels
+produce finite forecasts and actual training/holdout diagnostics. An independent
+Python verifier checks the returned work against known-parameter synthetic
+references. Private save requires installed packet-bound qualification and an
+exact human engineering decision; it cannot classify reserves or approve capital.
+
 ## Packages and dependency boundaries
 
 | Area | Current responsibility | Target boundary |
 | --- | --- | --- |
 | `contracts/` | Canonical JSON Schema 0.1.0, generated TypeScript types and Python/TypeScript validators for employee records | Extractable business contracts independent of agent, tool, model and storage adapters |
 | `connectors/` | Installed read-only adapters, scoped current grants, verified source artifacts and private parser snapshots; Geowiz first consumer | Extractable source runtime independent of agent, model, warehouse and orchestration |
-| `agents/<role>/` | Specialist tools/reasoning, ADK assets or remaining TypeScript implementation | Independent employee with versioned job/task/product/context/review/eval contracts |
+| `agents/<role>/` | Specialist tools/reasoning and ADK/Python assets | Independent employee with versioned job/task/product/context/review/eval contracts |
 | `servers/<name>/` | 14 TypeScript MCP servers with domain handlers and data hooks | Independent permitted-client interface, its own adapters and access enforcement |
 | `sdk/` | TypeScript contracts, models/parsers, server helpers, model client and legacy runtime | Small contract artifacts/bindings separated from installed utilities/adapters |
 | `sdk/python/` | Independently buildable `shaleyeah-mcp-client`; Geologist first consumer | Installed protocol adapter with no ADK/domain/root source imports |
 | `sdk/employee/` | Installed scoped context, providers/events, native runtime and protected review client; role factories own persona/tool selection | Independently installable helpers with optional ADK adapter and no employee imports |
 | `orchestrator/` | Version-constant stub with a workspace SDK dependency | Optional Chief of Staff unit; #675 charter selects bounded ADK/Python pilot implemented in #676 |
 
-Thirteen agents have ADK manifests: Geologist, Economist, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
+All fourteen agents have ADK manifests: Geologist, Economist, Reservoir Engineer, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
-Infrastructure Planner and Investment Chair. Reservoir Engineer retains its
-TypeScript implementation.
+Infrastructure Planner and Investment Chair. Nine still need their full employee
+workflow qualification.
 See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
 
-The remaining TypeScript employee uses `LocalAgentRuntime` and a copied task loop.
+The four copied TypeScript employee loops have been replaced. Shared SDK
+compatibility exports remain for the caller and public API audit in #692.
 `sdk/src/service.ts` supplies an endpoint facade, not an implemented universal
 HTTP employee service. `sdk/src/agent-loop.ts` exports a shared loop with tests
 but no internal production caller. #576 verifies caller/public API implications;
 migrations and #692 remove displaced runtime after replacement acceptance.
 The [legacy migration ledger](legacy-migration-ledger.md) records the verified
-four-employee callers, public exports, ten Python wrappers, numerical/fallback
+original four-employee callers, public exports, ten Python wrappers, numerical/fallback
 repairs and cleanup gates. Its inventory does not change runtime behavior.
 Preserve useful trust behavior and regression cases at the replacement boundary.
 

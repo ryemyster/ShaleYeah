@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- #681: add exact production-history, operating-basis and forecast-assumption JSON sources, current grants, secret exclusion and required audit. Expose bounded source/calculation/draft/review tools with actual fit and holdout diagnostics, explicit units/time/cutoff and unavailable uncertainty.
+- #681: require current source/context/action bindings, installed actual-output qualification and exact human approval before idempotent private forecast save. Add protected native provider/restart/revocation controls, independent packages and required non-root container journeys.
+- #681: delete old unscoped file-fit/proxy-quality tools and generated modules. Reuse accepted #712 numerical kernels unchanged; synthetic conformance supplies no reserves or field-accuracy claim.
+
 - Replace fixed-tier type curves and fabricated P10/P50/P90 values with versioned
   analog-rate fitting or explicit scenarios. Preserve source/synthetic labels,
   fit diagnostics and unavailable uncertainty. (#712)

@@ -174,3 +174,32 @@ host-owned authority callbacks. Local exports explicitly attest authority throug
 owner-only configuration; a remote host supplies its authenticated artifact
 service. Optional synthesis produces unreviewed cited notes, never permission to
 publish. External sending and professional certification require their own gates.
+
+## Reservoir Engineer and Curve-smith
+
+The native employee consumes three exact normalized JSON exports: production
+history, operating basis and forecast assumptions. Curve-smith owns source
+validation, finite calculations and the executing private-save gate. The employee
+and tool each install from declared dependencies without repository source imports.
+
+From the repository root, choose a fresh bundle and report location:
+
+```sh
+node servers/curve-smith/scripts/check-extraction.mjs \
+  --bundle /tmp/reservoir-bundle --report /tmp/reservoir-extraction.json
+python3 servers/curve-smith/scripts/check-containers.py \
+  --bundle /tmp/reservoir-bundle --report /tmp/reservoir-containers.json
+```
+
+Extraction checks clean source, allowlisted production archives, installed
+employee/helper wheels, a generic MCP client and a compatible external tool.
+The protected pair grades actual native output, requires installed packet-bound
+qualification before human approval, restarts both units, saves once, rejects
+forged/replayed grants and blocks revoked sources. Container qualification repeats
+the journey with separate non-root images, private actor-specific mounts and
+recorded base/image/artifact digests. Missing Docker is a blocked container report,
+never a successful substitute. Required CI runs both checks on the actual revision.
+
+Synthetic fixed-b references and offline native adapters establish bounded
+technical conformance. Field history quality, calibrated uncertainty, reserves,
+live model performance and named human MVP acceptance need separate evidence.

@@ -22,14 +22,22 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **CI fixture maintenance:** Reporter configuration/HTTP bootstrap controls
+  create current synthetic grant/evidence dates when running against the real
+  clock. Fixed-clock review fixtures and production expiry checks remain intact.
+  This repairs a workspace gate exposed while qualifying #681.
+
 - **Independent packages:** separate specialist agents and MCP tool servers in
   the monorepo, ADK/Python agent authoring, and package-local setup, source/wheel/
   archive exports and container verification. Orchestration remains optional.
   (#385, #498, #527–#543, #578, #597, #674, #679)
-- **Reviewed employee workflows:** Geologist, Reporter, QA and Economist now have
+- **Reviewed employee workflows:** Geologist, Reporter, QA, Economist and Reservoir Engineer now have
   source-bound private context, configurable scorecards, human review and
   restart/resume paths. Displaced TypeScript agent paths were removed for these
-  migrations. (#541, #542, #669, #671–#674, #680)
+  migrations. Reservoir binds exact production/basis/assumptions exports to
+  finite forecasts, independent synthetic numerical checks and qualified human
+  private-save review. Required CI includes its native, package and container
+  journeys. (#541, #542, #669, #671–#674, #680, #681)
 - **MCP interoperability and trust:** stateless MCP 2026-07-28 clients, explicit
   identities/scopes, schema and error validation, bounded discovery/preflight retries,
   cancellation, current source grants and redacted correlated events.

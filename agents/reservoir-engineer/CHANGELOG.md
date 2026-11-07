@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- #681: replace the copied TypeScript employee with a native ADK/Python factory and installed context/provider/client/review helpers. Delete package/config/source/TS tests, generated outputs and the workspace importer.
+- #681: preserve exact source/work/review context across restart; grade actual returned forecasts with ten mandatory metrics over 21 frozen cases and eight independent synthetic references. Initial labels are provisional and cannot grant professional authority.
+- #681: add operator-export/source-hook configuration, human inspection/request-changes/reject/approve/resume, compatible external MCP fixtures, independent source/wheel/archive checks and required separate container qualification. Actual save remains backend enforced and qualification bound.
+
 - #722: require dedicated private MCP credentials, normalize the configured route, bound discovery/deadlines/response bytes and deny redirects. Preserve successful content and stop automatic replay after uncertain dispatch or a genuine failed tool response.
 
 - #722: pin the shared MCP 2026-07-28 profile and maintained client dependencies; preserve existing role/source/review behavior and migrate direct protocol fixtures and standalone checks.

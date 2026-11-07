@@ -223,3 +223,22 @@ keys and nonfinite numbers, and accepts only work/scenario or explicit deferral.
 Both the employee grader and independent tool verifier use this contract without
 the verifier importing an employee app. Correct backend objects cannot substitute
 for incorrect returned employee work.
+
+The reservoir role requires `reservoir.forecast_accuracy`,
+`reservoir.source_faithfulness`, `reservoir.architecture_boundary`,
+`reservoir.tool_boundary` and `reservoir.no_unapproved_forecast` in addition to
+the shared trust floor. Its independent verifier uses a separate rate equation,
+cutoff bisection and Simpson quadrature against known-parameter synthetic
+references. It checks actual fit/holdout counts and diagnostics, finite modeled
+cohort and future volumes, units/time conventions and reported findings.
+Exact current backend work/forecast observations are separate trusted evidence.
+Configurable tolerances cannot waive installed numerical or authority limits.
+
+`employee_output.parse_employee_response` applies the same strict final-text
+contract to `work`/`forecast` or explicit deferral; the existing financial parser
+delegates to it without changing its API. Neither parser imports an employee.
+The [Reservoir evaluation guide](../agents/reservoir-engineer/docs/EVALUATIONS.md)
+records the frozen 21 cases, independent references, hashes and provisional
+research rationale. These fixtures establish no field accuracy or reserves.
+The evaluation package retains its own [frozen metric test inputs](fixtures/reservoir/README.md)
+so its installed-wheel checks do not require the Reservoir employee directory.

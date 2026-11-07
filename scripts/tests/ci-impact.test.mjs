@@ -11,7 +11,7 @@ const base = '1'.repeat(40);
 const head = '2'.repeat(40);
 const revision = '3'.repeat(40);
 const units = (...selected) => Object.fromEntries(
-  ['geologist', 'reporter', 'economist', 'qa'].map((unit) => [unit, selected.includes(unit)]));
+  ['geologist', 'reporter', 'economist', 'qa', 'reservoir'].map((unit) => [unit, selected.includes(unit)]));
 const impact = async (changedPaths, extra = {}) => {
   const { selectImpact } = await import('../ci-impact.mjs');
   return selectImpact({ eventName: 'pull_request', baseSha: base, headSha: head,
@@ -38,7 +38,8 @@ for (const [file, selected, expectedCallers = []] of [
   ['servers/econobot/scripts/check-containers.py', ['economist']],
   ['agents/quality-assurance/README.md', ['qa']],
   ['servers/qa-server/src/index.ts', ['qa']],
-  ['servers/curve-smith/src/index.ts', []],
+  ['servers/curve-smith/src/index.ts', ['reservoir']],
+  ['agents/reservoir-engineer/app/agent.py', ['reservoir']],
   ['docs/mvp-release-plan.md', []],
   ['CHANGELOG.md', []],
   ['README.md', []],
@@ -81,12 +82,12 @@ for (const file of ['sdk/employee/shaleyeah_employee/context.py', 'sdk/python/sh
   'package.json', 'pnpm-lock.yaml', 'turbo.json', 'data/samples/production.csv',
   'docs/policies/runtime.json', 'future-unit/README.md', 'agents/new-employee/app/agent.py',
   'docs/prompts/employee.md', 'docs/new-contract.md',
-  'agents/reservoir-engineer/app/agent.py', 'docs/../sdk/README.md',
+  'docs/../sdk/README.md',
   'servers/constructor/src/tool.ts', 'agents/toString/app/agent.py', 'servers/__proto__/src/tool.ts']) {
   test(`shared or unknown impact remains full: ${file}`, async () => {
     const plan = await impact([file]);
     assert.equal(plan.full, true);
-    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa'));
+    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa', 'reservoir'));
     assert.deepEqual(plan.callers, callers);
   });
 }

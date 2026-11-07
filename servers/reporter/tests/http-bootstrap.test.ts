@@ -8,7 +8,7 @@ import { Client, StreamableHTTPClientTransport } from "@modelcontextprotocol/cli
 import { fixture } from "./fixtures/review-fixture.js";
 
 test("installed HTTP launcher requires complete audit settings and serves scoped tools with private configuration", async () => {
-	const f = fixture();
+	const f = fixture({ now: new Date() });
 	let child: ReturnType<typeof spawn> | undefined;
 	const client = new Client(
 		{ name: "reporter-bootstrap-client", version: "r1" },

@@ -50,6 +50,20 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "reservoir-engineer": frozenset(
+        {
+            "contract.schema",
+            "evidence.provenance",
+            "evidence.freshness",
+            "assumptions.labeling",
+            "authority.boundary",
+            "reservoir.architecture_boundary",
+            "reservoir.no_unapproved_forecast",
+            "reservoir.tool_boundary",
+            "reservoir.source_faithfulness",
+            "reservoir.forecast_accuracy",
+        }
+    ),
     "economist": frozenset(
         {
             "contract.schema",
@@ -95,6 +109,11 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "reservoir-engineer": (
+        "reservoir.no_unapproved_forecast",
+        "reservoir.forecast_accuracy",
+        "reservoir.source_faithfulness",
+    ),
     "economist": (
         "economist.no_unapproved_scenario",
         "economist.cash_flow_accuracy",

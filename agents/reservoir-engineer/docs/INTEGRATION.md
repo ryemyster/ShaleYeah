@@ -1,22 +1,39 @@
-# Integration Guide — @shaleyeah/reservoir-engineer
+# Integrating the Reservoir Engineer
 
-The retained TypeScript interface calls Curve Smith through the stateless MCP
-connection described in the [package README](../README.md#mcp-connection).
-The complete ADK/Python employee workflow remains assigned to #681.
+Install the employee wheel with its declared contract, evaluation, MCP-client
+and employee-runtime dependencies. Workspace `tool.uv.sources` entries support
+authoring; independent distributions resolve declared wheels instead of sibling
+source trees.
 
-## Planned interface
+The host creates a private `ContextCatalog` for the exact customer, asset, task
+and employee. Supply a current context grant provider and a source-authority
+adapter that calls `get_context_source_metadata` for the required read/export
+operation. Verify exact evidence, operation and scope. Failed, expired or revoked
+access must deny assembly and continuation.
 
-```typescript
-import { runReservoirEngineerTask } from "@shaleyeah/reservoir-engineer";
+Put the assigned task and permitted source artifacts in the catalog, create its
+initial checkpoint, then open
+`ReservoirEngineerRuntime.open(catalog, models, backend_config=connection, events=events)`.
+Use `await runtime.run(prompt)` and close with `await runtime.close()`.
+The role retains complete source identities from successful calls and binds
+verified work to its own context before preparing review. Human approval grants
+do not become agent memory.
 
-const result = await runReservoirEngineerTask(
-    "Fit a decline curve to the attached production history and estimate EUR.",
-    { apiKey: process.env.ANTHROPIC_API_KEY },
-);
-```
+`connection` is an installed `MCPClientConfig`, or is loaded from
+`CURVE_SMITH_MCP_URL` and `CURVE_SMITH_MCP_ACCESS_TOKEN_FILE`. Remote services use
+HTTPS; local HTTP requires the explicit loopback option. Compatible external
+tools can implement this role surface without importing the employee.
 
-## Upstream / downstream
+Curve-smith binds three exact inputs: production history, operating basis and
+forecast assumptions. See its [input contract](../../../servers/curve-smith/docs/EMPLOYEE_INPUTS.md).
+The default adapter reads private operator exports. An installed normalized
+public/internal snapshot hook is separate from vendor-native API qualification
+and redistribution rights. BYO model credentials and BYO external employees are
+separate conformance choices.
 
-- **Upstream:** geologist provides formation data that informs reservoir inputs
-- **Downstream:** economist consumes EUR and production forecasts for NPV modeling
-- **Fleet coordinator:** development-planner uses well-level forecasts to design the field development
+After a separate human approves an exactly qualified packet,
+`ReviewSupervisor(connection, client=audited_client).resume(review_id)` reads the
+current review and executes only its bound transition. The host clears the
+completed pending-review reference while retaining task/work references. The
+[native fixture](../tests/fixtures/context-step.py) shows full host wiring through
+protected HTTP using offline provider responses; its grants and data are synthetic.

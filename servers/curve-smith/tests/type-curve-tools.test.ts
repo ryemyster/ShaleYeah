@@ -39,12 +39,6 @@ test("versioned tool schemas reject identifier-only tiers, silent GOR and model/
 	assert.throws(() => tool("generate_type_curve").inputSchema.parse({ ...analogInput, approved: true }));
 });
 
-test("a missing production file cannot reach the deleted fixed-tier fallback", async () => {
-	const result = await run("analyze_decline_curve", { filePath: "/unavailable-shaleyeah-fixture/no-production.csv" });
-	assert.equal(result.success, false);
-	assert.ok(!("analysis" in result));
-});
-
 test("unconfigured interpretation and unavailable calculation remain explicit without provider calls", async () => {
 	const unconfigured = await run("generate_type_curve", { ...analogInput, includeInterpretation: true });
 	assert.equal(unconfigured.analysis.interpretation.reason, "not_configured");

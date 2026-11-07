@@ -423,7 +423,7 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](model-providers.md).
 
-The Geologist, Reporter, QA and Economist factories use installable `sdk/employee` helpers for
+The Geologist, Reporter, QA, Economist and Reservoir Engineer factories use installable `sdk/employee` helpers for
 scoped state, providers/events, optional native ADK and protected continuation.
 Role code owns persona and tool mappings; the helper imports no employee. The
 TypeScript SDK review core accepts trusted role-owned source/action/schema
@@ -443,3 +443,13 @@ human scenario review reuse installed helpers. Private checkpoint lineage allows
 review completion without reactivating retired context. Independent employee/tool
 containers and archives use declared dependencies; fixture qualification does not
 certify forecasts, live feeds, fiscal models or capital decisions.
+
+Reservoir Engineer uses the existing JSON source profile 0.2.0 for three exact
+operator exports: production history, operating basis and forecast assumptions.
+Curve-smith reuses its qualified finite Arps/type-curve kernels, separates fit
+and holdout observations, and preserves unavailable uncertainty. Its native
+employee uses installed context/provider/client/review helpers; the executing
+backend binds current sources, actual-output qualification and human approval
+before a private save. Independent packages and required container qualification
+retain their own receipts. Synthetic numerical conformance does not establish
+field accuracy, reserves classification or professional acceptance.
