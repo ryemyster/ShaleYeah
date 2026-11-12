@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #682: Move Risk Analyst out of the remaining callable-wrapper test inventory
+  after its native role mappings replace the old wrapper. Its protected external
+  MCP and source/review controls run in the employee and matching backend suites;
+  the shared client still exercises all eight remaining wrappers.
+
 - #722: Add a shared validated role environment loader and migrate all nine remaining Python callers to the selected client; preserve private credential resolution, canonical results and failure classifications.
 
 

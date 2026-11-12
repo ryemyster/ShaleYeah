@@ -4,8 +4,11 @@
 packages. It uses the maintained Python MCP SDK for stateless protocol handling.
 It has no ADK, model-provider, business-role, warehouse or monorepo-source import.
 
-The first consumer is [Geologist](../../agents/geologist/README.md). Reporter and
-the other nine ADK packages also use this client for the selected wire profile.
+The first consumer is [Geologist](../../agents/geologist/README.md). Other ADK
+employees, including [Risk Analyst](../../agents/risk-analyst/README.md), also use
+this client for the selected wire profile. Adopted employees test their protected
+role tools in their own packages; this package tests the eight remaining callable
+wrappers as well as the shared client.
 Connection compatibility does not complete those roles' employee workflows.
 Its installed-wheel isolation check also installs the consumer's declared portable
 evaluation/contract wheels. Portable contracts 0.3.0 is now a client runtime
