@@ -1,68 +1,10 @@
-# Deployment — @shaleyeah/server-risk-analysis
+# Running Risk Analysis
+Compile this independent backend with `pnpm build`. The package-local TypeScript config and declared archives allow a clean exported-source build.
 
-## Transport modes
+Stdio uses `RISK_ANALYSIS_CONFIG_FILE=/absolute/private/binding.json pnpm start`. The binding supplies source/task authority and the local operator; an unconfigured process exposes no analysis tools.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3005` | Agent fleet, Docker, Kong |
+For explicit local HTTP, set `RISK_ANALYSIS_HTTP_CONFIG_FILE` and run `node examples/local-http.mjs`. That private JSON names `riskConfigFile`, `accessTokenFile`, `eventConfigFile` and `dataPath`. The access credential must be included in the source scanner's private sensitive-file references. HTTP binds loopback and requires identity/scopes plus audit; a port is not authorization. Remote hosts inject their own trusted ingress/source/review authorities and TLS policy.
 
-```bash
-# stdio mode
-pnpm build && pnpm start
+The Dockerfile builds from the [extraction bundle](../scripts/check-extraction.mjs), using a Node tool image with an installed Python verifier and a separate employee image. Images declare non-root user 10001. Qualification uses owner-specific mounts, no new privileges, read-only roots and separate credential visibility. Required hosted CI validates the full source/review/restart journey before merge.
 
-# HTTP mode
-PORT=3005 pnpm start
-```
-
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Gaius Probabilis Assessor) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3005`) |
-| `DATA_PATH` | No | `./data` | Path to risk data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
-
-## Build and run
-
-```bash
-cd servers/risk-analysis
-pnpm install && pnpm build
-PORT=3005 ANTHROPIC_API_KEY=sk-... pnpm start
-```
-
-## Docker Compose (agent pair)
-
-```yaml
-services:
-  risk-analysis:
-    image: shaleyeah/risk-analysis:latest
-    environment:
-      PORT: "3005"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3005:3005"
-  risk-analyst:
-    image: shaleyeah/risk-analyst:latest
-    environment:
-      RISK_ANALYSIS_MCP_URL: http://risk-analysis:3005
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [risk-analysis]
-```
-
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=risk-analysis
-curl -X POST http://kong:8001/upstreams/risk-analysis/targets -d target=risk-analysis:3005
-curl -X POST http://kong:8001/services -d name=risk-analysis -d host=risk-analysis
-curl -X POST http://kong:8001/services/risk-analysis/routes -d paths[]=/mcp/risk-analysis
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3005` set
-- [ ] Registered with Kong at `/mcp/risk-analysis`
-- [ ] Paired with `risk-analyst` agent at port 4005
+Public/internal normalized snapshot hooks are available for host integrations. Vendor-native API access and redistribution rights remain unverified. Paid sources, a specific cloud, a warehouse, vector storage and the coordinator are optional. Hosted-platform certification needs its own evidence; these container recipes do not establish it.

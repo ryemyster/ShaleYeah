@@ -1,6 +1,7 @@
 # Changelog — Risk Analyst ADK Agent
 
 ## [Unreleased]
+- #682: Adopt installed context/provider/client/review helpers and a native source-bound joint-scenario employee. Grade actual returned work with six mandatory Risk floors and 18 frozen control/edge/authority cases; retain exact pending review across restart and require qualified enrolled human approval before private recording. Remove the latest-model alias, displaced project-data/sampling wrappers and shape-only evals. Add isolated package/container controls and required Risk CI registration; professional calibration and human MVP acceptance remain separate.
 - #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
 
 

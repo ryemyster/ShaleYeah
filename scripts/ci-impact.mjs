@@ -6,8 +6,8 @@ import { parseArgs } from 'node:util';
 
 export const CALLER_ROLES = Object.freeze(['development-planner', 'drilling-engineer',
   'infrastructure-planner', 'investment-chair', 'legal-analyst', 'market-analyst',
-  'research-analyst', 'risk-analyst', 'title-analyst']);
-export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir']);
+  'research-analyst', 'title-analyst']);
+export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk']);
 export const PLAN_KIND = 'shaleyeah.ci-impact/v1';
 export const isRevision = (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value);
 
@@ -15,16 +15,18 @@ const agentOwners = {
   geologist: ['geologist', 'reporter'], 'reporter-agent': ['reporter'],
   economist: ['economist'], 'quality-assurance': ['qa'],
   'reservoir-engineer': ['reservoir'],
+  'risk-analyst': ['risk'],
 };
 const serverOwners = {
   geowiz: ['geologist', 'reporter'], reporter: ['reporter'], econobot: ['economist'],
   'qa-server': ['qa'], 'curve-smith': ['reservoir'],
+  'risk-analysis': ['risk'],
 };
 const serverCallers = {
   development: 'development-planner', drilling: 'drilling-engineer',
   infrastructure: 'infrastructure-planner', decision: 'investment-chair',
   legal: 'legal-analyst', market: 'market-analyst', research: 'research-analyst',
-  'risk-analysis': 'risk-analyst', title: 'title-analyst',
+  title: 'title-analyst',
 };
 const documentationPaths = new Set(['README.md', 'ARCHITECTURE.md', 'CONTRIBUTING.md', 'CHANGELOG.md',
   'docs/ci.md', 'docs/sdlc.md', 'docs/mvp-release-plan.md', 'docs/legacy-migration-ledger.md']);

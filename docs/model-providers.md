@@ -33,6 +33,12 @@ Node adapters: @google/genai 2.28.0 and @anthropic-ai/sdk 0.104.1.
 Provider or adapter changes require conformance and role regressions before
 promotion; real model and domain quality require separate evaluations.
 
+Risk Analyst uses the installed native provider helper with its own explicit
+agent profile and private credential reference. Its Risk Analysis backend is a
+deterministic source/policy calculator and makes no synthesis-model call. Native
+Gemini/Anthropic fixtures and actual-output grading qualify that bounded path;
+they do not establish live model quality or professional risk calibration.
+
 ## Create a private configuration
 
 1. Create an agent key file, synthesis key file and `models.json` outside the

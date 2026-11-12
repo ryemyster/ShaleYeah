@@ -143,6 +143,11 @@ class TrustedEvalPolicy:
                 "reservoir.forecast_accuracy",
             }
             if self.role_id == "reservoir-engineer"
+            else {
+                "risk.architecture_boundary", "risk.no_unapproved_acceptance", "risk.tool_boundary",
+                "risk.source_faithfulness", "risk.scenario_accuracy", "risk.register_coverage",
+            }
+            if self.role_id == "risk-analyst"
             else set()
         )
 
@@ -239,6 +244,8 @@ def load_profile(text, *, datasets, policy):
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("reservoir.") and policy.role_id != "reservoir-engineer":
             raise EvaluationError("policy_denied")
+        if metric["id"].startswith("risk.") and policy.role_id != "risk-analyst":
+            raise EvaluationError("policy_denied")
         if (
             policy.role_id != "reporter"
             and metric["id"] == "evidence.provenance"
@@ -268,6 +275,7 @@ def load_profile(text, *, datasets, policy):
                 "qa.tool_boundary",
                 "economist.tool_boundary",
                 "reservoir.tool_boundary",
+                "risk.tool_boundary",
             }
             and set(metric["parameters"]["expectedCalls"]) != case_ids
         ):

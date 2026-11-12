@@ -1,41 +1,10 @@
-# How Risk-Analysis Works — @shaleyeah/server-risk-analysis
+# How Risk Analysis calculates
+The risk owner declares a complete list of assumed joint outcomes. For each state, probability is its integer weight divided by total weight. Expected loss is the weighted mean of residual loss. Standard deviation uses centered weighted variance to preserve small variance around large loss baselines.
 
-## Plain language (12-year-old version)
+Loss quantiles use the weighted empirical CDF: return the first loss whose cumulative weight reaches the requested fraction. P10 is the lower loss quantile and P90 the higher loss quantile. These are loss quantiles, not petroleum reserve categories. Tail probability is the mass with loss at or above the operator's threshold.
 
-Before you spend $10 million drilling a well, you want to know: what could go wrong? Risk-Analysis is the expert who thinks through all the ways things could go bad — is the geology uncertain? Are prices volatile? Are there legal issues? Is the location in a tough regulatory state?
+Indicator correlations are calculated from which hazards occur together in the supplied joint states. Integer arithmetic protects the covariance numerator from cancellation. A zero-variance indicator has unavailable correlation; it is never assigned a fabricated coefficient. All such probabilities and dependence describe assumptions.
 
-It scores each risk area (low/medium/high), then runs a thousand imaginary futures using Monte Carlo simulation to show you the range of outcomes — best case, most likely case, worst case.
+Register coverage is evaluated independently of probability mass. A zero-probability state cannot erase missing evidence, a conflict, unknown severity or an unmitigated severe hazard. The resulting work remains blocked or ready for exact human review.
 
-## Technical explanation
-
-Risk-Analysis is a **Tier 1 MCP tool server** — stateless, no session memory. It exposes 2 risk tools.
-
-### Tool inventory
-
-| Tool | What it does |
-|------|-------------|
-| `assess_investment_risk` | Multi-domain risk scoring: geological, economic, legal, market, regulatory |
-| `monte_carlo_simulation` | Runs N iterations varying oil price, production, and cost assumptions; returns P10/P50/P90 NPV distribution |
-
-### Monte Carlo approach
-
-The three samplers are intentional random functions (the only legitimate randomness in the codebase):
-- `sampleUniform(min, max)` — uniform distribution
-- `sampleTriangular(min, mode, max)` — triangular distribution (most common for O&G uncertainty)
-- `sampleNormal(mean, std)` — normal distribution
-
-Each simulation run varies oil price, production rate, and capital costs across their uncertainty ranges, computes NPV, and builds a distribution.
-
-### LLM synthesis
-
-`callLLM()` is called to interpret the risk factors in context and produce a narrative recommendation. The response is validated against `RiskProfileSchema` from `@shaleyeah/sdk`.
-
-```typescript
-const rawResponse = await callLLM({ prompt: riskPrompt });
-const riskProfile = RiskProfileSchema.parse(JSON.parse(rawResponse));
-```
-
-### Transport modes
-
-- **stdio** (default): pipe-based
-- **HTTP** (when `PORT=3005`): `StreamableHTTPServerTransport` — used by the risk-analyst agent
+The initial method is deterministic, so a random seed is inapplicable. It does not infer field probabilities, financial NPV/IRR, jurisdiction risk scores, compliance or investment approval. An enrolled human's separate decision is required before private recording.

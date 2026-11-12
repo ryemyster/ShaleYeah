@@ -56,7 +56,7 @@ Versioned capability IDs will be published in #568.
 | Geologist | [geologist](../agents/geologist/README.md) | [geowiz](../servers/geowiz/src/index.ts): `process_well_logs`, `analyze_formation`, `assess_quality` and six other tools | #671–#674 |
 | Reservoir Engineer | [reservoir-engineer](../agents/reservoir-engineer/README.md) | [curve-smith](../servers/curve-smith/src/index.ts): source discovery/read, `calculate_forecast`, `compare_forecasts`, `draft_forecast`, exact review/status and `record_forecast`; source-independent `generate_type_curve`/`calculate_eur` | #681 |
 | Economist | [economist](../agents/economist/README.md) | [econobot](../servers/econobot/src/index.ts): explicit cash-flow calculation, source-linked scenarios and exact private human review | #680 |
-| Risk Analyst | [risk-analyst](../agents/risk-analyst/README.md) | [risk-analysis](../servers/risk-analysis/src/index.ts): `assess_investment_risk`, `monte_carlo_simulation` | #682 |
+| Risk Analyst | [risk-analyst](../agents/risk-analyst/README.md) | [risk-analysis](../servers/risk-analysis/src/index.ts): source-bound joint-scenario appraisal and exact human review | #682 |
 | Legal Analyst | [legal-analyst](../agents/legal-analyst/README.md) | [legal](../servers/legal/src/index.ts): `analyze_legal_framework`, `review_contract`, `assess_compliance` | #683 |
 | Market Analyst | [market-analyst](../agents/market-analyst/README.md) | [market](../servers/market/src/index.ts): `analyze_market_conditions`, `competitive_analysis` | #684 |
 | Title Analyst | [title-analyst](../agents/title-analyst/README.md) | [title](../servers/title/src/index.ts): `examine_ownership`, `analyze_lease`, `check_burdens`, `trace_chain_of_title` | #685 |
@@ -146,8 +146,8 @@ and reserves treatment remain unverified. See the [current input contract](../se
 - **Required inputs:** Asset/task scope, versioned specialist evidence, declared distributions/ranges or qualitative uncertainty, material exposure and risk policy. **Optional:** Operator incidents, cost overruns, environmental liabilities and permitted analog outcomes.
 - **Output and handoffs:** Evidence-linked risk register, scenario results, mitigation owners and unresolved dependencies to Investment Chair and Development; challenges back to the originating specialist.
 - **Own context:** Register revisions, scenario/distribution provenance, correlation assumptions, random seed when sampling, mitigation status and approved risk limits.
-- **Sources and hooks:** Internal incident/register CSV or controlled API, reviewed employee artifacts, optional Volve study records [S02](#s02-volve-study-data). A study field is not a calibrated universal probability model.
-- **Configurable evaluation:** Seeded reproducibility, distribution/correlation validation, severe-risk detection, sensitivity to missing evidence, mitigation traceability and disclosure of unsupported precision.
+- **Sources and hooks:** #682 accepts normalized register/policy/joint-state JSON exports and a controlled public/internal snapshot seam. Upstream CSV/vendor records require authorized normalization; direct vendor mappings are not qualified. Optional Volve study records [S02](#s02-volve-study-data) are not a calibrated universal probability model.
+- **Configurable evaluation:** Exact joint-state reproducibility, independent weighted moments/quantiles/dependence, severe-risk and source coverage, mitigation traceability and no unapproved acceptance. The initial deterministic method needs no seed; future sampling requires its own qualification.
 - **Human decisions:** Risk owner sets acceptance limits and approves residual risk/waivers. The agent cannot relax policy or treat independent-looking samples as proof that uncertainties are independent.
 - **Unresolved validation:** Risk professional calibrates scenarios, severity and correlations using representative operator evidence; financial/professional correctness needs expert review. Owner #682.
 

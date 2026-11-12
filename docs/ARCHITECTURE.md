@@ -41,8 +41,8 @@ remain owned by #671/#674 and their role peers.
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
-previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA, Economist and Reservoir Engineer
-use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The nine
+previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA, Economist, Reservoir Engineer and Risk Analyst
+use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The eight
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
 uses server/client 2.3.1 and Node adapter 2.1.1 with explicit modern options.
@@ -102,6 +102,15 @@ references. Private save requires installed packet-bound qualification and an
 exact human engineering decision; it cannot classify reserves or approve capital.
 
 ## Packages and dependency boundaries
+
+The [Risk Analyst](../agents/risk-analyst/README.md) uses exact register, operator-policy
+and complete joint-scenario JSON exports. Risk Analysis calculates assumed loss
+and dependence, preserves missing/conflicting evidence and severe-risk blockers,
+and enforces installed qualification plus enrolled human review before private
+recording. Native context/provider/client/review helpers remain installed
+dependencies; actual output is checked independently. The initial deterministic
+method does not establish field probability calibration, NPV/IRR, compliance or
+capital authority. Independent package/container results retain their own receipts.
 
 | Area | Current responsibility | Target boundary |
 | --- | --- | --- |

@@ -69,10 +69,6 @@ const TOOL_CLASS = new Map([
 	["research-analyst.conduct_market_research", MODERATE],
 	["research-analyst.analyze_competition", MODERATE],
 
-	// risk-analyst (2 tools)
-	["risk-analyst.assess_investment_risk", MODERATE],
-	["risk-analyst.monte_carlo_simulation", SLOW], // 10 000+ Monte Carlo iterations
-
 	// title-analyst (4 tools)
 	["title-analyst.examine_ownership", MODERATE],
 	["title-analyst.analyze_lease", MODERATE],

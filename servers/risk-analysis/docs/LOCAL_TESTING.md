@@ -1,39 +1,22 @@
-# Local Testing — @shaleyeah/server-risk-analysis
-
-## Quick start
-
-```bash
-cd servers/risk-analysis
+# Local Risk Analysis checks
+First install the matching native employee from the repository root:
+```sh
+uv sync --project agents/risk-analyst --locked
+```
+Then run these from the backend package:
+```sh
 pnpm build
-npx tsx tests/server.test.ts
+pnpm type-check
+pnpm lint
+pnpm test
 ```
+The suite uses synthetic operator files and offline model responses, with real MCP and review transitions. Loopback listeners must be permitted. It checks arithmetic against independently authored references, denied/stale/forged sources, human changes/rejection/approval, installed qualification, restart and replay. The generic MCP consumer uses the compiled entry.
 
-## HTTP mode testing
-
-```bash
-# Terminal 1
-PORT=3005 ANTHROPIC_API_KEY=sk-... pnpm start
-
-# Terminal 2
-cd agents/risk-analyst
-RISK_ANALYSIS_MCP_URL=http://localhost:3005 npx tsx tests/mcp-client.test.ts
+From the repository root, independent packaging and containers use:
+```sh
+node servers/risk-analysis/scripts/check-extraction.mjs --bundle NEW_EMPTY_BUNDLE_DIRECTORY --report EXTRACTION_REPORT
+python3 servers/risk-analysis/scripts/check-containers.py --bundle VERIFIED_BUNDLE_DIRECTORY --report CONTAINER_REPORT
 ```
+Use new owned absolute destinations. Extraction installs declared dependencies and runs isolated source, wheel and archive controls. Container checks require Docker and consume the verified bundle; missing runtime or a failed control produces a blocked decision. Reports retain exact artifact/lock hashes. Fixture success does not certify professional risk judgments.
 
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-# Expect: authentication error
-```
-
-## Monte Carlo determinism note
-
-Monte Carlo results are intentionally random — each run produces a different distribution. Tests should check P50 is within a reasonable range, not an exact value.
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3005` | Server not started in HTTP mode | `PORT=3005 pnpm start` |
-| Schema validation error | LLM returned unexpected shape | Check `RiskProfileSchema` in sdk/src/contracts.ts |
-| Tests fail to import | Build needed | `pnpm build` first |
+For startup failures, check private file permissions, enrolled IDs, current source grants, exact revisions and required audit/verifier configuration. Error messages intentionally omit source contents and credentials.

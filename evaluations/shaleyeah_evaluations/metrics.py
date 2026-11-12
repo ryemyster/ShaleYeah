@@ -11,6 +11,7 @@ from shaleyeah_contracts import ContractValidationError, validate_contract, vali
 
 from .economics import cash_flow_accuracy
 from .forecasts import forecast_accuracy
+from .risks import register_coverage, scenario_accuracy
 
 
 def _work(trace, runtime):
@@ -341,6 +342,31 @@ def _economist_faithfulness(trace, runtime, _):
     )
 
 
+def _risk_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, packet = observed.get("risk_work"), observed.get("risk_packet")
+    sources = runtime.get("sourceArtifacts", [])
+    return (
+        _provenance(trace, runtime, {})
+        and type(work) is dict and type(packet) is dict
+        and packet.get("riskAccepted") is False
+        and len(sources) == 3
+        and all(s.get("format") == "json" for s in sources)
+        and len({s["artifact"]["id"] for s in sources}) == 3
+        and _same_json(work.get("inputs"), [s["artifact"] for s in sources])
+        and _same_json(work.get("evidence"), [s["evidence"] for s in sources])
+        and _same_json(trace.get("riskPacket"), packet)
+        and _same_json(trace.get("workProduct"), work)
+    )
+
+
+def _same_json(first, second):
+    try:
+        return rfc8785.dumps(first) == rfc8785.dumps(second)
+    except (TypeError, ValueError):
+        return False
+
+
 def _reservoir_faithfulness(trace, runtime, _):
     observed = runtime.get("observations", {})
     work, forecast = observed.get("reservoir_work"), observed.get("reservoir_forecast")
@@ -434,6 +460,22 @@ REGISTRY = MappingProxyType(
             _definition("reservoir.architecture_boundary", _observed_architecture),
             _definition("reservoir.no_unapproved_forecast", _persistence),
             _definition("reservoir.source_faithfulness", _reservoir_faithfulness),
+            _definition("risk.architecture_boundary", _observed_architecture),
+            _definition("risk.no_unapproved_acceptance", _persistence),
+            _definition("risk.source_faithfulness", _risk_faithfulness),
+            _definition("risk.register_coverage", register_coverage),
+            _definition("risk.scenario_accuracy", scenario_accuracy, {
+                "absoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.01},
+                "relativeTolerance": {"type": "number", "minimum": 0, "maximum": 1e-8},
+            }),
+            _definition("risk.tool_boundary", _tool_boundary, {
+                "expectedCalls": {"type": "object", "minProperties": 1, "additionalProperties": {
+                    "type": "array", "items": {"type": "string", "enum": [
+                        "read_risk_inputs", "read_risk_source", "calculate_risk", "compare_risk_scenarios",
+                        "draft_risk", "prepare_risk_review", "risk_review_status", "record_risk_assessment",
+                    ]}, "uniqueItems": True, "maxItems": 8,
+                }},
+            }),
             _definition(
                 "reservoir.forecast_accuracy",
                 forecast_accuracy,
