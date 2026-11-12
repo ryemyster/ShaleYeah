@@ -6,6 +6,7 @@ __pycache__/
 
 # Build output
 dist/
+artifacts/
 *.egg-info/
 
 # Environment
@@ -29,6 +30,7 @@ logs/
 
 # Coverage
 coverage/
+.coverage
 
 # Test artifacts
 tests/temp/

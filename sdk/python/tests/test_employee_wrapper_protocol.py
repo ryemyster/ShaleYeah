@@ -1,4 +1,4 @@
-"""Wire compatibility only; these controls do not qualify employee job behavior."""
+"""Remaining callable-wrapper compatibility; adopted employees own their role controls."""
 
 import asyncio
 import importlib.util
@@ -19,7 +19,6 @@ CALLERS = [
     ("legal-analyst", "legal_mcp", "LEGAL", "legal"),
     ("market-analyst", "market_mcp", "MARKET", "market"),
     ("research-analyst", "research_mcp", "RESEARCH", "research"),
-    ("risk-analyst", "risk_analysis_mcp", "RISK_ANALYSIS", "risk-analysis"),
     ("title-analyst", "title_mcp", "TITLE", "title"),
 ]
 

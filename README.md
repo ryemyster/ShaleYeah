@@ -96,9 +96,9 @@ dispositions for an authenticated human owner. An exception retains the original
 
 ## Project Status
 
-Geologist, Reporter, QA, Economist and Reservoir Engineer have implemented reference employee workflows with
+Geologist, Reporter, QA, Economist, Reservoir Engineer and Risk Analyst have implemented employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. All fourteen roles now have ADK definitions. Nine roles still
+package checks. All fourteen roles now have ADK definitions. Eight roles still
 need their full employee workflows and qualification.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
@@ -108,6 +108,11 @@ supplied rate histories or explicit scenarios and report finite modeled volumes.
 The [Reservoir Engineer](agents/reservoir-engineer/README.md) binds three exact
 operator exports to forecast diagnostics, private context and human review.
 Its synthetic numerical fixtures do not establish field accuracy or reserves.
+
+The [Risk Analyst](agents/risk-analyst/README.md) binds exact register, policy and
+joint-scenario exports to assumed loss/dependence calculations, policy blockers,
+private context and qualified human review. Its deterministic fixtures do not
+establish field probabilities or professional risk acceptance.
 
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 

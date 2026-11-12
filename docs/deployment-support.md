@@ -235,6 +235,15 @@ the supported reference journey with actual inputs and outputs.
 
 ## Optional host requirements
 
+Risk Analyst #682 uses the installed native runtime with its own exact-source
+context and enrolled Risk Analysis review adapter. Its extraction and separate
+employee/tool container checks record artifact/lock hashes, current grants,
+actual-output grading and restart/replay/revocation. Required CI runs those
+checks on its tested revision. A local host without Docker can run the package
+checks, but cannot claim local container qualification. Provider fixtures,
+archive/container conformance and real-asset professional acceptance remain
+separate evidence; no additional hosted platform is certified by that adoption.
+
 - **VM:** use a supervised service, least-privilege runtime identity, private
   ingress/TLS, persistent disk and tested restore. Apply the same employee/tool
   contract as containers; no VM-specific logic belongs in agent reasoning.

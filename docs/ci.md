@@ -27,8 +27,9 @@ cannot silently turn the final gate into an accepted skip.
 | Reporter employee or server | Reporter |
 | Economist employee or Econobot | Economist |
 | Reservoir Engineer employee or Curve-smith | Reservoir Engineer |
+| Risk Analyst employee or Risk Analysis | Risk Analyst |
 | QA employee or QA server | QA |
-| One of the nine current Python caller packages or its backend | That caller's locked package checks |
+| One of the eight remaining Python caller packages or its backend | That caller's locked package checks |
 | Root README, architecture, contributing or changelog; reviewed CI/SDLC and MVP/legacy ledger docs | Workspace checks |
 | Shared SDK, contracts, connectors, evaluations, workflow/CI scripts, root configuration/data or unknown paths | Full qualification |
 

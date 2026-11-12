@@ -50,6 +50,11 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "risk-analyst": frozenset({
+        "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
+        "risk.architecture_boundary", "risk.no_unapproved_acceptance", "risk.tool_boundary",
+        "risk.source_faithfulness", "risk.scenario_accuracy", "risk.register_coverage",
+    }),
     "reservoir-engineer": frozenset(
         {
             "contract.schema",
@@ -109,6 +114,7 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "risk-analyst": ("risk.no_unapproved_acceptance", "risk.scenario_accuracy", "risk.source_faithfulness", "risk.register_coverage"),
     "reservoir-engineer": (
         "reservoir.no_unapproved_forecast",
         "reservoir.forecast_accuracy",

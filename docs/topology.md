@@ -423,7 +423,7 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](model-providers.md).
 
-The Geologist, Reporter, QA, Economist and Reservoir Engineer factories use installable `sdk/employee` helpers for
+The Geologist, Reporter, QA, Economist, Reservoir Engineer and Risk Analyst factories use installable `sdk/employee` helpers for
 scoped state, providers/events, optional native ADK and protected continuation.
 Role code owns persona and tool mappings; the helper imports no employee. The
 TypeScript SDK review core accepts trusted role-owned source/action/schema
@@ -453,3 +453,12 @@ backend binds current sources, actual-output qualification and human approval
 before a private save. Independent packages and required container qualification
 retain their own receipts. Synthetic numerical conformance does not establish
 field accuracy, reserves classification or professional acceptance.
+
+Risk Analyst uses the same JSON source profile for exact register, operator-policy
+and complete joint-scenario exports. It retains private context through installed
+helpers; Risk Analysis owns assumed-loss/dependence calculations, severe-risk
+coverage and exact human review. Six mandatory Risk metrics grade the actual
+returned work, and installed qualification is required before private recording.
+The initial deterministic method needs no seed and grants no field probability,
+financial NPV/IRR, compliance or capital authority. Source/package/container
+receipts and named human acceptance remain distinct evidence.

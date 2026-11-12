@@ -1,32 +1,12 @@
-# Integration — Risk Analyst ADK Agent
+# Integrating Risk Analyst
+Use `create_risk_analyst_agent` for the native factory and `RiskAnalystRuntime.open` for retained working context. Supply a configured backend, explicit model profiles, credential resolver and trusted context catalog. The host owns current context and source grants. [Shared context documentation](../../../sdk/employee/README.md) describes the installed helpers.
 
-Integrate with Risk Analyst through the ADK project in `agents/risk-analyst`.
+The backend connection uses `RISK_ANALYSIS_MCP_URL` (default `http://127.0.0.1:3005/mcp`) and an owner-only `RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE`. The selected profile is MCP 2026-07-28 with self-contained requests, fresh schema discovery, bounded calls and structured failures. Caller, provider and source credentials stay separate.
 
-## Local ADK Invocation
+Role tools discover inputs, read paged source text, calculate/compare scenarios, draft work, prepare review, read review status and record an approved private appraisal. Python arguments map exact task/model IDs and revisions. Retrieved text cannot supply identity, an endpoint, a credential or approval authority.
 
-```bash
-cd agents/risk-analyst
-RISK_ANALYSIS_MCP_URL=http://localhost:3005/mcp RISK_ANALYSIS_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Run a Monte Carlo simulation for price, production, decline, and capex uncertainty"
-```
+The final JSON contract has only `work` and `risk`; an explicit `deferred` string is the alternative. A host must grade the actual returned response through the installed scorecard. Replacing it with a correct backend object would hide employee errors.
 
-## Backend Contract
+`ReviewSupervisor` wraps the installed business-state adapter and translates only the fixed Risk review operations. On resume it reads the backend checkpoint and records only an exact, current, qualified human-approved action. An approved deterministic transition needs no model call.
 
-The agent calls the Risk Analysis-compatible MCP backend configured by `RISK_ANALYSIS_MCP_URL`.
-
-| Backend tool | Agent wrapper |
-|--------------|---------------|
-| `assess_investment_risk` | `assess_investment_risk` |
-| `monte_carlo_simulation` | `monte_carlo_simulation` |
-
-## Orchestrator Boundary
-
-Future orchestration should call the ADK agent as a standalone unit. Keep task routing, fleet learning loops, and deployment control plane work outside this package unless an issue explicitly scopes it here.
-
-## Server Integration
-
-Claude Desktop and other MCP clients can connect directly to `servers/risk-analysis` for Tier 1 tool access. The Tier 2 Risk Analyst behavior remains in ADK and uses the same backend URL.
-
-## Connection profile
-
-This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.
+Compatible external MCP fixtures prove transport and argument/result mapping. They do not certify another backend's calculations, source rights or review controls. Independent use and supported substitution must retain those contracts and pass their own qualification.

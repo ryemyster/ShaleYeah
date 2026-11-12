@@ -22,6 +22,16 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **Risk Analyst employee:** exact register/policy/joint-scenario sources,
+  durable native context, independent actual-output checks, enrolled human
+  review and installed qualification before private recording. The initial
+  deterministic method discloses assumptions and preserves policy blockers;
+  unsupported scores, financial proxies, unseeded sampling and caller-selected
+  writes are removed. Risk now has required native/package/container CI gates.
+  Shared caller controls now cover the eight remaining wrappers; Risk's
+  protected external-tool controls belong to its native employee package.
+  Fixture success does not establish field calibration or professional acceptance. (#682)
+
 - **CI fixture maintenance:** Reporter configuration/HTTP bootstrap controls
   create current synthetic grant/evidence dates when running against the real
   clock. Fixed-clock review fixtures and production expiry checks remain intact.

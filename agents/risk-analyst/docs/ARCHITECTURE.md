@@ -1,77 +1,10 @@
-# Architecture — Risk Analyst ADK Agent
+# Risk Analyst architecture
+The primary mode is **Stand-alone Agent with Progressive Disclosure (Skills)**. One native ADK (Agent Development Kit) employee uses metadata discovery and bounded source detail. It has no delegated children.
 
-`agents/risk-analyst` is the package-local ADK/Python project for the Risk Analyst role. The monorepo root remains workspace coordination only.
+`app/agent.py` owns persona, tool registration, explicit provider configuration and callbacks. `app/risk_analysis_mcp.py` maps role operations through the installed MCP (Model Context Protocol) client. `app/context_runtime.py` adds role-specific source and review references around the installed employee runtime. `app/evaluation.py` grades the actual final response, with trusted observations supplied separately by the host.
 
-## Package Boundary
+Risk Analysis owns source hashes, current grants, deterministic arithmetic, policy coverage, enrolled human decisions and private recording. Its durable business transitions are backend enforced; ADK confirmation alone grants no business authority.
 
-| Path | Purpose |
-|------|---------|
-| `agents-cli-manifest.yaml` | agents-cli project marker for this package |
-| `.agents-cli-spec.md` | reference-pair spec and package boundary |
-| `pyproject.toml` | Python ADK dependencies |
-| `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
-| `app/risk_analysis_mcp.py` | Python MCP client and Risk Analysis execution wrappers |
-| `tests/` | pytest shape tests plus ADK eval dataset/config |
-| `servers/risk-analysis` | independent TypeScript MCP backend |
+Context is private to customer, asset, task and employee. Successful source references are reauthorized before retention or use; malformed, duplicate, stale or revoked evidence blocks continuation. Review preparation rederives work before it enters the catalog. Pending review references survive restart, while approval grants remain in the backend. Shared knowledge cannot be silently promoted from model output.
 
-## Architecture Mode
-
-Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
-
-Risk Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Risk Analysis MCP tools when investment-risk diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #527.
-
-Graph-based workflow is reserved for a later issue if risk review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
-
-## Execution Path
-
-```
-ADK runner / agents-cli
-  |
-  v
-app/agent.py
-  |
-  |-- risk_analysis_backend_status()
-  |-- plan_risk_analysis_tool_call()
-  |-- assess_investment_risk()
-  `-- monte_carlo_simulation()
-       |
-       v
-app/risk_analysis_mcp.py
-       |
-       v
-RISK_ANALYSIS_MCP_URL, default http://localhost:3005/mcp
-       |
-       v
-servers/risk-analysis
-```
-
-## Tool Parity
-
-| Risk Analysis MCP tool | ADK Python wrapper |
-|------------------------|--------------------|
-| `assess_investment_risk` | `assess_investment_risk` |
-| `monte_carlo_simulation` | `monte_carlo_simulation` |
-
-## Eval Harness
-
-Behavior evals live under `tests/eval/`.
-
-| File | Purpose |
-|------|---------|
-| `tests/eval/datasets/risk-analyst-adk-reference.json` | Control, edge, and capability-boundary cases for ADK tool selection |
-| `tests/eval/eval_config.yaml` | Deterministic hard-boundary checks plus LLM-judged response quality |
-
-Run from `agents/risk-analyst`:
-
-```bash
-agents-cli eval run
-```
-
-## Runtime Configuration
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `RISK_ANALYSIS_MCP_URL` | `http://localhost:3005/mcp` | Risk Analysis-compatible MCP backend URL |
-| `RISK_ANALYST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
-
-The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Risk Analysis MCP backend is reachable when execution tools are invoked.
+Agents and tools install separately through declared contracts, client and runtime packages. Neither the coordinator nor a cloud deployment is required. Framework, provider and storage types remain adapter-local.
