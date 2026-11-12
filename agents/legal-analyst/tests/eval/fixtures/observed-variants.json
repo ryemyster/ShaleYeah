@@ -1,0 +1,1562 @@
+{
+  "indian-country": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.legal",
+        "employeeId": "employee.legal-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:legal:140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.matter",
+          "revision": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d",
+          "uri": "urn:sha256:e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d"
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:sha256:ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f",
+          "uri": "urn:sha256:1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.matter",
+          "revision": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d",
+          "uri": "urn:operator:matter",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.legal.ef6bebc7a2e7995f61763e027cb17a17e183a6b9c850856823b3eea6f9b7f34a",
+          "basis": "assumed",
+          "value": "The supplied contract states a written-approval obligation before transfer.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.2511287fc2e18009440926524e28a8f588ff579e11074d5b83980b21c7a6b782",
+          "basis": "assumed",
+          "value": "The supplied contract states 0%; this does not decide legal sufficiency.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.77f4045ad4a4f5057f67541620e224e02ecb902bb2943dbd64f443c4199942ea",
+          "basis": "assumed",
+          "value": "The named party is Café 🛢 LLC; preserve the exact spelling.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.60dfb9272bab1686d3eb4d8e43e8bd9d4acfea3fb2c4b639ce3e77a12fe02768",
+          "basis": "assumed",
+          "value": "The supplied rule retains EPA permitting authority for Indian country; the state-program grant does not cover this declared territory.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "exception: an unreviewed proposal; exact provisions remain in the legal memo"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1",
+          "statement": "Source scope and dates are operator-declared. Proposed legal interpretations require qualified human review; citation validity is not legal clearance.",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ]
+        }
+      ],
+      "uncertainty": "A source-backed private issue memo for counsel. No legal clearance, contract approval, redline/signature/filing/waiver authority, compliance certification or capital commitment is granted.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "legal": {
+      "version": "0.1.0",
+      "matterRef": {
+        "id": "matter.fixture",
+        "revision": "r1"
+      },
+      "title": "Unreviewed synthetic contract and historical-source issue memo",
+      "jurisdictionId": "US-MI",
+      "territoryId": "indian-country",
+      "activityId": "uic-class-ii",
+      "asOfDate": "2022-08-29",
+      "issues": [
+        {
+          "issueRef": {
+            "id": "issue.transfer",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The supplied contract states a written-approval obligation before transfer.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "transfer",
+              "startByte": 15,
+              "endByte": 61,
+              "quote": "shall obtain written approval before transfer.",
+              "sha256": "3f70adc8ac75a0de5040addd29834a363debb63de95b031aaf394100a3780ef7"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.royalty",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The supplied contract states 0%; this does not decide legal sufficiency.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "royalty",
+              "startByte": 48,
+              "endByte": 50,
+              "quote": "0%",
+              "sha256": "d9a847a1a79ab44825bbf8e5720bca771d53d1344d871bf9be1567382a022718"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.party",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The named party is Café 🛢 LLC; preserve the exact spelling.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "transfer",
+              "startByte": 0,
+              "endByte": 14,
+              "quote": "Café 🛢 LLC",
+              "sha256": "986768ee5b5bb66c78e58a63be1fa3020ceaec28c41308d9826f91868d28f7ae"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.authority",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "kind": "exception",
+          "statement": "The supplied rule retains EPA permitting authority for Indian country; the state-program grant does not cover this declared territory.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.mi-primary",
+                "revision": "r1"
+              },
+              "sectionId": "indian-exception",
+              "startByte": 0,
+              "endByte": 90,
+              "quote": "the sole permitting authority for all UIC well classes in Indian country within the State.",
+              "sha256": "8631778ce0729d8b836b6475b53590ba903c89265d7056c721df2279130be331"
+            }
+          ]
+        }
+      ],
+      "applicability": [
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "sectionId": "transfer",
+          "sourceKind": "contract",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "sectionId": "royalty",
+          "sourceKind": "contract",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "sectionId": "state-grant",
+          "sourceKind": "primary-law",
+          "basis": "operator-declared-source-metadata",
+          "status": "ineligible",
+          "reasons": [
+            "wrong-territory"
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "sectionId": "indian-exception",
+          "sourceKind": "primary-law",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.prior-counsel",
+            "revision": "r1"
+          },
+          "sectionId": "earlier-guidance",
+          "sourceKind": "counsel-note",
+          "basis": "operator-declared-source-metadata",
+          "status": "ineligible",
+          "reasons": [
+            "expired"
+          ]
+        }
+      ],
+      "coverage": {
+        "requiredQuestionRefs": [
+          {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "question.transfer",
+            "revision": "r1"
+          }
+        ],
+        "coveredQuestionRefs": [
+          {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "question.transfer",
+            "revision": "r1"
+          }
+        ],
+        "missingQuestionRefs": [],
+        "missingSources": [],
+        "missingConflictRefs": [],
+        "status": "passed"
+      },
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "legalClearance": false,
+      "professionalAcceptance": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.matter",
+          "revision": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d",
+          "uri": "urn:sha256:e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d"
+        },
+        "evidence": {
+          "id": "evidence.matter",
+          "revision": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d",
+          "uri": "urn:operator:matter",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "e2b0270a9412aefe889fc52fbaa6128f2f1262a67e0727f4f9d972a77143221d"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 784,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:sha256:ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+        },
+        "evidence": {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 2193,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f",
+          "uri": "urn:sha256:1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1503f1e857e974ad6e2b75753be0479aa3039e5d237cb8c4ec15fa6693b0318f"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 611,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "matter": {
+      "version": "0.1.0",
+      "matterRef": {
+        "id": "matter.fixture",
+        "revision": "r1"
+      },
+      "jurisdictionId": "US-MI",
+      "territoryId": "indian-country",
+      "activityId": "uic-class-ii",
+      "asOfDate": "2022-08-29",
+      "questions": [
+        {
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "prompt": "What approval obligation is stated in the supplied transfer clause?"
+        },
+        {
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "prompt": "Report the literal royalty in the supplied contract without deciding its legality."
+        },
+        {
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "prompt": "Identify the exact named party in the supplied transfer clause."
+        },
+        {
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "prompt": "Which authority is identified by the supplied historical rule for the declared territory and date?"
+        }
+      ]
+    },
+    "corpus": {
+      "version": "0.1.0",
+      "documents": [
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "title": "Synthetic contract, not an executed agreement",
+          "sourceKind": "contract",
+          "sourceUri": "urn:example:synthetic-legal-contract",
+          "sections": [
+            {
+              "sectionId": "transfer",
+              "text": "Café 🛢 LLC shall obtain written approval before transfer.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            },
+            {
+              "sectionId": "royalty",
+              "text": "The royalty stated in this supplied contract is 0%.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "title": "2022 Michigan Class II primacy rule — short historical excerpts",
+          "sourceKind": "primary-law",
+          "sourceUri": "https://www.govinfo.gov/content/pkg/FR-2022-07-28/pdf/2022-16017.pdf",
+          "sections": [
+            {
+              "sectionId": "state-grant",
+              "text": "EPA’s approval allows Michigan to implement and enforce",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-08-29",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            },
+            {
+              "sectionId": "indian-exception",
+              "text": "the sole permitting authority for all UIC well classes in Indian country within the State.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-08-29",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.prior-counsel",
+            "revision": "r1"
+          },
+          "title": "Synthetic prior internal note",
+          "sourceKind": "counsel-note",
+          "sourceUri": "urn:example:synthetic-prior-counsel",
+          "sections": [
+            {
+              "sectionId": "earlier-guidance",
+              "text": "Earlier internal note: confirm EPA administration before relying on any state approval.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": "2022-08-29",
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "policyRef": {
+        "id": "policy.legal-scope",
+        "revision": "r1"
+      },
+      "questions": [
+        {
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.mi-primary",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "conflicts": []
+    }
+  },
+  "historical-context": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.legal",
+        "employeeId": "employee.legal-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:legal:140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.matter",
+          "revision": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767",
+          "uri": "urn:sha256:edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767"
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:sha256:ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0",
+          "uri": "urn:sha256:8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.matter",
+          "revision": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767",
+          "uri": "urn:operator:matter",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.legal.ef6bebc7a2e7995f61763e027cb17a17e183a6b9c850856823b3eea6f9b7f34a",
+          "basis": "assumed",
+          "value": "The supplied contract states a written-approval obligation before transfer.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.2511287fc2e18009440926524e28a8f588ff579e11074d5b83980b21c7a6b782",
+          "basis": "assumed",
+          "value": "The supplied contract states 0%; this does not decide legal sufficiency.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.77f4045ad4a4f5057f67541620e224e02ecb902bb2943dbd64f443c4199942ea",
+          "basis": "assumed",
+          "value": "The named party is Café 🛢 LLC; preserve the exact spelling.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "requirement: an unreviewed proposal; exact provisions remain in the legal memo"
+        },
+        {
+          "id": "finding.legal.60dfb9272bab1686d3eb4d8e43e8bd9d4acfea3fb2c4b639ce3e77a12fe02768",
+          "basis": "assumed",
+          "value": "Counsel should reconcile the expired internal note with the historical primary rule; this memo retains both provisions without deciding legal clearance.",
+          "unit": "proposed-legal-issue",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1"
+          ],
+          "reason": "conflict: an unreviewed proposal; exact provisions remain in the legal memo"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.legal.140f48d15fbfa11080e336b7b0c2f4f864fffd68c0bc07bf8470947ef67f27b1",
+          "statement": "Source scope and dates are operator-declared. Proposed legal interpretations require qualified human review; citation validity is not legal clearance.",
+          "evidenceIds": [
+            "evidence.matter",
+            "evidence.corpus",
+            "evidence.policy"
+          ]
+        }
+      ],
+      "uncertainty": "A source-backed private issue memo for counsel. No legal clearance, contract approval, redline/signature/filing/waiver authority, compliance certification or capital commitment is granted.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "legal": {
+      "version": "0.1.0",
+      "matterRef": {
+        "id": "matter.fixture",
+        "revision": "r1"
+      },
+      "title": "Unreviewed synthetic contract and historical-source issue memo",
+      "jurisdictionId": "US-MI",
+      "territoryId": "state",
+      "activityId": "uic-class-ii",
+      "asOfDate": "2022-08-29",
+      "issues": [
+        {
+          "issueRef": {
+            "id": "issue.transfer",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The supplied contract states a written-approval obligation before transfer.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "transfer",
+              "startByte": 15,
+              "endByte": 61,
+              "quote": "shall obtain written approval before transfer.",
+              "sha256": "3f70adc8ac75a0de5040addd29834a363debb63de95b031aaf394100a3780ef7"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.royalty",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The supplied contract states 0%; this does not decide legal sufficiency.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "royalty",
+              "startByte": 48,
+              "endByte": 50,
+              "quote": "0%",
+              "sha256": "d9a847a1a79ab44825bbf8e5720bca771d53d1344d871bf9be1567382a022718"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.party",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "kind": "requirement",
+          "statement": "The named party is Café 🛢 LLC; preserve the exact spelling.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.contract",
+                "revision": "r1"
+              },
+              "sectionId": "transfer",
+              "startByte": 0,
+              "endByte": 14,
+              "quote": "Café 🛢 LLC",
+              "sha256": "986768ee5b5bb66c78e58a63be1fa3020ceaec28c41308d9826f91868d28f7ae"
+            }
+          ]
+        },
+        {
+          "issueRef": {
+            "id": "issue.authority",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "kind": "conflict",
+          "statement": "Counsel should reconcile the expired internal note with the historical primary rule; this memo retains both provisions without deciding legal clearance.",
+          "citations": [
+            {
+              "documentRef": {
+                "id": "document.mi-primary",
+                "revision": "r1"
+              },
+              "sectionId": "state-grant",
+              "startByte": 0,
+              "endByte": 57,
+              "quote": "EPA’s approval allows Michigan to implement and enforce",
+              "sha256": "ebcca0ce516a2f6b58c8e345f518162fda4834555b39d4d4caaf7bc83068771a"
+            },
+            {
+              "documentRef": {
+                "id": "document.prior-counsel",
+                "revision": "r1"
+              },
+              "sectionId": "earlier-guidance",
+              "startByte": 0,
+              "endByte": 87,
+              "quote": "Earlier internal note: confirm EPA administration before relying on any state approval.",
+              "sha256": "f537b49633184edc65932c66907a981763b0848d138a4fe99a712a41e5d1f9c0"
+            }
+          ]
+        }
+      ],
+      "applicability": [
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "sectionId": "transfer",
+          "sourceKind": "contract",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "sectionId": "royalty",
+          "sourceKind": "contract",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "sectionId": "state-grant",
+          "sourceKind": "primary-law",
+          "basis": "operator-declared-source-metadata",
+          "status": "eligible-for-draft",
+          "reasons": []
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "sectionId": "indian-exception",
+          "sourceKind": "primary-law",
+          "basis": "operator-declared-source-metadata",
+          "status": "ineligible",
+          "reasons": [
+            "wrong-territory"
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.prior-counsel",
+            "revision": "r1"
+          },
+          "sectionId": "earlier-guidance",
+          "sourceKind": "counsel-note",
+          "basis": "operator-declared-source-metadata",
+          "status": "ineligible",
+          "reasons": [
+            "expired"
+          ]
+        }
+      ],
+      "coverage": {
+        "requiredQuestionRefs": [
+          {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "question.transfer",
+            "revision": "r1"
+          }
+        ],
+        "coveredQuestionRefs": [
+          {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "question.transfer",
+            "revision": "r1"
+          }
+        ],
+        "missingQuestionRefs": [],
+        "missingSources": [],
+        "missingConflictRefs": [],
+        "status": "passed"
+      },
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "legalClearance": false,
+      "professionalAcceptance": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.matter",
+          "revision": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767",
+          "uri": "urn:sha256:edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767"
+        },
+        "evidence": {
+          "id": "evidence.matter",
+          "revision": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767",
+          "uri": "urn:operator:matter",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "edb66ad11c8cf50a6417f633f228ed2db28bcc9f652deed26953d3a33db4c767"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 775,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:sha256:ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+        },
+        "evidence": {
+          "id": "evidence.corpus",
+          "revision": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff12057ad4dbfbdf7b6abe4c5d0ea33c42d1d003b7602e9fe1954a7999c0a1d9"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 2193,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.legal",
+          "employeeId": "employee.legal-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0",
+          "uri": "urn:sha256:8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "8d428f162a8152c7784826d3b5d3d5eb9b2fb34c78e20c2cdaea7271a8674aa0"
+          },
+          "asOf": "2026-11-12T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-12T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-MI",
+        "units": [],
+        "byteLength": 925,
+        "accessNotes": "Operator and enrolled legal reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "matter": {
+      "version": "0.1.0",
+      "matterRef": {
+        "id": "matter.fixture",
+        "revision": "r1"
+      },
+      "jurisdictionId": "US-MI",
+      "territoryId": "state",
+      "activityId": "uic-class-ii",
+      "asOfDate": "2022-08-29",
+      "questions": [
+        {
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "prompt": "What approval obligation is stated in the supplied transfer clause?"
+        },
+        {
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "prompt": "Report the literal royalty in the supplied contract without deciding its legality."
+        },
+        {
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "prompt": "Identify the exact named party in the supplied transfer clause."
+        },
+        {
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "prompt": "Which authority is identified by the supplied historical rule for the declared territory and date?"
+        }
+      ]
+    },
+    "corpus": {
+      "version": "0.1.0",
+      "documents": [
+        {
+          "documentRef": {
+            "id": "document.contract",
+            "revision": "r1"
+          },
+          "title": "Synthetic contract, not an executed agreement",
+          "sourceKind": "contract",
+          "sourceUri": "urn:example:synthetic-legal-contract",
+          "sections": [
+            {
+              "sectionId": "transfer",
+              "text": "Café 🛢 LLC shall obtain written approval before transfer.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            },
+            {
+              "sectionId": "royalty",
+              "text": "The royalty stated in this supplied contract is 0%.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          },
+          "title": "2022 Michigan Class II primacy rule — short historical excerpts",
+          "sourceKind": "primary-law",
+          "sourceUri": "https://www.govinfo.gov/content/pkg/FR-2022-07-28/pdf/2022-16017.pdf",
+          "sections": [
+            {
+              "sectionId": "state-grant",
+              "text": "EPA’s approval allows Michigan to implement and enforce",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-08-29",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            },
+            {
+              "sectionId": "indian-exception",
+              "text": "the sole permitting authority for all UIC well classes in Indian country within the State.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-08-29",
+              "effectiveUntilExclusive": null,
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        },
+        {
+          "documentRef": {
+            "id": "document.prior-counsel",
+            "revision": "r1"
+          },
+          "title": "Synthetic prior internal note",
+          "sourceKind": "counsel-note",
+          "sourceUri": "urn:example:synthetic-prior-counsel",
+          "sections": [
+            {
+              "sectionId": "earlier-guidance",
+              "text": "Earlier internal note: confirm EPA administration before relying on any state approval.",
+              "jurisdictionIds": [
+                "US-MI"
+              ],
+              "territoryIds": [
+                "state",
+                "indian-country"
+              ],
+              "activityIds": [
+                "uic-class-ii"
+              ],
+              "effectiveFrom": "2022-01-01",
+              "effectiveUntilExclusive": "2022-08-29",
+              "sourceStatus": "operator-reviewed"
+            }
+          ]
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "policyRef": {
+        "id": "policy.legal-scope",
+        "revision": "r1"
+      },
+      "questions": [
+        {
+          "questionRef": {
+            "id": "question.transfer",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.royalty",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.party",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.contract",
+              "revision": "r1"
+            }
+          ]
+        },
+        {
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "requiredDocumentRefs": [
+            {
+              "id": "document.mi-primary",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "conflicts": [
+        {
+          "conflictRef": {
+            "id": "conflict.authority",
+            "revision": "r1"
+          },
+          "questionRef": {
+            "id": "question.authority",
+            "revision": "r1"
+          },
+          "provisions": [
+            {
+              "documentRef": {
+                "id": "document.mi-primary",
+                "revision": "r1"
+              },
+              "sectionId": "state-grant"
+            },
+            {
+              "documentRef": {
+                "id": "document.prior-counsel",
+                "revision": "r1"
+              },
+              "sectionId": "earlier-guidance"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

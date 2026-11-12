@@ -6,12 +6,12 @@ import path from 'node:path';
 import test from 'node:test';
 
 const callers = ['development-planner', 'drilling-engineer', 'infrastructure-planner',
-  'investment-chair', 'legal-analyst', 'market-analyst', 'research-analyst', 'title-analyst'];
+  'investment-chair', 'market-analyst', 'research-analyst', 'title-analyst'];
 const base = '1'.repeat(40);
 const head = '2'.repeat(40);
 const revision = '3'.repeat(40);
 const units = (...selected) => Object.fromEntries(
-  ['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk'].map((unit) => [unit, selected.includes(unit)]));
+  ['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal'].map((unit) => [unit, selected.includes(unit)]));
 const impact = async (changedPaths, extra = {}) => {
   const { selectImpact } = await import('../ci-impact.mjs');
   return selectImpact({ eventName: 'pull_request', baseSha: base, headSha: head,
@@ -40,6 +40,8 @@ for (const [file, selected, expectedCallers = []] of [
   ['servers/qa-server/src/index.ts', ['qa']],
   ['servers/curve-smith/src/index.ts', ['reservoir']],
   ['agents/reservoir-engineer/app/agent.py', ['reservoir']],
+  ['agents/legal-analyst/app/agent.py', ['legal']],
+  ['servers/legal/src/index.ts', ['legal']],
   ['docs/mvp-release-plan.md', []],
   ['CHANGELOG.md', []],
   ['README.md', []],
@@ -58,7 +60,7 @@ for (const [file, selected, expectedCallers = []] of [
   });
 }
 
-test('all eight remaining caller packages have explicit ownership', async () => {
+test('all seven remaining caller packages have explicit ownership', async () => {
   for (const role of callers) {
     const plan = await impact([`agents/${role}/app/agent.py`]);
     assert.equal(plan.full, false);
@@ -87,7 +89,7 @@ for (const file of ['sdk/employee/shaleyeah_employee/context.py', 'sdk/python/sh
   test(`shared or unknown impact remains full: ${file}`, async () => {
     const plan = await impact([file]);
     assert.equal(plan.full, true);
-    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk'));
+    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal'));
     assert.deepEqual(plan.callers, callers);
   });
 }

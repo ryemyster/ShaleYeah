@@ -1,34 +1,14 @@
-# Development — @shaleyeah/server-legal
+# Developing the Legal backend
 
-## Setup
+Work from this package with locked dependencies:
 
-```bash
-cd servers/legal
-pnpm install && pnpm build
+```sh
+pnpm build
+pnpm type-check
+pnpm lint
+pnpm test
 ```
 
-## Test commands
+Write failing behavior tests before changing source validation, coverage or review. Keep independently authored expected source/date decisions separate from generated backend wire observations. Preserve exact Unicode quotations, literal zero, document revisions, missing questions and conflicts. The employee proposes analysis; this service validates sources and canonical work rather than supplying legal conclusions from state names or keywords.
 
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-legal
-```
-
-## LLM wiring checklist
-
-- [ ] `callLLM()` called with jurisdiction + project type + lease terms prompt
-- [ ] Fallback: `deriveDefaultRegulatoryRisk()` — deterministic, exported for tests
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
-
-## Key constraints
-
-- No `Math.random()` in fallback functions
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- `deriveDefaultRegulatoryRisk()` must encode real regulatory patterns (not return same value always)
-- Governance (HITL, audit) lives in the `legal-analyst` agent, not here
-
-## Linting
-
-```bash
-cd servers/legal && npx biome check src/
-```
+Use installed contracts, MCP, qualification, audit/redaction and durable review helpers. Authentication, source rights and consequential review belong at the executing boundary. No model key is required here. Retain an independent build/extraction boundary and update inputs, public docs, changelogs and exact fixture/configuration hashes when contracts change.

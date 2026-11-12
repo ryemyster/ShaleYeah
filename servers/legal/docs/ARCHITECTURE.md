@@ -1,40 +1,11 @@
-# Architecture — @shaleyeah/server-legal
+# Legal backend architecture
 
-## Role
+The paired employee uses **Stand-alone Agent with Progressive Disclosure (Skills)**. This backend is an independently runnable deterministic MCP service. Its shared review business-state adapter enforces human decisions without becoming an agent reasoning loop.
 
-Tier 1 MCP tool server. Reviews lease terms, regulatory compliance, and legal risk for O&G properties. Paired with the `legal-analyst` agent (port 4006).
+`legal-service.ts` binds the current task to exact authorized matter, corpus and checklist exports, verifies fresh byte identities and source rights, and provides bounded source queries. `legal-memo.ts` validates the employee's proposed issues, exact quotations, provision-level declared applicability, required questions/document revisions and conflict retention. It derives canonical unreviewed work rather than a prewritten legal answer.
 
-## Tool inventory
+`employee-tools.ts` exposes ten fixed queries/commands. `configuration.ts` loads private operator exports and current enrollment/grants, scans configured secrets separately and requires redacted audit events. Source bytes participate in final authority checks even when the binding file is unchanged. `source-hooks.ts` provides a normalized public/internal snapshot seam under current rights; it qualifies no paid vendor mapping.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `analyze_legal_framework` | `callLLM()` | ✅ `callLLM` | Lease risk, regulatory environment, compliance checklist |
-| `review_contract` | `callLLM()` | ✅ `callLLM` | Contract term review, red flags, obligations |
+`review-workflow.ts` uses the installed durable review protocol. It rederives current work at prepare, approval and execution, binds all exact source/context/evaluation revisions, and rejects stale authority or replay. Qualified human review and installed qualification are required for recording. The source-date assertions and reviewer enrollment are operator-attested, not automated legal truth or license verification.
 
-## LLM + fallback pattern
-
-Calls `callLLM()` with jurisdiction, project type, and contract terms. Falls back to `deriveDefaultRegulatoryRisk(jurisdiction, projectType)` — deterministic rules: California exploration → "High", Texas production → "Low".
-
-## Key exports
-
-`deriveDefaultRegulatoryRisk(jurisdiction, projectType)` — exported pure function, used in anti-stub tests to verify no hardcoded stubs.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3006`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: analyze_legal_framework { jurisdiction, projectType, leaseTerms }
-  → callLLM(legal prompt with jurisdiction + project details)
-  ↘ fallback: deriveDefaultRegulatoryRisk(jurisdiction, projectType)
-```
-
-## Dependencies
-
-```
-@shaleyeah/server-legal
-  └── @shaleyeah/sdk   (MCPServer, callLLM, ServerFactory)
-```
+See [inputs](INPUTS.md), [integration](INTEGRATION.md) and the employee's [evaluation limits](../../../agents/legal-analyst/docs/EVALUATIONS.md).

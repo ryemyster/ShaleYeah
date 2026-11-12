@@ -423,7 +423,7 @@ configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
 Missing/unsupported configuration and synthesis failures are explicit errors.
 See [configuration and offline qualification](model-providers.md).
 
-The Geologist, Reporter, QA, Economist, Reservoir Engineer and Risk Analyst factories use installable `sdk/employee` helpers for
+The Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst and Legal Analyst factories use installable `sdk/employee` helpers for
 scoped state, providers/events, optional native ADK and protected continuation.
 Role code owns persona and tool mappings; the helper imports no employee. The
 TypeScript SDK review core accepts trusted role-owned source/action/schema
@@ -462,3 +462,14 @@ returned work, and installed qualification is required before private recording.
 The initial deterministic method needs no seed and grants no field probability,
 financial NPV/IRR, compliance or capital authority. Source/package/container
 receipts and named human acceptance remain distinct evidence.
+
+Legal Analyst uses JSON source profile 0.2.0 for exact matter/questions, versioned
+document provisions and a scope/checklist with declared conflicts. The native
+employee proposes cited issues; Legal computes exact UTF-8 citations, validates
+declared jurisdiction/territory/activity/effective dates and coverage, and binds
+human review to the current sources, work, context and qualification. Seven
+mandatory Legal metrics grade actual output. Source metadata and reviewer
+enrollment are operator-attested; citation identity is not legal entailment or
+license verification. Private recording grants no legal clearance, signature,
+filing, waiver, settlement or capital authority. Source/archive/container receipts
+and named human professional acceptance remain separate evidence.

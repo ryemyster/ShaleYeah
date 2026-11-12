@@ -1,35 +1,11 @@
-# Integration Guide - Legal Analyst ADK Agent
+# Integrating Legal Analyst
 
-Integrate Legal Analyst through its ADK package.
+Use `create_legal_analyst_agent` for an embedded ADK agent, passing explicit model configuration, MCP connection, event emitter and optional context hooks. Use `LegalAnalystRuntime.open(catalog, config, ...)` for retained working context, fresh source authorization before model dispatch, exact review references and restart behavior. Shared helpers are installed dependencies; runtime code does not import another employee's source.
 
-## Local ADK Invocation
+Set `LEGAL_MCP_URL` and `LEGAL_MCP_ACCESS_TOKEN_FILE` for the independent Legal-compatible MCP service. The installed client validates the selected MCP profile, resolves private credentials at dispatch, preserves safe failures and emits correlated events. Keep customer/asset/task/principal authorization in the host/backend. Tool arguments cannot choose credentials, principals, URLs or output paths.
 
-```bash
-cd agents/legal-analyst
-LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Review a farmout agreement for assignment consent, drilling commitment, indemnity, and default remedies"
-```
+The ten backend tools are documented in the [Legal backend](../../../servers/legal/README.md). Python proposal and comparison tools take bounded JSON strings so both native provider adapters receive fixed argument schemas. Quote lookup returns the exact citation object to copy into the proposal.
 
-## Backend Contract
+`prepare_legal_review` verifies fresh canonical `work`/`legal` before retaining host-owned context. It preserves a pending review reference without persisting an approval grant in employee context. `ReviewSupervisor` maps shared review continuation to `legal_review_status` and `record_legal_memo`; the executing backend still enforces current human authority and qualification.
 
-The ADK tools map to the current Legal MCP server tools:
-
-| ADK wrapper | MCP tool |
-|-------------|----------|
-| `analyze_legal_framework` | `analyze_legal_framework` |
-| `review_contract` | `review_contract` |
-| `assess_compliance` | `assess_compliance` |
-
-The MCP backend URL comes from `LEGAL_MCP_URL`. The default is `http://localhost:3006/mcp`.
-
-## Orchestration Boundary
-
-An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs. Shared contracts belong in `sdk/`; Legal execution stays behind `servers/legal`.
-
-## Human/Legal Review
-
-Downstream systems must treat legal opinions, redlines, filings, regulatory submissions, signatures, waivers, settlement positions, enforcement decisions, and binding approvals as human/legal-review actions. Legal Analyst can provide supporting analysis only.
-
-## Connection profile
-
-This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.
+Human decisions use the separate [backend API/CLI](../../../servers/legal/docs/INTEGRATION.md). A compatible service must preserve these source, revision, privacy and human-review contracts. Semantic/professional correctness and vendor access need separate qualification.

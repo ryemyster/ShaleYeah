@@ -1,0 +1,462 @@
+{
+  "schemaVersion": "0.1.0",
+  "fixtureId": "legal.source-oracles",
+  "revision": "r1",
+  "labelAuthor": "Codex under standing maintainer authorization",
+  "authoredAt": "2026-11-12",
+  "status": "provisional",
+  "professionalAcceptance": false,
+  "basis": "Independent source/citation and declared-scope/date controls authored before backend or grader implementation; no legal-clearance or current jurisdiction-wide opinion.",
+  "primaryReferences": [
+    {
+      "url": "https://www.govinfo.gov/content/pkg/FR-2022-07-28/pdf/2022-16017.pdf",
+      "version": "87 FR 45251, 2022-16017, published 2022-07-28; effective 2022-08-29",
+      "locator": "PDF page 1, Summary and Dates; reviewed as historical source"
+    },
+    {
+      "url": "https://www.ferc.gov/what-ferc-does",
+      "version": "Page updated 2025-06-18; retrieved 2026-11-12",
+      "purpose": "Regulator jurisdiction boundaries; later semantic fixtures require their own frozen source records"
+    },
+    {
+      "url": "https://www.epa.gov/uic/class-ii-oil-and-gas-related-injection-wells",
+      "version": "Retrieved 2026-11-12",
+      "purpose": "Program/well-class distinctions; no universal permitting rule"
+    },
+    {
+      "url": "https://www.ecfr.gov/reader-aids/government-policy-and-ofr-procedures/about-this-site",
+      "version": "Retrieved 2026-11-12",
+      "purpose": "Source status and verification against official editions"
+    }
+  ],
+  "matter": {
+    "version": "0.1.0",
+    "matterRef": {
+      "id": "matter.fixture",
+      "revision": "r1"
+    },
+    "jurisdictionId": "US-MI",
+    "territoryId": "state",
+    "activityId": "uic-class-ii",
+    "asOfDate": "2022-08-29",
+    "questions": [
+      {
+        "questionRef": {
+          "id": "question.transfer",
+          "revision": "r1"
+        },
+        "prompt": "What approval obligation is stated in the supplied transfer clause?"
+      },
+      {
+        "questionRef": {
+          "id": "question.royalty",
+          "revision": "r1"
+        },
+        "prompt": "Report the literal royalty in the supplied contract without deciding its legality."
+      },
+      {
+        "questionRef": {
+          "id": "question.party",
+          "revision": "r1"
+        },
+        "prompt": "Identify the exact named party in the supplied transfer clause."
+      },
+      {
+        "questionRef": {
+          "id": "question.authority",
+          "revision": "r1"
+        },
+        "prompt": "Which authority is identified by the supplied historical rule for the declared territory and date?"
+      }
+    ]
+  },
+  "corpus": {
+    "version": "0.1.0",
+    "documents": [
+      {
+        "documentRef": {
+          "id": "document.contract",
+          "revision": "r1"
+        },
+        "title": "Synthetic contract, not an executed agreement",
+        "sourceKind": "contract",
+        "sourceUri": "urn:example:synthetic-legal-contract",
+        "sections": [
+          {
+            "sectionId": "transfer",
+            "text": "Café 🛢 LLC shall obtain written approval before transfer.",
+            "jurisdictionIds": [
+              "US-MI"
+            ],
+            "territoryIds": [
+              "state",
+              "indian-country"
+            ],
+            "activityIds": [
+              "uic-class-ii"
+            ],
+            "effectiveFrom": "2022-01-01",
+            "effectiveUntilExclusive": null,
+            "sourceStatus": "operator-reviewed"
+          },
+          {
+            "sectionId": "royalty",
+            "text": "The royalty stated in this supplied contract is 0%.",
+            "jurisdictionIds": [
+              "US-MI"
+            ],
+            "territoryIds": [
+              "state",
+              "indian-country"
+            ],
+            "activityIds": [
+              "uic-class-ii"
+            ],
+            "effectiveFrom": "2022-01-01",
+            "effectiveUntilExclusive": null,
+            "sourceStatus": "operator-reviewed"
+          }
+        ]
+      },
+      {
+        "documentRef": {
+          "id": "document.mi-primary",
+          "revision": "r1"
+        },
+        "title": "2022 Michigan Class II primacy rule — short historical excerpts",
+        "sourceKind": "primary-law",
+        "sourceUri": "https://www.govinfo.gov/content/pkg/FR-2022-07-28/pdf/2022-16017.pdf",
+        "sections": [
+          {
+            "sectionId": "state-grant",
+            "text": "EPA’s approval allows Michigan to implement and enforce",
+            "jurisdictionIds": [
+              "US-MI"
+            ],
+            "territoryIds": [
+              "state"
+            ],
+            "activityIds": [
+              "uic-class-ii"
+            ],
+            "effectiveFrom": "2022-08-29",
+            "effectiveUntilExclusive": null,
+            "sourceStatus": "operator-reviewed"
+          },
+          {
+            "sectionId": "indian-exception",
+            "text": "the sole permitting authority for all UIC well classes in Indian country within the State.",
+            "jurisdictionIds": [
+              "US-MI"
+            ],
+            "territoryIds": [
+              "indian-country"
+            ],
+            "activityIds": [
+              "uic-class-ii"
+            ],
+            "effectiveFrom": "2022-08-29",
+            "effectiveUntilExclusive": null,
+            "sourceStatus": "operator-reviewed"
+          }
+        ]
+      },
+      {
+        "documentRef": {
+          "id": "document.prior-counsel",
+          "revision": "r1"
+        },
+        "title": "Synthetic prior internal note",
+        "sourceKind": "counsel-note",
+        "sourceUri": "urn:example:synthetic-prior-counsel",
+        "sections": [
+          {
+            "sectionId": "earlier-guidance",
+            "text": "Earlier internal note: confirm EPA administration before relying on any state approval.",
+            "jurisdictionIds": [
+              "US-MI"
+            ],
+            "territoryIds": [
+              "state",
+              "indian-country"
+            ],
+            "activityIds": [
+              "uic-class-ii"
+            ],
+            "effectiveFrom": "2022-01-01",
+            "effectiveUntilExclusive": "2022-08-29",
+            "sourceStatus": "operator-reviewed"
+          }
+        ]
+      }
+    ]
+  },
+  "policy": {
+    "version": "0.1.0",
+    "policyRef": {
+      "id": "policy.legal-scope",
+      "revision": "r1"
+    },
+    "questions": [
+      {
+        "questionRef": {
+          "id": "question.transfer",
+          "revision": "r1"
+        },
+        "requiredDocumentRefs": [
+          {
+            "id": "document.contract",
+            "revision": "r1"
+          }
+        ]
+      },
+      {
+        "questionRef": {
+          "id": "question.royalty",
+          "revision": "r1"
+        },
+        "requiredDocumentRefs": [
+          {
+            "id": "document.contract",
+            "revision": "r1"
+          }
+        ]
+      },
+      {
+        "questionRef": {
+          "id": "question.party",
+          "revision": "r1"
+        },
+        "requiredDocumentRefs": [
+          {
+            "id": "document.contract",
+            "revision": "r1"
+          }
+        ]
+      },
+      {
+        "questionRef": {
+          "id": "question.authority",
+          "revision": "r1"
+        },
+        "requiredDocumentRefs": [
+          {
+            "id": "document.mi-primary",
+            "revision": "r1"
+          }
+        ]
+      }
+    ],
+    "conflicts": []
+  },
+  "proposal": {
+    "version": "0.1.0",
+    "title": "Unreviewed synthetic contract and historical-source issue memo",
+    "issues": [
+      {
+        "issueRef": {
+          "id": "issue.transfer",
+          "revision": "r1"
+        },
+        "questionRef": {
+          "id": "question.transfer",
+          "revision": "r1"
+        },
+        "kind": "requirement",
+        "statement": "The supplied contract states a written-approval obligation before transfer.",
+        "citations": [
+          {
+            "documentRef": {
+              "id": "document.contract",
+              "revision": "r1"
+            },
+            "sectionId": "transfer",
+            "startByte": 15,
+            "endByte": 61,
+            "quote": "shall obtain written approval before transfer.",
+            "sha256": "3f70adc8ac75a0de5040addd29834a363debb63de95b031aaf394100a3780ef7"
+          }
+        ]
+      },
+      {
+        "issueRef": {
+          "id": "issue.royalty",
+          "revision": "r1"
+        },
+        "questionRef": {
+          "id": "question.royalty",
+          "revision": "r1"
+        },
+        "kind": "requirement",
+        "statement": "The supplied contract states 0%; this does not decide legal sufficiency.",
+        "citations": [
+          {
+            "documentRef": {
+              "id": "document.contract",
+              "revision": "r1"
+            },
+            "sectionId": "royalty",
+            "startByte": 48,
+            "endByte": 50,
+            "quote": "0%",
+            "sha256": "d9a847a1a79ab44825bbf8e5720bca771d53d1344d871bf9be1567382a022718"
+          }
+        ]
+      },
+      {
+        "issueRef": {
+          "id": "issue.party",
+          "revision": "r1"
+        },
+        "questionRef": {
+          "id": "question.party",
+          "revision": "r1"
+        },
+        "kind": "requirement",
+        "statement": "The named party is Café 🛢 LLC; preserve the exact spelling.",
+        "citations": [
+          {
+            "documentRef": {
+              "id": "document.contract",
+              "revision": "r1"
+            },
+            "sectionId": "transfer",
+            "startByte": 0,
+            "endByte": 14,
+            "quote": "Café 🛢 LLC",
+            "sha256": "986768ee5b5bb66c78e58a63be1fa3020ceaec28c41308d9826f91868d28f7ae"
+          }
+        ]
+      },
+      {
+        "issueRef": {
+          "id": "issue.authority",
+          "revision": "r1"
+        },
+        "questionRef": {
+          "id": "question.authority",
+          "revision": "r1"
+        },
+        "kind": "requirement",
+        "statement": "The supplied historical excerpt identifies Michigan implementation authority for the declared state program scope.",
+        "citations": [
+          {
+            "documentRef": {
+              "id": "document.mi-primary",
+              "revision": "r1"
+            },
+            "sectionId": "state-grant",
+            "startByte": 0,
+            "endByte": 57,
+            "quote": "EPA’s approval allows Michigan to implement and enforce",
+            "sha256": "ebcca0ce516a2f6b58c8e345f518162fda4834555b39d4d4caaf7bc83068771a"
+          }
+        ]
+      }
+    ]
+  },
+  "quotes": {
+    "transfer": {
+      "documentRef": {
+        "id": "document.contract",
+        "revision": "r1"
+      },
+      "sectionId": "transfer",
+      "startByte": 15,
+      "endByte": 61,
+      "quote": "shall obtain written approval before transfer.",
+      "sha256": "3f70adc8ac75a0de5040addd29834a363debb63de95b031aaf394100a3780ef7"
+    },
+    "party": {
+      "documentRef": {
+        "id": "document.contract",
+        "revision": "r1"
+      },
+      "sectionId": "transfer",
+      "startByte": 0,
+      "endByte": 14,
+      "quote": "Café 🛢 LLC",
+      "sha256": "986768ee5b5bb66c78e58a63be1fa3020ceaec28c41308d9826f91868d28f7ae"
+    },
+    "royalty": {
+      "documentRef": {
+        "id": "document.contract",
+        "revision": "r1"
+      },
+      "sectionId": "royalty",
+      "startByte": 48,
+      "endByte": 50,
+      "quote": "0%",
+      "sha256": "d9a847a1a79ab44825bbf8e5720bca771d53d1344d871bf9be1567382a022718"
+    },
+    "state-grant": {
+      "documentRef": {
+        "id": "document.mi-primary",
+        "revision": "r1"
+      },
+      "sectionId": "state-grant",
+      "startByte": 0,
+      "endByte": 57,
+      "quote": "EPA’s approval allows Michigan to implement and enforce",
+      "sha256": "ebcca0ce516a2f6b58c8e345f518162fda4834555b39d4d4caaf7bc83068771a"
+    },
+    "indian-exception": {
+      "documentRef": {
+        "id": "document.mi-primary",
+        "revision": "r1"
+      },
+      "sectionId": "indian-exception",
+      "startByte": 0,
+      "endByte": 90,
+      "quote": "the sole permitting authority for all UIC well classes in Indian country within the State.",
+      "sha256": "8631778ce0729d8b836b6475b53590ba903c89265d7056c721df2279130be331"
+    },
+    "prior-counsel": {
+      "documentRef": {
+        "id": "document.prior-counsel",
+        "revision": "r1"
+      },
+      "sectionId": "earlier-guidance",
+      "startByte": 0,
+      "endByte": 87,
+      "quote": "Earlier internal note: confirm EPA administration before relying on any state approval.",
+      "sha256": "f537b49633184edc65932c66907a981763b0848d138a4fe99a712a41e5d1f9c0"
+    }
+  },
+  "expectedApplicability": {
+    "state-as-of-effective": {
+      "document.contract/transfer": [],
+      "document.contract/royalty": [],
+      "document.mi-primary/state-grant": [],
+      "document.mi-primary/indian-exception": [
+        "wrong-territory"
+      ],
+      "document.prior-counsel/earlier-guidance": [
+        "expired"
+      ]
+    },
+    "day-before-effective": {
+      "document.contract/transfer": [],
+      "document.contract/royalty": [],
+      "document.mi-primary/state-grant": [
+        "not-yet-effective"
+      ],
+      "document.mi-primary/indian-exception": [
+        "not-yet-effective",
+        "wrong-territory"
+      ],
+      "document.prior-counsel/earlier-guidance": []
+    },
+    "indian-country-as-of-effective": {
+      "document.contract/transfer": [],
+      "document.contract/royalty": [],
+      "document.mi-primary/state-grant": [
+        "wrong-territory"
+      ],
+      "document.mi-primary/indian-exception": [],
+      "document.prior-counsel/earlier-guidance": [
+        "expired"
+      ]
+    }
+  }
+}

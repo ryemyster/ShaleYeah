@@ -1,43 +1,9 @@
-# Deployment - Legal Analyst ADK Agent
+# Deploying Legal Analyst
 
-Legal Analyst deploys as an ADK/Python agent package paired with the Legal MCP backend.
+Build this Python unit independently with its locked installed dependencies and deploy it beside a separately authorized Legal-compatible MCP service. Local processes, containers and managed runtimes can supply the same contracts; no particular cloud or orchestrator is required.
 
-## Required Runtime Inputs
+Supply `LEGAL_ANALYST_MODEL_CONFIG_FILE` with explicit provider/model revisions, owner scope, credential references and budgets. Supply `LEGAL_MCP_URL` and `LEGAL_MCP_ACCESS_TOKEN_FILE` separately, and use `LEGAL_ANALYST_EVENT_CONFIG_FILE` for configured private events. Remote MCP endpoints use HTTPS with current operator authorization.
 
-| Variable | Required | Default |
-|----------|----------|---------|
-| `LEGAL_MCP_URL` | No | `http://localhost:3006/mcp` |
-| `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
+For retained operation, the host opens `LegalAnalystRuntime` with private context storage and current grant/source callbacks. Keep that state and the backend's source/review/audit state in separate owner-only persistent locations. Restart must revalidate current inputs and rights rather than restore authority from conversation history.
 
-Set `LEGAL_MCP_URL` to the deployed `servers/legal` endpoint for non-local deployments.
-
-## Pre-Deployment Checks
-
-```bash
-cd agents/legal-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/legal_mcp.py
-agents-cli info
-```
-
-Run ADK evals when credentials are available:
-
-```bash
-agents-cli eval run
-```
-
-## Deployment Shape
-
-The agent package is independently buildable and extractable. Do not rely on root-level pnpm builds for Legal Analyst deployment. The backend MCP server remains independently deployable from `servers/legal`.
-
-## Smoke Test
-
-With the backend reachable:
-
-```bash
-cd agents/legal-analyst
-LEGAL_MCP_URL=https://legal-mcp.example.com agents-cli run \
-  "Assess compliance requirements for a New Mexico production project with 18 assets"
-```
-
-The response should cite the Legal backend path and avoid unreviewed legal opinion, filing, signature, or approval authority.
+Run package tests, actual native/backend integration, installed qualification and isolated package/container checks for the exact artifact before deployment. Fixture qualification grants no legal clearance or professional acceptance. Configure enrolled human review and source rights for the intended operator; paid data access and field/legal correctness require their own evidence.

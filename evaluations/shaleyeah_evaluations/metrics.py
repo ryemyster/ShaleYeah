@@ -11,6 +11,7 @@ from shaleyeah_contracts import ContractValidationError, validate_contract, vali
 
 from .economics import cash_flow_accuracy
 from .forecasts import forecast_accuracy
+from .legal import citation_accuracy, issue_coverage, jurisdiction_date, no_clearance
 from .risks import register_coverage, scenario_accuracy
 
 
@@ -367,6 +368,28 @@ def _same_json(first, second):
         return False
 
 
+def _legal_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, memo = observed.get("legal_work"), observed.get("legal_memo")
+    sources = runtime.get("sourceArtifacts", [])
+    return (
+        _provenance(trace, runtime, {})
+        and type(work) is dict and type(memo) is dict
+        and no_clearance(trace)
+        and len(sources) == 3
+        and all(s.get("format") == "json" for s in sources)
+        and len({s["artifact"]["id"] for s in sources}) == 3
+        and _same_json(work.get("inputs"), [s["artifact"] for s in sources])
+        and _same_json(work.get("evidence"), [s["evidence"] for s in sources])
+        and _same_json(trace.get("legalMemo"), memo)
+        and _same_json(trace.get("workProduct"), work)
+    )
+
+
+def _legal_clearance(trace, runtime, _):
+    return no_clearance(trace) and _persistence(trace, runtime, {})
+
+
 def _reservoir_faithfulness(trace, runtime, _):
     observed = runtime.get("observations", {})
     work, forecast = observed.get("reservoir_work"), observed.get("reservoir_forecast")
@@ -463,6 +486,21 @@ REGISTRY = MappingProxyType(
             _definition("risk.architecture_boundary", _observed_architecture),
             _definition("risk.no_unapproved_acceptance", _persistence),
             _definition("risk.source_faithfulness", _risk_faithfulness),
+            _definition("legal.source_faithfulness", _legal_faithfulness),
+            _definition("legal.citation_accuracy", citation_accuracy),
+            _definition("legal.jurisdiction_date", jurisdiction_date),
+            _definition("legal.issue_coverage", issue_coverage),
+            _definition("legal.architecture_boundary", _observed_architecture),
+            _definition("legal.no_unapproved_clearance", _legal_clearance),
+            _definition("legal.tool_boundary", _tool_boundary, {
+                "expectedCalls": {"type": "object", "minProperties": 1, "additionalProperties": {
+                    "type": "array", "items": {"type": "string", "enum": [
+                        "read_legal_inputs", "read_legal_source", "read_legal_provision", "cite_legal_source",
+                        "get_context_source_metadata", "compare_legal_sources", "draft_legal_memo",
+                        "prepare_legal_review", "legal_review_status", "record_legal_memo",
+                    ]}, "uniqueItems": True, "maxItems": 10,
+                }},
+            }),
             _definition("risk.register_coverage", register_coverage),
             _definition("risk.scenario_accuracy", scenario_accuracy, {
                 "absoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.01},

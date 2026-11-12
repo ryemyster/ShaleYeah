@@ -1,53 +1,20 @@
-# Integration — @shaleyeah/server-legal
+# Integrating the Legal backend
 
-## Who calls legal?
+Import `LegalServer` with explicit service/review/transport options, or run the compiled stdio entry with `LEGAL_CONFIG_FILE` pointing to a private binding. Starting without a binding advertises no analysis tools. The [input contract](INPUTS.md) defines the operator exports and local authority model.
 
-The `legal-analyst` agent (`agents/legal-analyst/`) connects over HTTP.
+For hosted use, inject current task/source/grant and review-policy callbacks into `LegalMemoService` and `LegalReviewWorkflow`. Configure the installed MCP server's HTTP identity, scopes, credential and required event policies separately. Transport authority cannot come from tool arguments or retrieved text. Use HTTPS for remote endpoints.
 
-## Example call (agent side)
+The model-facing surface can discover/read/compare sources, draft a memo, prepare review, read review status and execute a valid exact recording grant. Human decisions are separate:
 
-```typescript
-import { callLegalTool } from "./legal-client.js";
-
-const result = await callLegalTool(
-    "http://localhost:3006",
-    "analyze_legal_framework",
-    {
-        jurisdiction: "Texas",
-        projectType: "development",
-        leaseTerms: { royaltyRate: 0.25, primaryTerm: 5, bonus: 1000 },
-    },
-);
+```sh
+node examples/review.mjs inspect REVIEW_ID NEW_PRIVATE_PACKET_FILE
+node examples/review.mjs decide REVIEW_ID PACKET_DIGEST request_changes PRIVATE_REASON_JSON
+node examples/review.mjs decide REVIEW_ID PACKET_DIGEST reject PRIVATE_REASON_JSON
+node examples/review.mjs decide REVIEW_ID PACKET_DIGEST approve PRIVATE_REASON_JSON
 ```
 
-## Tool call reference
+Set `LEGAL_CONFIG_FILE` before running these commands. The current OS account must match the separately enrolled reviewer and its review policy. Inspection writes a new owner-only file and will not overwrite an existing path. The reason JSON contains `reason` and optional nonnegative `humanReviewSeconds`/`corrections`; measurements are supplied observations, not inferred savings.
 
-| Tool | Required args | Returns |
-|------|--------------|---------|
-| `analyze_legal_framework` | `jurisdiction`, `projectType` | Regulatory risk, compliance checklist |
-| `review_contract` | `contractText`, `contractType` | Red flags, obligations, recommendations |
+Approval additionally requires current installed qualification configured by the operator's `review.qualificationConfigFile`. A model's evaluation claims do not replace it. `LegalReviewWorkflow` also exposes prepare/inspect/decide/status/execute for a host-controlled interface. Changes to source/work/context/policy revisions require fresh review; repeated authorized execution returns the same stored private record, and revoked authority is still rejected.
 
-## Upstream dependencies
-
-No upstream MCP servers.
-
-```
-legal (port 3006)
-  ↓ callLLM()
-Anthropic API
-```
-
-## Downstream consumers
-
-```
-legal (port 3006)
-  ↑ MCP over HTTP
-legal-analyst agent (port 4006)
-```
-
-## Error types
-
-```json
-{ "error_type": "retryable", "message": "LLM timeout" }
-{ "error_type": "permanent", "message": "Unknown jurisdiction" }
-```
+Snapshot hooks accept host-selected normalized public/internal JSON under current rights and separate credential references. Tool callers cannot supply an arbitrary endpoint. Paid vendor access, native PDF interpretation, redistribution rights and legal correctness require separate evidence.

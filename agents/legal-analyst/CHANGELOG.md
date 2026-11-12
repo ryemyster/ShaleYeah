@@ -1,6 +1,16 @@
 # Changelog - Legal Analyst ADK Agent
 
 ## [Unreleased]
+
+- #683: adopt installed employee contracts, configured native Gemini/Anthropic adapters,
+  current scoped context, actual-output grading and exact human-review continuation.
+  Read provisions, obtain backend-computed citations and propose a memo; never grant
+  legal clearance. Add frozen control/edge/authority decisions, independent external
+  MCP and package/container qualification, plus pinned key-free native trace grading.
+  Remove the latest-model default, old framework/contract/compliance wrappers/planner,
+  shape-only evals and their displaced tests. Provisional fixture success does not
+  establish professional correctness, licensing or acceptance.
+
 - #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
 
 

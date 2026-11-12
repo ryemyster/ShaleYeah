@@ -148,6 +148,11 @@ class TrustedEvalPolicy:
                 "risk.source_faithfulness", "risk.scenario_accuracy", "risk.register_coverage",
             }
             if self.role_id == "risk-analyst"
+            else {
+                "legal.architecture_boundary", "legal.no_unapproved_clearance", "legal.tool_boundary",
+                "legal.source_faithfulness", "legal.citation_accuracy", "legal.jurisdiction_date", "legal.issue_coverage",
+            }
+            if self.role_id == "legal-analyst"
             else set()
         )
 
@@ -245,6 +250,8 @@ def load_profile(text, *, datasets, policy):
         if metric["id"].startswith("reservoir.") and policy.role_id != "reservoir-engineer":
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("risk.") and policy.role_id != "risk-analyst":
+            raise EvaluationError("policy_denied")
+        if metric["id"].startswith("legal.") and policy.role_id != "legal-analyst":
             raise EvaluationError("policy_denied")
         if (
             policy.role_id != "reporter"

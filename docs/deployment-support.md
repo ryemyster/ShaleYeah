@@ -244,6 +244,14 @@ checks, but cannot claim local container qualification. Provider fixtures,
 archive/container conformance and real-asset professional acceptance remain
 separate evidence; no additional hosted platform is certified by that adoption.
 
+Legal Analyst #683 follows the same installed native/helper boundary for exact
+matter/corpus/checklist exports and a proposed cited memo. Its source, wheel,
+production-archive and separate non-root container checks bind artifact/lock and
+tested-code identities, actual native output, current source rights and exact
+human review. Docker is required for the container receipt; a host without it
+cannot claim local image qualification. Citation identity, declared applicability,
+technical fixture success and professional legal acceptance remain separate.
+
 - **VM:** use a supervised service, least-privilege runtime identity, private
   ingress/TLS, persistent disk and tested restore. Apply the same employee/tool
   contract as containers; no VM-specific logic belongs in agent reasoning.

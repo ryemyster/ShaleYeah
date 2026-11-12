@@ -24,6 +24,7 @@ jobs:
       economist: ${{ steps.plan.outputs.economist }}
       reservoir: ${{ steps.plan.outputs.reservoir }}
       risk: ${{ steps.plan.outputs.risk }}
+      legal: ${{ steps.plan.outputs.legal }}
       qa: ${{ steps.plan.outputs.qa }}
       callers: ${{ steps.plan.outputs.callers }}
     steps:
@@ -54,6 +55,7 @@ jobs:
       economist: ${{ needs.impact.outputs.economist == 'true' }}
       reservoir: ${{ needs.impact.outputs.reservoir == 'true' }}
       risk: ${{ needs.impact.outputs.risk == 'true' }}
+      legal: ${{ needs.impact.outputs.legal == 'true' }}
       callers: ${{ needs.impact.outputs.callers }}
   qa-observed-qualification:
     name: QA observed result qualification
@@ -150,6 +152,8 @@ jobs:
       run: uv sync --project agents/reservoir-engineer --locked
     - name: Install Risk Analyst native runtime for scenario and human-review controls
       run: uv sync --project agents/risk-analyst --locked
+    - name: Install Legal Analyst native runtime for cited memo and human-review controls
+      run: uv sync --project agents/legal-analyst --locked
     - name: Workspace tests on the constrained runner
       run: pnpm turbo test --concurrency=1
     - run: pnpm --dir contracts check:isolation

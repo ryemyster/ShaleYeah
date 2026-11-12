@@ -1,26 +1,29 @@
 [project]
 name = "shaleyeah-legal-analyst-adk"
 version = "0.1.0"
-description = "Package-local ADK project for the Shale Yeah Legal Analyst agent"
+description = "Source-cited legal issue memo employee with exact human review"
 authors = [
   { name = "Ryan McDonald" },
 ]
 dependencies = [
-  "google-adk[gcp]>=2.0.0,<3.0.0",
+  "shaleyeah-contracts==0.3.0",
+  "shaleyeah-evaluations==0.3.0",
   "shaleyeah-mcp-client==0.3.0",
+  "shaleyeah-employee-runtime[adk]==0.1.0",
+  "httpx==0.28.1",
 ]
 requires-python = ">=3.11,<3.14"
+license = "Apache-2.0"
 
 [dependency-groups]
 dev = [
   "pytest>=9.0.2,<10.0.0",
   "pytest-asyncio>=1.0.0,<2.0.0",
+  "pytest-cov>=7,<8",
+  "ruff>=0.15,<1",
 ]
 
 [project.optional-dependencies]
-eval = [
-  "google-adk[eval]>=2.0.0,<3.0.0",
-]
 lint = [
   "ruff>=0.4.6,<1.0.0",
   "ty>=0.0.1a0",
@@ -48,3 +51,5 @@ packages = ["app"]
 [tool.uv.sources]
 shaleyeah-mcp-client = { path = "../../sdk/python", editable = true }
 shaleyeah-contracts = { path = "../../contracts", editable = true }
+shaleyeah-evaluations = { path = "../../evaluations", editable = true }
+shaleyeah-employee-runtime = { path = "../../sdk/employee", editable = true }

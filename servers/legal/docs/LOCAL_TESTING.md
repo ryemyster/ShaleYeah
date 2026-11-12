@@ -1,33 +1,16 @@
-# Local Testing — @shaleyeah/server-legal
+# Testing the Legal backend locally
 
-## Quick start
+From this directory:
 
-```bash
-cd servers/legal
+```sh
 pnpm build
-npx tsx tests/server.test.ts
+pnpm type-check
+pnpm lint
+pnpm test
 ```
 
-## HTTP mode testing
+The generic protocol test launches the compiled stdio entry as a separate process. It discovers tools, reads real owner-only operator exports, computes an exact Unicode citation, prepares review, invokes the separate human CLI, restores review state and rejects revoked access. It needs no TCP listener or model key.
 
-```bash
-# Terminal 1
-PORT=3006 ANTHROPIC_API_KEY=sk-... pnpm start
+Focused source/review tests cover current grants, changed bytes, quote identity, provision scope/effective dates, required question/source/conflict coverage, request changes, rejection, approval, replay and restart. Workflow unit tests use an explicit qualification double; the human CLI test confirms that a missing installed qualification cannot approve.
 
-# Terminal 2
-cd agents/legal-analyst
-LEGAL_MCP_URL=http://localhost:3006 npx tsx tests/mcp-client.test.ts
-```
-
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3006` | Server not started in HTTP mode | `PORT=3006 pnpm start` |
-| Tests fail to import | Build needed | `pnpm build` first |
+For the native employee checks, install its locked Python package and follow [Legal Analyst local testing](../../../agents/legal-analyst/docs/LOCAL_TESTING.md). Offline provider fixtures are distinct from live-model quality evaluation. Bind-dependent HTTP and independent packaging/container controls remain required integration checks for the final artifact; a local environment restriction does not turn them into a pass.
