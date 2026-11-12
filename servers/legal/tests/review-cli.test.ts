@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
+import { constants } from "node:fs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { test } from "node:test";
@@ -54,10 +55,15 @@ test("the enrolled human CLI inspects exact private bytes and requests changes w
 		const inspected = await f.run(["inspect", f.pending.reviewId, packetFile]);
 		assert.equal(JSON.parse(inspected.stdout).packetDigest, f.pending.packetDigest);
 		assert.ok(!inspected.stdout.includes("Café"));
-		assert.equal((await fs.stat(packetFile)).mode & 0o077, 0);
-		const packet = JSON.parse(await fs.readFile(packetFile, "utf8"));
-		assert.equal(packet.packet.sources.length, 3);
-		assert.equal(packet.packet.legal.legalClearance, false);
+		const packetHandle = await fs.open(packetFile, constants.O_RDONLY | constants.O_NOFOLLOW);
+		try {
+			assert.equal((await packetHandle.stat()).mode & 0o077, 0);
+			const packet = JSON.parse(await packetHandle.readFile("utf8"));
+			assert.equal(packet.packet.sources.length, 3);
+			assert.equal(packet.packet.legal.legalClearance, false);
+		} finally {
+			await packetHandle.close();
+		}
 		const reason = path.join(f.root, "reason.json");
 		await fs.writeFile(
 			reason,
