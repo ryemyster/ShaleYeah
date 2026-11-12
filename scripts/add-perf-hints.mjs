@@ -51,11 +51,6 @@ const TOOL_CLASS = new Map([
 	["investment-chair.calculate_bid_strategy", MODERATE],
 	["investment-chair.analyze_portfolio_fit", FAST],
 
-	// legal-analyst (3 tools)
-	["legal-analyst.analyze_legal_framework", MODERATE],
-	["legal-analyst.review_contract", MODERATE],
-	["legal-analyst.assess_compliance", FAST],
-
 	// market-analyst (2 tools)
 	["market-analyst.analyze_market_conditions", MODERATE],
 	["market-analyst.competitive_analysis", MODERATE],

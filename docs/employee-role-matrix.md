@@ -57,7 +57,7 @@ Versioned capability IDs will be published in #568.
 | Reservoir Engineer | [reservoir-engineer](../agents/reservoir-engineer/README.md) | [curve-smith](../servers/curve-smith/src/index.ts): source discovery/read, `calculate_forecast`, `compare_forecasts`, `draft_forecast`, exact review/status and `record_forecast`; source-independent `generate_type_curve`/`calculate_eur` | #681 |
 | Economist | [economist](../agents/economist/README.md) | [econobot](../servers/econobot/src/index.ts): explicit cash-flow calculation, source-linked scenarios and exact private human review | #680 |
 | Risk Analyst | [risk-analyst](../agents/risk-analyst/README.md) | [risk-analysis](../servers/risk-analysis/src/index.ts): source-bound joint-scenario appraisal and exact human review | #682 |
-| Legal Analyst | [legal-analyst](../agents/legal-analyst/README.md) | [legal](../servers/legal/src/index.ts): `analyze_legal_framework`, `review_contract`, `assess_compliance` | #683 |
+| Legal Analyst | [legal-analyst](../agents/legal-analyst/README.md) | [legal](../servers/legal/src/index.ts): exact source/citation/applicability/coverage and qualified human private-memo review | #683 |
 | Market Analyst | [market-analyst](../agents/market-analyst/README.md) | [market](../servers/market/src/index.ts): `analyze_market_conditions`, `competitive_analysis` | #684 |
 | Title Analyst | [title-analyst](../agents/title-analyst/README.md) | [title](../servers/title/src/index.ts): `examine_ownership`, `analyze_lease`, `check_burdens`, `trace_chain_of_title` | #685 |
 | Drilling Engineer | [drilling-engineer](../agents/drilling-engineer/README.md) | [drilling](../servers/drilling/src/index.ts): `design_drilling_program`, `estimate_well_costs`, `assess_drilling_risks` | #686 |

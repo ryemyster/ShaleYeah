@@ -1,45 +1,43 @@
+"""Project/extraction guards; these do not stand in for job-quality evaluation."""
+
+import tomllib
 from pathlib import Path
 
-PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-REPO_ROOT = PACKAGE_ROOT.parents[1]
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_adk_manifest_exists_inside_legal_analyst_package() -> None:
-    manifest = (PACKAGE_ROOT / "agents-cli-manifest.yaml").read_text()
-
-    assert 'name: "legal-analyst"' in manifest
-    assert 'agent_directory: "app"' in manifest
-    assert 'deployment_target: "none"' in manifest
+def test_native_project_exposes_the_employee_app():
+    assert (ROOT / "app" / "agent.py").is_file(), "native Legal Analyst app is required"
+    assert (ROOT / "agents-cli-manifest.yaml").is_file(), "scaffold provenance is required"
+    assert (ROOT / ".agents-cli-spec.md").is_file()
 
 
-def test_adk_python_entrypoint_exists_inside_legal_analyst_package() -> None:
-    agent = (PACKAGE_ROOT / "app" / "agent.py").read_text()
-
-    assert "root_agent = Agent(" in agent
-    assert 'app = App(root_agent=root_agent, name="app")' in agent
-    assert "LEGAL_MCP_URL" in agent
-    assert "servers/legal remains independently runnable" in agent
-
-
-def test_architecture_mode_is_explicit_and_not_misclassified() -> None:
-    spec = (PACKAGE_ROOT / ".agents-cli-spec.md").read_text()
-    agent = (PACKAGE_ROOT / "app" / "agent.py").read_text()
-
-    assert "Stand-alone Agent with Progressive Disclosure (Skills)" in spec
-    assert "stand-alone-with-progressive-disclosure-skills" in agent
-    assert "not hierarchical, graph-based, ambient, or capability-first" in agent
+def test_python_unit_has_declared_installable_shared_dependencies():
+    project = ROOT / "pyproject.toml"
+    assert project.is_file(), "the employee needs its own install/build contract"
+    config = tomllib.loads(project.read_text())
+    assert config["project"]["name"] == "shaleyeah-legal-analyst-adk"
+    dependencies = config["project"]["dependencies"]
+    for dependency in [
+        "shaleyeah-contracts==0.3.0",
+        "shaleyeah-evaluations==0.3.0",
+        "shaleyeah-mcp-client==0.3.0",
+        "shaleyeah-employee-runtime[adk]==0.1.0",
+    ]:
+        assert dependency in dependencies
+    assert config["tool"]["hatch"]["build"]["targets"]["wheel"]["packages"] == ["app"]
 
 
-def test_repo_root_does_not_become_an_adk_project() -> None:
-    for file_name in ("agents-cli-manifest.yaml", "pyproject.toml", ".agents-cli-spec.md"):
-        assert not (REPO_ROOT / file_name).exists(), f"{file_name} must not be added at repo root"
+def test_displaced_typescript_employee_surfaces_are_deleted():
+    for name in ["package.json", "tsconfig.json", "biome.json", "src/agent", "dist/agent"]:
+        assert not (ROOT / name).exists(), f"displaced employee surface remains: {name}"
+    assert not list((ROOT / "tests").glob("*.test.ts"))
 
-    assert not (REPO_ROOT / "app" / "agent.py").exists()
 
-
-def test_legal_analyst_agent_has_no_dangling_npm_surface() -> None:
-    for file_name in ("package.json", "tsconfig.json", "biome.json"):
-        assert not (PACKAGE_ROOT / file_name).exists(), f"{file_name} is dangling agent npm debt"
-
-    assert not (PACKAGE_ROOT / "src" / "agent").exists()
-    assert not list((PACKAGE_ROOT / "tests").glob("*.test.ts"))
+def test_job_evaluation_assets_are_separate_from_import_shape_checks():
+    for name in [
+        "tests/eval/performance_profile.json",
+        "tests/eval/datasets/legal-performance.json",
+        "tests/eval/run_fixture_evals.py",
+    ]:
+        assert (ROOT / name).is_file(), f"role evaluation asset is required: {name}"

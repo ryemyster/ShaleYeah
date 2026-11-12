@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- #683: move Legal Analyst out of the remaining callable-wrapper inventory. Its native
+  package owns exact memo/source tools, external MCP and protected review controls;
+  the shared client continues to exercise the seven remaining wrappers. No wire API changes.
+
 - #682: Move Risk Analyst out of the remaining callable-wrapper test inventory
   after its native role mappings replace the old wrapper. Its protected external
   MCP and source/review controls run in the employee and matching backend suites;

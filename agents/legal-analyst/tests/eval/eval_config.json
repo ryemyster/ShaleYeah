@@ -1,0 +1,6 @@
+{
+  "metrics_to_run": ["native_contract_fidelity"],
+  "custom_metrics": [
+    {"name": "native_contract_fidelity", "custom_function_file": "cli_trace_metric.py", "execution": "local"}
+  ]
+}

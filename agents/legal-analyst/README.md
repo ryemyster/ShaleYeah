@@ -1,87 +1,41 @@
-# Legal Analyst ADK Agent
+# Legal Analyst
 
-**Legatus Juridicus** — the ShaleYeah fleet's legal diligence analyst.
+Legatus Juridicus prepares a cited requirement/exception memo for a human legal reviewer. It reads the actual supplied provisions, compares declared jurisdiction and effective-date scope, and proposes issues through the independent [Legal MCP backend](../../servers/legal/README.md).
 
-Tier 2 ADK/Python intelligence layer over the [`servers/legal`](../../servers/legal) Tier 1 MCP server. It analyzes regulatory exposure, contract risk, and compliance requirements while deferring binding legal actions to human/legal review.
+The selected mode is **Stand-alone Agent with Progressive Disclosure (Skills)**. The employee loads source detail when needed and uses its own scoped working context. A separately enrolled human reviews exact source, memo, context and evaluation revisions before a private advisory record can be saved.
 
-## What It Does
+## Inputs and output
 
-Legal Analyst turns legal diligence requests into the right Legal MCP tool call, sends structured jurisdiction, project, contract, or compliance inputs to the backend, and explains the returned exposure or risk result.
+The backend accepts three exact JSON exports: matter/questions, a corpus of versioned documents and provisions, and a coverage checklist with declared source conflicts. Contract text, primary law, guidance and counsel notes remain distinguishable. See the [input contract](../../servers/legal/docs/INPUTS.md).
 
-It exists so diligence workflows can identify legal issues early while keeping legal opinions, filings, signatures, and binding decisions with qualified human/legal reviewers.
+The employee returns exactly `{"work": ..., "legal": ...}` from the latest successful draft, or an explicit JSON deferral. The memo preserves exact citations, declared applicability, missing questions/sources, exceptions and conflicts. Source metadata is operator-declared; citation validity does not prove that a legal interpretation follows from the quotation.
 
-## Project Boundary
+## Run and check
 
-This package is the Legal Analyst ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
+From this directory:
 
-At runtime:
-
-- ADK owns the agent shape, instructions, eval path, architecture classification, HITL boundary, and backend selection.
-- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- The agent calls the Legal MCP backend through package-local Python wrappers.
-- `servers/legal` is the independently runnable MCP backend.
-
-## Run A Legal Task
-
-```bash
-cd agents/legal-analyst
-agents-cli install
-LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Analyze regulatory exposure for a Texas development project covering three Permian leases"
+```sh
+uv sync --locked
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+agents-cli info
+uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/legal.json --code-revision FULL_TESTED_COMMIT_SHA
 ```
 
-Start the Legal MCP server separately when you want live backend execution:
+Replace the revision placeholder with the actual tested commit. Fixture tests need no provider key. The frozen decision is technical qualification, with professional acceptance explicitly false. See [evaluation](docs/EVALUATIONS.md).
 
-```bash
-cd servers/legal
-PORT=3006 pnpm start
+For a model run, set `LEGAL_ANALYST_MODEL_CONFIG_FILE` to an owner-only [model profile](../../docs/model-providers.md) with explicit Gemini or Anthropic model IDs and private credential references. Set `LEGAL_MCP_URL` and `LEGAL_MCP_ACCESS_TOKEN_FILE` separately for the authorized backend. Remote endpoints use HTTPS; loopback HTTP requires explicit client configuration. `LEGAL_ANALYST_EVENT_CONFIG_FILE` selects private event configuration.
+
+```sh
+agents-cli run "Read task.legal revision r1, inspect the supplied provisions and draft a cited memo for human legal review"
 ```
 
-The backend uses the selected MCP 2026-07-28 profile. Replace `/path/to/private/mcp-token` with an operator-issued credential file owned by your account and readable/writable only by you. Credentials are resolved when a tool runs and stay outside prompts. Use HTTPS for a remote endpoint; local HTTP is limited to loopback. Missing or denied credentials stop the call. An HTTP server needs explicit identity/scope and audit configuration; setting `PORT` alone does not supply that setup. The role-specific operator workflow and source qualification remain pending in the linked employee adoption issue.
+This requires a configured model and matching authorized task/source revisions, and can contact the selected paid provider. Model credentials are resolved separately from backend credentials.
 
-## Tools
+## Review and retained context
 
-| Tool | What it does | Type | Final approval? |
-|------|--------------|------|-----------------|
-| `analyze_legal_framework` | Calls `analyze_legal_framework` for jurisdiction/project legal exposure | query | No |
-| `review_contract` | Calls `review_contract` for contract-risk diligence | query | No |
-| `assess_compliance` | Calls `assess_compliance` for environmental, safety, and tax requirements | query | No |
+`LegalAnalystRuntime.open` embeds the installed native employee runtime with an operator-owned context catalog and current source-authority callbacks. Durable restart and input-revision guarantees require that retained runtime; the simple CLI app uses its host's session lifecycle. Verified backend work can be retained for review; raw model output cannot promote itself into shared knowledge.
 
-## HITL Boundary
+Human inspect/change/reject/approve operations use the separate [review API/CLI](../../servers/legal/docs/INTEGRATION.md). Installed qualification is required before approval and recording. Model prose and native confirmation cannot grant legal clearance, contract/redline approval, signatures, filings, waivers, settlements or capital authority. Reviewer enrollment is operator-attested authority, not automated professional-license verification.
 
-The agent may support diligence. It must defer to human/legal review for legal opinions, contract redlines, contract approval, signatures, filings, regulatory submissions, waivers, settlement positions, enforcement decisions, or any binding approval/authorization.
-
-## Environment Variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `LEGAL_MCP_URL` | No | `http://localhost:3006/mcp` | Legal Tier 1 server URL |
-| `LEGAL_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
-| `LEGAL_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
-| `LEGAL_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
-| `LEGAL_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
-
-## Build, Test, And Use
-
-Run these from `agents/legal-analyst`.
-
-| Task | Command |
-|------|---------|
-| Install dependencies | `uv sync --extra eval` |
-| Test package behavior | `uv run pytest` |
-| Build/syntax check | `uv run python -m py_compile app/agent.py app/legal_mcp.py` |
-| Inspect ADK project | `agents-cli info` |
-| Run a local task | `LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run "Analyze legal exposure for a Texas development project"` |
-| Run evals | `agents-cli eval run` |
-
-## Key Files
-
-| Path | Purpose |
-|------|---------|
-| [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Legal backend-selection tools |
-| [`app/legal_mcp.py`](app/legal_mcp.py) | Python MCP client and ADK-side execution tools |
-| [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
-| [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec, architecture mode, HITL boundary, and package constraints |
-| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape and architecture classification |
-| [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Legal MCP execution |
-| [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
+See [architecture](docs/ARCHITECTURE.md), [integration](docs/INTEGRATION.md), [local testing](docs/LOCAL_TESTING.md) and [deployment](docs/DEPLOYMENT.md).

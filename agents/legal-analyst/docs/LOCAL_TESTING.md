@@ -1,44 +1,16 @@
-# Local Testing - Legal Analyst ADK Agent
+# Testing Legal Analyst locally
 
-Use package-local Python commands for the agent.
+From this directory:
 
-## Fast Verification
-
-```bash
-cd agents/legal-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/legal_mcp.py
+```sh
+uv sync --locked
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
 agents-cli info
 ```
 
-## Live Backend Verification
+Native Gemini and Anthropic tests use offline HTTP provider fixtures; they require no real key. They test configured adapters, tool schemas, returned-output grading, private context restoration and revoked authority. They do not measure live-model legal quality.
 
-Start the Legal MCP server in another shell:
+The [frozen runner](EVALUATIONS.md) verifies research-backed provisional control/edge/authority decisions and exact reference hashes. Changing a profile/dataset creates a new configuration identity; a prior result cannot qualify different bytes.
 
-```bash
-cd servers/legal
-PORT=3006 pnpm start
-```
-
-Then run the ADK agent:
-
-```bash
-cd agents/legal-analyst
-LEGAL_MCP_URL=http://localhost:3006/mcp LEGAL_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Analyze legal exposure for a Texas development project covering three Permian leases"
-```
-
-## Eval Verification
-
-```bash
-cd agents/legal-analyst
-agents-cli eval run
-```
-
-If credentials are unavailable, keep the pytest eval-shape tests passing so the dataset and config remain in place for CI or credentialed local runs.
-
-## Common Failures
-
-`LEGAL_MCP_URL` connection errors mean the backend server is not running or the URL is wrong.
-
-An npm, TypeScript, or `src/agent` file under `agents/legal-analyst` means the agent package has regressed from the ADK migration boundary.
+For a live task, run an explicitly authorized backend and configure model/MCP credential references as described in [integration](INTEGRATION.md). A refused connection, denied credential or stale/revoked source is a failed or deferred call, never a completed memo. Bind-dependent HTTP tests require an environment that permits listeners; the generic backend stdio protocol test runs without one. Required integration gates must still run before merge.

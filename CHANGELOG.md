@@ -22,6 +22,16 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **Legal Analyst employee:** exact matter/corpus/checklist sources, backend-computed
+  UTF-8 citations, declared scope/effective-date eligibility and explicit question/
+  source/conflict coverage. Native configured providers, retained private context,
+  actual-output grading, installed qualification and enrolled human review bind
+  the exact private memo. Default risk/cost/timeline derivations, keyword rules,
+  silent LLM fallbacks and old wrapper/eval paths are removed. Legal has its own
+  required native, trace and artifact CI job; seven caller wrappers remain.
+  Citation validity and fixture qualification do not establish legal entailment,
+  professional licensing, acceptance or clearance. (#683)
+
 - **Risk Analyst employee:** exact register/policy/joint-scenario sources,
   durable native context, independent actual-output checks, enrolled human
   review and installed qualification before private recording. The initial

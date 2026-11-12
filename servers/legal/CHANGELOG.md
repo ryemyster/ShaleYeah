@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- #683: replace source-less default analysis with ten current source/provision/citation,
+  memo and review tools. Validate exact JSON exports, UTF-8 quote identity, provision-level
+  scope/date eligibility, required questions/revisions and retained conflicts. Bind
+  current file bytes/rights, private audit/redaction, installed qualification and separate
+  enrolled human review before private recording. Add generic MCP and independent
+  source/archive/container controls; delete default risk/cost/timeline and keyword
+  derivations, silent LLM fallbacks and old tests. No model key, legal clearance,
+  signature, filing, waiver, settlement or capital authority is supplied by this backend.
+
 ## [0.2.0] — 2026-06-10
 
 ### Added

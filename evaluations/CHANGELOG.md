@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- #683: add seven installed Legal source-fidelity, UTF-8 citation, declared jurisdiction/date,
+  question/source/conflict coverage and architecture/tool/authority floors. Accept strict
+  actual `{work, legal}` responses; data-only profiles and qualification cannot remove
+  these trust controls. Independent provisional source/decision labels remain separate
+  from generated observations and professional legal judgment. Shared wire schemas stay unchanged.
+
 - #681: keep Reservoir metric controls inside this package and copy their frozen data into the installed-wheel test harness. The portable test suite no longer reads the Reservoir employee directory.
 
 - #681: add Reservoir source-fidelity, independent known-parameter rate/integral/fit/holdout/finding checks and mandatory architecture/tool/authority qualification floors. Editable tolerances stay within installed bounds. Provisional synthetic labels do not certify field accuracy or reserves.

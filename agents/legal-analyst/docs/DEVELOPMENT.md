@@ -1,49 +1,9 @@
-# Development - Legal Analyst ADK Agent
+# Developing Legal Analyst
 
-Legal Analyst development happens inside this package as an ADK/Python project. Use package-local commands and keep root-level build changes out of agent work.
+Work from this package with `uv sync --locked`, `uv run --locked ruff check app tests` and `uv run --locked pytest -q --cov=app --cov-fail-under=90`. Use `agents-cli info` to inspect the project. The approved native dependency family is pinned through the shared employee runtime and this package's lock.
 
-## Setup
+Write failing behavioral cases before changing prompts/tools. Keep independent labels separate from generated wire observations and actual returned native output. Source fidelity, citation identity, declared applicability, coverage and executing authority are distinct checks. Preserve original labels/results when issuing revisions. See [evaluation](EVALUATIONS.md).
 
-```bash
-cd agents/legal-analyst
-uv sync --extra eval --extra lint
-agents-cli info
-```
+Agent reasoning and context integration live here. Deterministic source/projection/review behavior belongs in the matching Legal MCP package. Keep the Stand-alone Agent with Progressive Disclosure (Skills) mode and human legal-review boundary explicit. Any change to that design needs its owning issue and evidence.
 
-Start the backend only when a live MCP call is needed:
-
-```bash
-cd servers/legal
-PORT=3006 pnpm start
-```
-
-## Test Loop
-
-Write or update tests before changing agent behavior:
-
-```bash
-cd agents/legal-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/legal_mcp.py
-agents-cli eval run
-```
-
-`agents-cli eval run` may require configured ADK credentials. The pytest suite always checks that the eval dataset and config exist and cover control, edge, capability-boundary, architecture-boundary, HITL-deferral, and tool-selection cases.
-
-## Adding A Legal Tool
-
-1. Confirm the backend tool exists in `servers/legal`.
-2. Add a Python wrapper in `app/legal_mcp.py`.
-3. Register the wrapper in `app/agent.py`.
-4. Add or update eval cases under `tests/eval/`.
-5. Extend pytest coverage for project shape, wrapper parity, eval shape, architecture classification, and HITL boundary.
-6. Update README, package changelog, and root `CHANGELOG.md`.
-7. Update documentation and eval coverage for the behavior change.
-
-## Architecture Rule
-
-Legal Analyst is currently a Stand-alone Agent with Progressive Disclosure (Skills). Do not introduce hierarchical, graph-based, ambient, or capability-first behavior without an issue that explicitly changes the architecture mode.
-
-## Cleanup Rule
-
-Agent behavior belongs in the ADK package. Server tool behavior belongs in the matching MCP server package.
+Update affected package docs, changelogs and registered evaluation assets with behavior changes. The repository's sequential issue/branch/PR checks apply before shipping.

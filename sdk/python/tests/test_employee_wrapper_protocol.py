@@ -16,7 +16,6 @@ CALLERS = [
     ("drilling-engineer", "drilling_mcp", "DRILLING", "drilling"),
     ("infrastructure-planner", "infrastructure_mcp", "INFRASTRUCTURE", "infrastructure"),
     ("investment-chair", "decision_mcp", "DECISION", "decision"),
-    ("legal-analyst", "legal_mcp", "LEGAL", "legal"),
     ("market-analyst", "market_mcp", "MARKET", "market"),
     ("research-analyst", "research_mcp", "RESEARCH", "research"),
     ("title-analyst", "title_mcp", "TITLE", "title"),

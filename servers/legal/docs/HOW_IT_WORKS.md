@@ -1,35 +1,11 @@
-# How Legal Works — @shaleyeah/server-legal
+# How the Legal backend works
 
-## Plain language (12-year-old version)
+The backend loads three authorized exact JSON sources: matter/questions, versioned document provisions and a review checklist with declared conflicts. It preserves document revisions, source kinds, jurisdiction/territory/activity IDs and legal as-of dates. It does not infer jurisdiction hierarchies or treat retrieval time as an effective date.
 
-Before you can drill on a piece of land, you need to make sure you actually have the right to — and that there aren't any legal landmines. Legal is the expert who reads the lease, checks state regulations, flags compliance requirements, and reviews contracts to find any terms that could cause problems.
+A provision's effective interval starts inclusively at `effectiveFrom` and ends exclusively at `effectiveUntilExclusive`. Unknown dates, unverified sources and scope/date mismatches make that provision ineligible for an affirmative requirement or exception. Historical text may remain disclosed context for a question/conflict; each required question still needs an eligible required-source anchor.
 
-You hand it a jurisdiction (like "Texas") and project type (like "exploration"), and it tells you: what's the regulatory risk, what compliance checkboxes do you need to hit, and are there any red flags in the contract?
+Quote lookup computes exact UTF-8 byte spans and SHA-256 from selected text. Provision paging counts Unicode code points, which are different from citation byte offsets. The proposed memo must preserve all required questions/document revisions and both sides of declared conflicts. Gaps produce blocked work, not invented completion.
 
-## Technical explanation
+Canonical `work` and `legal` remain unreviewed and preserve `legalClearance: false` and `professionalAcceptance: false`. A separately enrolled human inspects the exact private packet and decides whether to request changes, reject or approve its recording. Installed qualification and current source rights are checked at the executing boundary; restart and native confirmation cannot bypass them.
 
-Legal is a **Tier 1 MCP tool server** — stateless. It exposes 2 legal analysis tools.
-
-### Tool inventory
-
-| Tool | What it does |
-|------|-------------|
-| `analyze_legal_framework` | Reviews jurisdiction, project type, lease terms; produces regulatory risk score and compliance checklist |
-| `review_contract` | Reads contract text; flags obligations, penalties, and unusual terms |
-
-### LLM + fallback pattern
-
-```typescript
-try {
-  return await callLLM({ prompt: legalPrompt });
-} catch (_err) {
-  return deriveDefaultRegulatoryRisk(jurisdiction, projectType);
-}
-```
-
-The fallback encodes real regulatory domain knowledge: California exploration is inherently "High" risk (CEQA, setbacks), Texas production is "Low" (favorable regulatory environment).
-
-### Transport modes
-
-- **stdio** (default): pipe-based
-- **HTTP** (when `PORT=3006`): `StreamableHTTPServerTransport` — used by the legal-analyst agent
+A valid citation proves source identity, not the correctness or materiality of the proposed legal interpretation. That judgment remains with qualified humans and optional configured semantic rubrics.
