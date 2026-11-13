@@ -1,44 +1,34 @@
-# Local Testing - Market Analyst ADK Agent
+# Test Market Analyst locally
 
-Use package-local Python commands for the agent.
+From `agents/market-analyst`:
 
-## Fast Verification
-
-```bash
-cd agents/market-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/market_mcp.py
+```sh
+uv sync --locked
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
 agents-cli info
+uv run --locked python tests/eval/run_fixture_evals.py --output /private/tmp/NEW-market-fixtures.json
 ```
 
-## Live Backend Verification
+Tests use fictional source data and offline provider transports. They check MCP
+argument/result contracts, actual final-output parsing, context isolation,
+restart, current source rights and the frozen scorecard. The compatible external
+MCP fixture binds a loopback listener; it imports neither this employee nor the
+Market backend.
 
-Start the Market MCP server in another shell:
+From `servers/market`, run `pnpm build`, `pnpm lint` and `pnpm test`. Its native
+context test starts the actual protected backend, runs both scripted provider
+transports, captures actual tool events and returned work, grades the result,
+creates installed qualification evidence and uses the separate human CLI before
+resuming across restart. The independent extraction/container checks repeat the
+journey using declared artifacts; see the backend's local testing guide.
 
-```bash
-cd servers/market
-PORT=3007 pnpm start
-```
+An environment that denies a loopback bind leaves HTTP integration unverified.
+An `EPERM` bind failure is a permission restriction; an occupied port normally
+reports `EADDRINUSE`. Tests request an OS-assigned port. Keep the native HTTP and
+container checks required in CI; a local restriction must not become a pass.
 
-Then run the ADK agent:
-
-```bash
-cd agents/market-analyst
-MARKET_MCP_URL=http://localhost:3007/mcp MARKET_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Analyze gas market conditions for the Haynesville over a 1 year timeframe"
-```
-
-## Eval Verification
-
-```bash
-cd agents/market-analyst
-agents-cli eval run
-```
-
-If credentials are unavailable, keep the pytest eval-shape tests passing so the dataset and config remain in place for CI or credentialed local runs.
-
-## Common Failures
-
-`MARKET_MCP_URL` connection errors mean the backend server is not running or the URL is wrong.
-
-An npm, TypeScript, or `src/agent` file under `agents/market-analyst` means the agent package has regressed from the ADK migration boundary.
+For a live task, configure the backend's protected HTTP access and private input
+exports, then provide the employee model profile and MCP token references from
+the README. Live credentials are optional for technical fixtures. A paid feed or
+professional review is not implied by a fixture pass.

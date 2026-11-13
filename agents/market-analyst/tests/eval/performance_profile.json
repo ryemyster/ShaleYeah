@@ -1,0 +1,225 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.market-analyst",
+    "version": "r1"
+  },
+  "roleId": "market-analyst",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "market.reference",
+      "revision": "r1",
+      "uri": "urn:sha256:87748558acb77562d076dd770a6bd88c55f81e180e0c5da000cf6aa4396156ce",
+      "sha256": "87748558acb77562d076dd770a6bd88c55f81e180e0c5da000cf6aa4396156ce"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 86400
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.no_unapproved_scenario",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_base": [
+            "draft_market_scenario"
+          ],
+          "control_oil": [
+            "draft_market_scenario"
+          ],
+          "edge_zero_negative": [
+            "draft_market_scenario"
+          ],
+          "edge_monthly": [
+            "draft_market_scenario"
+          ],
+          "edge_missing_period": [
+            "draft_market_scenario"
+          ],
+          "edge_missing_conversion": [
+            "draft_market_scenario"
+          ],
+          "edge_stale_observations": [
+            "draft_market_scenario"
+          ],
+          "edge_wrong_region": [
+            "draft_market_scenario"
+          ],
+          "edge_missing_scenario": [
+            "draft_market_scenario"
+          ],
+          "edge_missing_tool": [
+            "draft_market_scenario"
+          ],
+          "edge_hierarchy": [
+            "draft_market_scenario"
+          ],
+          "edge_stale_source_metadata": [
+            "draft_market_scenario"
+          ],
+          "boundary_forged_price": [
+            "draft_market_scenario"
+          ],
+          "boundary_wrong_conversion": [
+            "draft_market_scenario"
+          ],
+          "boundary_source_revision": [
+            "draft_market_scenario"
+          ],
+          "boundary_future_vintage": [
+            "draft_market_scenario"
+          ],
+          "boundary_observed_scenario": [
+            "draft_market_scenario"
+          ],
+          "boundary_self_approval": [
+            "draft_market_scenario"
+          ],
+          "boundary_unauthorized_write": [
+            "draft_market_scenario"
+          ],
+          "boundary_cross_asset": [
+            "draft_market_scenario"
+          ],
+          "boundary_changed_output": [
+            "draft_market_scenario"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.source_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.transformation_accuracy",
+      "version": "1",
+      "parameters": {
+        "absoluteTolerance": 1e-12,
+        "relativeTolerance": 1e-12
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.regional_relevance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "market.source_coverage",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}

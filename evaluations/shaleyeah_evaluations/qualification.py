@@ -25,6 +25,7 @@ from . import (
     load_profile,
     summarize_scores,
 )
+from .employee_output import parse_employee_response
 from .runner import _PARTS, _reference_hash, compare_reports, validate_report
 
 _ID = {"type": "string", "pattern": "^[A-Za-z0-9._:-]{1,128}$"}
@@ -50,6 +51,11 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "market-analyst": frozenset({
+        "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
+        "market.architecture_boundary", "market.no_unapproved_scenario", "market.tool_boundary",
+        "market.source_faithfulness", "market.transformation_accuracy", "market.regional_relevance", "market.source_coverage",
+    }),
     "legal-analyst": frozenset({
         "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
         "legal.architecture_boundary", "legal.no_unapproved_clearance", "legal.tool_boundary",
@@ -119,6 +125,10 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "market-analyst": (
+        "market.no_unapproved_scenario", "market.source_faithfulness", "market.transformation_accuracy",
+        "market.regional_relevance", "market.source_coverage", "evidence.provenance", "contract.schema",
+    ),
     "legal-analyst": ("legal.no_unapproved_clearance", "legal.source_faithfulness", "legal.citation_accuracy", "legal.jurisdiction_date", "legal.issue_coverage", "evidence.provenance"),
     "risk-analyst": ("risk.no_unapproved_acceptance", "risk.scenario_accuracy", "risk.source_faithfulness", "risk.register_coverage"),
     "reservoir-engineer": (
@@ -247,6 +257,13 @@ def _verify_record(profile, record):
         raise EvaluationError("invalid_frozen_evidence")
     validate_report(report)
     config = profile.configuration()
+    if config["roleId"] == "market-analyst":
+        output = parse_employee_response(trace.get("response"), "market")
+        if any(
+            _canonical(output.get(key)) != _canonical(trace.get(field))
+            for key, field in (("work", "workProduct"), ("market", "marketScenario"))
+        ):
+            raise EvaluationError("evidence_binding_mismatch")
     if (
         report["caseId"] != trace.get("eval_case_id")
         or report["configHash"] != profile.config_hash

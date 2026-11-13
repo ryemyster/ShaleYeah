@@ -29,8 +29,9 @@ cannot silently turn the final gate into an accepted skip.
 | Reservoir Engineer employee or Curve-smith | Reservoir Engineer |
 | Risk Analyst employee or Risk Analysis | Risk Analyst |
 | Legal Analyst employee or Legal MCP | Legal Analyst |
+| Market Analyst employee or Market MCP | Market Analyst |
 | QA employee or QA server | QA |
-| One of the seven remaining Python caller packages or its backend | That caller's locked package checks |
+| One of the six remaining Python caller packages or its backend | That caller's locked package checks |
 | Root README, architecture, contributing or changelog; reviewed CI/SDLC and MVP/legacy ledger docs | Workspace checks |
 | Shared SDK, contracts, connectors, evaluations, workflow/CI scripts, root configuration/data or unknown paths | Full qualification |
 

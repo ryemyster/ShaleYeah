@@ -1,51 +1,37 @@
-# Architecture - Market Analyst ADK Agent
+# Market Analyst architecture
 
-Market Analyst is a Tier 2 ADK/Python package. It owns agent reasoning, tool-selection policy, eval coverage, and human-review boundaries for market diligence.
+Market Analyst uses **Stand-alone Agent with Progressive Disclosure (Skills)**.
+One ADK agent selects tools and requests bounded source detail. ADK owns its
+reasoning loop; the shared employee runtime owns model budgets, private context
+and lifecycle callbacks. The separate Market MCP service owns source arithmetic,
+current authority, exact review state and protected recording.
 
-The Tier 1 execution backend is [`servers/market`](../../../servers/market), an independently runnable MCP service for market data and analysis tools.
+| Component | Responsibility |
+| --- | --- |
+| `app/agent.py` | Configured native agent, role instructions, callbacks and tool declarations |
+| `app/market_mcp.py` | Installed MCP client wrappers; canonical draft and context binding before review |
+| `app/context_runtime.py` | Retain authorized source/work references, assemble context and preserve pending review across restart |
+| `app/evaluation.py` | Parse the actual final response and grade it against trusted host observations |
+| `app/review_supervision.py` | Map Market operations to the shared review supervisor |
 
-## Package Boundary
+The host supplies task, scope, source authority, retention and model profiles.
+`MarketAnalystRuntime.open` assembles permitted context before model dispatch and
+uses `include_contents="none"`; retained records replace raw prior chat replay.
+Revocation or input revision changes prevent continued use of old evidence.
+Raw model text never promotes itself to working or shared knowledge.
 
-```text
-agents/market-analyst/
-  agents-cli-manifest.yaml   ADK project marker
-  .agents-cli-spec.md        reference-pair spec and package constraints
-  pyproject.toml             Python package and test dependencies
-  app/agent.py               ADK root agent
-  app/market_mcp.py          Python MCP client wrappers
-  tests/                     pytest shape tests and eval references
-```
+The backend reads exact mandate, series and assumptions JSON. It preserves native
+units, location, observation periods, publication vintage and retrieval time.
+Applicable supplied heat content is required for gas volume/energy conversion.
+Explicit future assumptions cannot become observed or licensed forward prices.
 
-## Architecture Mode
+Review preparation re-drafts the proposed interpretation from current sources,
+checks the exact work and scenario, and supplies the host's current context.
+The human inspects a private packet and separately approves, rejects or requests
+changes. Installed qualification and current source rights are checked at both
+approval and execution. A restart can resume only that exact approved operation,
+with replay returning the original stored result.
 
-Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
-
-Market Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Market MCP tools when market diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #530.
-
-Graph-based workflow is reserved for a later issue if market review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
-
-## Execution Flow
-
-1. ADK receives a market analysis task through `app/agent.py`.
-2. The agent plans the correct Market backend tool and checks review boundaries.
-3. `app/market_mcp.py` calls the Market MCP server through streamable HTTP.
-4. `servers/market` performs the domain operation and returns MCP content.
-5. The ADK agent summarizes the result without approving final bid or investment decisions.
-
-## Current Tool Parity
-
-| ADK tool | Backend MCP tool | Purpose |
-|----------|------------------|---------|
-| `analyze_market_conditions` | `analyze_market_conditions` | Commodity market, pricing, and supply-demand context |
-| `competitive_market_analysis` | `competitive_analysis` | Competitive landscape and operator comparison |
-
-## Runtime Configuration
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `MARKET_MCP_URL` | `http://localhost:3007/mcp` | Market MCP backend URL |
-| `MARKET_ANALYST_ADK_MODEL` | `gemini-flash-latest` | Local ADK model id |
-
-## Safety Boundary
-
-Market Analyst may analyze market conditions, competitor context, pricing signals, and uncertainty. It must not present final bid approval, investment approval, or acquisition authorization without human review.
+The agent and backend use declared shared packages. Neither imports another
+specialist's implementation. The optional orchestrator is outside this package's
+runtime. See [integration](INTEGRATION.md) and [evaluation](EVALUATIONS.md).

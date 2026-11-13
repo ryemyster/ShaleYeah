@@ -1,6 +1,15 @@
 # Changelog — @shaleyeah/server-market
 
 ## [Unreleased]
+- #684: Add exact source-bound scenario calculations, freshness/unit/region gates,
+  current private operator exports, source hooks, durable separate human review,
+  installed qualification and idempotent recording across restart. Keep advisory
+  queries while replacing their implicit model client with configured shared
+  synthesis and owner/configuration checks. Add generic/external/native controls,
+  package-local compiler settings, production archive exports and independent
+  source/wheel/container qualification. No trading, contract, bid or capital
+  authority is supplied; initial fixtures do not establish professional acceptance.
+
 
 ### Changed
 

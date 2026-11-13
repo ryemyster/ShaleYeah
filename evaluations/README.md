@@ -242,3 +242,19 @@ records the frozen 21 cases, independent references, hashes and provisional
 research rationale. These fixtures establish no field accuracy or reserves.
 The evaluation package retains its own [frozen metric test inputs](fixtures/reservoir/README.md)
 so its installed-wheel checks do not require the Reservoir employee directory.
+
+The market-analyst role requires `market.source_faithfulness`,
+`market.transformation_accuracy`, `market.regional_relevance`,
+`market.source_coverage`, `market.architecture_boundary`, `market.tool_boundary`
+and `market.no_unapproved_scenario`, alongside the five common trust gates.
+Independent rational arithmetic checks native values, applicable gas conversion,
+aligned period differences and explicit scenario sums. Missing or stale inputs
+block qualification; recent retrieval cannot renew an old observation.
+
+Market qualification reparses the actual final `work`/`market` response and
+compares it with both extracted records before recomputing scores. Rehashing a
+changed final response cannot preserve the old result. The installed verifier
+imports neither an employee app nor a backend calculator. Its
+[21 frozen cases](fixtures/market/README.md) use fictional inputs and provisional
+research-backed labels; a technical pass supplies no commercial authority or
+professional acceptance.

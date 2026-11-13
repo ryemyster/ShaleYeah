@@ -1,6 +1,6 @@
 # Running the Market backend
 
-Market runs as an ordinary Node/TypeScript MCP process with installed shared SDK dependencies. No orchestrator, database or paid feed is required.
+Market runs as an ordinary Node/TypeScript MCP process with installed shared SDK dependencies. No orchestrator, external database or paid feed is required. The optional employee review store uses local durable storage.
 
 ## Local stdio
 
@@ -23,8 +23,31 @@ Without a source file, company metrics are unavailable. Without EIA access, benc
 
 An HTTP deployment must construct the server with the [SDK's explicit access, identity/scope and audit configuration](../../../sdk/docs/http-access.md). A host can use `ServerFactory.createServer(createMarketTemplate(hostOptions))` and supply `ServerRuntimeOptions` at construction. `PORT` selects the listener only after that configuration exists; `PORT=3007` alone is rejected. Keep source, MCP access and model credentials separate.
 
-No published Market image, gateway installation or production deployment is claimed by this package. Build/qualify the intended artifact and environment before use. The later #684 adoption owns full employee review/context and independent artifact/container qualification.
+`examples/local-http.mjs` loads `MARKET_HTTP_CONFIG_FILE`, an owned private JSON
+file declaring `marketConfigFile`, `accessTokenFile`, `eventConfigFile` and
+`dataPath`. All paths are absolute. The employee binding must include the MCP
+token file in `sensitiveFiles`. Event configuration uses the shared required
+JSONL emitter contract. The helper binds explicit local identity, tool scopes and
+redacted audit; setting `PORT` alone supplies none of those.
+
+The server and employee Dockerfiles consume the independent extraction bundle.
+The tool image installs its own evaluation-only verifier without the employee app;
+the employee image has no backend store. Both images declare a non-root user.
+Run `scripts/check-extraction.mjs` and `scripts/check-containers.py` against the
+intended artifacts before deployment. No published image, gateway installation
+or production deployment is claimed.
 
 ## Advisory exports and decisions
 
 An explicit `outputPath` creates a new private file with mode `0600`. Existing files and symlinks are rejected; select a new path for another result. Exported narratives remain unreviewed. An operator must assess commercial suitability and approve consequential actions through the appropriate human workflow.
+
+## Configured advisory providers
+
+The employee binding's optional `modelConfigFile` uses the shared agent/synthesis/
+judge profile contract. It must select the task owner. This local binding resolves
+private file references; remote secret systems use the host integration instead.
+Model credentials are included in source redaction automatically. Profile/task
+changes invalidate the running binding before or after a model request; reopen
+with fresh configuration. An authenticated caller must match the synthesis owner.
+Source facts do not require model availability, and ambient model keys do not
+select an interpretation provider.

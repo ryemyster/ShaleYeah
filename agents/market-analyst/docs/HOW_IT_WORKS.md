@@ -1,23 +1,23 @@
-# How It Works - Market Analyst ADK Agent
+# How Market Analyst works
 
-Market Analyst translates market diligence questions into calls against the Market MCP server.
+The host assigns an asset-scoped task with three authorized JSON sources: a
+market mandate, dated price series and explicit commercial scenario assumptions.
+The agent first discovers the current source revisions and reads detail as needed.
+The backend aligns the requested periods and applies supplied unit conversions.
 
-## Components
+The agent proposes an interpretation, evidence-series IDs, scenario IDs and
+limitations. The backend creates the canonical work product and market packet.
+Missing, stale, foreign-region or incompatible required inputs produce blockers;
+no default price, forward fill or national conversion factor repairs the gap.
 
-`app/agent.py` defines the ADK root agent, instructions, planning helper, backend status helper, and callable tool surface.
+The employee retains currently permitted source and work references through its
+private context catalog. On restart, the host reconstructs only authorized,
+unexpired context. Model output and retrieved text cannot grant access or
+promote themselves into shared knowledge.
 
-`app/market_mcp.py` owns the MCP client boundary. It maps Python tool arguments to the current `servers/market` MCP tool schemas and serializes returned MCP content for the ADK response path.
-
-`servers/market` remains the tool backend. It performs market-condition and competitive-analysis operations and can keep its own TypeScript package because it is not an agent.
-
-## Request Flow
-
-1. A user asks for market diligence.
-2. The ADK agent decides whether the task is market conditions or competitive analysis.
-3. The Python wrapper calls `MARKET_MCP_URL`.
-4. The backend returns structured MCP content.
-5. The agent explains the result and calls out uncertainty or missing data.
-
-## Review Boundary
-
-The agent can support diligence. It cannot approve a final bid, acquisition, investment committee decision, or capital allocation without human review.
+The human reviews exact source bytes, assumptions, work, context and evaluations
+through the backend's separate CLI/API. Request changes require a revised draft;
+rejection cannot execute. Approval requires installed qualification and binds the
+exact revision. The supervisor then resumes the private record once, with current
+rights and qualification rechecked at execution. The record grants no transaction
+or capital authority.

@@ -11,7 +11,7 @@ pnpm build
 pnpm start
 ```
 
-The default transport is standard input/output (stdio), which a generic MCP client can launch as a child process. To use the compiled entry, run `node dist/index.js` with installed package dependencies. The source entry used by `pnpm start` needs the package's development dependencies.
+The default transport is standard input/output (stdio), which a generic MCP client can launch as a child process. To use the compiled entry, run `node dist/index.js` with installed package dependencies. `pnpm start` uses that compiled entry.
 
 ## Tools
 
@@ -31,9 +31,31 @@ The process reads environment variables; it does not automatically load an `.env
 | `EIA_API_KEY` | Optional Energy Information Administration (EIA) access for the two daily benchmarks; absent/failed access leaves unavailable fields |
 | `MARKET_SOURCE_FILE` | Optional absolute path to an owned private JSON file containing permitted observations and reviewed scenario assumptions |
 | `MARKET_MAX_OBSERVATION_AGE_SECONDS` | Analysis freshness policy; defaults to 604800 seconds (seven days), accepts integers from 1 to 31536000 |
-| `ANTHROPIC_API_KEY` | Optional shared `callLLM` interpretation access; missing/failed model access leaves source data intact and interpretation unavailable |
+| `MARKET_CONFIG_FILE` | Optional absolute private employee binding: task, exact source files, current grants, storage, audit, review and optional `modelConfigFile` |
 | `DATA_PATH` | Shared MCP runtime's data-directory setting |
 
 See [input records](docs/INPUTS.md), [EIA setup](docs/EIA_API_SETUP.md), [integration](docs/INTEGRATION.md), and [local tests](docs/LOCAL_TESTING.md). HTTP requires explicit identity/scope and required audit configuration from the [shared SDK](../../sdk/docs/http-access.md); setting `PORT` alone does not provide access policy.
 
-This backend provides advisory evidence. Human reviewers own source rights, commercial suitability and consequential decisions. Market Analyst's full employee workflow and qualification are tracked separately in #684.
+## Employee scenarios and review
+
+With `MARKET_CONFIG_FILE`, the backend also exposes `read_market_inputs`,
+`read_market_source`, `get_context_source_metadata`, `calculate_market_scenarios`,
+`draft_market_scenario`, `prepare_market_review`, `market_review_status` and
+`record_market_scenarios`. These bind the assigned mandate, dated series and
+commercial assumptions to an exact private scenario packet. Applicable gas
+conversion, period alignment and scenario arithmetic run in code. Missing or
+stale inputs block a complete packet.
+
+The separate human review CLI requires installed qualification before approval.
+Source rights and exact revision are rechecked before recording, including after
+restart. No model tool can approve, and recording supplies no trading, contract,
+bid or capital authority. See [employee configuration and review](docs/EMPLOYEE_WORKFLOW.md).
+
+Optional model interpretation uses a pinned, owner-bound shared synthesis
+profile, configured by `modelConfigFile` or host-injected `modelRuntime`.
+Unconfigured interpretation stays unavailable; ambient `ANTHROPIC_API_KEY` does
+not select an implicit model. Source values remain available independently.
+
+Human reviewers own source rights and commercial suitability. Initial price and
+approval fixtures are fictional technical references, without professional
+acceptance or a production deployment claim.
