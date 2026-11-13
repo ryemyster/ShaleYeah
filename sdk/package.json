@@ -22,7 +22,7 @@
 	"dependencies": {
 		"@anthropic-ai/sdk": "0.104.1",
 		"@google/genai": "2.28.0",
-		"@modelcontextprotocol/node": "2.1.1",
+		"@modelcontextprotocol/node": "2.1.2",
 		"@modelcontextprotocol/server": "2.3.1",
 		"@shaleyeah/contracts": "workspace:*",
 		"@turf/turf": "^7.3.4",
