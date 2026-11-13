@@ -8,7 +8,8 @@
 	"scripts": {
 		"build": "tsc",
 		"start": "tsx src/index.ts",
-		"test": "bash ../../scripts/run-tests.sh",
+		"test": "node --import tsx --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=src/**/*.ts --test-coverage-lines=90 tests/*.test.ts",
+		"test:coverage": "pnpm test",
 		"lint": "biome check .",
 		"type-check": "tsc --noEmit"
 	},

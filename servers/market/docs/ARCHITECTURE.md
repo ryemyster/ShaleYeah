@@ -1,47 +1,22 @@
-# Architecture — @shaleyeah/server-market
+# Market backend architecture
 
-## Role
+This TypeScript MCP (Model Context Protocol) package exposes two query tools. The [Market Analyst](../../../agents/market-analyst/README.md) is a separate ADK/Python employee. This backend's source repair changes no employee reasoning loop.
 
-Tier 1 MCP tool server. Provides commodity price data (WTI crude, Henry Hub gas) and market trend analysis. Paired with the `market-analyst` agent (port 4007).
+| Module | Responsibility |
+| --- | --- |
+| `src/prices.ts` | Fixed EIA series selection, bounded HTTP retrieval, per-host cache and separate observation/retrieval metadata |
+| `src/evidence.ts` | Strict host source/assumption records, declared permissions, units, dates, freshness and private-file loading |
+| `src/analysis.ts` | Canonical source projections and separately validated advisory `callLLM` interpretation |
+| `src/index.ts` | Public MCP schemas, host dependency binding and explicit private advisory exports |
 
-## Tool inventory
+The host chooses the source reader and model dependency. The default reader uses the private file named by `MARKET_SOURCE_FILE`; MCP arguments cannot select a source file, URL, credential or reviewer. Host source rights and review records are operator-attested, not independently certified.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `analyze_market_conditions` | `synthesizeMarketAnalysisWithLLM()` | ✅ `callLLM` | Trend analysis, price forecast, supply/demand for a commodity + region |
-| `competitive_analysis` | `synthesizeCompetitorAnalysisWithLLM()` | ✅ `callLLM` | Competitor activity and positioning in a basin |
+`analyze_market_conditions` uses explicit host benchmark observations when supplied; otherwise it reads the intended EIA benchmark. Source-file assumptions stay separate. `competitive_analysis` reads exact company/market/metric records; missing or ambiguous records remain unavailable. A region query supplies interpretation context, not a measurement of every regional price.
 
-## Price data source
+Canonical metric values are assembled before model output. Strict JSON response schemas allow narrative text and known evidence IDs, not new metric fields. Unknown/cross-company references, malformed responses and provider failures leave interpretation unavailable. The source snapshot/rights and observation age are rechecked after asynchronous interpretation.
 
-`fetchEiaPrices()` calls the EIA API when `EIA_API_KEY` is set. Without it, falls back to `STUB_OIL_PRICE` / `STUB_GAS_PRICE` constants. Results are cached in-process to avoid redundant API calls. `clearEiaCache()` is exported for tests.
+EIA observations are cached for one hour, with original retrieval time and observation period preserved. Cache use compares private, in-memory credential handles; no credential digest is persisted. Changing/removing the key or clearing the cache invalidates older in-flight work, even when the same key is configured again. Caller mutation cannot change cached data. Observation age is assessed on every use.
 
-## LLM + fallback pattern
+An explicit `outputPath` creates a new owner-private advisory file. Existing paths and links are rejected. Recording an unreviewed report supplies no commercial, bid, acquisition or capital approval.
 
-After fetching prices, calls `callLLM()` once to interpret the market environment. Falls back to `deriveDefaultMarketInterpretation(oilPrice, gasPrice)` and `deriveDefaultCompetitorProfile(company, market)` if the API is unavailable.
-
-## Key exports
-
-`deriveDefaultMarketInterpretation()`, `deriveDefaultCompetitorProfile()`, and `clearEiaCache()` — all exported for tests.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3007`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: analyze_market_conditions { commodity, region, timeframe }
-  → fetchEiaPrices()                  # EIA API or stub
-  → synthesizeMarketAnalysisWithLLM() → callLLM()
-  ↘ fallback: deriveDefaultMarketInterpretation()
-```
-
-## Dependencies
-
-```
-@shaleyeah/server-market
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
-```
-
-See `docs/EIA_API_SETUP.md` for EIA API configuration.
+The runtime depends on the installed `@shaleyeah/sdk` and Zod packages, not another employee's implementation. Stdio works as a local child process. HTTP uses the SDK's explicit access/audit configuration; see [deployment](DEPLOYMENT.md).

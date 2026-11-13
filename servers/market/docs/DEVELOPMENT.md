@@ -1,45 +1,20 @@
-# Development — @shaleyeah/server-market
+# Developing the Market backend
 
-## Setup
+Use the workspace setup in [Getting Started](../../../docs/GETTING_STARTED.md), then run these from `servers/market`:
 
-```bash
-cd servers/market
-pnpm install && pnpm build
+```sh
+pnpm build
+pnpm type-check
+pnpm lint
+pnpm test
 ```
 
-## Test commands
+The package-local Node test command discovers `tests/*.test.ts` and enforces at least 90% implementation line coverage. Offline fixtures need no real EIA or model key. Tests use actual structured source records and controlled HTTP/model responses; they do not establish live-feed availability or commercial suitability.
 
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-market
-```
+Keep factual values in the source projection. Add an observation or an explicitly reviewed scenario record when a new metric is supported; do not add a default number, inferred company-size proxy or model-generated fact. Preserve source units, literal zero and observation dates. Unsupported fields stay unavailable with a reason.
 
-## LLM wiring checklist
+The model's production dependency remains `callLLM` from `@shaleyeah/sdk`. Host integrations can supply `createMarketTemplate` options for source/model/price readers. These options are not MCP arguments. Provider or credential-resolution failures must return safe unavailable results without private error text.
 
-- [ ] `synthesizeMarketAnalysisWithLLM()` calls `callLLM()`
-- [ ] `synthesizeCompetitorAnalysisWithLLM()` calls `callLLM()`
-- [ ] Fallbacks: `deriveDefaultMarketInterpretation()`, `deriveDefaultCompetitorProfile()`
-- [ ] `clearEiaCache()` exported for tests (reset between test runs)
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
+Before changing a prompt, add control, edge and authority tests. Check actual source values independently of narrative output. Include stale observations, denied/changed source rights, unknown references, malformed model output and explicit assumptions. The initial #708 regression run failed eight semantic cases before implementation; the issue retains that receipt and the bounded repair plan.
 
-## EIA API testing
-
-Tests should call `clearEiaCache()` before each test to prevent price data from leaking between tests:
-
-```typescript
-import { clearEiaCache } from "../src/index.js";
-beforeEach(() => clearEiaCache());
-```
-
-## Key constraints
-
-- No `Math.random()` in fallback functions
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- `EIA_API_KEY` is optional — tests must pass without it (stub prices are the fallback)
-- Governance (HITL, audit) lives in the `market-analyst` agent, not here
-
-## Linting
-
-```bash
-cd servers/market && npx biome check src/
-```
+`createEiaPriceClient` gives each host an independent cache and accepts explicit clock/fetch/credential/freshness options. `fetchEiaPrices` and `clearEiaCache` use the default client. A cache hit cannot renew an observation date. The higher-level analysis policy is separately supplied by the host/environment and reassesses the detailed observations.

@@ -1,73 +1,30 @@
-# Deployment — @shaleyeah/server-market
+# Running the Market backend
 
-## Transport modes
+Market runs as an ordinary Node/TypeScript MCP process with installed shared SDK dependencies. No orchestrator, database or paid feed is required.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3007` | Agent fleet, Docker, Kong |
+## Local stdio
 
-```bash
-# stdio mode
-pnpm build && pnpm start
+After workspace dependency setup, from `servers/market`:
 
-# HTTP mode
-PORT=3007 pnpm start
+```sh
+pnpm build
+pnpm start
 ```
 
-## Environment variables
+A generic MCP client may launch the compiled `node dist/index.js` entry. The process uses standard input/output for the protocol. Keep model/source credentials in a private environment; see [configuration](../README.md#host-configuration).
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Mercatus Analyticus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3007`) |
-| `EIA_API_KEY` | No | stub prices | EIA API key for live WTI/Henry Hub prices |
-| `DATA_PATH` | No | `./data` | Path to market data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
+## Operator source records
 
-Without `EIA_API_KEY`, stub prices are used silently. See `docs/EIA_API_SETUP.md` for setup instructions.
+Set `MARKET_SOURCE_FILE` to an absolute file owned by the operating user with mode `0600`. The file declares permitted observations or explicit reviewed assumptions in the [input format](INPUTS.md). It is reread to detect changed data or denied rights. The source file is host configuration, not a model-selectable path.
 
-## Build and run
+Without a source file, company metrics are unavailable. Without EIA access, benchmark fields are unavailable unless the host supplies an eligible observation. Model failure does not replace missing metrics. Set `MARKET_MAX_OBSERVATION_AGE_SECONDS` for the analysis's declared freshness window; source dates are never renewed by a fetch or cache hit.
 
-```bash
-cd servers/market
-pnpm install && pnpm build
-PORT=3007 ANTHROPIC_API_KEY=sk-... EIA_API_KEY=... pnpm start
-```
+## Protected HTTP
 
-## Docker Compose (agent pair)
+An HTTP deployment must construct the server with the [SDK's explicit access, identity/scope and audit configuration](../../../sdk/docs/http-access.md). A host can use `ServerFactory.createServer(createMarketTemplate(hostOptions))` and supply `ServerRuntimeOptions` at construction. `PORT` selects the listener only after that configuration exists; `PORT=3007` alone is rejected. Keep source, MCP access and model credentials separate.
 
-```yaml
-services:
-  market:
-    image: shaleyeah/market:latest
-    environment:
-      PORT: "3007"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      EIA_API_KEY: ${EIA_API_KEY}
-    ports:
-      - "3007:3007"
-  market-analyst:
-    image: shaleyeah/market-analyst:latest
-    environment:
-      MARKET_MCP_URL: http://market:3007
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [market]
-```
+No published Market image, gateway installation or production deployment is claimed by this package. Build/qualify the intended artifact and environment before use. The later #684 adoption owns full employee review/context and independent artifact/container qualification.
 
-## Kong gateway
+## Advisory exports and decisions
 
-```bash
-curl -X POST http://kong:8001/upstreams -d name=market
-curl -X POST http://kong:8001/upstreams/market/targets -d target=market:3007
-curl -X POST http://kong:8001/services -d name=market -d host=market
-curl -X POST http://kong:8001/services/market/routes -d paths[]=/mcp/market
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3007` set
-- [ ] `EIA_API_KEY` set (or accept stub prices for dev)
-- [ ] Registered with Kong at `/mcp/market`
-- [ ] Paired with `market-analyst` agent at port 4007
+An explicit `outputPath` creates a new private file with mode `0600`. Existing files and symlinks are rejected; select a new path for another result. Exported narratives remain unreviewed. An operator must assess commercial suitability and approve consequential actions through the appropriate human workflow.

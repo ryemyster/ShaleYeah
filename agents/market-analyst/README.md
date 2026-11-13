@@ -30,12 +30,10 @@ MARKET_MCP_URL=http://localhost:3007/mcp MARKET_MCP_ACCESS_TOKEN_FILE=/path/to/p
   "Analyze current oil and gas market conditions for the Permian over a 1 year timeframe"
 ```
 
-Start the Market MCP server separately when you want live backend execution:
-
-```bash
-cd servers/market
-PORT=3007 pnpm start
-```
+Configure and start the Market MCP backend separately using its
+[protected HTTP deployment guide](../../servers/market/docs/DEPLOYMENT.md)
+before making agent tool calls. The backend's ordinary `pnpm start` uses stdio;
+HTTP also needs the operator's explicit identity/scope and audit binding.
 
 The backend uses the selected MCP 2026-07-28 profile. Replace `/path/to/private/mcp-token` with an operator-issued credential file owned by your account and readable/writable only by you. Credentials are resolved when a tool runs and stay outside prompts. Use HTTPS for a remote endpoint; local HTTP is limited to loopback. Missing or denied credentials stop the call. An HTTP server needs explicit identity/scope and audit configuration; setting `PORT` alone does not supply that setup. The role-specific operator workflow and source qualification remain pending in the linked employee adoption issue.
 

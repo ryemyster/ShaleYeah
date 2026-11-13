@@ -1,6 +1,11 @@
 # Changelog — Market Analyst ADK Agent
 
 ## [Unreleased]
+- #708: Document the repaired backend's unavailable/source/assumption fields and
+  host configuration; correct the protected HTTP setup instructions and remove
+  the stale fixed-price fallback example from the project spec. Agent code,
+  reasoning and full employee qualification remain owned by #684.
+
 - #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
 
 

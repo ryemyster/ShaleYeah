@@ -21,6 +21,16 @@ The ADK tools map to the current Market MCP server tools:
 
 The MCP backend URL comes from `MARKET_MCP_URL`. The default is `http://localhost:3007/mcp`.
 
+The repaired backend keeps source metrics separate from advisory model output.
+Current prices and company metrics may be `null`; inspect their detailed status,
+reason, source period, retrieval time and assumption/review fields. Names alone
+do not supply competitor facts, and a recent fetch does not renew an observation.
+The host configures the private [Market source file](../../../servers/market/docs/INPUTS.md),
+EIA access and optional interpretation key. The caller cannot send those source
+or reviewer assertions as tool arguments. Preserve the backend's unreviewed
+state and `commercialAuthority: false`. Full role workflow qualification remains
+in #684.
+
 ## Orchestration Boundary
 
 An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs or recreate a TypeScript agent adapter. Shared contracts belong in `sdk/`; Market execution stays behind `servers/market`.
