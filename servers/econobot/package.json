@@ -34,7 +34,7 @@
 		"@shaleyeah/connectors": "workspace:*",
 		"@shaleyeah/sdk": "workspace:*",
 		"csv-parse": "7.0.3",
-		"zod": "^4.3.6"
+		"zod": "^4.6.7"
 	},
 	"devDependencies": {
 		"@modelcontextprotocol/client": "2.3.1",
