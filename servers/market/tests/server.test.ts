@@ -1,213 +1,158 @@
-/**
- * Market EIA API Tests — Issue #223
- *
- * TDD: written BEFORE the implementation.
- * Tests should fail against the current stub and pass after EIA integration.
- *
- * Validates:
- * - fetchEiaPrices() returns prices from a mocked HTTP response
- * - fetchEiaPrices() falls back to stub constants when fetch fails
- * - fetchEiaPrices() falls back when EIA_API_KEY is absent
- * - Cache prevents duplicate fetches within 1 hour
- * - analyze_market_conditions response includes dataSource field
- * - dataSource is 'eia' when fetch succeeds, 'stub' on fallback
- */
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { afterEach, beforeEach, test } from "node:test";
+import type { MarketAnalysisOptions } from "../src/analysis.js";
+import { createMarketTemplate } from "../src/index.js";
+import { createEiaPriceClient } from "../src/prices.js";
+import { bundle, eiaRow, NOW, narrative } from "./fixtures/evidence.js";
 
-import assert from "node:assert";
-
-// We import the EIA client functions directly for unit testing.
-// These do not exist yet — import will fail until implementation is added.
-import { clearEiaCache, type EiaPrices, fetchEiaPrices } from "../src/index.js";
-
-let passed = 0;
-let failed = 0;
-
-function test(name: string, fn: () => void | Promise<void>): Promise<void> {
-	return Promise.resolve()
-		.then(fn)
-		.then(() => {
-			console.log(`  ✓ ${name}`);
-			passed++;
-		})
-		.catch((err: unknown) => {
-			console.log(`  ✗ ${name}`);
-			console.log(`    ${err instanceof Error ? err.message : String(err)}`);
-			failed++;
-		});
+const saved = {
+	source: process.env.MARKET_SOURCE_FILE,
+	eia: process.env.EIA_API_KEY,
+	model: process.env.ANTHROPIC_API_KEY,
+};
+beforeEach(() => {
+	delete process.env.MARKET_SOURCE_FILE;
+	delete process.env.EIA_API_KEY;
+	delete process.env.ANTHROPIC_API_KEY;
+});
+afterEach(() => {
+	for (const [name, value] of [
+		["MARKET_SOURCE_FILE", saved.source],
+		["EIA_API_KEY", saved.eia],
+		["ANTHROPIC_API_KEY", saved.model],
+	]) {
+		if (value === undefined) delete process.env[name!];
+		else process.env[name!] = value;
+	}
+});
+const clock = () => new Date(NOW);
+async function invoke(name: string, arguments_: unknown, options: MarketAnalysisOptions = {}) {
+	const template = createMarketTemplate(options);
+	const tool = template.tools.find((tool) => tool.name === name);
+	assert.ok(tool);
+	return tool.handler(arguments_);
 }
 
-// ---------------------------------------------------------------------------
-// Mock fetch helper — replaces global fetch for a single test
-// ---------------------------------------------------------------------------
+test("the existing public tools return explicit unavailability without fabricated facts or confidence", async () => {
+	const result = await invoke("analyze_market_conditions", { commodity: "both", region: "Permian" });
+	assert.equal(result.success, true);
+	assert.equal(result.analysis.status, "unavailable");
+	assert.equal(result.analysis.current.oil.price, null);
+	assert.equal(result.analysis.current.gas.price, null);
+	assert.equal(result.analysis.commercialAuthority, false);
+	assert.equal(result.metadata.confidence, null);
+	assert.equal(result.analysis.confidence, undefined);
+	const companies = await invoke("competitive_analysis", { competitors: ["Acme"], market: "Permian" });
+	assert.equal(companies.analysis.competitors[0].production, null);
+	assert.equal(companies.analysis.competitors[0].marketShare, null);
+	assert.equal(companies.analysis.competitors[0].avgCosts, null);
+});
 
-type FetchFn = typeof fetch;
+test("MCP arguments cannot supply source facts, reviewer identities or provider credentials", async () => {
+	let reads = 0;
+	for (const extra of [
+		{ records: bundle.records },
+		{ sourceFile: "/private/source.json" },
+		{ reviewerId: "forged" },
+		{ apiKey: "private-value" },
+	]) {
+		const result = await invoke(
+			"competitive_analysis",
+			{ competitors: ["Acme"], market: "Permian", ...extra },
+			{
+				readSources: async () => {
+					reads++;
+					return bundle;
+				},
+			},
+		);
+		assert.equal(result.success, false);
+	}
+	assert.equal(reads, 0);
+	for (const args of [
+		{ competitors: ["Acme", "Acme"], market: "Permian" },
+		{ competitors: ["Acme"], market: "Permian", metrics: ["unknown"] },
+	]) {
+		assert.equal((await invoke("competitive_analysis", args)).success, false);
+	}
+});
 
-function withMockFetch(mockFn: FetchFn, fn: () => Promise<void>): Promise<void> {
-	const original = globalThis.fetch;
-	globalThis.fetch = mockFn;
-	return fn().finally(() => {
-		globalThis.fetch = original;
-	});
-}
+test("real private operator data is used by the default public tool without granting model authority", async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), "market-host-"));
+	try {
+		const file = path.join(root, "sources.json");
+		await fs.writeFile(file, JSON.stringify(bundle), { mode: 0o600 });
+		process.env.MARKET_SOURCE_FILE = file;
+		const result = await invoke(
+			"competitive_analysis",
+			{ competitors: ["Acme"], market: " Permian ", metrics: ["production", "costs"] },
+			{ clock },
+		);
+		assert.equal(result.success, true);
+		assert.equal(result.analysis.competitors[0].production, 0);
+		assert.equal(result.analysis.competitors[0].avgCosts, 12.25);
+		assert.equal(result.analysis.competitors[0].interpretation.status, "unavailable");
+		assert.equal(result.analysis.reviewStatus, "unreviewed");
+	} finally {
+		await fs.rm(root, { recursive: true, force: true });
+	}
+});
 
-async function runTests(): Promise<void> {
-	console.log("\n🧪 Market EIA API Tests (Issue #223)\n");
+test("public market output preserves requested commodity, dates and unreviewed interpretation", async () => {
+	const prices = createEiaPriceClient({
+		clock,
+		apiKey: () => "fixture-key",
+		fetch: async (input) => new Response(JSON.stringify(eiaRow(String(input).includes("RWTC") ? "RWTC" : "RNGWHHD"))),
+	}).fetch;
+	const result = await invoke(
+		"analyze_market_conditions",
+		{ commodity: "gas", region: " Permian ", timeframe: "current" },
+		{
+			clock,
+			prices,
+			llm: async () =>
+				JSON.stringify({ summary: "Dated gas benchmark only", evidenceIds: ["eia.NG.RNGWHHD.D"], limitations: [] }),
+		},
+	);
+	assert.equal(result.success, true);
+	assert.equal(result.analysis.current.oil, undefined);
+	assert.equal(result.analysis.current.gas.price, 3.75);
+	assert.equal(result.analysis.current.gas.observation.observedAt, "2026-11-12");
+	assert.equal(result.analysis.interpretation.reviewStatus, "unreviewed");
+});
 
-	// ------------------------------------------------------------------
-	// fetchEiaPrices — mock fetch, key present
-	// ------------------------------------------------------------------
-
-	await test("fetchEiaPrices returns oil and gas prices from EIA response", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		process.env.EIA_API_KEY = "test-key";
-		let callCount = 0;
-		const mockFetch: FetchFn = async () => {
-			callCount++;
-			const price = callCount === 1 ? "82.50" : "3.75";
-			const body = JSON.stringify({ response: { data: [{ value: price, period: "2026-04-01" }] } });
-			return new Response(body, { status: 200 });
-		};
+test("explicit advisory exports are new private files and cannot overwrite data or follow links", async () => {
+	const root = await fs.mkdtemp(path.join(os.tmpdir(), "market-output-"));
+	try {
+		const target = path.join(root, "report.json");
+		const options = { clock, readSources: async () => structuredClone(bundle), llm: async () => narrative() };
+		const args = { competitors: ["Acme"], market: "Permian", outputPath: target };
+		assert.equal((await invoke("competitive_analysis", args, options)).success, true);
+		const handle = await fs.open(target, "r");
 		try {
-			await withMockFetch(mockFetch, async () => {
-				const prices = await fetchEiaPrices();
-				assert.strictEqual(prices.dataSource, "eia", "Expected dataSource: 'eia'");
-				assert.strictEqual(prices.oilPrice, 82.5, `Expected oil $82.50, got ${prices.oilPrice}`);
-				assert.strictEqual(prices.gasPrice, 3.75, `Expected gas $3.75, got ${prices.gasPrice}`);
-			});
+			assert.equal((await handle.stat()).mode & 0o077, 0);
+			const content = JSON.parse(await handle.readFile("utf8"));
+			assert.equal(content.competitors[0].production, 0);
+			assert.equal(content.commercialAuthority, false);
 		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-			else delete process.env.EIA_API_KEY;
+			await handle.close();
 		}
-	});
+		assert.equal((await invoke("competitive_analysis", args, options)).success, false);
+		const link = path.join(root, "link.json");
+		await fs.symlink(target, link);
+		assert.equal((await invoke("competitive_analysis", { ...args, outputPath: link }, options)).success, false);
+		assert.equal(JSON.parse(await fs.readFile(target, "utf8")).competitors[0].production, 0);
+	} finally {
+		await fs.rm(root, { recursive: true, force: true });
+	}
+});
 
-	await test("fetchEiaPrices falls back to stub when EIA_API_KEY is absent", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		delete process.env.EIA_API_KEY;
-		try {
-			const prices = await fetchEiaPrices();
-			assert.strictEqual(prices.dataSource, "stub", "Expected dataSource: 'stub' when key absent");
-			assert.ok(typeof prices.oilPrice === "number" && prices.oilPrice > 0, "Expected positive oil stub price");
-			assert.ok(typeof prices.gasPrice === "number" && prices.gasPrice > 0, "Expected positive gas stub price");
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-		}
-	});
-
-	await test("fetchEiaPrices falls back to stub when fetch throws", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		process.env.EIA_API_KEY = "test-key";
-		const failFetch: FetchFn = async () => {
-			throw new Error("Network error");
-		};
-		try {
-			await withMockFetch(failFetch, async () => {
-				const prices = await fetchEiaPrices();
-				assert.strictEqual(prices.dataSource, "stub", "Expected dataSource: 'stub' on network error");
-			});
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-			else delete process.env.EIA_API_KEY;
-		}
-	});
-
-	await test("fetchEiaPrices falls back to stub when EIA returns non-200", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		process.env.EIA_API_KEY = "test-key";
-		const errorFetch: FetchFn = async () => new Response("Unauthorized", { status: 401 });
-		try {
-			await withMockFetch(errorFetch, async () => {
-				const prices = await fetchEiaPrices();
-				assert.strictEqual(prices.dataSource, "stub", "Expected dataSource: 'stub' on 401");
-			});
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-			else delete process.env.EIA_API_KEY;
-		}
-	});
-
-	// ------------------------------------------------------------------
-	// Cache behaviour
-	// ------------------------------------------------------------------
-
-	await test("cache: second call within 1 hour does not re-fetch", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		process.env.EIA_API_KEY = "test-key";
-		let fetchCount = 0;
-		const countingFetch: FetchFn = async () => {
-			fetchCount++;
-			const price = fetchCount === 1 ? "80.00" : "4.00";
-			const body = JSON.stringify({ response: { data: [{ value: price, period: "2026-04-01" }] } });
-			return new Response(body, { status: 200 });
-		};
-		try {
-			await withMockFetch(countingFetch, async () => {
-				await fetchEiaPrices();
-				await fetchEiaPrices(); // second call — should hit cache
-				// 2 EIA endpoints × 1 fetch (not 2) = 2 fetch calls total, not 4
-				assert.ok(fetchCount <= 2, `Expected ≤2 fetch calls (cache hit), got ${fetchCount}`);
-			});
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-			else delete process.env.EIA_API_KEY;
-		}
-	});
-
-	await test("clearEiaCache forces a re-fetch on next call", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		process.env.EIA_API_KEY = "test-key";
-		let fetchCount = 0;
-		const countingFetch: FetchFn = async () => {
-			fetchCount++;
-			const body = JSON.stringify({ response: { data: [{ value: "77.00", period: "2026-04-01" }] } });
-			return new Response(body, { status: 200 });
-		};
-		try {
-			await withMockFetch(countingFetch, async () => {
-				await fetchEiaPrices();
-				clearEiaCache();
-				await fetchEiaPrices(); // should re-fetch
-				assert.ok(fetchCount === 4, `Expected 4 fetch calls after cache clear, got ${fetchCount}`);
-			});
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-			else delete process.env.EIA_API_KEY;
-		}
-	});
-
-	// ------------------------------------------------------------------
-	// EiaPrices shape
-	// ------------------------------------------------------------------
-
-	await test("EiaPrices type has oilPrice, gasPrice, dataSource, fetchedAt", async () => {
-		clearEiaCache();
-		const savedKey = process.env.EIA_API_KEY;
-		delete process.env.EIA_API_KEY;
-		try {
-			const prices: EiaPrices = await fetchEiaPrices();
-			assert.ok("oilPrice" in prices, "Missing oilPrice");
-			assert.ok("gasPrice" in prices, "Missing gasPrice");
-			assert.ok("dataSource" in prices, "Missing dataSource");
-			assert.ok("fetchedAt" in prices, "Missing fetchedAt");
-			assert.ok(prices.fetchedAt instanceof Date, "fetchedAt should be a Date");
-		} finally {
-			if (savedKey !== undefined) process.env.EIA_API_KEY = savedKey;
-		}
-	});
-
-	// ------------------------------------------------------------------
-	// Summary
-	// ------------------------------------------------------------------
-	console.log(`\n  Results: ${passed} passed, ${failed} failed\n`);
-	if (failed > 0) process.exit(1);
-}
-
-runTests().catch((err) => {
-	console.error("Test runner error:", err);
-	process.exit(1);
+test("market export failure is a safe failure without an output path in its error", async () => {
+	const target = "/directory-that-is-not-present/market.json";
+	const result = await invoke("analyze_market_conditions", { commodity: "oil", region: "Permian", outputPath: target });
+	assert.equal(result.success, false);
+	assert.ok(!JSON.stringify(result).includes(target));
 });

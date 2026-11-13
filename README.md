@@ -121,6 +121,12 @@ and requires qualified exact human review before private recording. Citation
 validity and fixture qualification do not establish legal clearance or
 professional acceptance.
 
+The [Market backend](servers/market/README.md) preserves dated benchmark and
+operator-source observations, separates reviewed scenario assumptions, and
+returns unavailable fields when evidence is missing. Its model narrative is
+unreviewed and cannot supply company metrics or commercial approval. Full
+Market Analyst employee adoption remains in #684.
+
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 
 Current root commands are workspace conveniences, not permanent architecture constraints. Package-local READMEs and docs are the source of truth for each independently buildable unit.

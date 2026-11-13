@@ -1,42 +1,18 @@
-# EIA API Setup
+# EIA benchmark access
 
-The EIA (U.S. Energy Information Administration) API provides free, official commodity price data — WTI crude and Henry Hub natural gas. SHALE YEAH uses it in `market.ts` to replace stub prices with real values.
+The U.S. Energy Information Administration (EIA) publishes the benchmark series used here. Obtain an API key through [EIA registration](https://www.eia.gov/opendata/register.php), then supply `EIA_API_KEY` in the server's private process environment. The package does not automatically read an `.env` file.
 
-## Get a Key
+The client uses EIA's documented [APIv2 series-ID route](https://www.eia.gov/opendata/documentation.php):
 
-1. Go to [https://www.eia.gov/opendata/register.php](https://www.eia.gov/opendata/register.php)
-2. Enter your email — the key arrives within minutes
-3. No credit card, no tier limits for standard use
+| Benchmark | Series ID | Canonical unit | Public definition |
+| --- | --- | --- | --- |
+| WTI oil at Cushing | `PET.RWTC.D` | `USD/bbl` (US dollars per barrel) | [Daily WTI history](https://www.eia.gov/dnav/pet/hist/rwtcd.htm) |
+| Henry Hub natural gas | `NG.RNGWHHD.D` | `USD/MMBtu` (US dollars per million British thermal units) | [Daily Henry Hub history](https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm) |
 
-## Add It to Your Environment
+Requests select daily data, `value`, descending `period` order and length one. The client checks the returned series, daily period, numeric value and unit. EIA's [FAQ](https://www.eia.gov/opendata/faqs.php) explains that compatibility routes retain v2 metadata and can return different row counts; empty or ambiguous rows are unavailable here. Accepted unit spellings are the matching EIA abbreviations or the benchmark's written unit name.
 
-```bash
-# .env (never commit this file — it's in .gitignore)
-EIA_API_KEY=your_key_here
-```
+Each HTTP request has a ten-second deadline and a 256 KiB response bound. Request URLs contain the API key for EIA access; they are not returned or logged as source metadata. Results cite the public benchmark definition instead.
 
-Or export inline for a single run:
+Successful observations are cached for one hour with their original retrieval time. The source's observation day remains separate. The analysis defaults to a seven-day observation-age window that the host can configure; this is a local policy, not a promise about publication timing. Clearing the cache or downloading again cannot make an old observation current. Key removal/rotation invalidates its cache. Failed requests are not converted into prices.
 
-```bash
-EIA_API_KEY=your_key_here npm run prod
-```
-
-## What It Unlocks
-
-Without the key, `analyze_market_conditions` falls back to documented stub constants (`$75/bbl WTI`, `$3.50/mcf Henry Hub`) and tags the response with `dataSource: 'stub'`. With the key, it fetches live spot prices and tags with `dataSource: 'eia'`.
-
-The fallback is intentional — demo mode and CI both work without a key.
-
-## Endpoints Used
-
-| Price | Series ID | Endpoint |
-|-------|-----------|----------|
-| WTI Crude ($/bbl) | `RWTC` | `GET /v2/petroleum/pri/spt/data/?frequency=daily&data[0]=value&series_id=RWTC&sort[0][column]=period&sort[0][direction]=desc&length=1` |
-| Henry Hub Gas ($/MMBtu) | `RNGWHHD` | `GET /v2/natural-gas/pri/fut/data/?frequency=daily&data[0]=value&series_id=RNGWHHD&sort[0][column]=period&sort[0][direction]=desc&length=1` |
-
-Full API explorer: [https://www.eia.gov/opendata/browser/](https://www.eia.gov/opendata/browser/)
-
-## Rate Limits
-
-- 5,000 requests per hour per key (free tier)
-- SHALE YEAH caches prices for 1 hour — a full analysis run costs 2 requests
+Missing access produces `null` current fields and a safe reason. One valid benchmark remains available if the other fails. No key is needed for offline tests; no live-key verification is claimed by that test suite. The region query does not turn a benchmark into a regional price or a single quote into measured volatility.

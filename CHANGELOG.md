@@ -22,6 +22,14 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **Market source repair:** missing/failed EIA access leaves unavailable prices;
+  source periods, units and retrieval times remain distinct. Host-selected private
+  observations and reviewed scenario assumptions replace name-derived competitor
+  metrics. Shared model interpretation stays advisory and cannot populate factual
+  fields. Unsupported forecasts, volatility and confidence defaults are removed;
+  key-scoped caches and exclusive private exports preserve the source boundary.
+  Full Market Analyst employee adoption remains in #684. (#708)
+
 - **Legal Analyst employee:** exact matter/corpus/checklist sources, backend-computed
   UTF-8 citations, declared scope/effective-date eligibility and explicit question/
   source/conflict coverage. Native configured providers, retained private context,
