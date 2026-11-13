@@ -1,0 +1,872 @@
+{
+  "pass": {
+    "report": {
+      "schemaVersion": "0.1.0",
+      "kind": "qa-observed-report",
+      "resultRef": {
+        "id": "result.qa.e6636aed4ad15acb22f3d6e4b11d4eec449b8457224a7b43d7fbf7e8c235e2d9",
+        "revision": "r1",
+        "uri": "urn:qa:result:9339a442370fe77daf43481791db5273f659752e42f79767c476f30cab27f0a4"
+      },
+      "work": {
+        "artifact": {
+          "id": "product.qa.892b6bff995d98553165c0b533f4e9d581fb1b0a",
+          "revision": "r1",
+          "uri": "urn:qa:draft:892b6bff995d98553165c0b533f4e9d581fb1b0a14e1364afb86fe3a65c068e1"
+        },
+        "assumptions": [],
+        "blockers": [],
+        "contractVersion": "0.1.0",
+        "evidence": [
+          {
+            "accessClassification": "restricted",
+            "asOf": "2026-10-13T00:00:00Z",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+            },
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one",
+            "usagePolicy": {
+              "id": "policy.data",
+              "version": "r1"
+            }
+          }
+        ],
+        "findings": [
+          {
+            "assumptionIds": [],
+            "basis": "measured",
+            "evidenceIds": [
+              "source.one"
+            ],
+            "id": "finding.qa.ac53020694c03984a68d1441029a5a22",
+            "unit": "not_applicable",
+            "value": "PASS"
+          }
+        ],
+        "inputs": [
+          {
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one"
+          }
+        ],
+        "kind": "work-product",
+        "review": {
+          "decisionRefs": [],
+          "status": "unreviewed"
+        },
+        "scope": {
+          "assetId": "well",
+          "customerId": "customer",
+          "employeeId": "employee.qa",
+          "taskId": "task"
+        },
+        "status": "ready_for_review",
+        "taskRevision": "r1",
+        "uncertainty": "Configured observed data checks; unresolved inputs and defects require the data or producing owner. No professional or regulatory certification."
+      },
+      "summary": {
+        "status": "PASS",
+        "counts": {
+          "applicable": 1,
+          "errors": 0,
+          "evaluated": 1,
+          "failed": 0,
+          "notApplicable": 0,
+          "passed": 1,
+          "total": 1,
+          "untested": 0
+        },
+        "passRate": 1,
+        "coverage": 1,
+        "rateScale": "fraction"
+      },
+      "results": [
+        {
+          "assessmentComplete": true,
+          "defects": [],
+          "evidence": [
+            {
+              "accessClassification": "restricted",
+              "asOf": "2026-10-13T00:00:00Z",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+              },
+              "id": "source.one",
+              "revision": "r1",
+              "uri": "urn:fixture:source.one",
+              "usagePolicy": {
+                "id": "policy.data",
+                "version": "r1"
+              }
+            }
+          ],
+          "inspectedRows": 1,
+          "omittedDefects": 0,
+          "profile": {
+            "id": "profile.qa",
+            "revision": "r1",
+            "sha256": "c4ad7a75127280cd2b9bc21ee2852419ce5ffdac758af630048170bdb575e6dd"
+          },
+          "reason": "all_applicable_assertions_held",
+          "repairOwner": "data-owner",
+          "rowCounts": {
+            "evaluated": 1,
+            "failed": 0,
+            "passed": 1,
+            "total": 1,
+            "untested": 0
+          },
+          "rule": {
+            "id": "rule.complete",
+            "revision": "r1",
+            "version": "1"
+          },
+          "severity": "critical",
+          "status": "PASS",
+          "type": "completeness"
+        }
+      ],
+      "disclosures": [
+        "Observed configured data checks; no professional or regulatory certification"
+      ],
+      "review": "unreviewed"
+    },
+    "sourceArtifacts": [
+      {
+        "kind": "source-artifact",
+        "contractVersion": "0.2.0",
+        "scope": {
+          "customerId": "customer",
+          "assetId": "well",
+          "taskId": "task",
+          "employeeId": "employee.qa"
+        },
+        "taskRevision": "r1",
+        "connectorRef": {
+          "id": "connector.qa",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "evidence": {
+          "id": "source.one",
+          "revision": "r1",
+          "uri": "urn:fixture:source.one",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+          },
+          "asOf": "2026-10-13T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.data",
+            "version": "r1"
+          }
+        },
+        "artifact": {
+          "id": "source.one",
+          "revision": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4",
+          "uri": "urn:sha256:17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+        },
+        "retrievedAt": "2026-10-13T00:00:00Z",
+        "format": "json",
+        "parserRef": {
+          "id": "normalized-qa-data",
+          "version": "0.1.0"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 228,
+        "accessNotes": "Authored operator fixture",
+        "licenseNotes": "Synthetic data; no licensed rule library",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "sourceBytesBase64": "eyJzY2hlbWFWZXJzaW9uIjoiMC4xLjAiLCJraW5kIjoibm9ybWFsaXplZC1xYS1kYXRhIiwicm93cyI6W3siaWQiOiJyb3cuMSIsImFzc2V0SWQiOiJ3ZWxsIiwid2VsbElkIjoid2VsbGJvcmUuMSIsInBlcmlvZCI6IjIwMjYtMTAiLCJhc09mIjoiMjAyNi0xMC0xM1QwMDowMDowMFoiLCJmaWVsZHMiOnsibmV0UGF5Ijp7InZhbHVlIjowLCJ1bml0IjoiZnQiLCJiYXNpcyI6Im1lYXN1cmVkIn19fV19",
+    "profile": {
+      "schemaVersion": "0.1.0",
+      "id": "profile.qa",
+      "revision": "r1",
+      "rules": [
+        {
+          "id": "rule.complete",
+          "revision": "r1",
+          "version": "1",
+          "sourceId": "source.one",
+          "severity": "critical",
+          "repairOwner": "data-owner",
+          "applicable": true,
+          "type": "completeness",
+          "field": "netPay"
+        }
+      ]
+    }
+  },
+  "failure": {
+    "report": {
+      "schemaVersion": "0.1.0",
+      "kind": "qa-observed-report",
+      "resultRef": {
+        "id": "result.qa.3037d83efb093d576cccc37014156fe659ed4b89f7171b59afea588a64e97bf6",
+        "revision": "r1",
+        "uri": "urn:qa:result:e45c07502ad0fa5675cc286274b983fceb79c400af05b156f737c615c6c71e9d"
+      },
+      "work": {
+        "artifact": {
+          "id": "product.qa.5971f1fa533a3cba30e05bd76306bd8a57c2cb8f",
+          "revision": "r1",
+          "uri": "urn:qa:draft:5971f1fa533a3cba30e05bd76306bd8a57c2cb8f781cd12607578885eeb7a7ab"
+        },
+        "assumptions": [],
+        "blockers": [
+          {
+            "code": "missing_input",
+            "message": "Observed QA status FAIL; review defects and untested inputs",
+            "references": []
+          }
+        ],
+        "contractVersion": "0.1.0",
+        "evidence": [
+          {
+            "accessClassification": "restricted",
+            "asOf": "2026-10-13T00:00:00Z",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+            },
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one",
+            "usagePolicy": {
+              "id": "policy.data",
+              "version": "r1"
+            }
+          }
+        ],
+        "findings": [
+          {
+            "assumptionIds": [],
+            "basis": "measured",
+            "evidenceIds": [
+              "source.one"
+            ],
+            "id": "finding.qa.ddf270da32c42911c73e378b3212b233",
+            "unit": "not_applicable",
+            "value": "FAIL"
+          }
+        ],
+        "inputs": [
+          {
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one"
+          }
+        ],
+        "kind": "work-product",
+        "review": {
+          "decisionRefs": [],
+          "status": "unreviewed"
+        },
+        "scope": {
+          "assetId": "well",
+          "customerId": "customer",
+          "employeeId": "employee.qa",
+          "taskId": "task"
+        },
+        "status": "blocked",
+        "taskRevision": "r1",
+        "uncertainty": "Configured observed data checks; unresolved inputs and defects require the data or producing owner. No professional or regulatory certification."
+      },
+      "summary": {
+        "status": "FAIL",
+        "counts": {
+          "applicable": 1,
+          "errors": 0,
+          "evaluated": 1,
+          "failed": 1,
+          "notApplicable": 0,
+          "passed": 0,
+          "total": 1,
+          "untested": 0
+        },
+        "passRate": 0,
+        "coverage": 1,
+        "rateScale": "fraction"
+      },
+      "results": [
+        {
+          "assessmentComplete": true,
+          "defects": [
+            {
+              "expected": "m",
+              "location": "/rows/0/fields/netPay/unit",
+              "observed": "ft",
+              "reason": "unit_mismatch"
+            }
+          ],
+          "evidence": [
+            {
+              "accessClassification": "restricted",
+              "asOf": "2026-10-13T00:00:00Z",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+              },
+              "id": "source.one",
+              "revision": "r1",
+              "uri": "urn:fixture:source.one",
+              "usagePolicy": {
+                "id": "policy.data",
+                "version": "r1"
+              }
+            }
+          ],
+          "inspectedRows": 1,
+          "omittedDefects": 0,
+          "profile": {
+            "id": "profile.qa",
+            "revision": "r1",
+            "sha256": "bee50bd4e97c0580f5d81eef019719a8056380baf0114bed48c9fd26167fbbef"
+          },
+          "reason": "observed_defects",
+          "repairOwner": "data-owner",
+          "rowCounts": {
+            "evaluated": 1,
+            "failed": 1,
+            "passed": 0,
+            "total": 1,
+            "untested": 0
+          },
+          "rule": {
+            "id": "rule.units",
+            "revision": "r1",
+            "version": "1"
+          },
+          "severity": "critical",
+          "status": "FAIL",
+          "type": "units"
+        }
+      ],
+      "disclosures": [
+        "Observed configured data checks; no professional or regulatory certification"
+      ],
+      "review": "unreviewed"
+    },
+    "sourceArtifacts": [
+      {
+        "kind": "source-artifact",
+        "contractVersion": "0.2.0",
+        "scope": {
+          "customerId": "customer",
+          "assetId": "well",
+          "taskId": "task",
+          "employeeId": "employee.qa"
+        },
+        "taskRevision": "r1",
+        "connectorRef": {
+          "id": "connector.qa",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "evidence": {
+          "id": "source.one",
+          "revision": "r1",
+          "uri": "urn:fixture:source.one",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+          },
+          "asOf": "2026-10-13T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.data",
+            "version": "r1"
+          }
+        },
+        "artifact": {
+          "id": "source.one",
+          "revision": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4",
+          "uri": "urn:sha256:17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+        },
+        "retrievedAt": "2026-10-13T00:00:00Z",
+        "format": "json",
+        "parserRef": {
+          "id": "normalized-qa-data",
+          "version": "0.1.0"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 228,
+        "accessNotes": "Authored operator fixture",
+        "licenseNotes": "Synthetic data; no licensed rule library",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "sourceBytesBase64": "eyJzY2hlbWFWZXJzaW9uIjoiMC4xLjAiLCJraW5kIjoibm9ybWFsaXplZC1xYS1kYXRhIiwicm93cyI6W3siaWQiOiJyb3cuMSIsImFzc2V0SWQiOiJ3ZWxsIiwid2VsbElkIjoid2VsbGJvcmUuMSIsInBlcmlvZCI6IjIwMjYtMTAiLCJhc09mIjoiMjAyNi0xMC0xM1QwMDowMDowMFoiLCJmaWVsZHMiOnsibmV0UGF5Ijp7InZhbHVlIjowLCJ1bml0IjoiZnQiLCJiYXNpcyI6Im1lYXN1cmVkIn19fV19",
+    "profile": {
+      "schemaVersion": "0.1.0",
+      "id": "profile.qa",
+      "revision": "r1",
+      "rules": [
+        {
+          "id": "rule.units",
+          "revision": "r1",
+          "version": "1",
+          "sourceId": "source.one",
+          "severity": "critical",
+          "repairOwner": "data-owner",
+          "applicable": true,
+          "type": "units",
+          "field": "netPay",
+          "expectedUnit": "m"
+        }
+      ]
+    }
+  },
+  "missing-reference": {
+    "report": {
+      "schemaVersion": "0.1.0",
+      "kind": "qa-observed-report",
+      "resultRef": {
+        "id": "result.qa.7b1e009a14d57119a2043ec5e0c2c6b72cd842b99cbfb0ae06da299d3d2ba93c",
+        "revision": "r1",
+        "uri": "urn:qa:result:5f1694ed0646defe44bc2ec94a4315dfc662edb1b87eea588388dc855d14c170"
+      },
+      "work": {
+        "artifact": {
+          "id": "product.qa.f8e33d5e9b0f99ba65bb7908d142a7dfb57ef73c",
+          "revision": "r1",
+          "uri": "urn:qa:draft:f8e33d5e9b0f99ba65bb7908d142a7dfb57ef73cba81b2c9e3fc37620747136d"
+        },
+        "assumptions": [],
+        "blockers": [
+          {
+            "code": "missing_input",
+            "message": "Observed QA status UNTESTED; review defects and untested inputs",
+            "references": []
+          }
+        ],
+        "contractVersion": "0.1.0",
+        "evidence": [
+          {
+            "accessClassification": "restricted",
+            "asOf": "2026-10-13T00:00:00Z",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+            },
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one",
+            "usagePolicy": {
+              "id": "policy.data",
+              "version": "r1"
+            }
+          }
+        ],
+        "findings": [
+          {
+            "assumptionIds": [],
+            "basis": "unknown",
+            "evidenceIds": [],
+            "id": "finding.qa.23665117b6709f2c105e44da130a014b",
+            "reason": "reference_unavailable",
+            "unit": "not_applicable",
+            "value": null
+          }
+        ],
+        "inputs": [
+          {
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one"
+          }
+        ],
+        "kind": "work-product",
+        "review": {
+          "decisionRefs": [],
+          "status": "unreviewed"
+        },
+        "scope": {
+          "assetId": "well",
+          "customerId": "customer",
+          "employeeId": "employee.qa",
+          "taskId": "task"
+        },
+        "status": "blocked",
+        "taskRevision": "r1",
+        "uncertainty": "Configured observed data checks; unresolved inputs and defects require the data or producing owner. No professional or regulatory certification."
+      },
+      "summary": {
+        "status": "UNTESTED",
+        "counts": {
+          "applicable": 1,
+          "errors": 0,
+          "evaluated": 0,
+          "failed": 0,
+          "notApplicable": 0,
+          "passed": 0,
+          "total": 1,
+          "untested": 1
+        },
+        "passRate": null,
+        "coverage": 0,
+        "rateScale": "fraction"
+      },
+      "results": [
+        {
+          "assessmentComplete": false,
+          "defects": [],
+          "evidence": [
+            {
+              "accessClassification": "restricted",
+              "asOf": "2026-10-13T00:00:00Z",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+              },
+              "id": "source.one",
+              "revision": "r1",
+              "uri": "urn:fixture:source.one",
+              "usagePolicy": {
+                "id": "policy.data",
+                "version": "r1"
+              }
+            }
+          ],
+          "inspectedRows": 1,
+          "omittedDefects": 0,
+          "profile": {
+            "id": "profile.qa",
+            "revision": "r1",
+            "sha256": "55fc2168546baddcd3959d75be9583bb4caeec7b7244a6372095347868ff190b"
+          },
+          "reason": "reference_unavailable",
+          "repairOwner": "data-owner",
+          "rowCounts": {
+            "evaluated": 0,
+            "failed": 0,
+            "passed": 0,
+            "total": 0,
+            "untested": 0
+          },
+          "rule": {
+            "id": "rule.reference",
+            "revision": "r1",
+            "version": "1"
+          },
+          "severity": "critical",
+          "status": "UNTESTED",
+          "type": "correctness"
+        }
+      ],
+      "disclosures": [
+        "Observed configured data checks; no professional or regulatory certification"
+      ],
+      "review": "unreviewed"
+    },
+    "sourceArtifacts": [
+      {
+        "kind": "source-artifact",
+        "contractVersion": "0.2.0",
+        "scope": {
+          "customerId": "customer",
+          "assetId": "well",
+          "taskId": "task",
+          "employeeId": "employee.qa"
+        },
+        "taskRevision": "r1",
+        "connectorRef": {
+          "id": "connector.qa",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "evidence": {
+          "id": "source.one",
+          "revision": "r1",
+          "uri": "urn:fixture:source.one",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+          },
+          "asOf": "2026-10-13T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.data",
+            "version": "r1"
+          }
+        },
+        "artifact": {
+          "id": "source.one",
+          "revision": "17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4",
+          "uri": "urn:sha256:17ac48d1cac4f57dfc3f75ccff3cbf61bf452bf758479e6ba409694ceb2090b4"
+        },
+        "retrievedAt": "2026-10-13T00:00:00Z",
+        "format": "json",
+        "parserRef": {
+          "id": "normalized-qa-data",
+          "version": "0.1.0"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 228,
+        "accessNotes": "Authored operator fixture",
+        "licenseNotes": "Synthetic data; no licensed rule library",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "sourceBytesBase64": "eyJzY2hlbWFWZXJzaW9uIjoiMC4xLjAiLCJraW5kIjoibm9ybWFsaXplZC1xYS1kYXRhIiwicm93cyI6W3siaWQiOiJyb3cuMSIsImFzc2V0SWQiOiJ3ZWxsIiwid2VsbElkIjoid2VsbGJvcmUuMSIsInBlcmlvZCI6IjIwMjYtMTAiLCJhc09mIjoiMjAyNi0xMC0xM1QwMDowMDowMFoiLCJmaWVsZHMiOnsibmV0UGF5Ijp7InZhbHVlIjowLCJ1bml0IjoiZnQiLCJiYXNpcyI6Im1lYXN1cmVkIn19fV19",
+    "profile": {
+      "schemaVersion": "0.1.0",
+      "id": "profile.qa",
+      "revision": "r1",
+      "rules": [
+        {
+          "id": "rule.reference",
+          "revision": "r1",
+          "version": "1",
+          "sourceId": "source.one",
+          "severity": "critical",
+          "repairOwner": "data-owner",
+          "applicable": true,
+          "type": "correctness",
+          "field": "netPay",
+          "referenceSourceId": "source.missing",
+          "tolerance": 0
+        }
+      ]
+    }
+  },
+  "error": {
+    "report": {
+      "schemaVersion": "0.1.0",
+      "kind": "qa-observed-report",
+      "resultRef": {
+        "id": "result.qa.513f96cf22b8d3e228b179fbfbe7c4338de33c1ca9fba7c30763272296b77bf2",
+        "revision": "r1",
+        "uri": "urn:qa:result:8c157a9318da26f3802c72a4162017fb730e0cce42fd13b10107071ecf0c5f36"
+      },
+      "work": {
+        "artifact": {
+          "id": "product.qa.66ea3d5a9a0e07e7841ec0f3e3a8f038d0720264",
+          "revision": "r1",
+          "uri": "urn:qa:draft:66ea3d5a9a0e07e7841ec0f3e3a8f038d0720264a9a7642191c8c5c623db63f0"
+        },
+        "assumptions": [],
+        "blockers": [
+          {
+            "code": "missing_input",
+            "message": "Observed QA status ERROR; review defects and untested inputs",
+            "references": []
+          }
+        ],
+        "contractVersion": "0.1.0",
+        "evidence": [
+          {
+            "accessClassification": "restricted",
+            "asOf": "2026-10-13T00:00:00Z",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+            },
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one",
+            "usagePolicy": {
+              "id": "policy.data",
+              "version": "r1"
+            }
+          }
+        ],
+        "findings": [
+          {
+            "assumptionIds": [],
+            "basis": "unknown",
+            "evidenceIds": [],
+            "id": "finding.qa.ac53020694c03984a68d1441029a5a22",
+            "reason": "unsupported_or_malformed_source",
+            "unit": "not_applicable",
+            "value": null
+          }
+        ],
+        "inputs": [
+          {
+            "id": "source.one",
+            "revision": "r1",
+            "uri": "urn:fixture:source.one"
+          }
+        ],
+        "kind": "work-product",
+        "review": {
+          "decisionRefs": [],
+          "status": "unreviewed"
+        },
+        "scope": {
+          "assetId": "well",
+          "customerId": "customer",
+          "employeeId": "employee.qa",
+          "taskId": "task"
+        },
+        "status": "blocked",
+        "taskRevision": "r1",
+        "uncertainty": "Configured observed data checks; unresolved inputs and defects require the data or producing owner. No professional or regulatory certification."
+      },
+      "summary": {
+        "status": "ERROR",
+        "counts": {
+          "applicable": 1,
+          "errors": 1,
+          "evaluated": 0,
+          "failed": 0,
+          "notApplicable": 0,
+          "passed": 0,
+          "total": 1,
+          "untested": 0
+        },
+        "passRate": null,
+        "coverage": 0,
+        "rateScale": "fraction"
+      },
+      "results": [
+        {
+          "assessmentComplete": false,
+          "defects": [],
+          "evidence": [
+            {
+              "accessClassification": "restricted",
+              "asOf": "2026-10-13T00:00:00Z",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+              },
+              "id": "source.one",
+              "revision": "r1",
+              "uri": "urn:fixture:source.one",
+              "usagePolicy": {
+                "id": "policy.data",
+                "version": "r1"
+              }
+            }
+          ],
+          "inspectedRows": 0,
+          "omittedDefects": 0,
+          "profile": {
+            "id": "profile.qa",
+            "revision": "r1",
+            "sha256": "c4ad7a75127280cd2b9bc21ee2852419ce5ffdac758af630048170bdb575e6dd"
+          },
+          "reason": "unsupported_or_malformed_source",
+          "repairOwner": "data-owner",
+          "rowCounts": {
+            "evaluated": 0,
+            "failed": 0,
+            "passed": 0,
+            "total": 0,
+            "untested": 0
+          },
+          "rule": {
+            "id": "rule.complete",
+            "revision": "r1",
+            "version": "1"
+          },
+          "severity": "critical",
+          "status": "ERROR",
+          "type": "completeness"
+        }
+      ],
+      "disclosures": [
+        "Observed configured data checks; no professional or regulatory certification"
+      ],
+      "review": "unreviewed"
+    },
+    "sourceArtifacts": [
+      {
+        "kind": "source-artifact",
+        "contractVersion": "0.2.0",
+        "scope": {
+          "customerId": "customer",
+          "assetId": "well",
+          "taskId": "task",
+          "employeeId": "employee.qa"
+        },
+        "taskRevision": "r1",
+        "connectorRef": {
+          "id": "connector.qa",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "evidence": {
+          "id": "source.one",
+          "revision": "r1",
+          "uri": "urn:fixture:source.one",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+          },
+          "asOf": "2026-10-13T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.data",
+            "version": "r1"
+          }
+        },
+        "artifact": {
+          "id": "source.one",
+          "revision": "be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73",
+          "uri": "urn:sha256:be302461cda285db3ed2d45fb767b23e08ca8808b35a638009937df22b332d73"
+        },
+        "retrievedAt": "2026-10-13T00:00:00Z",
+        "format": "json",
+        "parserRef": {
+          "id": "normalized-qa-data",
+          "version": "0.1.0"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 7,
+        "accessNotes": "Authored operator fixture",
+        "licenseNotes": "Synthetic data; no licensed rule library",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "sourceBytesBase64": "e2Jyb2tlbg==",
+    "profile": {
+      "schemaVersion": "0.1.0",
+      "id": "profile.qa",
+      "revision": "r1",
+      "rules": [
+        {
+          "id": "rule.complete",
+          "revision": "r1",
+          "version": "1",
+          "sourceId": "source.one",
+          "severity": "critical",
+          "repairOwner": "data-owner",
+          "applicable": true,
+          "type": "completeness",
+          "field": "netPay"
+        }
+      ]
+    }
+  }
+}

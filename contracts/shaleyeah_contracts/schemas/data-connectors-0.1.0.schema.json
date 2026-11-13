@@ -1,0 +1,543 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:shaleyeah:data-connectors:0.1.0",
+  "title": "SourceContract",
+  "description": "Portable source connector records; execution and authority remain in trusted adapters.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/DataConnectorManifest"
+    },
+    {
+      "$ref": "#/$defs/SourceFetchRequest"
+    },
+    {
+      "$ref": "#/$defs/SourceArtifact"
+    },
+    {
+      "$ref": "#/$defs/ConnectorStatus"
+    }
+  ],
+  "$defs": {
+    "SourceKind": {
+      "type": "string",
+      "enum": [
+        "operator-file",
+        "public-download",
+        "internal-api",
+        "licensed-export"
+      ]
+    },
+    "SourceFormat": {
+      "type": "string",
+      "enum": [
+        "las",
+        "csv"
+      ]
+    },
+    "SourceOperation": {
+      "type": "string",
+      "enum": [
+        "fetch",
+        "health"
+      ]
+    },
+    "SourceUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "field",
+        "unit",
+        "origin"
+      ],
+      "properties": {
+        "field": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "unit": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "header",
+            "operator-declared",
+            "api-metadata"
+          ]
+        }
+      }
+    },
+    "DataConnectorManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "id",
+        "revision",
+        "owner",
+        "sourceKinds",
+        "formats",
+        "allowedOperations",
+        "requiredScopes",
+        "limits"
+      ],
+      "properties": {
+        "kind": {
+          "const": "data-connector-manifest"
+        },
+        "contractVersion": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractVersion"
+        },
+        "id": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+        },
+        "revision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "owner": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "customerId",
+            "employeeId"
+          ],
+          "properties": {
+            "customerId": {
+              "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+            },
+            "employeeId": {
+              "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+            }
+          }
+        },
+        "sourceKinds": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceKind"
+          },
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceFormat"
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "allowedOperations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceOperation"
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "requiredScopes": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxBytes",
+            "maxAgeSeconds",
+            "timeoutMs"
+          ],
+          "properties": {
+            "maxBytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 16777216
+            },
+            "maxAgeSeconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 31536000
+            },
+            "timeoutMs": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120000
+            }
+          }
+        }
+      }
+    },
+    "SourceFetchRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "scope",
+        "taskRevision",
+        "connectorRef",
+        "sourceRef",
+        "operation",
+        "expectedUnits"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source-fetch-request"
+        },
+        "contractVersion": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractVersion"
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "connectorRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "sourceRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "operation": {
+          "$ref": "#/$defs/SourceOperation"
+        },
+        "expectedUnits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceUnit"
+          },
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true
+        }
+      }
+    },
+    "SourceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "scope",
+        "taskRevision",
+        "connectorRef",
+        "adapterRef",
+        "sourceKind",
+        "evidence",
+        "artifact",
+        "retrievedAt",
+        "format",
+        "parserRef",
+        "jurisdiction",
+        "units",
+        "byteLength",
+        "accessNotes",
+        "licenseNotes",
+        "revisionOrigin"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source-artifact"
+        },
+        "contractVersion": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractVersion"
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "connectorRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "adapterRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "sourceKind": {
+          "$ref": "#/$defs/SourceKind"
+        },
+        "evidence": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/SourceEvidence"
+        },
+        "artifact": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ArtifactRef"
+        },
+        "retrievedAt": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Timestamp"
+        },
+        "format": {
+          "$ref": "#/$defs/SourceFormat"
+        },
+        "parserRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "jurisdiction": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceUnit"
+          },
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "byteLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "accessNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "licenseNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "revisionOrigin": {
+          "type": "string",
+          "enum": [
+            "operator-declared",
+            "source-reported"
+          ]
+        }
+      }
+    },
+    "ConnectorStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "scope",
+        "taskRevision",
+        "connectorRef",
+        "sourceRef",
+        "checkedAt",
+        "status",
+        "errorCode"
+      ],
+      "properties": {
+        "kind": {
+          "const": "connector-status"
+        },
+        "contractVersion": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractVersion"
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "connectorRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "sourceRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "checkedAt": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Timestamp"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "denied",
+            "unavailable"
+          ]
+        },
+        "errorCode": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractErrorCode"
+            }
+          ]
+        }
+      }
+    },
+    "SourceGrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subjectId",
+        "scope",
+        "taskRevision",
+        "connectorId",
+        "sourceIds",
+        "operations",
+        "requiredScopes",
+        "usagePolicy",
+        "expiresAt",
+        "revoked"
+      ],
+      "properties": {
+        "subjectId": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "connectorId": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+        },
+        "sourceIds": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/StableId"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "operations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceOperation"
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "requiredScopes": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "usagePolicy": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "expiresAt": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Timestamp"
+        },
+        "revoked": {
+          "type": "boolean"
+        }
+      }
+    },
+    "ConfiguredSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence",
+        "sourceKind",
+        "format",
+        "locator",
+        "jurisdiction",
+        "units",
+        "accessNotes",
+        "licenseNotes"
+      ],
+      "properties": {
+        "evidence": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/SourceEvidence"
+        },
+        "sourceKind": {
+          "$ref": "#/$defs/SourceKind"
+        },
+        "format": {
+          "$ref": "#/$defs/SourceFormat"
+        },
+        "locator": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "jurisdiction": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceUnit"
+          },
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "accessNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "licenseNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        }
+      }
+    },
+    "ConnectorConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "contractVersion",
+        "manifest",
+        "adapterRef",
+        "workspaceRoot",
+        "credentialRef",
+        "scope",
+        "taskRevision",
+        "grant",
+        "sources"
+      ],
+      "properties": {
+        "contractVersion": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ContractVersion"
+        },
+        "manifest": {
+          "$ref": "#/$defs/DataConnectorManifest"
+        },
+        "adapterRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "workspaceRoot": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "credentialRef": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^(secret|file):[^\\s]+$",
+              "maxLength": 2048
+            }
+          ]
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "grant": {
+          "$ref": "#/$defs/SourceGrant"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ConfiguredSource"
+          },
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

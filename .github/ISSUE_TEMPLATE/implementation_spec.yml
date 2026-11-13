@@ -1,0 +1,182 @@
+name: Implementation Spec
+description: Small, independently executable implementation or refactor work
+title: "spec: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for implementation work. Keep the issue small enough to branch from `develop`, verify independently, and merge back through one PR.
+
+  - type: textarea
+    id: role
+    attributes:
+      label: Role / Owner
+      description: Which business role, package, or project unit owns this work?
+      placeholder: "Example: geologist agent, geowiz MCP server, orchestrator preview, sdk contract."
+    validations:
+      required: true
+
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use Case
+      description: What user or system outcome should this work enable?
+      placeholder: "As a ..., I need ..., so that ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operating_mode
+    attributes:
+      label: Operating Mode
+      description: Pick the smallest mode that fits the work.
+      options:
+        - stand-alone project unit
+        - hierarchical agent
+        - graph workflow
+        - ambient/background workflow
+        - capability-first deterministic tool routing
+        - shared contract/package
+        - documentation/process only
+    validations:
+      required: true
+
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Boundaries
+      description: State what belongs in the agent, MCP server, orchestrator, shared package, or docs. Call out anything that must stay independent.
+      placeholder: "Agents are ADK/Python under agents/<name>; MCP backend may remain TypeScript under servers/<name>; no repo-root runtime scaffolding."
+    validations:
+      required: true
+
+  - type: textarea
+    id: inputs
+    attributes:
+      label: Inputs
+      description: Required inputs, optional inputs, data formats, credentials, context, and assumptions.
+      placeholder: "Files, API payloads, env vars, secrets, user context, prior memory, fixtures, or none."
+    validations:
+      required: true
+
+  - type: textarea
+    id: outputs
+    attributes:
+      label: Outputs
+      description: Expected artifacts, API/tool responses, docs, tests, logs, or package behavior.
+      placeholder: "New function, tool response shape, README section, eval dataset, CI check, etc."
+    validations:
+      required: true
+
+  - type: textarea
+    id: behavior_spec
+    attributes:
+      label: Behavior Spec
+      description: Write acceptance behavior in Given/When/Then form. Include at least one failure case.
+      value: |
+        Given ...
+        When ...
+        Then ...
+
+        Failure case:
+        Given ...
+        When ...
+        Then ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: hitl
+    attributes:
+      label: HITL / Approval
+      description: What human approval, consent, waiver, or review gate is required before execution or promotion?
+      placeholder: "Example: maintainer approves the issue plan before code changes; write/destructive tools require explicit approval."
+    validations:
+      required: true
+
+  - type: textarea
+    id: memory
+    attributes:
+      label: Memory / State
+      description: Does this read, write, promote, redact, or avoid memory/state? Say explicitly if none.
+      placeholder: "No memory writes; reviewed memory only; namespace and retention policy; vector store impact."
+    validations:
+      required: true
+
+  - type: textarea
+    id: runtime
+    attributes:
+      label: Runtime / Deployment
+      description: Local, package-local, container, VM, Fly.io, Cloud Run, GKE, Agent Runtime, or not applicable.
+      placeholder: "Package-local only; portable runtime; no hardcoded deploy target."
+    validations:
+      required: true
+
+  - type: textarea
+    id: evals
+    attributes:
+      label: Tests / Evals / Verification
+      description: Tests, evals, smoke checks, CI gates, and blocking failure conditions required for completion.
+      placeholder: "Agent: uv/py_compile, agents-cli info, eval generate/grade. Server/SDK: package-local pnpm checks. Root checks only for shared workspace changes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: trust
+    attributes:
+      label: Trust / Security / Audit
+      description: Secrets, scopes, audit logging, redaction, sensitive data, external systems, and trust boundaries.
+      placeholder: "No secrets; env vars only; audit trail required; redact file paths; external API scopes."
+    validations:
+      required: true
+
+  - type: textarea
+    id: docs_topology
+    attributes:
+      label: Docs / Topology Impact
+      description: Which README, architecture, topology, package docs, or issue templates must change?
+      placeholder: "README, docs/topology.md, package docs, CHANGELOG.md, no topology impact."
+    validations:
+      required: true
+
+  - type: textarea
+    id: deletion_migration
+    attributes:
+      label: Deletion / Migration Notes
+      description: What displaced code, stale docs, adapter, npm package surface, or temporary path should be removed? If nothing is removed now, name the follow-up.
+      placeholder: "For agents, delete dangling npm/package.json/tsconfig/src/agent surfaces when ADK owns the path. Servers may remain TypeScript. Temporary adapter retained because ...; follow-up issue required for ..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-Goals
+      description: What is explicitly out of scope for this issue?
+      placeholder: "No root ADK scaffold; no production deploy; no unrelated package migration; no TypeScript agent surface unless deleting it."
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / Blockers
+      description: Upstream blockers, downstream consumers, and whether this can be executed independently.
+      placeholder: "Independent; blocked by #...; downstream issues #... consume this contract."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: planning_gate
+    attributes:
+      label: Planning Gate
+      description: These gates must be true before implementation starts.
+      options:
+        - label: The issue is small enough for one branch and one PR.
+          required: true
+        - label: The intended package or project unit is named explicitly.
+          required: true
+        - label: A maintainer has approved the issue plan before code changes.
+          required: true
+        - label: Success criteria and at least one failure case are written above.
+          required: true

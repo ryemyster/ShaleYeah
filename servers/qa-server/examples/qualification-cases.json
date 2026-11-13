@@ -1,0 +1,1521 @@
+{
+  "schemaVersion": "0.1.0",
+  "id": "qa.observed.synthetic",
+  "revision": "r1",
+  "scope": {
+    "customerId": "operator-fixture",
+    "assetId": "well-1",
+    "taskId": "task-qa",
+    "employeeId": "employee.qa"
+  },
+  "evaluatedAt": "2026-10-13T00:00:00Z",
+  "labelAuthority": "Codex initial research-assisted deterministic labels",
+  "professionalValidated": false,
+  "cases": [
+    {
+      "id": "control.completeness",
+      "dimension": "completeness",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.completeness",
+      "dimension": "completeness",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": null,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.correctness",
+      "dimension": "correctness",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.correctness",
+            "type": "correctness",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.correctness",
+      "dimension": "correctness",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.correctness",
+            "type": "correctness",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 5,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.units",
+      "dimension": "units",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.units",
+            "type": "units",
+            "field": "netPay",
+            "expectedUnit": "ft"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.units",
+      "dimension": "units",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.units",
+            "type": "units",
+            "field": "netPay",
+            "expectedUnit": "ft"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "m",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.identity",
+      "dimension": "identity",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.identity",
+            "type": "identity",
+            "expectedAssetId": "well-1",
+            "expectedWellId": "wellbore.1"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.identity",
+      "dimension": "identity",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.identity",
+            "type": "identity",
+            "expectedAssetId": "well-1",
+            "expectedWellId": "wellbore.1"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "other-well",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.duplication",
+      "dimension": "duplication",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.duplication",
+            "type": "duplication",
+            "keys": [
+              "wellId",
+              "period"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.duplication",
+      "dimension": "duplication",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.duplication",
+            "type": "duplication",
+            "keys": [
+              "wellId",
+              "period"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              },
+              {
+                "id": "row.2",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.freshness",
+      "dimension": "freshness",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.freshness",
+            "type": "freshness",
+            "maxAgeSeconds": 3600
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.freshness",
+      "dimension": "freshness",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.freshness",
+            "type": "freshness",
+            "maxAgeSeconds": 3600
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-12T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.provenance",
+      "dimension": "provenance",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.provenance",
+            "type": "provenance"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.provenance",
+      "dimension": "provenance",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.provenance",
+            "type": "provenance"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          },
+          "declaredHash": "0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "control.contradiction",
+      "dimension": "contradiction",
+      "expected": "PASS",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.contradiction",
+            "type": "contradiction",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "defect.contradiction",
+      "dimension": "contradiction",
+      "expected": "FAIL",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.contradiction",
+            "type": "contradiction",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 5,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "source.reference",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge.absent-source",
+      "dimension": "boundary",
+      "expected": "UNTESTED",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.correctness",
+            "type": "correctness",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.units",
+            "type": "units",
+            "field": "netPay",
+            "expectedUnit": "ft"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.identity",
+            "type": "identity",
+            "expectedAssetId": "well-1",
+            "expectedWellId": "wellbore.1"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.duplication",
+            "type": "duplication",
+            "keys": [
+              "wellId",
+              "period"
+            ]
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.freshness",
+            "type": "freshness",
+            "maxAgeSeconds": 3600
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.provenance",
+            "type": "provenance"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.contradiction",
+            "type": "contradiction",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": []
+    },
+    {
+      "id": "edge.absent-reference",
+      "dimension": "boundary",
+      "expected": "UNTESTED",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.correctness",
+            "type": "correctness",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "0.1.0",
+            "kind": "normalized-qa-data",
+            "rows": [
+              {
+                "id": "row.1",
+                "assetId": "well-1",
+                "wellId": "wellbore.1",
+                "period": "2026-10",
+                "asOf": "2026-10-13T00:00:00Z",
+                "fields": {
+                  "netPay": {
+                    "value": 0,
+                    "unit": "ft",
+                    "basis": "measured"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "edge.empty-profile",
+      "dimension": "boundary",
+      "expected": "UNTESTED",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": []
+      },
+      "sources": []
+    },
+    {
+      "id": "edge.not-applicable",
+      "dimension": "boundary",
+      "expected": "NOT_APPLICABLE",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": false,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          }
+        ]
+      },
+      "sources": []
+    },
+    {
+      "id": "edge.unsupported-source",
+      "dimension": "boundary",
+      "expected": "ERROR",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "source.input",
+          "data": {
+            "schemaVersion": "99.0.0",
+            "kind": "normalized-qa-data",
+            "rows": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "boundary.script-profile",
+      "dimension": "boundary",
+      "expected": "REJECTED",
+      "profile": {
+        "schemaVersion": "0.1.0",
+        "id": "profile.qa.normalized",
+        "revision": "r1",
+        "rules": [
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.completeness",
+            "type": "completeness",
+            "field": "netPay"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.correctness",
+            "type": "correctness",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.units",
+            "type": "units",
+            "field": "netPay",
+            "expectedUnit": "ft"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.identity",
+            "type": "identity",
+            "expectedAssetId": "well-1",
+            "expectedWellId": "wellbore.1"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.duplication",
+            "type": "duplication",
+            "keys": [
+              "wellId",
+              "period"
+            ]
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.freshness",
+            "type": "freshness",
+            "maxAgeSeconds": 3600
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.provenance",
+            "type": "provenance"
+          },
+          {
+            "revision": "r1",
+            "version": "1",
+            "sourceId": "source.input",
+            "severity": "major",
+            "repairOwner": "data-owner",
+            "applicable": true,
+            "id": "rule.contradiction",
+            "type": "contradiction",
+            "field": "netPay",
+            "referenceSourceId": "source.reference",
+            "tolerance": 0
+          }
+        ],
+        "script": "approve()"
+      },
+      "sources": []
+    }
+  ]
+}

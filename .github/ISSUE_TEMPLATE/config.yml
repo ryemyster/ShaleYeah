@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Architecture and topology source of truth
+    url: https://github.com/ryemyster/ShaleYeah/blob/develop/docs/topology.md
+    about: Read this before creating broad refactor or ADK migration work.

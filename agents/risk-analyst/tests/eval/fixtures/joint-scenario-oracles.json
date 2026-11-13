@@ -1,0 +1,67 @@
+{
+  "version": "r1",
+  "labelAuthor": "Codex under the maintainer's initial research authorization",
+  "qualification": "fixture",
+  "professionalAcceptance": false,
+  "sources": [
+    "https://www.gov.uk/government/publications/orange-book/the-orange-book-management-of-risk-principles-and-concepts",
+    "https://www.gov.uk/guidance/the-aqua-book",
+    "https://numpy.org/doc/stable/reference/generated/numpy.quantile.html"
+  ],
+  "rationale": "Synthetic declared joint states, not calibrated petroleum probabilities. Expected weighted losses, tail mass and indicator moments were authored independently of backend output. P10/P50/P90 mean ascending loss CDF quantiles, not reserves exceedance categories.",
+  "cases": {
+    "dependent": {
+      "risks": ["risk.a", "risk.b"],
+      "states": [
+        {"id": "none", "weight": 7, "risks": [], "loss": 0},
+        {"id": "a", "weight": 1, "risks": ["risk.a"], "loss": 100},
+        {"id": "b", "weight": 1, "risks": ["risk.b"], "loss": 200},
+        {"id": "ab", "weight": 1, "risks": ["risk.a", "risk.b"], "loss": 500}
+      ],
+      "totalWeight": 10,
+      "lossThreshold": 200,
+      "expected": {"mean": 80, "variance": 23600, "p10": 0, "p50": 0, "p90": 200, "tailProbability": 0.2, "occurrence": [0.2, 0.2], "correlations": [0.375]}
+    },
+    "exclusive": {
+      "risks": ["risk.a", "risk.b"],
+      "states": [
+        {"id": "a", "weight": 1, "risks": ["risk.a"], "loss": 100},
+        {"id": "b", "weight": 1, "risks": ["risk.b"], "loss": 300}
+      ],
+      "totalWeight": 2,
+      "lossThreshold": 300,
+      "expected": {"mean": 200, "variance": 10000, "p10": 100, "p50": 100, "p90": 300, "tailProbability": 0.5, "occurrence": [0.5, 0.5], "correlations": [-1]}
+    },
+    "identical": {
+      "risks": ["risk.a", "risk.b"],
+      "states": [
+        {"id": "none", "weight": 1, "risks": [], "loss": 0},
+        {"id": "ab", "weight": 1, "risks": ["risk.a", "risk.b"], "loss": 40}
+      ],
+      "totalWeight": 2,
+      "lossThreshold": 40,
+      "expected": {"mean": 20, "variance": 400, "p10": 0, "p50": 0, "p90": 40, "tailProbability": 0.5, "occurrence": [0.5, 0.5], "correlations": [1]}
+    },
+    "zero-variance": {
+      "risks": ["risk.a", "risk.b"],
+      "states": [
+        {"id": "none", "weight": 9, "risks": [], "loss": 0},
+        {"id": "a", "weight": 1, "risks": ["risk.a"], "loss": 0},
+        {"id": "zero-weight-b", "weight": 0, "risks": ["risk.b"], "loss": 900}
+      ],
+      "totalWeight": 10,
+      "lossThreshold": 1,
+      "expected": {"mean": 0, "variance": 0, "p10": 0, "p50": 0, "p90": 0, "tailProbability": 0, "occurrence": [0.1, 0], "correlations": [null]}
+    },
+    "large-weights": {
+      "risks": ["risk.a"],
+      "states": [
+        {"id": "none", "weight": 1000000000, "risks": [], "loss": 1000000000},
+        {"id": "a", "weight": 1000000000, "risks": ["risk.a"], "loss": 1000000002}
+      ],
+      "totalWeight": 2000000000,
+      "lossThreshold": 1000000002,
+      "expected": {"mean": 1000000001, "variance": 1, "p10": 1000000000, "p50": 1000000000, "p90": 1000000002, "tailProbability": 0.5, "occurrence": [0.5], "correlations": []}
+    }
+  }
+}

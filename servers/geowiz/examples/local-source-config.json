@@ -1,0 +1,87 @@
+{
+	"contractVersion": "0.1.0",
+	"manifest": {
+		"kind": "data-connector-manifest",
+		"contractVersion": "0.1.0",
+		"id": "connector.operator",
+		"revision": "r1",
+		"owner": {
+			"customerId": "local-workspace",
+			"employeeId": "geologist"
+		},
+		"sourceKinds": ["operator-file", "public-download", "internal-api", "licensed-export"],
+		"formats": ["las", "csv"],
+		"allowedOperations": ["fetch", "health"],
+		"requiredScopes": ["source:read"],
+		"limits": {
+			"maxBytes": 1048576,
+			"maxAgeSeconds": 86400,
+			"timeoutMs": 1000
+		}
+	},
+	"adapterRef": {
+		"id": "operator-file",
+		"version": "0.1.0"
+	},
+	"workspaceRoot": "/absolute/approved/workspace",
+	"credentialRef": null,
+	"scope": {
+		"customerId": "local-workspace",
+		"assetId": "asset-demo",
+		"taskId": "task-geology-demo",
+		"employeeId": "geologist"
+	},
+	"taskRevision": "r1",
+	"grant": {
+		"subjectId": "local-geologist",
+		"scope": {
+			"customerId": "local-workspace",
+			"assetId": "asset-demo",
+			"taskId": "task-geology-demo",
+			"employeeId": "geologist"
+		},
+		"taskRevision": "r1",
+		"connectorId": "connector.operator",
+		"sourceIds": ["evidence.operator-log"],
+		"operations": ["fetch", "health"],
+		"requiredScopes": ["source:read"],
+		"usagePolicy": {
+			"id": "policy.operator-data",
+			"version": "r1"
+		},
+		"expiresAt": "2026-01-02T00:00:00Z",
+		"revoked": false
+	},
+	"sources": [
+		{
+			"sourceKind": "operator-file",
+			"format": "las",
+			"jurisdiction": "US-TX",
+			"units": [
+				{
+					"field": "DEPT",
+					"unit": "FT",
+					"origin": "header"
+				}
+			],
+			"accessNotes": "Operator must confirm access to this input",
+			"licenseNotes": "Operator must confirm allowed use and redistribution restrictions",
+			"evidence": {
+				"id": "evidence.operator-log",
+				"uri": "urn:operator:well-log:replace-me",
+				"hash": {
+					"algorithm": "sha256",
+					"value": "0000000000000000000000000000000000000000000000000000000000000000"
+				},
+				"revision": "r1",
+				"asOf": "2026-01-01T00:00:00Z",
+				"accessClassification": "restricted",
+				"usagePolicy": {
+					"id": "policy.operator-data",
+					"version": "r1"
+				}
+			},
+			"locator": "input.las"
+		}
+	]
+}

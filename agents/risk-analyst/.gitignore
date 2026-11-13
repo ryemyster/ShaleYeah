@@ -1,0 +1,39 @@
+# Dependencies
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Build output
+dist/
+artifacts/
+*.egg-info/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Coverage
+coverage/
+.coverage
+
+# Test artifacts
+tests/temp/
+
+# Cache
+.turbo/

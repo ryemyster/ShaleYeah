@@ -1,0 +1,43 @@
+"""Turn a Google local-handler/CLI summary into a strict two-provider CI decision."""
+
+import argparse
+import json
+import math
+from pathlib import Path
+
+
+def verify(directory):
+    try:
+        files = list(Path(directory).glob("results_*.json"))
+        if len(files) != 1:
+            return False
+        summaries = json.loads(files[0].read_text())["summary_metrics"]
+        if (
+            type(summaries) is not list
+            or len(summaries) != 1
+            or type(summaries[0]) is not dict
+            or any(
+                type(summaries[0].get(key)) is not int
+                for key in ("num_cases_total", "num_cases_valid", "num_cases_error")
+            )
+            or type(summaries[0].get("mean_score")) not in (int, float)
+            or not math.isfinite(summaries[0]["mean_score"])
+        ):
+            return False
+        return len(summaries) == 1 and summaries[0] == {
+            **summaries[0],
+            "metric_name": "native_contract_fidelity",
+            "num_cases_total": 2,
+            "num_cases_valid": 2,
+            "num_cases_error": 0,
+            "mean_score": 1.0,
+        }
+    except (OSError, KeyError, TypeError, ValueError):
+        return False
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("directory", help="One fresh Google grading output directory")
+    args = parser.parse_args()
+    raise SystemExit(0 if verify(args.directory) else 1)

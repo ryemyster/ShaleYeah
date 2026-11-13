@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "normalized-qa-data",
+  "rows": [
+    {
+      "id": "row.1",
+      "assetId": "well-1",
+      "wellId": "wellbore.1",
+      "period": "2026-10",
+      "asOf": "2026-10-13T00:00:00Z",
+      "fields": {
+        "netPay": {
+          "value": 0,
+          "unit": "ft",
+          "basis": "measured"
+        }
+      }
+    }
+  ]
+}

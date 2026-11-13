@@ -1,0 +1,46 @@
+{
+	"name": "@shaleyeah/server-curve-smith",
+	"version": "0.1.0",
+	"description": "Curve-Smith MCP server — production decline curve analysis and forecasting",
+	"private": true,
+	"type": "module",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc",
+		"start": "node dist/index.js",
+		"test": "node --import tsx --test --test-concurrency=1 --experimental-test-coverage --test-coverage-include=src/**/*.ts --test-coverage-lines=90 tests/*.test.ts",
+		"test:coverage": "pnpm test",
+		"lint": "biome check .",
+		"type-check": "tsc --noEmit",
+		"test:extraction": "node --test tests/extraction/control.test.mjs tests/extraction/container-report.test.mjs"
+	},
+	"dependencies": {
+		"@shaleyeah/contracts": "workspace:*",
+		"@shaleyeah/connectors": "workspace:*",
+		"@shaleyeah/sdk": "workspace:*",
+		"zod": "^4.3.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.0",
+		"@modelcontextprotocol/client": "2.3.1",
+		"@types/node": "^25.9.3",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	},
+	"license": "Apache-2.0",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"engines": {
+		"node": ">=22.13.0"
+	},
+	"files": [
+		"dist",
+		"examples",
+		"LICENSE"
+	]
+}
