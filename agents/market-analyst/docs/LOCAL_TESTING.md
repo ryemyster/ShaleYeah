@@ -14,7 +14,8 @@ Tests use fictional source data and offline provider transports. They check MCP
 argument/result contracts, actual final-output parsing, context isolation,
 restart, current source rights and the frozen scorecard. The compatible external
 MCP fixture binds a loopback listener; it imports neither this employee nor the
-Market backend.
+Market backend. It verifies successful current client calls and actual HTTP denial
+for missing or wrong credentials before dispatch, with private error details hidden.
 
 From `servers/market`, run `pnpm build`, `pnpm lint` and `pnpm test`. Its native
 context test starts the actual protected backend, runs both scripted provider

@@ -7,7 +7,7 @@ from pathlib import Path
 from secrets import token_urlsafe
 
 import pytest
-from shaleyeah_mcp import FileBearerCredential, MCPClientConfig
+from shaleyeah_mcp import FileBearerCredential, MCPClientConfig, MCPClientError
 
 from app.market_mcp import MarketAnalystTools
 
@@ -74,9 +74,18 @@ async def test_market_uses_an_independent_compatible_external_scenario_service(t
             assert actual["market"]["scenarios"][0]["basis"] == "operator-scenario"
             assert len(actual["sourceArtifacts"]) == 3
             assert token not in json.dumps(result)
+            token_file.unlink()
+            with pytest.raises(MCPClientError) as missing:
+                await tools.draft_market_scenario("task.market", "r1", json.dumps(proposal), "r1")
+            assert missing.value.code == "authentication_required"
+            assert missing.value.effect_unknown is False
             token_file.write_text(token_urlsafe(32))
-            denied = await tools.draft_market_scenario("task.market", "r1", json.dumps(proposal), "r1")
-            assert denied["isError"] is True
+            token_file.chmod(0o600)
+            with pytest.raises(MCPClientError) as denied:
+                await tools.draft_market_scenario("task.market", "r1", json.dumps(proposal), "r1")
+            assert denied.value.code == "authentication_required"
+            assert denied.value.effect_unknown is False
+            assert str(token_file) not in str(denied.value)
         finally:
             peer.terminate()
             try:
