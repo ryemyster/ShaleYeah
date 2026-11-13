@@ -1,0 +1,4507 @@
+{
+  "zero-negative": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60",
+          "uri": "urn:sha256:ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 0,
+            "benchmarkValue": 0,
+            "realizedNativeValue": 0,
+            "realizedValue": 0,
+            "differential": 0
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": -1,
+            "benchmarkValue": -1,
+            "realizedNativeValue": -1.05,
+            "realizedValue": -1,
+            "differential": 0
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 2,
+          "missing": []
+        },
+        "meanDifferential": 0
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": []
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 375,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60",
+          "uri": "urn:sha256:ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ed9877fc5143315ae7204b87f363ab33199c5c6be7f6a0c3af320a5b6a21fc60"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 948,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 0
+            },
+            {
+              "period": "2026-11-12",
+              "value": -1
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 0
+            },
+            {
+              "period": "2026-11-12",
+              "value": -1.05
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "monthly": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418",
+          "uri": "urn:sha256:3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e",
+          "uri": "urn:sha256:c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "assumed",
+          "value": -0.20000000000000018,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "monthly",
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-09",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": 3,
+            "realizedNativeValue": 2.94,
+            "realizedValue": 2.8,
+            "differential": -0.20000000000000018
+          },
+          {
+            "period": "2026-10",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": 3.5,
+            "realizedNativeValue": 3.465,
+            "realizedValue": 3.3,
+            "differential": -0.20000000000000018
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 2,
+          "missing": []
+        },
+        "meanDifferential": -0.20000000000000018
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "monthly",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "monthly",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-09-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": []
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418",
+          "uri": "urn:sha256:3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3662f11d0e5e6d0576d192a7b8eb9b2b923a37cb020da055f04c2bec58f9f418"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 372,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e",
+          "uri": "urn:sha256:c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1630a4f7073528781453bd06cae361d5994a1b3d790c1a78f92a82ab1b1112e"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 944,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "monthly",
+      "requiredPeriods": [
+        "2026-09",
+        "2026-10"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 5184000,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "monthly",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-09",
+              "value": 3
+            },
+            {
+              "period": "2026-10",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "monthly",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-09-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-09",
+              "value": 2.94
+            },
+            {
+              "period": "2026-10",
+              "value": 3.465
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "oil": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5",
+          "uri": "urn:sha256:d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6",
+          "uri": "urn:sha256:4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d",
+          "uri": "urn:sha256:9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "assumed",
+          "value": -1.75,
+          "unit": "USD/bbl",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 63,
+          "unit": "USD/bbl",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 52,
+          "unit": "USD/bbl",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 74,
+          "unit": "USD/bbl",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Fictional Permian oil comparison and commercial scenarios",
+      "commodity": "oil",
+      "region": "Permian",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "cushing-wti",
+        "realizedSeriesId": "operator-permian",
+        "unit": "USD/bbl",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 60,
+            "benchmarkValue": 60,
+            "realizedNativeValue": 58,
+            "realizedValue": 58,
+            "differential": -2
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 61,
+            "benchmarkValue": 61,
+            "realizedNativeValue": 59.5,
+            "realizedValue": 59.5,
+            "differential": -1.5
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 2,
+          "missing": []
+        },
+        "meanDifferential": -1.75
+      },
+      "seriesMetadata": [
+        {
+          "id": "cushing-wti",
+          "commodity": "oil",
+          "location": "Cushing, Oklahoma",
+          "basis": "spot-benchmark",
+          "unit": "USD/bbl",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/pet/hist/rwtcd.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-permian",
+          "commodity": "oil",
+          "location": "Permian",
+          "basis": "realized",
+          "unit": "USD/bbl",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:permian-realized",
+          "heatContent": null
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/bbl",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 65,
+          "basisDifferentialAssumption": -2,
+          "price": 63,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/bbl",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 55,
+          "basisDifferentialAssumption": -3,
+          "price": 52,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/bbl",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 75,
+          "basisDifferentialAssumption": -1,
+          "price": 74,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Fictional Permian oil comparison and commercial scenarios",
+        "summary": "Compare supplied Cushing WTI and fictional operator realized observations. Future prices remain explicit operator assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "cushing-wti",
+          "operator-permian"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": []
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5",
+          "uri": "urn:sha256:d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "d9ddc63ca6637294de9a59cfab96fb34d69ec9a35b5aca5c280c79f1a19d91c5"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 369,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6",
+          "uri": "urn:sha256:4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4e7f9117fe15a9c873f0d9123c43a2155d018c6958192b1845163450c71080d6"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 755,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d",
+          "uri": "urn:sha256:9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9327ed2136105753fd130d675560cc0709e986ffbe09ec7c5768896620903f0d"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 645,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "oil",
+      "region": "Permian",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "cushing-wti",
+      "realizedSeriesId": "operator-permian",
+      "targetUnit": "USD/bbl",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "cushing-wti",
+          "commodity": "oil",
+          "location": "Cushing, Oklahoma",
+          "basis": "spot-benchmark",
+          "unit": "USD/bbl",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/pet/hist/rwtcd.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 60
+            },
+            {
+              "period": "2026-11-12",
+              "value": 61
+            }
+          ]
+        },
+        {
+          "id": "operator-permian",
+          "commodity": "oil",
+          "location": "Permian",
+          "basis": "realized",
+          "unit": "USD/bbl",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:permian-realized",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 58
+            },
+            {
+              "period": "2026-11-12",
+              "value": 59.5
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "oil",
+          "region": "Permian",
+          "unit": "USD/bbl",
+          "benchmarkPrice": 65,
+          "basisDifferential": -2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "oil",
+          "region": "Permian",
+          "unit": "USD/bbl",
+          "benchmarkPrice": 55,
+          "basisDifferential": -3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "oil",
+          "region": "Permian",
+          "unit": "USD/bbl",
+          "benchmarkPrice": 75,
+          "basisDifferential": -1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "missing-period": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9",
+          "uri": "urn:sha256:5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "unknown",
+          "value": null,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [],
+          "assumptionIds": [],
+          "reason": "Required market comparison or scenario input is unavailable"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "incomplete_period_coverage",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "blocked",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": 3,
+            "realizedNativeValue": 2.94,
+            "realizedValue": 2.8,
+            "differential": -0.20000000000000018
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": 3.5,
+            "realizedNativeValue": null,
+            "realizedValue": null,
+            "differential": null
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 1,
+          "missing": [
+            "2026-11-12"
+          ]
+        },
+        "meanDifferential": null
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": [
+        "incomplete_period_coverage"
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 375,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9",
+          "uri": "urn:sha256:5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "5e23086692586b2085c72fadf9b2f8f9cbbf1d894de6778ca223abb4026abdb9"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 914,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 3
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 2.94
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "missing-conversion": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e",
+          "uri": "urn:sha256:61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "unknown",
+          "value": null,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [],
+          "assumptionIds": [],
+          "reason": "Required market comparison or scenario input is unavailable"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "conversion_unavailable",
+          "references": []
+        },
+        {
+          "code": "missing_input",
+          "message": "incomplete_period_coverage",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "blocked",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": 3,
+            "realizedNativeValue": 2.94,
+            "realizedValue": null,
+            "differential": null
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": 3.5,
+            "realizedNativeValue": 3.465,
+            "realizedValue": null,
+            "differential": null
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 0,
+          "missing": [
+            "2026-11-11",
+            "2026-11-12"
+          ]
+        },
+        "meanDifferential": null
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": null
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": [
+        "conversion_unavailable",
+        "incomplete_period_coverage"
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 375,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e",
+          "uri": "urn:sha256:61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "61cb7a57a5efec4b608c60e8151b77f55ab6bd75118f1a6b63efe5373a26f68e"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 761,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 3
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 2.94
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.465
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "stale-observations": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f",
+          "uri": "urn:sha256:9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:sha256:4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "unknown",
+          "value": null,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [],
+          "assumptionIds": [],
+          "reason": "Required market comparison or scenario input is unavailable"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "observation_stale",
+          "references": []
+        },
+        {
+          "code": "missing_input",
+          "message": "incomplete_period_coverage",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "blocked",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": null,
+            "realizedNativeValue": 2.94,
+            "realizedValue": null,
+            "differential": null
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": null,
+            "realizedNativeValue": 3.465,
+            "realizedValue": null,
+            "differential": null
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 0,
+          "missing": [
+            "2026-11-11",
+            "2026-11-12"
+          ]
+        },
+        "meanDifferential": null
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": [
+        "observation_stale",
+        "incomplete_period_coverage"
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f",
+          "uri": "urn:sha256:9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9bc3c6ffb82c9d8db41f796351ae330294255721734c054f5ddc613fc802fb4f"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 373,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:sha256:4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 952,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 3600,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 3
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 2.94
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.465
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "wrong-region": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702",
+          "uri": "urn:sha256:7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "unknown",
+          "value": null,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [],
+          "assumptionIds": [],
+          "reason": "Required market comparison or scenario input is unavailable"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "assumed",
+          "value": 4.4,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "region_mismatch",
+          "references": []
+        },
+        {
+          "code": "missing_input",
+          "message": "incomplete_period_coverage",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "blocked",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": 3,
+            "realizedNativeValue": 2.94,
+            "realizedValue": null,
+            "differential": null
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": 3.5,
+            "realizedNativeValue": 3.465,
+            "realizedValue": null,
+            "differential": null
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 0,
+          "missing": [
+            "2026-11-11",
+            "2026-11-12"
+          ]
+        },
+        "meanDifferential": null
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Permian",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Permian",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4.5,
+          "basisDifferentialAssumption": -0.1,
+          "price": 4.4,
+          "rationale": "Fictional operator upside assumption",
+          "reason": null
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": [
+        "region_mismatch",
+        "incomplete_period_coverage"
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 375,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702",
+          "uri": "urn:sha256:7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "7bbe8f3cf2af633e16815cc0b8b9bac7537c279fa3a7b254727a19a2297ed702"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 946,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:sha256:dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dcb4a487be7e538042170f3dbc9b11af5b21fbbdffa35ecabb2d010fbbf2593b"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 667,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 3
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Permian",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Permian",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 2.94
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.465
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        },
+        {
+          "id": "upside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4.5,
+          "basisDifferential": -0.1,
+          "rationale": "Fictional operator upside assumption"
+        }
+      ]
+    }
+  },
+  "missing-scenario": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.market",
+        "employeeId": "employee.market-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:market:27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:sha256:4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff",
+          "uri": "urn:sha256:77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.market.4e581dad080e0f62bba438849ebf3d64b55fb89f1a4710aac6842ef71c25e8a9",
+          "basis": "assumed",
+          "value": -0.20000000000000018,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.25d0c6afadc3fdcb4764d4816a451e65571f58a1beb67fe272f27eae9cd36a74",
+          "basis": "assumed",
+          "value": 3.8,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.357cc54f44c54ae2b7a69ccf5f2f0ef93efa6d6fd0be284b6d47771891868ff2",
+          "basis": "assumed",
+          "value": 3.2,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb"
+          ],
+          "reason": "Arithmetic uses the supplied period selection, native source values and operator conversion/scenario assumptions; human commercial review is required"
+        },
+        {
+          "id": "finding.market.a7ecfc0f81ed7cea085350347bd52aa1c648a8dc63d65e0e2bccfef00fdff6c0",
+          "basis": "unknown",
+          "value": null,
+          "unit": "USD/MMBtu",
+          "evidenceIds": [],
+          "assumptionIds": [],
+          "reason": "scenario_missing"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.market.27fea49e46f1ae6f0fcb0ad2c3ee924563e7a40af16267fe11fc8f882326abbb",
+          "statement": "The operator supplies region/period selection, heat-content conversion and future commercial assumptions. The original observations and units remain in the market packet; no scenario is an observed or licensed forward price.",
+          "evidenceIds": [
+            "evidence.mandate",
+            "evidence.series",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Source metadata and heat content are operator-attested. Scenario values require the commercial owner's exact human review; this packet grants no trade, contract, bid or capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "scenario_missing",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "market": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "status": "blocked",
+      "reviewStatus": "unreviewed",
+      "commercialAuthority": false,
+      "comparison": {
+        "benchmarkSeriesId": "henry-hub",
+        "realizedSeriesId": "operator-appalachia",
+        "unit": "USD/MMBtu",
+        "rows": [
+          {
+            "period": "2026-11-11",
+            "benchmarkNativeValue": 3,
+            "benchmarkValue": 3,
+            "realizedNativeValue": 2.94,
+            "realizedValue": 2.8,
+            "differential": -0.20000000000000018
+          },
+          {
+            "period": "2026-11-12",
+            "benchmarkNativeValue": 3.5,
+            "benchmarkValue": 3.5,
+            "realizedNativeValue": 3.465,
+            "realizedValue": 3.3,
+            "differential": -0.20000000000000018
+          }
+        ],
+        "coverage": {
+          "required": 2,
+          "aligned": 2,
+          "missing": []
+        },
+        "meanDifferential": -0.20000000000000018
+      },
+      "seriesMetadata": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          }
+        }
+      ],
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 4,
+          "basisDifferentialAssumption": -0.2,
+          "price": 3.8,
+          "rationale": "Fictional operator base assumption; not a live or forward quote",
+          "reason": null
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": 3.5,
+          "basisDifferentialAssumption": -0.3,
+          "price": 3.2,
+          "rationale": "Fictional operator downside assumption",
+          "reason": null
+        },
+        {
+          "id": "upside",
+          "period": null,
+          "unit": "USD/MMBtu",
+          "basis": "operator-scenario",
+          "benchmarkPriceAssumption": null,
+          "basisDifferentialAssumption": null,
+          "price": null,
+          "rationale": null,
+          "reason": "scenario_missing"
+        }
+      ],
+      "proposal": {
+        "version": "0.1.0",
+        "title": "Appalachia gas comparison and December scenarios",
+        "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+        "evidenceSeriesIds": [
+          "henry-hub",
+          "operator-appalachia"
+        ],
+        "scenarioIds": [
+          "base",
+          "downside",
+          "upside"
+        ],
+        "limitations": [
+          "Synthetic source values; no licensed forward curve or professional price-deck approval"
+        ]
+      },
+      "limitations": [
+        "Synthetic source values; no licensed forward curve or professional price-deck approval"
+      ],
+      "blockers": [
+        "scenario_missing"
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:sha256:9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+        },
+        "evidence": {
+          "id": "evidence.mandate",
+          "revision": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936",
+          "uri": "urn:operator:mandate",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9fa7c8155ef08f9fdb768f3e0df0afa16746fad02ec8dad19ee2674112972936"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 375,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:sha256:4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+        },
+        "evidence": {
+          "id": "evidence.series",
+          "revision": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914",
+          "uri": "urn:operator:series",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4eb421d9e655d07a013fadbc774f6862b18fafd962389723f4b3645db3436914"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 952,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.market",
+          "employeeId": "employee.market-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff",
+          "uri": "urn:sha256:77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "77798a4c126aa1bc7d5330b1f1c534c12939c1cf9457946f9d8c32155ec835ff"
+          },
+          "asOf": "2026-11-13T00:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-13T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US",
+        "units": [],
+        "byteLength": 476,
+        "accessNotes": "Operator and enrolled commercial reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": [
+        "base",
+        "downside",
+        "upside"
+      ]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 3
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.5
+            }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            {
+              "period": "2026-11-11",
+              "value": 2.94
+            },
+            {
+              "period": "2026-11-12",
+              "value": 3.465
+            }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        {
+          "id": "base",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 4,
+          "basisDifferential": -0.2,
+          "rationale": "Fictional operator base assumption; not a live or forward quote"
+        },
+        {
+          "id": "downside",
+          "period": "2026-12",
+          "commodity": "gas",
+          "region": "Appalachia",
+          "unit": "USD/MMBtu",
+          "benchmarkPrice": 3.5,
+          "basisDifferential": -0.3,
+          "rationale": "Fictional operator downside assumption"
+        }
+      ]
+    }
+  }
+}

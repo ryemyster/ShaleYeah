@@ -1,6 +1,15 @@
 # Changelog — Market Analyst ADK Agent
 
 ## [Unreleased]
+- #684: Adopt shared configured native runtime, current source/private context,
+  declarative twelve-gate scorecard, actual final-output grading and the common
+  review supervisor. Bind exact work/scenarios to installed qualification and a
+  separate human decision before private recording. Preserve advisory tools;
+  replace global wrappers, old inline eval YAML/data and shape-only tests with
+  functional contracts, frozen cases and native/independent-package controls.
+  Add extraction/container artifacts and required role CI. Initial labels and
+  prices remain provisional fictional fixtures, without professional acceptance.
+
 - #708: Document the repaired backend's unavailable/source/assumption fields and
   host configuration; correct the protected HTTP setup instructions and remove
   the stale fixed-price fallback example from the project spec. Agent code,

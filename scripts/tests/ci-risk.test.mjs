@@ -21,15 +21,15 @@ test('full push/manual and unknown/shared changes include Risk independently of 
   for (const plan of [planFor('CHANGELOG.md', 'push'), planFor('CHANGELOG.md', 'workflow_dispatch'), planFor('evaluations/shaleyeah_evaluations/risks.py')]) {
     assert.equal(plan.full, true);
     assert.equal(plan.units.risk, true);
-    assert.equal(plan.callers.length, 7);
+    assert.equal(plan.callers.length, 6);
     assert.ok(!plan.callers.includes('risk-analyst'));
   }
 });
 
 test('no other successful role, missing result or reusable flag can waive selected Risk qualification', () => {
   const plan = planFor('servers/risk-analysis/src/index.ts');
-  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'success', legal: 'skipped', 'protocol-callers': 'skipped' };
-  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: true, legal: false, callers: '[]' };
+  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'success', legal: 'skipped', market: 'skipped', 'protocol-callers': 'skipped' };
+  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: true, legal: false, market: false, callers: '[]' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan, results, codeRevision, inputs }));
   for (const result of ['failure', 'cancelled', 'skipped', undefined])
     assert.throws(() => assertGate({ scope: 'reference', plan, results: { ...results, risk: result }, codeRevision, inputs }), /risk/);

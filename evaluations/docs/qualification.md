@@ -31,6 +31,14 @@ numerics, architecture, tool boundaries and no unapproved private forecast save.
 Its synthetic references and key-free native traces do not supply field accuracy
 or professional acceptance. Operator thresholds cannot remove these floors.
 
+The installed policy also supports Market Analyst's seven role gates plus the
+five common gates. Its verifier requires the final response to contain the exact
+extracted work and market scenario, then independently checks sources, regional
+coverage and transformations. The role-local private evidence runner binds the
+current control to an inspected packet's source bytes and full source metadata.
+This support does not by itself establish Market CI, independent packaging or
+native workflow acceptance; those receipts belong to #684.
+
 CI uses public demo LAS bytes, authored employee work and a scripted qualitative
 judge. Passing means **offline fixture conformance**. The release package states
 this limit in `QUALIFICATION.txt`; live models, scientific conclusions, other

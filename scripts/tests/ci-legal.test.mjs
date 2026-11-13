@@ -18,19 +18,19 @@ test('Legal agent and backend changes select full employee qualification instead
   }
 });
 
-test('full push/manual and shared inputs require Legal independently of the seven remaining callers', () => {
+test('full push/manual and shared inputs require Legal independently of the six remaining callers', () => {
   for (const plan of [planFor('CHANGELOG.md', 'push'), planFor('CHANGELOG.md', 'workflow_dispatch'), planFor('evaluations/shaleyeah_evaluations/legal.py')]) {
     assert.equal(plan.full, true);
     assert.equal(plan.units.legal, true);
-    assert.equal(plan.callers.length, 7);
+    assert.equal(plan.callers.length, 6);
     assert.ok(!plan.callers.includes('legal-analyst'));
   }
 });
 
 test('other passing roles, missing Legal results or false reusable flags cannot waive selected qualification', () => {
   const plan = planFor('servers/legal/src/index.ts');
-  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'success', 'protocol-callers': 'skipped' };
-  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: true, callers: '[]' };
+  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'success', market: 'skipped', 'protocol-callers': 'skipped' };
+  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: true, market: false, callers: '[]' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan, results, codeRevision, inputs }));
   for (const result of ['failure', 'cancelled', 'skipped', undefined])
     assert.throws(() => assertGate({ scope: 'reference', plan, results: { ...results, legal: result }, codeRevision, inputs }), /legal/);
@@ -41,7 +41,7 @@ test('hosted Legal job keeps native HTTP, external, installed, artifact and trac
   const workflow = readFileSync(new URL('../../.github/workflows/reference-qualification.yml', import.meta.url), 'utf8');
   const start = workflow.indexOf('\n  legal:\n');
   assert.ok(start >= 0);
-  const end = workflow.indexOf('\n  protocol-callers:\n', start);
+  const end = workflow.indexOf('\n  market:\n', start);
   assert.ok(end > start);
   const job = workflow.slice(start, end);
   assert.match(job, /if: inputs\.legal/);
@@ -49,7 +49,7 @@ test('hosted Legal job keeps native HTTP, external, installed, artifact and trac
   assert.match(job, /run: pnpm --dir servers\/legal test/);
   for (const step of ['grade_local_google.py', 'verify_cli_grade.py', 'check-extraction.mjs', 'check-containers.py']) assert.ok(job.includes(step));
   assert.doesNotMatch(job, /continue-on-error|--deselect|--ignore|test-name-pattern/);
-  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, protocol-callers, reference, reporter\]/);
+  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, market, protocol-callers, reference, reporter\]/);
 });
 
 test('the reusable workflow preserves one root job section and each existing job exactly once', () => {
@@ -57,5 +57,5 @@ test('the reusable workflow preserves one root job section and each existing job
   assert.equal([...workflow.matchAll(/^jobs:$/gm)].length, 1);
   const jobs = [...workflow.slice(workflow.indexOf('\njobs:\n')).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]);
   assert.equal(new Set(jobs).size, jobs.length);
-  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
+  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'market', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
 });

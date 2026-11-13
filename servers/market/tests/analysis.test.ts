@@ -244,7 +244,7 @@ test("duplicate/foreign model narratives and oversized responses cannot attach t
 	}
 });
 
-test("the default shared callLLM path remains safe and unavailable without a configured model key", async () => {
+test("advisory interpretation stays unavailable without an explicitly configured model runtime", async () => {
 	const saved = process.env.ANTHROPIC_API_KEY;
 	delete process.env.ANTHROPIC_API_KEY;
 	try {

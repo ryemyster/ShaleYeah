@@ -25,6 +25,7 @@ jobs:
       reservoir: ${{ steps.plan.outputs.reservoir }}
       risk: ${{ steps.plan.outputs.risk }}
       legal: ${{ steps.plan.outputs.legal }}
+      market: ${{ steps.plan.outputs.market }}
       qa: ${{ steps.plan.outputs.qa }}
       callers: ${{ steps.plan.outputs.callers }}
     steps:
@@ -56,6 +57,7 @@ jobs:
       reservoir: ${{ needs.impact.outputs.reservoir == 'true' }}
       risk: ${{ needs.impact.outputs.risk == 'true' }}
       legal: ${{ needs.impact.outputs.legal == 'true' }}
+      market: ${{ needs.impact.outputs.market == 'true' }}
       callers: ${{ needs.impact.outputs.callers }}
   qa-observed-qualification:
     name: QA observed result qualification
@@ -154,6 +156,8 @@ jobs:
       run: uv sync --project agents/risk-analyst --locked
     - name: Install Legal Analyst native runtime for cited memo and human-review controls
       run: uv sync --project agents/legal-analyst --locked
+    - name: Install Market Analyst qualification environment
+      run: uv sync --project agents/market-analyst --locked
     - name: Workspace tests on the constrained runner
       run: pnpm turbo test --concurrency=1
     - run: pnpm --dir contracts check:isolation

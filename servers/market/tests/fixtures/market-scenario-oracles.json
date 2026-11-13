@@ -1,0 +1,101 @@
+{
+  "fixtureVersion": "0.1.0",
+  "fixtureKind": "synthetic",
+  "labelAuthor": "Codex under the maintainer's issue #684 authorization",
+  "labelStatus": "provisional research-backed initial labels; no professional acceptance",
+  "rationale": "Preserve dated source values and benchmark location, require the supplied regional heat-content factor, align only required periods, and separate explicit commercial scenarios from observations. All prices and the 1.05 conversion factor are fictional operator inputs.",
+  "primarySources": [
+    { "url": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm", "retrievedOn": "2026-11-13", "supports": "Henry Hub spot benchmark and USD/MMBtu unit; no fixture price is taken from the page" },
+    { "url": "https://www.eia.gov/tools/faqs/faq.php?id=45&t=8", "retrievedOn": "2026-11-13", "supports": "USD/Mcf to USD/MMBtu requires applicable heat content; its national example is not a local default" },
+    { "url": "https://www.eia.gov/opendata/documentation.php", "retrievedOn": "2026-11-13", "supports": "Explicit series, period, frequency and unit metadata" }
+  ],
+  "input": {
+    "mandate": {
+      "version": "0.1.0",
+      "commodity": "gas",
+      "region": "Appalachia",
+      "asOf": "2026-11-13T12:00:00.000Z",
+      "frequency": "daily",
+      "requiredPeriods": ["2026-11-11", "2026-11-12"],
+      "benchmarkSeriesId": "henry-hub",
+      "realizedSeriesId": "operator-appalachia",
+      "targetUnit": "USD/MMBtu",
+      "maxObservationAgeSeconds": 259200,
+      "maxConversionAgeSeconds": 604800,
+      "requiredScenarioIds": ["base", "downside", "upside"]
+    },
+    "series": {
+      "version": "0.1.0",
+      "series": [
+        {
+          "id": "henry-hub",
+          "commodity": "gas",
+          "location": "Henry Hub",
+          "basis": "spot-benchmark",
+          "unit": "USD/MMBtu",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T22:00:00.000Z",
+          "sourceUri": "https://www.eia.gov/dnav/ng/hist/rngwhhdD.htm",
+          "heatContent": null,
+          "observations": [
+            { "period": "2026-11-11", "value": 3.0 },
+            { "period": "2026-11-12", "value": 3.5 }
+          ]
+        },
+        {
+          "id": "operator-appalachia",
+          "commodity": "gas",
+          "location": "Appalachia",
+          "basis": "realized",
+          "unit": "USD/Mcf",
+          "frequency": "daily",
+          "retrievedAt": "2026-11-13T06:00:00.000Z",
+          "vintage": "2026-11-12T23:00:00.000Z",
+          "sourceUri": "urn:operator:appalachia-realized",
+          "heatContent": {
+            "value": 1.05,
+            "unit": "MMBtu/Mcf",
+            "location": "Appalachia",
+            "asOf": "2026-11-12T00:00:00.000Z",
+            "validFrom": "2026-11-01",
+            "validThrough": "2026-11-30",
+            "sourceUri": "urn:operator:appalachia-heat-content"
+          },
+          "observations": [
+            { "period": "2026-11-11", "value": 2.94 },
+            { "period": "2026-11-12", "value": 3.465 }
+          ]
+        }
+      ]
+    },
+    "assumptions": {
+      "version": "0.1.0",
+      "asOf": "2026-11-13T00:00:00.000Z",
+      "scenarios": [
+        { "id": "base", "period": "2026-12", "commodity": "gas", "region": "Appalachia", "unit": "USD/MMBtu", "benchmarkPrice": 4.0, "basisDifferential": -0.2, "rationale": "Fictional operator base assumption; not a live or forward quote" },
+        { "id": "downside", "period": "2026-12", "commodity": "gas", "region": "Appalachia", "unit": "USD/MMBtu", "benchmarkPrice": 3.5, "basisDifferential": -0.3, "rationale": "Fictional operator downside assumption" },
+        { "id": "upside", "period": "2026-12", "commodity": "gas", "region": "Appalachia", "unit": "USD/MMBtu", "benchmarkPrice": 4.5, "basisDifferential": -0.1, "rationale": "Fictional operator upside assumption" }
+      ]
+    },
+    "proposal": {
+      "version": "0.1.0",
+      "title": "Appalachia gas comparison and December scenarios",
+      "summary": "Compare the supplied regional realized observations with the dated Henry Hub benchmark. The future prices are operator scenario assumptions for commercial review.",
+      "evidenceSeriesIds": ["henry-hub", "operator-appalachia"],
+      "scenarioIds": ["base", "downside", "upside"],
+      "limitations": ["Synthetic source values; no licensed forward curve or professional price-deck approval"]
+    }
+  },
+  "expected": {
+    "periods": ["2026-11-11", "2026-11-12"],
+    "benchmarkValues": [3.0, 3.5],
+    "realizedNativeValues": [2.94, 3.465],
+    "realizedValues": [2.8, 3.3],
+    "differentials": [-0.2, -0.2],
+    "meanDifferential": -0.2,
+    "scenarioPrices": { "base": 3.8, "downside": 3.2, "upside": 4.4 },
+    "requiredPeriods": 2,
+    "alignedPeriods": 2
+  }
+}

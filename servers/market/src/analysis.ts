@@ -1,4 +1,10 @@
-import { callLLM, normalizeIdentifier, reviewJson } from "@shaleyeah/sdk";
+import {
+	type LLMCallOptions,
+	ModelProviderError,
+	type ModelRuntime,
+	normalizeIdentifier,
+	reviewJson,
+} from "@shaleyeah/sdk";
 import { z } from "zod";
 import {
 	assessRecord,
@@ -43,7 +49,8 @@ export const competitorQuerySchema = z
 export interface MarketAnalysisOptions {
 	clock?: () => Date;
 	readSources?: () => Promise<unknown>;
-	llm?: typeof callLLM;
+	llm?: (options: LLMCallOptions) => Promise<string>;
+	modelRuntime?: ModelRuntime;
 	prices?: () => Promise<EiaPrices>;
 	maxObservationAgeSeconds?: number;
 }
@@ -104,7 +111,17 @@ function dependencies(options: MarketAnalysisOptions) {
 			options.maxObservationAgeSeconds ?? (configured === undefined ? undefined : Number(configured)),
 		),
 		read: options.readSources ?? (() => readMarketSourceFile(process.env.MARKET_SOURCE_FILE)),
-		model: options.llm ?? ((request) => callLLM(request)),
+		model: async (request: LLMCallOptions, schema: z.ZodType) => {
+			if (options.llm && options.modelRuntime) throw new ModelProviderError("configuration");
+			if (options.llm) return options.llm(request);
+			if (!options.modelRuntime) throw new ModelProviderError("configuration");
+			const result = await options.modelRuntime.generate({
+				prompt: request.prompt,
+				system: request.system,
+				schema: z.toJSONSchema(schema),
+			});
+			return JSON.stringify(result.output);
+		},
 		prices: async (): Promise<EiaPrices> => {
 			try {
 				return await priceProvider();
@@ -167,13 +184,16 @@ export async function synthesizeMarketAnalysisWithLLM(
 	const evidence = params.evidence.filter(eligible);
 	if (!evidence.length) return unavailableInterpretation("source_missing");
 	try {
-		const raw = await dependencies(options).model({
-			prompt: prompt(
-				{ ...params, evidence },
-				'{"summary":"advisory interpretation","evidenceIds":["supplied.id"],"limitations":["unsupported or uncertain points"]}',
-			),
-			maxTokens: 600,
-		});
+		const raw = await dependencies(options).model(
+			{
+				prompt: prompt(
+					{ ...params, evidence },
+					'{"summary":"advisory interpretation","evidenceIds":["supplied.id"],"limitations":["unsupported or uncertain points"]}',
+				),
+				maxTokens: 600,
+			},
+			narrativeSchema,
+		);
 		const parsed = parsedResponse(raw, narrativeSchema);
 		if (!validReferences(parsed.evidenceIds, evidence)) throw new MarketEvidenceError("interpretation_invalid");
 		return availableInterpretation(parsed);
@@ -256,19 +276,22 @@ export async function synthesizeCompetitorAnalysisWithLLM(
 	let response: z.infer<typeof competitorsResponse> | undefined;
 	if (supplied.length) {
 		try {
-			const raw = await deps.model({
-				prompt: prompt(
-					{
-						market: query.market,
-						competitors: supplied.map((profile) => ({
-							name: profile.name,
-							evidence: Object.values(profile.metrics).filter(eligible),
-						})),
-					},
-					'{"narratives":[{"name":"supplied company","summary":"advisory interpretation","evidenceIds":["that company supplied.id"]}],"limitations":["uncertainties"]}',
-				),
-				maxTokens: 1000,
-			});
+			const raw = await deps.model(
+				{
+					prompt: prompt(
+						{
+							market: query.market,
+							competitors: supplied.map((profile) => ({
+								name: profile.name,
+								evidence: Object.values(profile.metrics).filter(eligible),
+							})),
+						},
+						'{"narratives":[{"name":"supplied company","summary":"advisory interpretation","evidenceIds":["that company supplied.id"]}],"limitations":["uncertainties"]}',
+					),
+					maxTokens: 1000,
+				},
+				competitorsResponse,
+			);
 			response = parsedResponse(raw, competitorsResponse);
 		} catch {
 			response = undefined;
