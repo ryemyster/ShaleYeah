@@ -198,3 +198,29 @@ test("an older in-flight credential request cannot overwrite or clear a newer cr
 	assert.equal((await client.fetch()).oilPrice, 88);
 	assert.equal(newerRequests, 2, "the older request cannot invalidate the newer cache");
 });
+
+test("clearing a cache invalidates in-flight work even when the credential stays the same", async () => {
+	let release = () => {};
+	const pending = new Promise<void>((resolve) => {
+		release = resolve;
+	});
+	let requests = 0;
+	const client = createEiaPriceClient({
+		clock: () => new Date(NOW),
+		apiKey: () => "fixture-key",
+		fetch: async (input) => {
+			const old = ++requests <= 2;
+			if (old) await pending;
+			return new Response(
+				JSON.stringify(eiaRow(String(input).includes("RWTC") ? "RWTC" : "RNGWHHD", old ? "10" : "88")),
+			);
+		},
+	});
+	const earlier = client.fetch();
+	client.clearCache();
+	assert.equal((await client.fetch()).oilPrice, 88);
+	release();
+	assert.equal((await earlier).oilPrice, null);
+	assert.equal((await client.fetch()).oilPrice, 88);
+	assert.equal(requests, 4);
+});

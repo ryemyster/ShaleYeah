@@ -15,7 +15,7 @@ The host chooses the source reader and model dependency. The default reader uses
 
 Canonical metric values are assembled before model output. Strict JSON response schemas allow narrative text and known evidence IDs, not new metric fields. Unknown/cross-company references, malformed responses and provider failures leave interpretation unavailable. The source snapshot/rights and observation age are rechecked after asynchronous interpretation.
 
-EIA observations are cached for one hour, with original retrieval time and observation period preserved. Cache use checks current credentials; changing/removing the key invalidates its cache. Caller mutation cannot change cached data. Observation age is assessed on every use.
+EIA observations are cached for one hour, with original retrieval time and observation period preserved. Cache use compares private, in-memory credential handles; no credential digest is persisted. Changing/removing the key or clearing the cache invalidates older in-flight work, even when the same key is configured again. Caller mutation cannot change cached data. Observation age is assessed on every use.
 
 An explicit `outputPath` creates a new owner-private advisory file. Existing paths and links are rejected. Recording an unreviewed report supplies no commercial, bid, acquisition or capital approval.
 

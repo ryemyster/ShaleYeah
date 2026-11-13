@@ -28,6 +28,8 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
   metrics. Shared model interpretation stays advisory and cannot populate factual
   fields. Unsupported forecasts, volatility and confidence defaults are removed;
   key-scoped caches and exclusive private exports preserve the source boundary.
+  Volatile key handles and cache generations reject cleared in-flight work;
+  export tests inspect the same open file handle after denied writes.
   Full Market Analyst employee adoption remains in #684. (#708)
 
 - **Legal Analyst employee:** exact matter/corpus/checklist sources, backend-computed

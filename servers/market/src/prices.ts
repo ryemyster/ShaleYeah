@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createSecretKey, type KeyObject } from "node:crypto";
 import {
 	assessRecord,
 	type MarketDatum,
@@ -95,13 +95,22 @@ export function createEiaPriceClient(options: EiaPriceOptions = {}) {
 	};
 	const fetcher: typeof fetch = options.fetch ?? ((input, init) => globalThis.fetch(input, init));
 	const cache = new Map<"oil" | "gas", MarketRecord>();
-	let keyHash = "";
-	const fingerprint = (value: string | undefined) => (value ? createHash("sha256").update(value).digest("hex") : "");
+	// Credentials stay in private, volatile key handles; cached records contain no credential digest.
+	let cacheIdentity: KeyObject | undefined;
+	let generation = 0;
+	const identityFor = (value: string | undefined) => (value ? createSecretKey(value, "utf8") : undefined);
+	const sameIdentity = (left: KeyObject | undefined, right: KeyObject | undefined) =>
+		left === right || Boolean(left && right && left.equals(right));
 	const clearCache = () => {
 		cache.clear();
-		keyHash = "";
+		cacheIdentity = undefined;
+		generation++;
 	};
-	async function fetchQuote(kind: "oil" | "gas", credential: string): Promise<MarketRecord | MarketDatum> {
+	async function fetchQuote(
+		kind: "oil" | "gas",
+		credential: string,
+		requestGeneration: number,
+	): Promise<MarketRecord | MarketDatum> {
 		const spec = series[kind],
 			cached = cache.get(kind),
 			now = clock();
@@ -159,10 +168,9 @@ export function createEiaPriceClient(options: EiaPriceOptions = {}) {
 			};
 			const assessed = assessRecord(record, clock(), maxAge);
 			if (assessed.status === "unavailable") throw new MarketEvidenceError("invalid_source");
-			// A rotated/cleared cache belongs to a newer request, even if this response arrived later.
-			const active = fingerprint(credentialState().credential),
-				request = fingerprint(credential);
-			if (active !== request || keyHash !== request) throw new MarketEvidenceError("access_changed");
+			// A clear invalidates older requests even if the same credential is configured again.
+			if (generation !== requestGeneration || !sameIdentity(identityFor(credentialState().credential), cacheIdentity))
+				throw new MarketEvidenceError("access_changed");
 			cache.set(kind, structuredClone(record));
 			return record;
 		} catch (error) {
@@ -173,20 +181,24 @@ export function createEiaPriceClient(options: EiaPriceOptions = {}) {
 		const attemptedAt = clock(),
 			access = credentialState(),
 			credential = access.credential;
-		const hash = fingerprint(credential);
-		if (hash !== keyHash) {
-			cache.clear();
-			keyHash = hash;
+		const identity = identityFor(credential);
+		if (!sameIdentity(identity, cacheIdentity)) {
+			clearCache();
+			cacheIdentity = identity;
 		}
+		const requestGeneration = generation;
 		let oil: MarketDatum, gas: MarketDatum;
 		if (!credential) {
 			clearCache();
 			oil = unavailableDatum("USD/bbl", access.reason);
 			gas = unavailableDatum("USD/MMBtu", access.reason);
 		} else {
-			const rows = await Promise.all([fetchQuote("oil", credential), fetchQuote("gas", credential)]);
-			if (fingerprint(credentialState().credential) !== hash) {
-				if (keyHash === hash) clearCache();
+			const rows = await Promise.all([
+				fetchQuote("oil", credential, requestGeneration),
+				fetchQuote("gas", credential, requestGeneration),
+			]);
+			if (generation !== requestGeneration || !sameIdentity(identityFor(credentialState().credential), identity)) {
+				if (generation === requestGeneration) clearCache();
 				oil = unavailableDatum("USD/bbl", "access_changed");
 				gas = unavailableDatum("USD/MMBtu", "access_changed");
 			} else {

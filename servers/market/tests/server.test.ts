@@ -134,17 +134,16 @@ test("explicit advisory exports are new private files and cannot overwrite data 
 		const handle = await fs.open(target, "r");
 		try {
 			assert.equal((await handle.stat()).mode & 0o077, 0);
+			assert.equal((await invoke("competitive_analysis", args, options)).success, false);
+			const link = path.join(root, "link.json");
+			await fs.symlink(target, link);
+			assert.equal((await invoke("competitive_analysis", { ...args, outputPath: link }, options)).success, false);
 			const content = JSON.parse(await handle.readFile("utf8"));
 			assert.equal(content.competitors[0].production, 0);
 			assert.equal(content.commercialAuthority, false);
 		} finally {
 			await handle.close();
 		}
-		assert.equal((await invoke("competitive_analysis", args, options)).success, false);
-		const link = path.join(root, "link.json");
-		await fs.symlink(target, link);
-		assert.equal((await invoke("competitive_analysis", { ...args, outputPath: link }, options)).success, false);
-		assert.equal(JSON.parse(await fs.readFile(target, "utf8")).competitors[0].production, 0);
 	} finally {
 		await fs.rm(root, { recursive: true, force: true });
 	}
