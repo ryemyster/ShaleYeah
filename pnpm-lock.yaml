@@ -365,6 +365,12 @@ importers:
 
   servers/market:
     dependencies:
+      '@shaleyeah/connectors':
+        specifier: workspace:*
+        version: link:../../connectors
+      '@shaleyeah/contracts':
+        specifier: workspace:*
+        version: link:../../contracts
       '@shaleyeah/sdk':
         specifier: workspace:*
         version: link:../../sdk
@@ -375,6 +381,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.5.0
         version: 2.5.0
+      '@modelcontextprotocol/client':
+        specifier: 2.3.1
+        version: 2.3.1
       '@types/node':
         specifier: ^25.9.3
         version: 25.9.3

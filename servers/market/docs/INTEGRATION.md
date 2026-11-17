@@ -1,6 +1,6 @@
 # Integrating the Market backend
 
-The two MCP tool names remain `analyze_market_conditions` and `competitive_analysis`. A generic MCP client can call them over stdio; the separate [Market Analyst adapter](../../../agents/market-analyst/docs/INTEGRATION.md) uses protected HTTP when its host is configured.
+The retained advisory MCP tool names are `analyze_market_conditions` and `competitive_analysis`. A generic MCP client can call them over stdio; the separate [Market Analyst adapter](../../../agents/market-analyst/docs/INTEGRATION.md) uses protected HTTP when its host is configured.
 
 ```json
 {"commodity":"both","region":"Permian","timeframe":"current"}
@@ -25,6 +25,9 @@ The shared MCP envelope's `success` describes whether the query executed. Read t
 
 Requesting `gas` excludes the oil output. Competitor scope uses exact company names and canonical market spelling; ambiguous records remain unavailable. `timeframe` is interpretation context, not a generated price history or forecast. The model is not a factual data provider.
 
-Host observations use [the private source format](INPUTS.md). In TypeScript integrations, `createMarketTemplate({readSources, prices, llm, clock, maxObservationAgeSeconds})` can bind trusted providers without exposing those dependencies as tool parameters. The default `llm` uses the existing shared `callLLM` function.
+Host observations use [the private source format](INPUTS.md). In TypeScript integrations, `createMarketTemplate({readSources, prices, llm, clock, maxObservationAgeSeconds})` can bind trusted providers without exposing those dependencies as tool parameters. Use host-injected `modelRuntime` for shared configured synthesis, or an explicit `llm` integration. Without either, interpretation is unavailable; no ambient model key selects a fallback.
 
 The caller must preserve `null`, source dates, status and assumption labels. Human approval and professional suitability are separate from a tool response. No observation, source-rights attestation or narrative authorizes a bid, acquisition or capital commitment.
+
+The [employee workflow guide](EMPLOYEE_WORKFLOW.md) covers exact task/source bindings,
+scenario calculations, current context, installed qualification and human review.

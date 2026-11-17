@@ -96,9 +96,9 @@ dispositions for an authenticated human owner. An exception retains the original
 
 ## Project Status
 
-Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst and Legal Analyst have implemented employee workflows with
+Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst, Legal Analyst and Market Analyst have implemented employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. All fourteen roles now have ADK definitions. Seven roles still
+package checks. All fourteen roles now have ADK definitions. Six roles still
 need their full employee workflows and qualification.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
@@ -124,8 +124,11 @@ professional acceptance.
 The [Market backend](servers/market/README.md) preserves dated benchmark and
 operator-source observations, separates reviewed scenario assumptions, and
 returns unavailable fields when evidence is missing. Its model narrative is
-unreviewed and cannot supply company metrics or commercial approval. Full
-Market Analyst employee adoption remains in #684.
+unreviewed and cannot supply company metrics or commercial approval. The
+[Market Analyst](agents/market-analyst/README.md) binds exact mandate, dated series
+and commercial assumptions to private context, independent evaluation and separate
+human review before recording. Initial fixtures establish no commercial accuracy
+or licensed-feed entitlement; qualification evidence belongs to #684.
 
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 

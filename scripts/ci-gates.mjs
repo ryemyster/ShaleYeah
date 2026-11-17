@@ -29,11 +29,11 @@ export function assertGate({ scope, plan, results, codeRevision, inputs }) {
   if (scope === 'reference' && inputs) {
     let callers;
     try { callers = JSON.parse(inputs.callers); } catch { throw new Error('invalid_reusable_input'); }
-    if (['geologist', 'reporter', 'economist', 'reservoir', 'risk', 'legal'].some((unit) => inputs[unit] !== plan.units[unit]) ||
+    if (['geologist', 'reporter', 'economist', 'reservoir', 'risk', 'legal', 'market'].some((unit) => inputs[unit] !== plan.units[unit]) ||
         JSON.stringify(callers) !== JSON.stringify(plan.callers)) throw new Error('reusable_input_mismatch');
   }
   const expected = scope === 'reference' ? { reference: plan.units.geologist, reporter: plan.units.reporter,
-    economist: plan.units.economist, reservoir: plan.units.reservoir, risk: plan.units.risk, legal: plan.units.legal, 'protocol-callers': plan.callers.length > 0 } : scope === 'final'
+    economist: plan.units.economist, reservoir: plan.units.reservoir, risk: plan.units.risk, legal: plan.units.legal, market: plan.units.market, 'protocol-callers': plan.callers.length > 0 } : scope === 'final'
     ? { impact: true, workspace: true, 'reference-qualification': true, 'qa-observed-qualification': plan.units.qa }
     : null;
   if (!expected) throw new Error('invalid_gate_scope');

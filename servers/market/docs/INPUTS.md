@@ -39,3 +39,12 @@ Provide one selected observed record per company/market/metric or commodity pric
 The default analysis window is seven days. Observation age uses `observedAt`; assumption age uses its actual review time. A date-only period is assessed at UTC midnight. Future or inconsistent times are unavailable. A stale value and its original date remain visible in the detailed metric, while its current factual field is `null`. Fresh retrieval and cache timestamps do not renew source age.
 
 The [synthetic test packet](../tests/fixtures/evidence.ts) shows the complete shape for offline tests. Its companies, numbers and review identities are fictional and must not be presented as operating evidence. Enter real permitted source records and actual operator review assertions for a live task.
+
+## Assigned employee sources
+
+The records above serve advisory queries. A task's scenario work uses a separate
+private binding with exact mandate, series and assumption JSON exports. It retains
+observation periods and vintage separately from retrieval time, requires applicable
+heat content for gas conversion, and binds source byte hashes and current rights.
+See [employee workflow](EMPLOYEE_WORKFLOW.md); advisory records cannot silently
+replace these assigned inputs.

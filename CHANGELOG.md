@@ -22,6 +22,16 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **Market Analyst employee:** exact mandate/series/assumption exports, independent
+  time-series and unit checks, native configured providers, private retained context,
+  actual-output grading and installed qualification before separate human review.
+  Recording binds the exact scenario packet and remains idempotent after restart.
+  Retained advisory queries use configured synthesis with owner checks; obsolete
+  global wrappers and inline evals are removed. Market has a required native,
+  external-tool, source/archive/wheel and container CI job; six callers remain.
+  Fictional prices and provisional labels establish no commercial accuracy,
+  licensed-feed entitlement, professional acceptance or transaction authority. (#684)
+
 - **Market source repair:** missing/failed EIA access leaves unavailable prices;
   source periods, units and retrieval times remain distinct. Host-selected private
   observations and reviewed scenario assumptions replace name-derived competitor
@@ -30,7 +40,7 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
   key-scoped caches and exclusive private exports preserve the source boundary.
   Volatile key handles and cache generations reject cleared in-flight work;
   export tests inspect the same open file handle after denied writes.
-  Full Market Analyst employee adoption remains in #684. (#708)
+  The employee workflow is adopted separately in #684. (#708)
 
 - **Legal Analyst employee:** exact matter/corpus/checklist sources, backend-computed
   UTF-8 citations, declared scope/effective-date eligibility and explicit question/

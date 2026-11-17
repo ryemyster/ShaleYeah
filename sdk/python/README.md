@@ -6,9 +6,10 @@ It has no ADK, model-provider, business-role, warehouse or monorepo-source impor
 
 The first consumer is [Geologist](../../agents/geologist/README.md). Other ADK
 employees, including [Risk Analyst](../../agents/risk-analyst/README.md) and
-[Legal Analyst](../../agents/legal-analyst/README.md), also use
+[Legal Analyst](../../agents/legal-analyst/README.md) and
+[Market Analyst](../../agents/market-analyst/README.md), also use
 this client for the selected wire profile. Adopted employees test their protected
-role tools in their own packages; this package tests the seven remaining callable
+role tools in their own packages; this package tests the six remaining callable
 wrappers as well as the shared client.
 Connection compatibility does not complete those roles' employee workflows.
 Its installed-wheel isolation check also installs the consumer's declared portable

@@ -1,43 +1,29 @@
-# Deployment - Market Analyst ADK Agent
+# Deploy Market Analyst
 
-Market Analyst deploys as an ADK/Python agent package paired with the Market MCP backend.
+Market Analyst runs in an installed Python environment with the separate Market
+MCP backend. Local processes, containers and hosted runtimes can supply the same
+contracts. No orchestrator, cloud account or vector database is mandatory.
 
-## Required Runtime Inputs
+The operator supplies a pinned model configuration, private credential references,
+MCP endpoint/token, task and source-authority integration, context storage,
+retention, and required event sink. Configure `MARKET_ANALYST_MODEL_CONFIG_FILE`
+and optional `MARKET_ANALYST_EVENT_CONFIG_FILE` for the root app. MCP settings are
+`MARKET_MCP_URL`, `MARKET_MCP_ACCESS_TOKEN_FILE`, and optional bounded
+`MARKET_MCP_TIMEOUT_SECONDS` / `MARKET_MCP_REQUEST_TIMEOUT_SECONDS` (30/10 seconds
+by default, at most 120). Remote MCP requires HTTPS.
 
-| Variable | Required | Default |
-|----------|----------|---------|
-| `MARKET_MCP_URL` | No | `http://localhost:3007/mcp` |
-| `MARKET_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` |
+Durable operation uses the trusted host's `MarketAnalystRuntime` integration;
+ordinary ADK chat does not configure that storage or authority for the operator.
+Mount only the employee's permitted context and credential files. The employee
+must not have the human review settings, qualification-policy write access or the
+backend's private review store.
 
-Set `MARKET_MCP_URL` to the deployed `servers/market` endpoint for non-local deployments.
+`Dockerfile` consumes the independent extraction bundle and installs declared
+wheels and locked requirements as a non-root image. The backend has its own image
+and an evaluation-only environment without the employee app. The container
+qualification repeats the source/context/qualified-human-review/restart journey.
+Run those checks against the intended artifact and environment before deployment;
+this package makes no production deployment or vendor-entitlement claim.
 
-## Pre-Deployment Checks
-
-```bash
-cd agents/market-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/market_mcp.py
-agents-cli info
-```
-
-Run ADK evals when credentials are available:
-
-```bash
-agents-cli eval run
-```
-
-## Deployment Shape
-
-The agent package is independently buildable and extractable. Do not rely on root-level pnpm builds for Market Analyst deployment. The backend MCP server remains independently deployable from `servers/market`.
-
-## Smoke Test
-
-With the backend reachable:
-
-```bash
-cd agents/market-analyst
-MARKET_MCP_URL=https://market-mcp.example.com agents-cli run \
-  "Compare Chevron and ExxonMobil in the Delaware Basin on production and costs"
-```
-
-The response should cite the Market backend path and avoid unreviewed final investment approval.
+See [local testing](LOCAL_TESTING.md), the [evaluation guide](EVALUATIONS.md) and
+the backend's [deployment guide](../../../servers/market/docs/DEPLOYMENT.md).

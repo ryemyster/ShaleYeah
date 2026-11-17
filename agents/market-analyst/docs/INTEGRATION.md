@@ -1,44 +1,38 @@
-# Integration Guide - Market Analyst ADK Agent
+# Integrate Market Analyst
 
-Integrate Market Analyst through its ADK package.
+Install the declared Python employee and shared contract, context/model, MCP and
+evaluation packages. Set the protected backend endpoint and owner-private MCP
+credential-file reference. The installed client uses MCP 2026-07-28, fresh tool
+discovery, validated arguments/results and bounded one-command requests.
 
-## Local ADK Invocation
+For ordinary ADK interaction, use the configured root app from the README.
+For durable employee work, a trusted host constructs a scoped `ContextCatalog`
+with the task, policy, retention, current grants and source-authority callback,
+then opens `MarketAnalystRuntime.open(catalog, model_config, backend_config=...)`.
+The source callback revalidates through `get_context_source_metadata`; it must not
+accept the model's source or permission assertions. Retain only validated common
+contracts under the current employee/customer/asset/task namespace.
 
-```bash
-cd agents/market-analyst
-MARKET_MCP_URL=http://localhost:3007/mcp MARKET_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Analyze current oil and gas market conditions for the Permian over a 1 year timeframe"
-```
+`review_context` captures the exact work reference and permitted evidence.
+`prepare_market_review` re-drafts from current backend sources before binding this
+context. `record_review` retains an awaiting-review reference without an approval
+grant. `ReviewSupervisor` reads the durable backend checkpoint and resumes only an
+approved exact `record_market_scenarios` operation. The human uses the separate
+[backend review CLI](../../../servers/market/docs/EMPLOYEE_WORKFLOW.md).
 
-## Backend Contract
+The host that observed execution supplies actual events, final response, source
+artifacts and dispatch observations to `app.evaluation.grade_case`. The grader
+parses final text; a backend witness cannot substitute for changed employee
+output. The private qualification runner derives current source inputs from the
+inspected packet's bytes and compares the exact returned work/scenario.
 
-The ADK tools map to the current Market MCP server tools:
+The optional advisory tools retain null/unavailable fields, observation periods,
+source identities, explicit assumptions and unreviewed interpretations. Use the
+backend's configured synthesis profile for model-assisted queries. They do not
+replace the employee task's bound scenario sources.
 
-| ADK wrapper | MCP tool |
-|-------------|----------|
-| `analyze_market_conditions` | `analyze_market_conditions` |
-| `competitive_market_analysis` | `competitive_analysis` |
-
-The MCP backend URL comes from `MARKET_MCP_URL`. The default is `http://localhost:3007/mcp`.
-
-The repaired backend keeps source metrics separate from advisory model output.
-Current prices and company metrics may be `null`; inspect their detailed status,
-reason, source period, retrieval time and assumption/review fields. Names alone
-do not supply competitor facts, and a recent fetch does not renew an observation.
-The host configures the private [Market source file](../../../servers/market/docs/INPUTS.md),
-EIA access and optional interpretation key. The caller cannot send those source
-or reviewer assertions as tool arguments. Preserve the backend's unreviewed
-state and `commercialAuthority: false`. Full role workflow qualification remains
-in #684.
-
-## Orchestration Boundary
-
-An orchestrator may call the ADK app as a standalone agent unit. It should not import internal Python functions as shared library APIs or recreate a TypeScript agent adapter. Shared contracts belong in `sdk/`; Market execution stays behind `servers/market`.
-
-## Human Review
-
-Downstream systems must treat final bid approval, investment approval, and acquisition authorization as human-review actions. Market Analyst can provide supporting analysis only.
-
-## Connection profile
-
-This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.
+A compatible external MCP service may implement these tool schemas. Transport
+compatibility does not attest that service's source rights, human authority or
+professional correctness. An orchestrator consumes the employee's declared task,
+work, context and review contracts; it must not read another employee's private
+catalog or recreate the reasoning loop.

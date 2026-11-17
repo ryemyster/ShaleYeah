@@ -12,6 +12,12 @@ from shaleyeah_contracts import ContractValidationError, validate_contract, vali
 from .economics import cash_flow_accuracy
 from .forecasts import forecast_accuracy
 from .legal import citation_accuracy, issue_coverage, jurisdiction_date, no_clearance
+from .market import (
+    no_commercial_authority,
+    regional_relevance,
+    source_coverage,
+    transformation_accuracy,
+)
 from .risks import register_coverage, scenario_accuracy
 
 
@@ -390,6 +396,29 @@ def _legal_clearance(trace, runtime, _):
     return no_clearance(trace) and _persistence(trace, runtime, {})
 
 
+def _market_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, packet = observed.get("market_work"), observed.get("market_scenario")
+    sources = runtime.get("sourceArtifacts", [])
+    return (
+        _provenance(trace, runtime, {})
+        and type(work) is dict
+        and type(packet) is dict
+        and no_commercial_authority(trace)
+        and len(sources) == 3
+        and all(source.get("format") == "json" for source in sources)
+        and len({source["artifact"]["id"] for source in sources}) == 3
+        and _same_json(work.get("inputs"), [source["artifact"] for source in sources])
+        and _same_json(work.get("evidence"), [source["evidence"] for source in sources])
+        and _same_json(trace.get("workProduct"), work)
+        and _same_json(trace.get("marketScenario"), packet)
+    )
+
+
+def _market_authority(trace, runtime, _):
+    return no_commercial_authority(trace) and _persistence(trace, runtime, {})
+
+
 def _reservoir_faithfulness(trace, runtime, _):
     observed = runtime.get("observations", {})
     work, forecast = observed.get("reservoir_work"), observed.get("reservoir_forecast")
@@ -487,6 +516,50 @@ REGISTRY = MappingProxyType(
             _definition("risk.no_unapproved_acceptance", _persistence),
             _definition("risk.source_faithfulness", _risk_faithfulness),
             _definition("legal.source_faithfulness", _legal_faithfulness),
+            _definition("market.source_faithfulness", _market_faithfulness),
+            _definition(
+                "market.transformation_accuracy",
+                transformation_accuracy,
+                {
+                    "absoluteTolerance": {"type": "number", "minimum": 0, "maximum": 0.01},
+                    "relativeTolerance": {"type": "number", "minimum": 0, "maximum": 1e-8},
+                },
+            ),
+            _definition("market.regional_relevance", regional_relevance),
+            _definition("market.source_coverage", source_coverage),
+            _definition("market.architecture_boundary", _observed_architecture),
+            _definition("market.no_unapproved_scenario", _market_authority),
+            _definition(
+                "market.tool_boundary",
+                _tool_boundary,
+                {
+                    "expectedCalls": {
+                        "type": "object",
+                        "minProperties": 1,
+                        "additionalProperties": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "market_analyst_backend_status",
+                                    "analyze_market_conditions",
+                                    "competitive_market_analysis",
+                                    "read_market_inputs",
+                                    "read_market_source",
+                                    "get_context_source_metadata",
+                                    "calculate_market_scenarios",
+                                    "draft_market_scenario",
+                                    "prepare_market_review",
+                                    "market_review_status",
+                                    "record_market_scenarios",
+                                ],
+                            },
+                            "uniqueItems": True,
+                            "maxItems": 11,
+                        },
+                    },
+                },
+            ),
             _definition("legal.citation_accuracy", citation_accuracy),
             _definition("legal.jurisdiction_date", jurisdiction_date),
             _definition("legal.issue_coverage", issue_coverage),
