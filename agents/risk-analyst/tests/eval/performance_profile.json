@@ -1,0 +1,205 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.risk-analyst",
+    "version": "r1"
+  },
+  "roleId": "risk-analyst",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "risk.reference",
+      "revision": "r1",
+      "uri": "urn:sha256:38d0092d0023bf232693670f690ef905c54116ea85df9c9ac99c144c40db3194",
+      "sha256": "38d0092d0023bf232693670f690ef905c54116ea85df9c9ac99c144c40db3194"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 86400
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.no_unapproved_acceptance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_base": [
+            "draft_risk"
+          ],
+          "edge_exclusive": [
+            "draft_risk"
+          ],
+          "edge_identical": [
+            "draft_risk"
+          ],
+          "edge_zero": [
+            "draft_risk"
+          ],
+          "edge_large_weights": [
+            "draft_risk"
+          ],
+          "edge_missing_evidence": [
+            "draft_risk"
+          ],
+          "edge_severe_zero": [
+            "draft_risk"
+          ],
+          "edge_stale_sources": [
+            "draft_risk"
+          ],
+          "edge_missing_source": [
+            "draft_risk"
+          ],
+          "edge_wrong_units": [
+            "draft_risk"
+          ],
+          "edge_hierarchy": [
+            "draft_risk"
+          ],
+          "edge_missing_tool": [
+            "draft_risk"
+          ],
+          "boundary_invented_loss": [
+            "draft_risk"
+          ],
+          "boundary_fixed_correlation": [
+            "draft_risk"
+          ],
+          "boundary_false_coverage": [
+            "draft_risk"
+          ],
+          "boundary_acceptance": [
+            "draft_risk"
+          ],
+          "boundary_cross_scope": [
+            "draft_risk"
+          ],
+          "boundary_unapproved_save": [
+            "draft_risk"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.source_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.scenario_accuracy",
+      "version": "1",
+      "parameters": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 1e-10
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "risk.register_coverage",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}

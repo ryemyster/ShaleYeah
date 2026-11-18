@@ -1,0 +1,999 @@
+{
+  "fixtureVersion": "1",
+  "policy": {
+    "id": "policy.context.reference",
+    "version": "r1"
+  },
+  "observedAt": "2026-10-08T13:00:00Z",
+  "records": {
+    "privateContext": {
+      "contractVersion": "0.1.0",
+      "kind": "context-manifest",
+      "id": "context.geology-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "contextPolicy": {
+        "id": "policy.employee-context",
+        "version": "r1"
+      },
+      "selectedEvidence": [
+        {
+          "id": "evidence.log-1",
+          "uri": "urn:example:well-log:1",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "revision": "r1",
+          "asOf": "2026-10-07T12:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "workingArtifactRefs": [
+        {
+          "id": "artifact.log-1",
+          "revision": "r1",
+          "uri": "urn:example:well-log:1"
+        }
+      ],
+      "sharedKnowledge": [],
+      "assembledAt": "2026-10-07T12:30:00Z",
+      "retention": {
+        "policy": {
+          "id": "policy.retention",
+          "version": "r1"
+        },
+        "expiresAt": "2026-11-07T12:30:00Z"
+      },
+      "budget": {
+        "maxItems": 5,
+        "maxBytes": 10000,
+        "maxTokens": 2000
+      },
+      "blockers": []
+    },
+    "sharedContext": {
+      "contractVersion": "0.1.0",
+      "kind": "context-manifest",
+      "id": "context.research-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-research-1",
+        "employeeId": "employee.research-analyst"
+      },
+      "taskRevision": "r1",
+      "contextPolicy": {
+        "id": "policy.context.reference",
+        "version": "r1"
+      },
+      "selectedEvidence": [
+        {
+          "id": "evidence.log-1",
+          "uri": "urn:example:well-log:1",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "revision": "r1",
+          "asOf": "2026-10-07T12:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "workingArtifactRefs": [],
+      "sharedKnowledge": [
+        {
+          "artifact": {
+            "id": "product.geology-1",
+            "revision": "r1",
+            "uri": "urn:example:interpretation:1"
+          },
+          "origin": {
+            "customerId": "operator-demo",
+            "assetId": "well-demo-1",
+            "taskId": "task-geology-1",
+            "employeeId": "employee.geologist"
+          },
+          "evidence": [
+            {
+              "id": "evidence.log-1",
+              "uri": "urn:example:well-log:1",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "1111111111111111111111111111111111111111111111111111111111111111"
+              },
+              "revision": "r1",
+              "asOf": "2026-10-07T12:00:00Z",
+              "accessClassification": "restricted",
+              "usagePolicy": {
+                "id": "policy.operator-data",
+                "version": "r1"
+              }
+            }
+          ],
+          "reviewDecisionRef": {
+            "id": "decision.geology-approved-1",
+            "revision": "r1"
+          },
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          },
+          "retentionPolicy": {
+            "id": "policy.retention",
+            "version": "r1"
+          }
+        }
+      ],
+      "assembledAt": "2026-10-08T12:00:00Z",
+      "retention": {
+        "policy": {
+          "id": "policy.retention",
+          "version": "r1"
+        },
+        "expiresAt": "2026-11-07T12:30:00Z"
+      },
+      "budget": {
+        "maxItems": 5,
+        "maxBytes": 10000,
+        "maxTokens": 2000
+      },
+      "blockers": []
+    },
+    "reviewedProduct": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      },
+      "status": "final",
+      "inputs": [
+        {
+          "id": "artifact.log-1",
+          "revision": "r1",
+          "uri": "urn:example:well-log:1"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.log-1",
+          "uri": "urn:example:well-log:1",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "revision": "r1",
+          "asOf": "2026-10-07T12:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.depth",
+          "basis": "measured",
+          "value": 1200,
+          "unit": "ft",
+          "evidenceIds": [
+            "evidence.log-1"
+          ],
+          "assumptionIds": []
+        },
+        {
+          "id": "finding.datum",
+          "basis": "assumed",
+          "value": "operator-datum",
+          "unit": "not_applicable",
+          "evidenceIds": [],
+          "assumptionIds": [
+            "assumption.datum"
+          ]
+        },
+        {
+          "id": "finding.porosity",
+          "basis": "unknown",
+          "value": null,
+          "unit": "fraction",
+          "reason": "Required curve is absent",
+          "evidenceIds": [],
+          "assumptionIds": []
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.datum",
+          "statement": "Use the supplied operator datum pending geologist review",
+          "evidenceIds": [
+            "evidence.log-1"
+          ]
+        }
+      ],
+      "uncertainty": "Datum assumption is unreviewed; porosity is unknown",
+      "confidence": 0,
+      "blockers": [],
+      "review": {
+        "status": "approved",
+        "decisionRefs": [
+          {
+            "id": "decision.geology-approved-1",
+            "revision": "r1"
+          }
+        ]
+      }
+    },
+    "approval": {
+      "contractVersion": "0.1.0",
+      "kind": "review-decision",
+      "id": "decision.geology-approved-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "requestRef": {
+        "id": "review.geology-1",
+        "revision": "r1"
+      },
+      "productRef": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      },
+      "decision": "approve",
+      "reviewer": {
+        "principalId": "reviewer.geologist",
+        "authorityPolicy": {
+          "id": "policy.geologist.review",
+          "version": "r1"
+        }
+      },
+      "reason": "The revised assumptions are accepted for this synthetic example.",
+      "decidedAt": "2026-10-07T13:00:00Z",
+      "auditRef": {
+        "id": "audit.review-1",
+        "revision": "r1"
+      }
+    },
+    "unreviewedProduct": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-geology-1",
+        "employeeId": "employee.geologist"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "product.geology-1",
+        "revision": "r1",
+        "uri": "urn:example:interpretation:1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "artifact.log-1",
+          "revision": "r1",
+          "uri": "urn:example:well-log:1"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.log-1",
+          "uri": "urn:example:well-log:1",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "revision": "r1",
+          "asOf": "2026-10-07T12:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.depth",
+          "basis": "measured",
+          "value": 1200,
+          "unit": "ft",
+          "evidenceIds": [
+            "evidence.log-1"
+          ],
+          "assumptionIds": []
+        },
+        {
+          "id": "finding.datum",
+          "basis": "assumed",
+          "value": "operator-datum",
+          "unit": "not_applicable",
+          "evidenceIds": [],
+          "assumptionIds": [
+            "assumption.datum"
+          ]
+        },
+        {
+          "id": "finding.porosity",
+          "basis": "unknown",
+          "value": null,
+          "unit": "fraction",
+          "reason": "Required curve is absent",
+          "evidenceIds": [],
+          "assumptionIds": []
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.datum",
+          "statement": "Use the supplied operator datum pending geologist review",
+          "evidenceIds": [
+            "evidence.log-1"
+          ]
+        }
+      ],
+      "uncertainty": "Datum assumption is unreviewed; porosity is unknown",
+      "confidence": 0,
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "expiredContext": {
+      "contractVersion": "0.1.0",
+      "kind": "context-manifest",
+      "id": "context.research-1",
+      "revision": "r1",
+      "scope": {
+        "customerId": "operator-demo",
+        "assetId": "well-demo-1",
+        "taskId": "task-research-1",
+        "employeeId": "employee.research-analyst"
+      },
+      "taskRevision": "r1",
+      "contextPolicy": {
+        "id": "policy.context.reference",
+        "version": "r1"
+      },
+      "selectedEvidence": [
+        {
+          "id": "evidence.log-1",
+          "uri": "urn:example:well-log:1",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1111111111111111111111111111111111111111111111111111111111111111"
+          },
+          "revision": "r1",
+          "asOf": "2026-10-07T12:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "workingArtifactRefs": [],
+      "sharedKnowledge": [
+        {
+          "artifact": {
+            "id": "product.geology-1",
+            "revision": "r1",
+            "uri": "urn:example:interpretation:1"
+          },
+          "origin": {
+            "customerId": "operator-demo",
+            "assetId": "well-demo-1",
+            "taskId": "task-geology-1",
+            "employeeId": "employee.geologist"
+          },
+          "evidence": [
+            {
+              "id": "evidence.log-1",
+              "uri": "urn:example:well-log:1",
+              "hash": {
+                "algorithm": "sha256",
+                "value": "1111111111111111111111111111111111111111111111111111111111111111"
+              },
+              "revision": "r1",
+              "asOf": "2026-10-07T12:00:00Z",
+              "accessClassification": "restricted",
+              "usagePolicy": {
+                "id": "policy.operator-data",
+                "version": "r1"
+              }
+            }
+          ],
+          "reviewDecisionRef": {
+            "id": "decision.geology-approved-1",
+            "revision": "r1"
+          },
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          },
+          "retentionPolicy": {
+            "id": "policy.retention",
+            "version": "r1"
+          }
+        }
+      ],
+      "assembledAt": "2026-10-08T12:00:00Z",
+      "retention": {
+        "policy": {
+          "id": "policy.retention",
+          "version": "r1"
+        },
+        "expiresAt": "2026-10-08T12:30:00Z"
+      },
+      "budget": {
+        "maxItems": 5,
+        "maxBytes": 10000,
+        "maxTokens": 2000
+      },
+      "blockers": []
+    }
+  },
+  "invalidRecords": [
+    {
+      "name": "promotion-without-review-reference",
+      "record": {
+        "contractVersion": "0.1.0",
+        "kind": "context-manifest",
+        "id": "context.research-1",
+        "revision": "r1",
+        "scope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-research-1",
+          "employeeId": "employee.research-analyst"
+        },
+        "taskRevision": "r1",
+        "contextPolicy": {
+          "id": "policy.context.reference",
+          "version": "r1"
+        },
+        "selectedEvidence": [
+          {
+            "id": "evidence.log-1",
+            "uri": "urn:example:well-log:1",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "revision": "r1",
+            "asOf": "2026-10-07T12:00:00Z",
+            "accessClassification": "restricted",
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            }
+          }
+        ],
+        "workingArtifactRefs": [],
+        "sharedKnowledge": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "operator-demo",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ],
+        "assembledAt": "2026-10-08T12:00:00Z",
+        "retention": {
+          "policy": {
+            "id": "policy.retention",
+            "version": "r1"
+          },
+          "expiresAt": "2026-11-07T12:30:00Z"
+        },
+        "budget": {
+          "maxItems": 5,
+          "maxBytes": 10000,
+          "maxTokens": 2000
+        },
+        "blockers": []
+      },
+      "code": "invalid_contract"
+    },
+    {
+      "name": "cross-customer-shared-origin",
+      "record": {
+        "contractVersion": "0.1.0",
+        "kind": "context-manifest",
+        "id": "context.research-1",
+        "revision": "r1",
+        "scope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-research-1",
+          "employeeId": "employee.research-analyst"
+        },
+        "taskRevision": "r1",
+        "contextPolicy": {
+          "id": "policy.context.reference",
+          "version": "r1"
+        },
+        "selectedEvidence": [
+          {
+            "id": "evidence.log-1",
+            "uri": "urn:example:well-log:1",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "revision": "r1",
+            "asOf": "2026-10-07T12:00:00Z",
+            "accessClassification": "restricted",
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            }
+          }
+        ],
+        "workingArtifactRefs": [],
+        "sharedKnowledge": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "another-operator",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "reviewDecisionRef": {
+              "id": "decision.geology-approved-1",
+              "revision": "r1"
+            },
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ],
+        "assembledAt": "2026-10-08T12:00:00Z",
+        "retention": {
+          "policy": {
+            "id": "policy.retention",
+            "version": "r1"
+          },
+          "expiresAt": "2026-11-07T12:30:00Z"
+        },
+        "budget": {
+          "maxItems": 5,
+          "maxBytes": 10000,
+          "maxTokens": 2000
+        },
+        "blockers": []
+      },
+      "code": "scope_mismatch"
+    },
+    {
+      "name": "manifest-items-exceed-declared-limit",
+      "record": {
+        "contractVersion": "0.1.0",
+        "kind": "context-manifest",
+        "id": "context.research-1",
+        "revision": "r1",
+        "scope": {
+          "customerId": "operator-demo",
+          "assetId": "well-demo-1",
+          "taskId": "task-research-1",
+          "employeeId": "employee.research-analyst"
+        },
+        "taskRevision": "r1",
+        "contextPolicy": {
+          "id": "policy.context.reference",
+          "version": "r1"
+        },
+        "selectedEvidence": [
+          {
+            "id": "evidence.log-1",
+            "uri": "urn:example:well-log:1",
+            "hash": {
+              "algorithm": "sha256",
+              "value": "1111111111111111111111111111111111111111111111111111111111111111"
+            },
+            "revision": "r1",
+            "asOf": "2026-10-07T12:00:00Z",
+            "accessClassification": "restricted",
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            }
+          }
+        ],
+        "workingArtifactRefs": [],
+        "sharedKnowledge": [
+          {
+            "artifact": {
+              "id": "product.geology-1",
+              "revision": "r1",
+              "uri": "urn:example:interpretation:1"
+            },
+            "origin": {
+              "customerId": "operator-demo",
+              "assetId": "well-demo-1",
+              "taskId": "task-geology-1",
+              "employeeId": "employee.geologist"
+            },
+            "evidence": [
+              {
+                "id": "evidence.log-1",
+                "uri": "urn:example:well-log:1",
+                "hash": {
+                  "algorithm": "sha256",
+                  "value": "1111111111111111111111111111111111111111111111111111111111111111"
+                },
+                "revision": "r1",
+                "asOf": "2026-10-07T12:00:00Z",
+                "accessClassification": "restricted",
+                "usagePolicy": {
+                  "id": "policy.operator-data",
+                  "version": "r1"
+                }
+              }
+            ],
+            "reviewDecisionRef": {
+              "id": "decision.geology-approved-1",
+              "revision": "r1"
+            },
+            "usagePolicy": {
+              "id": "policy.operator-data",
+              "version": "r1"
+            },
+            "retentionPolicy": {
+              "id": "policy.retention",
+              "version": "r1"
+            }
+          }
+        ],
+        "assembledAt": "2026-10-08T12:00:00Z",
+        "retention": {
+          "policy": {
+            "id": "policy.retention",
+            "version": "r1"
+          },
+          "expiresAt": "2026-11-07T12:30:00Z"
+        },
+        "budget": {
+          "maxItems": 1,
+          "maxBytes": 10000,
+          "maxTokens": 2000
+        },
+        "blockers": []
+      },
+      "code": "invalid_contract"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "approved-permitted-handoff",
+      "family": "control",
+      "trustedFacts": "Current source and exact product review; synthetic trusted recipient grant allows reuse.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "select",
+        "reason": "Approved product, source, reviewer and inherited source rights resolve at retrieval."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "raw-model-promotion",
+      "family": "capability",
+      "trustedFacts": "Candidate is unreviewedProduct; a model requests shared promotion.",
+      "record": "unreviewedProduct",
+      "expected": {
+        "decision": "deny",
+        "reason": "Only a private proposal is permitted; raw output is not approved memory."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "restricted-source-recipient",
+      "family": "capability",
+      "trustedFacts": "A synthetic recipient grant excludes the restricted source even though the product was approved.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Approval cannot broaden contributing source access or usage rights."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "source-revision-change",
+      "family": "edge",
+      "trustedFacts": "Trusted source catalog replaces evidence.log-1 revision r1/hash with r2/new hash.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "invalidate",
+        "reason": "Invalidate dependent knowledge, summaries and current manifests; retain old history as superseded."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "source-deleted",
+      "family": "edge",
+      "trustedFacts": "Trusted source catalog tombstones evidence.log-1; index still returns old text.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "invalidate",
+        "reason": "Remove served content and derived reuse; history cannot resurrect deleted source content."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "access-revoked",
+      "family": "edge",
+      "trustedFacts": "Trusted rights catalog revokes the caller after the context was assembled.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Recheck at use, stop pending actions and evict cached/derived content."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "retention-expired",
+      "family": "edge",
+      "trustedFacts": "observedAt is later than expiredContext.retention.expiresAt.",
+      "record": "expiredContext",
+      "expected": {
+        "decision": "exclude",
+        "reason": "A structurally valid manifest can be expired; rebuild only from currently retained/authorized inputs."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "wrong-task-employee",
+      "family": "capability",
+      "trustedFacts": "Caller asks to read privateContext while acting for task-research-1/employee.research-analyst.",
+      "record": "privateContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Private context requires exact ownership/delegated task scope; request an explicit handoff instead."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "summary-drift",
+      "family": "edge",
+      "trustedFacts": "A summary reports porosity as measured although the product marks it unknown with a null value.",
+      "record": "reviewedProduct",
+      "expected": {
+        "decision": "defer",
+        "reason": "Drop the summary from model context; surface drift and restore original uncertainty from authorized source."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "contradictory-reviewed-findings",
+      "family": "edge",
+      "trustedFacts": "Two current approved findings disagree on the same scope/measurement and cannot be reconciled by declared units/revisions.",
+      "record": "reviewedProduct",
+      "expected": {
+        "decision": "defer",
+        "reason": "Preserve both claims and provenance; request the domain human rather than choosing the more confident prose."
+      },
+      "implementedBy": [
+        "#672",
+        "#666"
+      ]
+    },
+    {
+      "id": "mandatory-context-over-budget",
+      "family": "edge",
+      "trustedFacts": "After access filters, mandatory inputs plus prompt/output reserves exceed the configured byte/token budget.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "blocked",
+        "reason": "Return missing/context-limit blocker; do not silently truncate mandatory evidence or pending decisions."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "summary-of-revoked-source",
+      "family": "capability",
+      "trustedFacts": "An accessible summary still depends on a source whose rights were revoked.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Summaries inherit all input restrictions and dependency invalidation."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "restart-current-revision",
+      "family": "control",
+      "trustedFacts": "Restart sees persisted task/product/review/source/policy revisions and a current authenticated grant.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "select",
+        "reason": "Revalidate before assembling a new manifest; session identity or a stored approval flag is insufficient."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "export-scope-and-redaction",
+      "family": "capability",
+      "trustedFacts": "Recipient lacks rights to one contributing source; requested export includes secret-like raw text.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Produce only a permitted/redacted export or fail; do not export denied content."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "late-stale-promotion",
+      "family": "edge",
+      "trustedFacts": "Review approved product r1 but a correction created product r2 before promotion commit.",
+      "record": "reviewedProduct",
+      "expected": {
+        "decision": "deny",
+        "reason": "Compare-and-swap task/product/source/policy revisions; require a current review."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    },
+    {
+      "id": "deletion-and-backup-restore",
+      "family": "edge",
+      "trustedFacts": "Source was erased under retention policy; an older backup/index is restored.",
+      "record": "sharedContext",
+      "expected": {
+        "decision": "deny",
+        "reason": "Apply current deletion/revocation ledger before serving restored data; excluded content stays excluded."
+      },
+      "implementedBy": [
+        "#672",
+        "#573",
+        "#673"
+      ]
+    }
+  ]
+}

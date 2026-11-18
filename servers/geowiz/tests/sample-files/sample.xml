@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<witsml xmlns="http://www.witsml.org/schemas/1series" version="1.4.1.1">
+  <wellLogs>
+    <wellLog>
+      <nameWell>DEMO-WELL-001H</nameWell>
+      <name>DEMO_LOG</name>
+      <wellDatum>
+        <name>KB</name>
+        <elevation uom="ft">3245.5</elevation>
+        <code>KB</code>
+      </wellDatum>
+      <logCurveInfo>
+        <mnemonic>DEPT</mnemonic>
+        <unit>FT</unit>
+        <curveDescription>Depth</curveDescription>
+      </logCurveInfo>
+      <logCurveInfo>
+        <mnemonic>GR</mnemonic>
+        <unit>GAPI</unit>
+        <curveDescription>Gamma Ray</curveDescription>
+      </logCurveInfo>
+      <logData>
+        <mnemonicList>DEPT,GR</mnemonicList>
+        <unitList>FT,GAPI</unitList>
+        <data>8400.0,45.2</data>
+        <data>8401.0,47.8</data>
+        <data>8402.0,52.1</data>
+      </logData>
+    </wellLog>
+  </wellLogs>
+</witsml>

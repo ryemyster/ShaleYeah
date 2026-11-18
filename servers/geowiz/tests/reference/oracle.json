@@ -1,0 +1,488 @@
+{
+  "referenceTool": "lasio",
+  "referenceTag": "v0.32",
+  "sourceRevision": "aef25d50b9b36c08a9bde8c53181ed244ee2a035",
+  "runtimeVersion": "0.26.0.dev0+unknown-post-dist-version.d20261012",
+  "numpyVersion": "2.5.1",
+  "readPolicy": [],
+  "nullPolicy": "strict",
+  "readerSha256": "3fa31d534c99236f6ac500ab52e3f0731a7ab9e22728bccff36827415847cb19",
+  "license": "MIT; see lasio-0.32/LICENSE",
+  "qualification": "format/reference controls only; no petrophysical or field accuracy score",
+  "cases": [
+    {
+      "file": "lasio-0.32/sample_2.0.las",
+      "source": "https://github.com/kinverarity1/lasio/blob/aef25d50b9b36c08a9bde8c53181ed244ee2a035/tests/examples/2.0/sample_2.0.las",
+      "sha256": "0240d793603c6b3e0496378e22ccfd69921da5b619f3773e532bd9e57bc1f45e",
+      "reference": {
+        "version": "2.0",
+        "start": 1670.0,
+        "stop": 1669.75,
+        "step": -0.125,
+        "null": -999.25,
+        "curves": [
+          {
+            "name": "DEPT",
+            "unit": "M"
+          },
+          {
+            "name": "DT",
+            "unit": "US/M"
+          },
+          {
+            "name": "RHOB",
+            "unit": "K/M3"
+          },
+          {
+            "name": "NPHI",
+            "unit": "V/V"
+          },
+          {
+            "name": "SFLU",
+            "unit": "OHMM"
+          },
+          {
+            "name": "SFLA",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILM",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILD",
+            "unit": "OHMM"
+          }
+        ],
+        "data": [
+          [
+            1670.0,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.875,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.75,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ]
+        ]
+      },
+      "geowizDiagnostic": null
+    },
+    {
+      "file": "lasio-0.32/sample_2.0-small-neg-values.las",
+      "source": "https://github.com/kinverarity1/lasio/blob/aef25d50b9b36c08a9bde8c53181ed244ee2a035/tests/examples/2.0/sample_2.0-small-neg-values.las",
+      "sha256": "ab00cb6a3d78d3437819499639ccc34d64fd8cc40ae8503663988c7e8d660047",
+      "reference": {
+        "version": "2.0",
+        "start": 1670.0,
+        "stop": 1660.0,
+        "step": -0.125,
+        "null": -999.25,
+        "curves": [
+          {
+            "name": "DEPT",
+            "unit": "M"
+          },
+          {
+            "name": "DT",
+            "unit": "US/M"
+          },
+          {
+            "name": "RHOB",
+            "unit": "K/M3"
+          },
+          {
+            "name": "NPHI",
+            "unit": "V/V"
+          },
+          {
+            "name": "SFLU",
+            "unit": "OHMM"
+          },
+          {
+            "name": "SFLA",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILM",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILD",
+            "unit": "OHMM"
+          }
+        ],
+        "data": [
+          [
+            1670.0,
+            123.45,
+            -0.0733,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.875,
+            123.45,
+            -0.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.75,
+            123.45,
+            -0.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ]
+        ]
+      },
+      "geowizDiagnostic": "invalid_depth"
+    },
+    {
+      "file": "lasio-0.32/sample_2.0_wrapped.las",
+      "source": "https://github.com/kinverarity1/lasio/blob/aef25d50b9b36c08a9bde8c53181ed244ee2a035/tests/examples/2.0/sample_2.0_wrapped.las",
+      "sha256": "4507d080833ef0447459202f7ab66dd6d14922bd79422c2cc308f81c2ad91da4",
+      "reference": {
+        "version": "2.0",
+        "start": 910.0,
+        "stop": 909.5,
+        "step": -0.125,
+        "null": -999.25,
+        "curves": [
+          {
+            "name": "DEPT",
+            "unit": "M"
+          },
+          {
+            "name": "DT",
+            "unit": "US/M"
+          },
+          {
+            "name": "RHOB",
+            "unit": "K/M"
+          },
+          {
+            "name": "NPHI",
+            "unit": "V/V"
+          },
+          {
+            "name": "RX0",
+            "unit": "OHMM"
+          },
+          {
+            "name": "RESS",
+            "unit": "OHMM"
+          },
+          {
+            "name": "RESM",
+            "unit": "OHMM"
+          },
+          {
+            "name": "RESD",
+            "unit": "OHMM"
+          },
+          {
+            "name": "SP",
+            "unit": "MV"
+          },
+          {
+            "name": "GR",
+            "unit": "GAPI"
+          },
+          {
+            "name": "CALI",
+            "unit": "MM"
+          },
+          {
+            "name": "DRHO",
+            "unit": "K/M3"
+          },
+          {
+            "name": "EATT",
+            "unit": "DBM"
+          },
+          {
+            "name": "TPL",
+            "unit": "NS/M"
+          },
+          {
+            "name": "PEF",
+            "unit": ""
+          },
+          {
+            "name": "FFI",
+            "unit": "V/V"
+          },
+          {
+            "name": "DCAL",
+            "unit": "MM"
+          },
+          {
+            "name": "RHGF",
+            "unit": "K/M3"
+          },
+          {
+            "name": "RHGA",
+            "unit": "K/M3"
+          },
+          {
+            "name": "SPBL",
+            "unit": "MV"
+          },
+          {
+            "name": "GRC",
+            "unit": "GAPI"
+          },
+          {
+            "name": "PHIA",
+            "unit": "V/V"
+          },
+          {
+            "name": "PHID",
+            "unit": "V/V"
+          },
+          {
+            "name": "PHIE",
+            "unit": "V/V"
+          },
+          {
+            "name": "PHIN",
+            "unit": "V/V"
+          },
+          {
+            "name": "PHIC",
+            "unit": "V/V"
+          },
+          {
+            "name": "R0",
+            "unit": "OHMM"
+          },
+          {
+            "name": "RWA",
+            "unit": "OHMM"
+          },
+          {
+            "name": "SW",
+            "unit": ""
+          },
+          {
+            "name": "MSI",
+            "unit": ""
+          },
+          {
+            "name": "BVW",
+            "unit": ""
+          },
+          {
+            "name": "FGAS",
+            "unit": ""
+          },
+          {
+            "name": "PIDX",
+            "unit": ""
+          },
+          {
+            "name": "FBH",
+            "unit": ""
+          },
+          {
+            "name": "FHCC",
+            "unit": ""
+          },
+          {
+            "name": "LSWB",
+            "unit": ""
+          }
+        ],
+        "data": [
+          [
+            910.0,
+            null,
+            2692.7075,
+            0.314,
+            19.4086,
+            19.4086,
+            13.1709,
+            12.2681,
+            -1.501,
+            96.5306,
+            204.7177,
+            30.5822,
+            null,
+            null,
+            3.2515,
+            null,
+            4.7177,
+            3025.0264,
+            3025.0264,
+            -1.501,
+            93.1378,
+            0.1641,
+            0.0101,
+            0.1641,
+            0.314,
+            0.1641,
+            11.1397,
+            0.3304,
+            0.9529,
+            0.0,
+            0.1564,
+            0.0,
+            11.1397,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            909.875,
+            null,
+            2712.646,
+            0.2886,
+            23.3987,
+            23.3987,
+            13.6129,
+            12.4744,
+            -1.472,
+            90.2803,
+            203.1093,
+            18.7566,
+            null,
+            null,
+            3.7058,
+            null,
+            3.1093,
+            3004.605,
+            3004.605,
+            -1.472,
+            86.9078,
+            0.1456,
+            -0.0015,
+            0.1456,
+            0.2886,
+            0.1456,
+            14.1428,
+            0.2646,
+            1.0,
+            0.0,
+            0.1456,
+            0.0,
+            14.1428,
+            0.0,
+            0.0,
+            0.0
+          ]
+        ]
+      },
+      "geowizDiagnostic": "unsupported_layout"
+    },
+    {
+      "file": "lasio-0.32/sample_2.0_wrong_stop_value.las",
+      "source": "https://github.com/kinverarity1/lasio/blob/aef25d50b9b36c08a9bde8c53181ed244ee2a035/tests/examples/2.0/sample_2.0_wrong_stop_value.las",
+      "sha256": "d7d7fb99f53744670a61010246f7ffa43de76f12d08c4b3f658d44b005c821af",
+      "reference": {
+        "version": "2.0",
+        "start": 1670.0,
+        "stop": 1660.0,
+        "step": -0.125,
+        "null": -999.25,
+        "curves": [
+          {
+            "name": "DEPT",
+            "unit": "M"
+          },
+          {
+            "name": "DT",
+            "unit": "US/M"
+          },
+          {
+            "name": "RHOB",
+            "unit": "K/M3"
+          },
+          {
+            "name": "NPHI",
+            "unit": "V/V"
+          },
+          {
+            "name": "SFLU",
+            "unit": "OHMM"
+          },
+          {
+            "name": "SFLA",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILM",
+            "unit": "OHMM"
+          },
+          {
+            "name": "ILD",
+            "unit": "OHMM"
+          }
+        ],
+        "data": [
+          [
+            1670.0,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.875,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ],
+          [
+            1669.75,
+            123.45,
+            2550.0,
+            0.45,
+            123.45,
+            123.45,
+            110.2,
+            105.6
+          ]
+        ]
+      },
+      "geowizDiagnostic": "invalid_depth"
+    }
+  ]
+}

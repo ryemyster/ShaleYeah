@@ -1,0 +1,485 @@
+{
+  "version": "0.1.0",
+  "labelAuthority": "provisional-codex-research-review",
+  "reviewedAt": "2026-11-06T00:00:00Z",
+  "professionalAcceptance": false,
+  "sources": [
+    "https://equinor.github.io/decline-curve-analysis/dca_report.html",
+    "https://www.eia.gov/analysis/drilling/curve_analysis/2020/"
+  ],
+  "rationale": "Synthetic point-rate histories use independently declared qi, nominal D and fixed b. The installed verifier independently evaluates the rate equation, bisects cutoff and integrates with Simpson quadrature. This does not implement EIA's monthly-total preprocessing or certify reserves, field accuracy or source rights.",
+  "references": {
+    "harmonic": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.9090909090909
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 76.92307692307692
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "exponential": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 0,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.48374180359595
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 81.87307530779819
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 74.08182206817177
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "hyperbolic": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 0.5,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 120,
+          "nominalDecline": 0.2,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 120
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 99.17355371900825
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 71.0059171597633
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "monthly-gas": {
+      "id": "base",
+      "revision": "r1",
+      "product": "gas",
+      "rateUnit": "Mcf/day",
+      "timeBasis": {
+        "unit": "month",
+        "daysPerUnit": 30
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 60,
+          "nominalDecline": 0.1,
+          "origin": "2025-10-03T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 60
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 54.54545454545454
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 50
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 46.15384615384615
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "insufficient": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 1,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.9090909090909
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 76.92307692307692
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": false
+    },
+    "cutoff": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 80,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.9090909090909
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 76.92307692307692
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "initial-cutoff": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 110,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 2,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.9090909090909
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 76.92307692307692
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    },
+    "no-holdout": {
+      "id": "base",
+      "revision": "r1",
+      "product": "oil",
+      "rateUnit": "bbl/day",
+      "timeBasis": {
+        "unit": "year",
+        "daysPerUnit": 365
+      },
+      "formation": "Synthetic formation",
+      "definition": {
+        "id": "base",
+        "revision": "r1",
+        "bFactor": 1,
+        "horizon": 5,
+        "economicLimitRate": 0,
+        "forecastTimes": [
+          0,
+          1,
+          3,
+          5
+        ],
+        "fitUntil": 4,
+        "minimumTrainingObservations": 3,
+        "minimumHoldoutObservations": 1,
+        "maxFitRelativeRmse": 0.01,
+        "maxHoldoutRelativeRmse": 0.1
+      },
+      "wells": [
+        {
+          "wellRef": {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          },
+          "initialRate": 100,
+          "nominalDecline": 0.1,
+          "origin": "2023-01-01T00:00:00Z",
+          "observations": [
+            {
+              "elapsedTime": 0,
+              "rate": 100
+            },
+            {
+              "elapsedTime": 1,
+              "rate": 90.9090909090909
+            },
+            {
+              "elapsedTime": 2,
+              "rate": 83.33333333333334
+            },
+            {
+              "elapsedTime": 3,
+              "rate": 76.92307692307692
+            }
+          ]
+        }
+      ],
+      "expectedFitAvailable": true
+    }
+  }
+}

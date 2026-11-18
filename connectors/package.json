@@ -1,0 +1,40 @@
+{
+	"name": "@shaleyeah/connectors",
+	"version": "0.1.0",
+	"description": "Scoped source connector runtime and operator-file adapter",
+	"type": "module",
+	"private": false,
+	"license": "Apache-2.0",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"LICENSE"
+	],
+	"engines": {
+		"node": ">=22"
+	},
+	"scripts": {
+		"build": "tsc",
+		"type-check": "tsc --noEmit",
+		"lint": "biome check .",
+		"test": "node --import tsx --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-include=src/**/*.ts tests/*.test.ts",
+		"check:isolation": "bash scripts/check-isolation.sh"
+	},
+	"dependencies": {
+		"@shaleyeah/contracts": "workspace:*",
+		"csv-parse": "7.0.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.0",
+		"@types/node": "25.9.3",
+		"tsx": "4.21.0",
+		"typescript": "6.0.2"
+	}
+}

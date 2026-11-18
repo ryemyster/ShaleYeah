@@ -1,0 +1,3948 @@
+{
+  "dependent": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 1022,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 1022,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:sha256:2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 358,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:sha256:3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1896,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:sha256:2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:sha256:3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 80,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 10,
+        "lossThreshold": 200
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 80,
+        "standardDeviation": 153.62291495737216,
+        "lossQuantiles": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 200
+        },
+        "probabilityLossAtOrAbove": 0.2,
+        "scenarioCount": 4,
+        "positiveWeightScenarioCount": 4
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.2
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0.2
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "available",
+            "value": 0.375
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "passed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 200
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 10,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 7,
+          "riskRefs": [],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 100
+        },
+        {
+          "stateRef": {
+            "id": "b",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 200
+        },
+        {
+          "stateRef": {
+            "id": "ab",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            },
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 500
+        }
+      ]
+    },
+    "referenceName": "dependent"
+  },
+  "exclusive": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 1022,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 1022,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc",
+          "uri": "urn:sha256:6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 358,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf",
+          "uri": "urn:sha256:8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1427,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc",
+          "uri": "urn:sha256:6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf",
+          "uri": "urn:sha256:8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "6b717b895809e3bc714986e3ae7914ab7d57930712e5bee73f9646d9bb12dbdc"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "8d079b492b6199a563fd56082f99ff59b1844b8a9c25de9bc126d3ed62b06cdf"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 200,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 2,
+        "lossThreshold": 300
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 200,
+        "standardDeviation": 100,
+        "lossQuantiles": {
+          "p10": 100,
+          "p50": 100,
+          "p90": 300
+        },
+        "probabilityLossAtOrAbove": 0.5,
+        "scenarioCount": 2,
+        "positiveWeightScenarioCount": 2
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.5
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0.5
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "available",
+            "value": -1
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "passed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 300
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 2,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 100
+        },
+        {
+          "stateRef": {
+            "id": "b",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 300
+        }
+      ]
+    },
+    "referenceName": "exclusive"
+  },
+  "identical": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 1022,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 1022,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549",
+          "uri": "urn:sha256:22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 357,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa",
+          "uri": "urn:sha256:0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1431,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549",
+          "uri": "urn:sha256:22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa",
+          "uri": "urn:sha256:0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "22d99dcc3b35b59b913da4d73b585ab778473d2febda1624941cc336115d6549"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "0b4ce404ecfbe7ef259db3cf5dd98d92def643d3006911a53012590bc934dafa"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 20,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 2,
+        "lossThreshold": 40
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 20,
+        "standardDeviation": 20,
+        "lossQuantiles": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 40
+        },
+        "probabilityLossAtOrAbove": 0.5,
+        "scenarioCount": 2,
+        "positiveWeightScenarioCount": 2
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.5
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0.5
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "available",
+            "value": 1
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "passed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 40
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 2,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "ab",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            },
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 40
+        }
+      ]
+    },
+    "referenceName": "identical"
+  },
+  "zero-variance": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 1022,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 1022,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:sha256:eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 356,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:sha256:c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1620,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:sha256:9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:sha256:eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:sha256:c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ee0a1209464ca928ed44ec87c0bad036427952709421360a8f6ac9c9840dcc5"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 10,
+        "lossThreshold": 1
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 0,
+        "standardDeviation": 0,
+        "lossQuantiles": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0
+        },
+        "probabilityLossAtOrAbove": 0,
+        "scenarioCount": 3,
+        "positiveWeightScenarioCount": 2
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.1
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "unavailable",
+            "value": null,
+            "reason": "zero_variance"
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "passed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 1
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 10,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 9,
+          "riskRefs": [],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "zero-weight-b",
+            "revision": "r1"
+          },
+          "weight": 0,
+          "riskRefs": [
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 900
+        }
+      ]
+    },
+    "referenceName": "zero-variance"
+  },
+  "large-weights": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+        "uri": "urn:sha256:f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 572,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+          "uri": "urn:sha256:f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 572,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c",
+          "uri": "urn:sha256:dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 354,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36",
+          "uri": "urn:sha256:3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1453,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+          "uri": "urn:sha256:f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c",
+          "uri": "urn:sha256:dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36",
+          "uri": "urn:sha256:3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "f4272d9415b4f2075c0a6746c1ab1e969d459887a6872958025347d54f35b046"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "dffd510736d57ef76f08c3b2a9fdb816e0799ecb632ae552e7abda2987cbf57c"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3ae8aacbf6ceecc53538b45ac47c44de2ed93e4ba55aa049e8b122ae762c6d36"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 1000000001,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 2000000000,
+        "lossThreshold": 1000000002
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 1000000001,
+        "standardDeviation": 1,
+        "lossQuantiles": {
+          "p10": 1000000000,
+          "p50": 1000000000,
+          "p90": 1000000002
+        },
+        "probabilityLossAtOrAbove": 0.5,
+        "scenarioCount": 2,
+        "positiveWeightScenarioCount": 2
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.5
+        }
+      ],
+      "correlations": [],
+      "coverage": {
+        "coveredCategories": [
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "passed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 1000000002
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 2000000000,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 1000000000,
+          "riskRefs": [],
+          "residualLoss": 1000000000
+        },
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1000000000,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 1000000002
+        }
+      ]
+    },
+    "referenceName": "large-weights"
+  },
+  "missing-evidence": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+        "uri": "urn:sha256:ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 983,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+          "uri": "urn:sha256:ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 983,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:sha256:2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 358,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:sha256:3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1896,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+          "uri": "urn:sha256:ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:sha256:2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:sha256:3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ee3e35e5b601f2e894310d188e4841a1822177abb51619c8ac13266a958bfb03"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "2552b621f8634fc04518c6cceded07070a1d37eba53930d3cb64726c11263cd9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "3055c9341325bfe7b2c873b293c9b396c96015938ed98323d9687dfe9e84e511"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 80,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "unsupported-evidence",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 10,
+        "lossThreshold": 200
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 80,
+        "standardDeviation": 153.62291495737216,
+        "lossQuantiles": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 200
+        },
+        "probabilityLossAtOrAbove": 0.2,
+        "scenarioCount": 4,
+        "positiveWeightScenarioCount": 4
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.2
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0.2
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "available",
+            "value": 0.375
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [
+          "risk.a"
+        ],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "failed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "missing",
+          "evidenceRefs": [],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 200
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 10,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 7,
+          "riskRefs": [],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 100
+        },
+        {
+          "stateRef": {
+            "id": "b",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 200
+        },
+        {
+          "stateRef": {
+            "id": "ab",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            },
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 500
+        }
+      ]
+    },
+    "referenceName": "dependent"
+  },
+  "severe-zero": {
+    "taskRef": {
+      "id": "task.risk",
+      "revision": "r1"
+    },
+    "sourceArtifact": {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.register",
+        "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+        "uri": "urn:sha256:faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+      },
+      "evidence": {
+        "id": "evidence.register",
+        "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+        "uri": "urn:operator:register",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+        },
+        "asOf": "2026-01-02T00:00:00Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-01-02T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "US-TX",
+      "units": [],
+      "byteLength": 1024,
+      "accessNotes": "Operator-only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.register",
+          "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+          "uri": "urn:sha256:faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+        },
+        "evidence": {
+          "id": "evidence.register",
+          "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 1024,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:sha256:eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 356,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.risk",
+          "employeeId": "employee.risk-analyst"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:sha256:c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+        },
+        "evidence": {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "residualLoss",
+            "unit": "USD",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 1620,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.risk",
+        "employeeId": "employee.risk-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.risk.a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:risk:a27ac6528d24313f60b38ba16d5e51d6fb57cb1934b6759c99f8d40cc5aaf43d:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.register",
+          "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+          "uri": "urn:sha256:faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:sha256:eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:sha256:c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.register",
+          "revision": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3",
+          "uri": "urn:operator:register",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "faa72e4de3c3417babb85e649e555f88b0dcba26965c78eb05bd5393836191b3"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "eccd0f3bcc3932c20b88167df5373f34ba2afd74c0860459cc37e9d339669734"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.scenarios",
+          "revision": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f",
+          "uri": "urn:operator:scenarios",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "c1a6df108056b309cfaba2854f12f2209d475eb22b75960859539f0265d1ed2f"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "joint.fixture.expected-loss",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ],
+          "assumptionIds": [
+            "joint.fixture.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "joint.fixture.basis",
+          "statement": "Complete declared joint scenarios; weighted-inverted-cdf. Probabilities and losses are assumptions; no field calibration. Full dependence basis and 1 limitations remain in the risk packet and exact source inputs.",
+          "evidenceIds": [
+            "evidence.register",
+            "evidence.policy",
+            "evidence.scenarios"
+          ]
+        }
+      ],
+      "uncertainty": "Conditional scenario appraisal, not calibrated field probabilities, NPV/IRR, compliance certification or investment approval. A separate enrolled human owns residual risk acceptance.",
+      "blockers": [
+        {
+          "code": "approval_required",
+          "message": "unmitigated-severe-risk-limit",
+          "references": []
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "risk": {
+      "version": "0.1.0",
+      "definition": {
+        "modelRef": {
+          "id": "joint.fixture",
+          "revision": "r1"
+        },
+        "method": "complete-joint-scenarios-v1",
+        "currency": "USD",
+        "horizon": {
+          "start": "2026-01-01T00:00:00Z",
+          "end": "2027-01-01T00:00:00Z"
+        },
+        "amountBasis": "undiscounted-residual-loss",
+        "probabilityBasis": "assumed-joint-scenarios",
+        "quantileConvention": "weighted-inverted-cdf",
+        "totalWeight": 10,
+        "lossThreshold": 1
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "riskRefs": [
+        {
+          "id": "risk.a",
+          "revision": "r1"
+        },
+        {
+          "id": "risk.b",
+          "revision": "r1"
+        }
+      ],
+      "summary": {
+        "expectedLoss": 0,
+        "standardDeviation": 0,
+        "lossQuantiles": {
+          "p10": 0,
+          "p50": 0,
+          "p90": 0
+        },
+        "probabilityLossAtOrAbove": 0,
+        "scenarioCount": 3,
+        "positiveWeightScenarioCount": 2
+      },
+      "occurrence": [
+        {
+          "riskId": "risk.a",
+          "probability": 0.1
+        },
+        {
+          "riskId": "risk.b",
+          "probability": 0
+        }
+      ],
+      "correlations": [
+        {
+          "riskIds": [
+            "risk.a",
+            "risk.b"
+          ],
+          "basis": "assumed-joint-scenarios",
+          "correlation": {
+            "status": "unavailable",
+            "value": null,
+            "reason": "zero_variance"
+          }
+        }
+      ],
+      "coverage": {
+        "coveredCategories": [
+          "economic",
+          "geological"
+        ],
+        "missingCategories": [],
+        "unsupportedRiskIds": [],
+        "conflictingRiskIds": [],
+        "unknownSeverityRiskIds": [],
+        "unmitigatedSevereRiskIds": [
+          "risk.b"
+        ],
+        "expectedLossWithinLimit": true,
+        "tailProbabilityWithinLimit": true,
+        "status": "failed"
+      },
+      "reviewStatus": "unreviewed",
+      "riskAccepted": false,
+      "professionalAcceptance": false
+    },
+    "evaluatedAt": "2026-01-02T12:00:00.000Z",
+    "register": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "entries": [
+        {
+          "riskRef": {
+            "id": "risk.a",
+            "revision": "r1"
+          },
+          "category": "geological",
+          "statement": "Synthetic risk.a",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "medium",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.0",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.0",
+            "verificationRef": null
+          }
+        },
+        {
+          "riskRef": {
+            "id": "risk.b",
+            "revision": "r1"
+          },
+          "category": "economic",
+          "statement": "Synthetic risk.b",
+          "consequence": "Declared hypothetical downside; not a measured field event",
+          "severity": "critical",
+          "severityBasis": "Operator-assumed synthetic medium severity; no field calibration",
+          "evidenceState": "supported",
+          "evidenceRefs": [
+            {
+              "id": "specialist.1",
+              "revision": "r1"
+            }
+          ],
+          "conflicts": [],
+          "mitigation": {
+            "state": "proposed",
+            "ownerId": "owner.1",
+            "verificationRef": null
+          }
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "policyRef": {
+        "id": "risk-policy.fixture",
+        "revision": "r1"
+      },
+      "requiredCategories": [
+        "geological",
+        "economic"
+      ],
+      "escalateSeverities": [
+        "high",
+        "critical"
+      ],
+      "maxUnmitigatedSevereRisks": 0,
+      "maxExpectedLoss": 2000000000000,
+      "maxTailProbability": 1,
+      "lossThreshold": 1
+    },
+    "model": {
+      "version": "0.1.0",
+      "currency": "USD",
+      "horizon": {
+        "start": "2026-01-01T00:00:00Z",
+        "end": "2027-01-01T00:00:00Z"
+      },
+      "modelRef": {
+        "id": "joint.fixture",
+        "revision": "r1"
+      },
+      "method": "complete-joint-scenarios-v1",
+      "totalWeight": 10,
+      "exhaustiveWithinDeclaredModel": true,
+      "dependenceBasis": "Operator-authored complete synthetic joint states; no independence inference",
+      "limitations": [
+        "Provisional hypothetical fixture; no field probability calibration or human risk acceptance"
+      ],
+      "states": [
+        {
+          "stateRef": {
+            "id": "none",
+            "revision": "r1"
+          },
+          "weight": 9,
+          "riskRefs": [],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "a",
+            "revision": "r1"
+          },
+          "weight": 1,
+          "riskRefs": [
+            {
+              "id": "risk.a",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 0
+        },
+        {
+          "stateRef": {
+            "id": "zero-weight-b",
+            "revision": "r1"
+          },
+          "weight": 0,
+          "riskRefs": [
+            {
+              "id": "risk.b",
+              "revision": "r1"
+            }
+          ],
+          "residualLoss": 900
+        }
+      ]
+    },
+    "referenceName": "zero-variance"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "context": {
+    "runId": "diligence-run-1",
+    "traceId": "1234567890abcdef1234567890abcdef",
+    "scope": {
+      "customerId": "operator-fixture",
+      "assetId": "well-fixture",
+      "taskId": "task-fixture",
+      "employeeId": "geologist"
+    },
+    "taskRevision": "r1",
+    "qualification": "fixture"
+  },
+  "event": {
+    "schemaVersion": "0.1.0",
+    "kind": "employee-event",
+    "eventId": "event-1",
+    "streamId": "stream-fixture-1",
+    "eventType": "tool",
+    "status": "succeeded",
+    "observedAt": "2026-10-11T22:00:00Z",
+    "producer": {
+      "id": "geowiz",
+      "version": "1.0.0"
+    },
+    "sequence": 1,
+    "context": {
+      "runId": "diligence-run-1",
+      "traceId": "1234567890abcdef1234567890abcdef",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "well-fixture",
+        "taskId": "task-fixture",
+        "employeeId": "geologist"
+      },
+      "taskRevision": "r1",
+      "qualification": "fixture"
+    },
+    "spanId": "1234567890abcdef",
+    "refs": [
+      {
+        "kind": "source",
+        "id": "las-fixture",
+        "revision": "r1",
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "toolName": "assess_quality",
+    "versions": {
+      "runtime": {
+        "id": "mcp-node",
+        "version": "22"
+      },
+      "model": {
+        "provider": "gemini",
+        "id": "fixture-model",
+        "revision": "fixture-r1"
+      }
+    },
+    "measurements": {
+      "toolLatencyMs": 12,
+      "humanReviewSeconds": 4,
+      "corrections": 0,
+      "reworkCount": 0
+    },
+    "modelConfidence": 0,
+    "redaction": {
+      "policy": {
+        "id": "metadata-only",
+        "version": "1"
+      },
+      "droppedFields": 0,
+      "redactedValues": 0
+    }
+  }
+}

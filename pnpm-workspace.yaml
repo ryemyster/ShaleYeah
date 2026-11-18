@@ -1,0 +1,12 @@
+packages:
+  - 'contracts'
+  - 'connectors'
+  - 'sdk'
+  - 'agents/*'
+  - 'servers/*'
+  - 'orchestrator'
+allowBuilds:
+  '@biomejs/biome': true
+  '@google/genai': false
+  esbuild: true
+  protobufjs: false
