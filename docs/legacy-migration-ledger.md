@@ -253,10 +253,25 @@ claim and records its limited fixed-b method and provisional numerical evidence;
 | Prior artifact/body-edit reuse and removal of workspace tests | Defer | No immutable reuse or cross-package replacement proof; #693 still needs the full actual candidate and artifact-variance investigation |
 
 These helpers belong to CI and are not imported by employee packages. #754 is a
-separate output after #757 and before #712; the ordered plan now has 56 outputs.
+separate output after #757 and before #712; this brought the ordered plan to 56 outputs.
 | [orchestrator/src/index.ts](../orchestrator/src/index.ts), [orchestrator/package.json](../orchestrator/package.json) | Version-constant stub; unused workspace SDK dependency; no implemented Temporal workflow | #675 charter selects this optional unit; #676 replaces stub, unused workspace dependency and stale #362-only/full-deal assumptions with the bounded ADK/Python pilot. Don't present it as running or require it for employees |
 | [README.md](../README.md), [docs/ARCHITECTURE.md](ARCHITECTURE.md), [docs/topology.md](topology.md), package README/`docs/`/CHANGELOG | Public setup, architecture, commands and support claims | Owner PR updates current behavior, deletes obsolete command/transport examples and records limits. #498 owns shared contributor setup, #578 portable support matrix, #692 final residue audit |
 | Ignored local `.agents/`, `.claude/`, `AGENTS.md`, caches, `dist/`, `node_modules/`, `.venv/` | Local tooling/build/dependency artifacts, not tracked source in this ledger | Exclude from source-bloat/deletion claims and staging. No authorization to erase maintainer's local notes or preexisting files |
+
+### Private-file allocation and native diagnostics (#788)
+
+The shared [private reader](../sdk/src/private-json.ts) remains the executing
+boundary for current owner-only configuration/source bytes. #788 replaces
+allocation of the permitted ceiling on every lookup with allocation of the
+observed size plus a growth sentinel. Keep the byte cap, exact length and final
+metadata checks, private ownership/mode/link rules and strict decoding; no file
+or authority result cache replaces those reads.
+
+The Legal native fixture retains its actual source/context/model/qualification/
+human-review journey and execution bounds. Fixed phase/count summaries replace
+raw child failure prose. This required repair follows #684 and precedes #685,
+bringing the ordered plan to 57 outputs while retaining all previous outputs.
+Cold PR and merge qualification remain its acceptance gate.
 
 ## Mandatory replacement and extraction gate
 

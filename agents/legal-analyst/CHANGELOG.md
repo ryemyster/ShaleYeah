@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #788: add safe phase/count telemetry to the offline native qualification
+  fixture. Count actual generation and token-count requests separately from the
+  scripted response cursor, including restart's single generation. Domain
+  output, source authorization, installed qualification and human review are unchanged.
+
 - #683: adopt installed employee contracts, configured native Gemini/Anthropic adapters,
   current scoped context, actual-output grading and exact human-review continuation.
   Read provisions, obtain backend-computed citations and propose a memo; never grant

@@ -141,6 +141,14 @@ removes repeated caller setup while retaining full actual merged push/manual
 qualification, security scans, coverage and approval boundaries. #691 extends
 the mapping for the fleet; #693 still requires the full integrated candidate.
 
+Repeated Legal native qualification failures during #684 delivery add
+[#788](https://github.com/ryemyster/ShaleYeah/issues/788) after #684 and before
+#685, bringing the plan to **57 outputs**. This bounded repair reduces private
+file-read allocation pressure and adds safe child phase/timing diagnostics.
+It preserves current reads, snapshot/authority checks, the existing child and
+qualification deadlines, coverage floors and actual protected journeys. Exact
+PR and merged cold-run evidence must pass before further employee rollout.
+
 ### Foundations and decisions
 
 | Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
@@ -204,7 +212,8 @@ Independent defects discovered during adoption receive their own repair issue.
 | 32 | [#683](https://github.com/ryemyster/ShaleYeah/issues/683) | Adopt employee contracts for Legal Analyst | #674, #665, #679 | develop | Exact matter/corpus/checklist JSON; actual returned citations, declared applicability and question/source/conflict coverage; retained context, installed qualification and enrolled human private-record review/restart; generic/external MCP and isolated packages/containers; source-less defaults/wrappers/evals removed; no legal clearance or professional acceptance claim |
 | 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Exact EIA/host values, periods and units vs separate reviewed assumptions/unavailability; key-scoped cache and changed-source cases; model narratives cannot populate facts; private exports; no name-derived metrics |
 | 33 | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Adopt employee contracts for Market Analyst | #674, #665, #679, #708 | develop | Exact mandate/series/assumption sources; independent period/unit/region checks on actual output; retained private context, installed qualification, separate enrolled human review/restart and independent source/archive/wheel/container checks; provisional fictional labels grant no commercial authority |
-| 34 | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Adopt employee contracts for Title Analyst | #674, #665, #679 | develop | Ownership evidence, conflicts and professional review; common employee checks |
+| 33a | [#788](https://github.com/ryemyster/ShaleYeah/issues/788) | Make native Legal qualification reliable on constrained runners | #684, #754 | develop | Allocation follows actual private content with growth/ownership/snapshot guards intact; safe phase and actual-request telemetry; unchanged native/human bounds and source/review assertions; exact cold PR and merge qualification |
+| 34 | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Adopt employee contracts for Title Analyst | #674, #665, #679, #788 | develop | Ownership evidence, conflicts and professional review; common employee checks |
 | 35 | [#686](https://github.com/ryemyster/ShaleYeah/issues/686) | Adopt employee contracts for Drilling Engineer | #674, #665, #679 | develop | Engineering constraints, evidence and human review; common employee checks |
 | 36 | [#687](https://github.com/ryemyster/ShaleYeah/issues/687) | Adopt employee contracts for Development Planner | #674, #665, #679 | develop | Development alternatives, assumptions and human review; common employee checks |
 | 36a | [#709](https://github.com/ryemyster/ShaleYeah/issues/709) | Defer research findings when source evidence is missing | #576 | develop | Cited control findings, outage/coverage/contradiction cases; unsupported defaults cannot become evidence |
@@ -217,7 +226,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
 | 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755, #757, #754 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
+| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755, #757, #754, #788 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
 | 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
 | 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
 | 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
