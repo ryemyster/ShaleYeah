@@ -19,7 +19,8 @@ export async function readPrivateText(file: string, maximum = 65536): Promise<st
 			before.size > maximum
 		)
 			throw new PrivateConfigError();
-		const bytes = Buffer.alloc(maximum + 1);
+		// One extra byte detects growth without allocating the entire permitted ceiling.
+		const bytes = Buffer.alloc(before.size + 1);
 		let length = 0;
 		while (length < bytes.length) {
 			const read = await handle.read(bytes, length, bytes.length - length, length);

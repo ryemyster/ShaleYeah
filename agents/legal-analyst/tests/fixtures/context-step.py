@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 import sys
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from secrets import token_urlsafe
@@ -19,6 +20,24 @@ from shaleyeah_mcp.events import EventEmitter, create_jsonl_sink
 from app.context_runtime import LegalAnalystRuntime
 from app.evaluation import grade_case, observe_legal, parse_response
 from app.review_supervision import ReviewSupervisor
+
+_runtime_started = time.monotonic()
+
+
+def phase(name, provider=None, *, source_calls=None, model_calls=None, count_calls=None):
+    """Emit fixed phase names and counts, never inputs, paths or credential values."""
+    record = {
+        "phase": name,
+        "provider": provider if provider in {"gemini", "anthropic"} else None,
+        "runtimeElapsedMs": round((time.monotonic() - _runtime_started) * 1000),
+    }
+    if source_calls is not None:
+        record["sourceCalls"] = source_calls
+    if model_calls is not None:
+        record["modelCalls"] = model_calls
+    if count_calls is not None:
+        record["countCalls"] = count_calls
+    print("LEGAL_NATIVE_PHASE " + json.dumps(record), file=sys.stderr, flush=True)
 
 
 def tool_analyses(body):
@@ -99,6 +118,7 @@ def actual_memo(analyses):
 
 
 def write_output(file, value):
+    phase("output-write")
     descriptor = os.open(file, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
     with os.fdopen(descriptor, "w") as handle:
         json.dump(value, handle, allow_nan=False)
@@ -107,6 +127,8 @@ def write_output(file, value):
 async def main():
     input_file, output_file, endpoint = sys.argv[1:]
     settings = json.loads(Path(input_file).read_text())
+    provider = settings["provider"]
+    phase("settings-loaded", provider)
     task, draft = settings["task"], settings["draft"]
     scope, work = task["scope"], draft["work"]
     principal = {
@@ -157,7 +179,12 @@ async def main():
             "expiresAt": settings["expiresAt"],
         }
 
+    source_calls = 0
+
     async def source_authority(evidence, who, requested, operation):
+        nonlocal source_calls
+        source_calls += 1
+        phase("source-authority", provider, source_calls=source_calls)
         assert who == principal and requested == scope
         source = next(item for item in draft["sourceArtifacts"] if item["evidence"] == evidence)
         result = await call_tool(
@@ -169,6 +196,7 @@ async def main():
             },
             events=events,
         )
+        phase("source-authority-complete", provider, source_calls=source_calls)
         payload = result.get("structuredContent", {})
         if result.get("isError") or payload.get("success") is not True:
             return {
@@ -190,7 +218,6 @@ async def main():
             "retentionExpiresAt": settings["expiresAt"],
         }
 
-    provider = settings["provider"]
     package = httpx if provider == "gemini" else httpx2
     owner = {key: scope[key] for key in ("customerId", "employeeId")}
 
@@ -225,7 +252,7 @@ async def main():
         }
     )
     key, purposes, requests = token_urlsafe(32), [], []
-    generations = 0
+    generations, model_calls, count_calls = 0, 0, 0
 
     async def resolve(requested_owner, reference, purpose):
         assert requested_owner == owner and purpose == "agent"
@@ -274,14 +301,30 @@ async def main():
     observed_analyses = []
 
     async def respond(request):
-        nonlocal generations
+        nonlocal generations, model_calls, count_calls
         assert request.headers["x-goog-api-key" if provider == "gemini" else "x-api-key"] == key
         body = json.loads(request.content)
         requests.append(body)
         observed_analyses.extend(tool_analyses(body))
         if "count" in request.url.path.lower():
+            count_calls += 1
+            phase(
+                "model-count",
+                provider,
+                source_calls=source_calls,
+                model_calls=model_calls,
+                count_calls=count_calls,
+            )
             response = {"totalTokens": 400} if provider == "gemini" else {"input_tokens": 400}
         else:
+            model_calls += 1
+            phase(
+                "model-generate",
+                provider,
+                source_calls=source_calls,
+                model_calls=model_calls,
+                count_calls=count_calls,
+            )
             tool = generations < len(sequence)
             name, args = sequence[generations] if tool else (None, None)
             if name == "draft_legal_memo":
@@ -360,14 +403,18 @@ async def main():
             profile, key, transport=package.MockTransport(respond)
         ),
     }
+    phase("catalog-open", provider)
     catalog = await opened()
     if settings.get("mode") not in {"revoked", "resume", "verify_restart"}:
+        phase("catalog-seed", provider)
         await catalog.put_task(task)
         for source in draft["sourceArtifacts"]:
             await catalog.put_source(source)
+    phase("runtime-open", provider, source_calls=source_calls)
     runtime = await LegalAnalystRuntime.open(catalog, models, **options)
     try:
         if settings.get("mode") == "verify_restart":
+            phase("restart", provider, source_calls=source_calls)
             checkpoint = await catalog.current_checkpoint()
             assert checkpoint["workRefs"] == [work["artifact"]]
             assert checkpoint["pendingReviewRefs"] == [
@@ -395,11 +442,13 @@ async def main():
             )
             return
         if settings.get("mode") == "revoked":
+            phase("revoked", provider, source_calls=source_calls)
             result = await runtime.run("Continue with revoked legal source")
             assert result["status"] == "blocked" and requests == []
             write_output(output_file, {"status": "blocked", "modelContacted": False})
             return
         if settings.get("mode") == "resume":
+            phase("resume", provider, source_calls=source_calls)
             checkpoint = await catalog.current_checkpoint()
             assert checkpoint["pendingReviewRefs"] == [
                 {"id": settings["reviewId"], "revision": "r1"}
@@ -429,6 +478,7 @@ async def main():
                 },
             )
             return
+        phase("native-run", provider, source_calls=source_calls)
         first = await runtime.run(
             "Read exact provisions, propose the cited legal memo and prepare human review"
         )
@@ -471,6 +521,13 @@ async def main():
                 ]
             },
         }
+        phase(
+            "grade",
+            provider,
+            source_calls=source_calls,
+            model_calls=model_calls,
+            count_calls=count_calls,
+        )
         evaluation_root = Path(__file__).parents[1] / "eval"
         profile_config = load_profile(
             (evaluation_root / "performance_profile.json").read_bytes(),
@@ -530,8 +587,17 @@ async def main():
             },
         )
     finally:
+        phase(
+            "cleanup",
+            provider,
+            source_calls=source_calls,
+            model_calls=model_calls,
+            count_calls=count_calls,
+        )
         await runtime.close()
 
 
 if __name__ == "__main__":
+    phase("imports-complete")
     asyncio.run(main())
+    phase("completed")

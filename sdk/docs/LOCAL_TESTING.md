@@ -68,3 +68,19 @@ controls. Tests cover foreign bindings, failure before/after
 dispatch, optional failure health, invalid outputs and protocol-only stdout.
 The [reference trace](../../docs/employee-events.md#generate-an-operator-readable-fixture-trace)
 adds native Geologist/source/evaluation/review observations without live keys.
+
+## Private configuration reads
+
+From this package:
+
+```sh
+pnpm build
+pnpm exec node --import tsx --test tests/private-json.test.ts
+pnpm test:employee-review
+```
+
+The focused tests verify that the same small content has bounded allocation
+under different permitted ceilings, and that concurrent growth is rejected even
+with unchanged stat timestamps. Existing private-mode, symlink and size-limit
+denials remain required. The broader review suite checks the executing review,
+qualification and private-file boundary with package coverage enabled.

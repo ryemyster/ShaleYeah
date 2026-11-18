@@ -4,6 +4,11 @@ All notable changes to this package.
 
 ## [Unreleased]
 
+- #788: size private-read buffers from the observed file length plus one byte,
+  preserving the configured cap, growth detection, ownership/mode/link checks,
+  final snapshot metadata and strict UTF-8 decoding. Add allocation-scaling and
+  concurrent-growth regressions; every call still reads the current file.
+
 - #681: remove the last Reservoir-only TypeScript private-client access/no-replay matrices after migration to the installed Python client. Its credential, failed-result and no-replay regressions remain in the independently installed client tests. Shared compatibility runtime/API deletion remains #692.
 
 - #542: propagate optional prepare cancellation to source reads and reject a cancelled request before the review packet transaction. Existing callers retain the same signature behavior.

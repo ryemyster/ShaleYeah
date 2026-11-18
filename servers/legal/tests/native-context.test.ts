@@ -9,6 +9,7 @@ import { loadLegalBinding } from "../src/configuration.js";
 import { LegalServer } from "../src/server.js";
 import { ref } from "./fixtures/legal.js";
 import { localBindingFixture } from "./fixtures/local-binding.js";
+import { runNativeChild } from "./fixtures/native-child.js";
 
 test("native Legal employees return graded work and resume exact human-approved private memo storage across restart and revocation", async () => {
 	const f = await localBindingFixture({ liveClock: true });
@@ -89,7 +90,7 @@ test("native Legal employees return graded work and resume exact human-approved 
 			};
 			await fs.writeFile(input, JSON.stringify(settings), { mode: 0o600 });
 			const execute = (destination: string) =>
-				promisify(execFile)(
+				runNativeChild(
 					python,
 					[
 						"-I",
@@ -99,8 +100,12 @@ test("native Legal employees return graded work and resume exact human-approved 
 						`http://127.0.0.1:${server.httpPort()}/mcp`,
 					],
 					{ timeout: 60000 },
-				);
+				).then((result) => {
+					console.log(`LEGAL_NATIVE_CHILD ${JSON.stringify(result.diagnostics)}`);
+					return result;
+				});
 			const result = await execute(output);
+			assert.match(result.stderr, /^LEGAL_NATIVE_PHASE /m, "Native child must report safe phase diagnostics");
 			assert.ok(!result.stdout.includes(token) && !result.stderr.includes(token));
 			const actual = JSON.parse(await fs.readFile(output, "utf8"));
 			assert.deepEqual(actual.work, draft.work);
@@ -125,7 +130,12 @@ test("native Legal employees return graded work and resume exact human-approved 
 				},
 			);
 			const restoredFile = path.join(f.root, `${provider}-restored.json`);
-			await execute(restoredFile);
+			const restartResult = await execute(restoredFile);
+			assert.equal(
+				restartResult.diagnostics.modelCalls,
+				1,
+				"Restart reports actual generations, not the script cursor",
+			);
 			const restored = JSON.parse(await fs.readFile(restoredFile, "utf8"));
 			assert.equal(restored.status, "ready");
 			assert.equal(restored.context.selectedEvidence.length, 3);

@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #788: report safe native child phases, elapsed/deadline, exit/termination and
+  actual source/model/token-count request totals. Preserve the existing native
+  and qualification deadlines, successful outputs and all protected review
+  assertions; remove raw child output/arguments from failure summaries.
+
 - #683: replace source-less default analysis with ten current source/provision/citation,
   memo and review tools. Validate exact JSON exports, UTF-8 quote identity, provision-level
   scope/date eligibility, required questions/revisions and retained conflicts. Bind

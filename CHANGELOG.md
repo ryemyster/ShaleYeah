@@ -89,6 +89,12 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Fixed
 
+- **Private-file read allocations:** allocate from the observed file size plus a
+  growth sentinel while retaining byte limits, ownership/mode checks, snapshot
+  consistency and strict UTF-8 validation. This removes repeated 8 MB allocations
+  for Legal's small current-configuration files. Native qualification reports
+  safe phase, elapsed/deadline and actual request counts for bounded failures.
+  Existing source checks, evaluation labels and approval gates remain in force. (#788)
 - **Employee context:** shared dependencies are checked once per authorization
   phase, with fresh checks across delivery boundaries. Exports validate captured
   task/checkpoint/record metadata after the final authority await and reject
