@@ -27,9 +27,12 @@ on:
       market:
         type: boolean
         default: true
+      title:
+        type: boolean
+        default: true
       callers:
         type: string
-        default: '["development-planner","drilling-engineer","infrastructure-planner","investment-chair","research-analyst","title-analyst"]'
+        default: '["development-planner","drilling-engineer","infrastructure-planner","investment-chair","research-analyst"]'
 
 permissions:
   contents: read
@@ -351,6 +354,64 @@ jobs:
             agents/market-analyst/artifacts/grade_results
           if-no-files-found: error
           retention-days: 14
+  title:
+    name: Title Analyst employee and Title MCP qualification
+    if: inputs.title
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: '22.x'
+          cache: pnpm
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.12.21'
+          python-version: '3.12'
+      - run: pnpm install --frozen-lockfile
+      - name: Native Title Analyst, external MCP and frozen instrument-cited packet qualification
+        working-directory: agents/title-analyst
+        env:
+          QUALIFICATION_CODE_REVISION: ${{ github.sha }}
+        run: |
+          uv run --locked ruff check app tests
+          uv run --locked pytest -q --cov=app --cov-fail-under=90
+          uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/title.json --code-revision "$QUALIFICATION_CODE_REVISION"
+      - run: pnpm turbo build --filter=@shaleyeah/server-title...
+      - run: pnpm --dir servers/title type-check
+      - run: pnpm --dir servers/title lint
+      - name: Native protected source, actual output and human approval journey
+        env:
+          TITLE_TEST_CODE_REVISION: ${{ github.sha }}
+          TITLE_TEST_TRACE_DIRECTORY: ${{ runner.temp }}/title-traces
+        run: pnpm --dir servers/title test
+      - name: Grade native traces with Google's key-free local handler
+        working-directory: agents/title-analyst
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/intentionally-unavailable-google-credentials.json
+        run: |
+          uv tool install google-agents-cli==1.3.1 --with-requirements tests/eval/cli-requirements.txt
+          uv run --locked python tests/eval/export_cli_traces.py "$RUNNER_TEMP/title-traces" "$RUNNER_TEMP/title-cli-traces"
+          grading_tools_dir="$(uv tool dir)"
+          "$grading_tools_dir/google-agents-cli/bin/python" tests/eval/grade_local_google.py --traces "$RUNNER_TEMP/title-cli-traces" --config tests/eval/eval_config.json --output "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
+          uv run --locked python tests/eval/verify_cli_grade.py "artifacts/grade_results/${{ github.run_id }}-${{ github.run_attempt }}"
+      - name: Source, wheel and production archive isolation
+        run: node servers/title/scripts/check-extraction.mjs --bundle "$RUNNER_TEMP/title-bundle" --report "$RUNNER_TEMP/title-extraction.json"
+      - name: Publish Title Analyst decisions
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: title-qualification-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/title-extraction.json
+            ${{ runner.temp }}/title-traces
+            ${{ runner.temp }}/title-cli-traces
+            agents/title-analyst/artifacts/evals/title.json
+            agents/title-analyst/artifacts/grade_results
+          if-no-files-found: error
+          retention-days: 14
   protocol-callers:
     name: Python caller compatibility
     if: inputs.callers != '[]'
@@ -523,7 +584,7 @@ jobs:
   qualification-gate:
     name: Selected reference qualification
     if: always()
-    needs: [economist, reservoir, risk, legal, market, protocol-callers, reference, reporter]
+    needs: [economist, reservoir, risk, legal, market, title, protocol-callers, reference, reporter]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10

@@ -1,50 +1,16 @@
-# Local Testing — Title Analyst ADK Agent + Title
+# Test Title Analyst locally
 
-The Title Analyst agent is ADK/Python. The Title server is the TypeScript MCP backend it calls over HTTP.
+From this package:
 
-## Verify The Agent Package
-
-```bash
-cd agents/title-analyst
-uv run pytest
-uv run python -m py_compile app/agent.py app/title_mcp.py
+```sh
+uv sync --locked
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+uv run --locked python -m compileall -q app
 agents-cli info
+uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/title.json --code-revision FULL_TESTED_COMMIT_SHA
 ```
 
-`agents-cli info` should detect `agents/title-analyst` as the project. It should not require or create ADK files at repo root.
+Use the actual tested revision. These checks use fictional sources and offline provider responses. The compatible external MCP test binds an automatically assigned loopback port. Full backend native tests require that same host capability and exercise the installed employee against the actual protected Title server. Do not infer a port collision from a sandbox `EPERM` denial.
 
-## Run With A Live Title Backend
-
-Start the MCP server in one terminal:
-
-```bash
-cd servers/title
-PORT=3010 pnpm start
-```
-
-Run the ADK agent in another terminal:
-
-```bash
-cd agents/title-analyst
-agents-cli install
-TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Examine ownership for Section 12 in Reeves County, Texas"
-```
-
-## Run ADK Evals
-
-```bash
-cd agents/title-analyst
-agents-cli eval run
-```
-
-The eval harness covers control cases, sparse-context edge behavior, and the boundary that the agent must not claim final clean title or legal approval without review.
-
-## Common Issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED localhost:3010` | Title is not running | `cd servers/title && PORT=3010 pnpm start` |
-| `agents-cli info` cannot find the project | Command was run from the wrong directory | `cd agents/title-analyst` |
-| Python import error for `mcp` or `google.adk` | Dependencies are not installed | `uv sync --extra eval` or `agents-cli install` |
-| Live eval needs credentials | Provider credentials are absent | Run shape tests with `uv run pytest`; live eval can run when credentials are configured |
+Run backend build/type/lint/tests from `servers/title`; run the source/archive/wheel command from [deployment](DEPLOYMENT.md). Required CI includes every test without deselection and grades actual native traces. Failed or unexecuted checks remain separate from passing unit coverage. Synthetic results do not measure professional accuracy or human effort saved.

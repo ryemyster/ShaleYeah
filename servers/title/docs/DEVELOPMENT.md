@@ -1,36 +1,7 @@
-# Development — @shaleyeah/server-title
+# Develop Title MCP
 
-## Setup
+Follow the open issue's bounded plan and sequential SDLC. Keep tests before implementation and current source/authority checks at the executing boundary. Use package-local `pnpm build`, `pnpm type-check`, `pnpm lint` and `pnpm test`; shared evaluation/CI changes require their own checks and workspace verification.
 
-```bash
-cd servers/title
-pnpm install && pnpm build
-```
+Preserve independent fixture labels and primary-source limits. The packet module only reconciles explicitly supplied normalized facts. Do not add county defaults, inferred record priority, invented missing owners, fuzzy party identity or a model-generated factual fallback. A broader algorithm or professional decision needs a separately scoped issue.
 
-## Test commands
-
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-title
-```
-
-## LLM wiring checklist
-
-- [ ] `callLLM()` called with legal description, county, chainAge in prompt
-- [ ] Zod schema validates `ownershipPercentage`, `riskLevel`, `encumbrances`, `notes`
-- [ ] Fallback: `deriveDefaultTitleFindings(description, county, chainAge)` exported
-- [ ] Anti-stub test: `ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts`
-
-## Key constraints
-
-- `riskLevel` must be `"low" | "medium" | "high"` — no other values
-- `ownershipPercentage` must be a number 0–100
-- No `Math.random()` in fallback functions
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- Governance (HITL, audit) lives in the `title-analyst` agent, not here
-
-## Linting
-
-```bash
-cd servers/title && npx biome check src/
-```
+Keep MCP serving, private-file readers and the durable review state machine in the installed shared helpers. The Title adapter binds role sources and canonical work; consequential authority cannot live only in a prompt. Update affected docs/changelogs and delete displaced code/callers before review.

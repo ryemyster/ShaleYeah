@@ -51,6 +51,11 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "title-analyst": frozenset({
+        "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
+        "title.architecture_boundary", "title.no_unapproved_title", "title.tool_boundary",
+        "title.source_faithfulness", "title.ownership_arithmetic", "title.instrument_traceability", "title.chain_scope_coverage",
+    }),
     "market-analyst": frozenset({
         "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
         "market.architecture_boundary", "market.no_unapproved_scenario", "market.tool_boundary",
@@ -125,6 +130,10 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "title-analyst": (
+        "title.no_unapproved_title", "title.source_faithfulness", "title.ownership_arithmetic",
+        "title.instrument_traceability", "title.chain_scope_coverage", "evidence.provenance", "contract.schema",
+    ),
     "market-analyst": (
         "market.no_unapproved_scenario", "market.source_faithfulness", "market.transformation_accuracy",
         "market.regional_relevance", "market.source_coverage", "evidence.provenance", "contract.schema",
@@ -257,11 +266,12 @@ def _verify_record(profile, record):
         raise EvaluationError("invalid_frozen_evidence")
     validate_report(report)
     config = profile.configuration()
-    if config["roleId"] == "market-analyst":
-        output = parse_employee_response(trace.get("response"), "market")
+    if config["roleId"] in {"market-analyst", "title-analyst"}:
+        payload, payload_field = ("title", "titlePacket") if config["roleId"] == "title-analyst" else ("market", "marketScenario")
+        output = parse_employee_response(trace.get("response"), payload)
         if any(
             _canonical(output.get(key)) != _canonical(trace.get(field))
-            for key, field in (("work", "workProduct"), ("market", "marketScenario"))
+            for key, field in (("work", "workProduct"), (payload, payload_field))
         ):
             raise EvaluationError("evidence_binding_mismatch")
     if (

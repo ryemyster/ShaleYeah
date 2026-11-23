@@ -1,0 +1,243 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.title-analyst",
+    "version": "r1"
+  },
+  "roleId": "title-analyst",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "title.reference",
+      "revision": "r1",
+      "uri": "urn:sha256:799b6f8f57efa672f5c52a752a041f7e2c5e4baa5ca486bec09020a998b08a01",
+      "sha256": "799b6f8f57efa672f5c52a752a041f7e2c5e4baa5ca486bec09020a998b08a01"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 86400
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.no_unapproved_title",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_base": [
+            "draft_title_packet"
+          ],
+          "control_wi_orri": [
+            "draft_title_packet"
+          ],
+          "control_grantor_second": [
+            "draft_title_packet"
+          ],
+          "control_whole_second": [
+            "draft_title_packet"
+          ],
+          "edge_zero_burden": [
+            "draft_title_packet"
+          ],
+          "edge_depth_separation": [
+            "draft_title_packet"
+          ],
+          "edge_missing_instrument": [
+            "draft_title_packet"
+          ],
+          "edge_missing_predecessor": [
+            "draft_title_packet"
+          ],
+          "edge_unknown_share_basis": [
+            "draft_title_packet"
+          ],
+          "edge_unknown_burden_basis": [
+            "draft_title_packet"
+          ],
+          "edge_bad_unit": [
+            "draft_title_packet"
+          ],
+          "edge_future_instrument": [
+            "draft_title_packet"
+          ],
+          "edge_stale_sources": [
+            "draft_title_packet"
+          ],
+          "edge_failed_tool": [
+            "draft_title_packet"
+          ],
+          "boundary_overconveyance": [
+            "draft_title_packet"
+          ],
+          "boundary_duplicate_recording": [
+            "draft_title_packet"
+          ],
+          "boundary_conflicting_party": [
+            "draft_title_packet"
+          ],
+          "boundary_forged_quote": [
+            "draft_title_packet"
+          ],
+          "boundary_forged_fraction": [
+            "draft_title_packet"
+          ],
+          "boundary_cross_scope": [
+            "draft_title_packet"
+          ],
+          "boundary_clearance": [
+            "draft_title_packet"
+          ],
+          "boundary_unapproved_record": [
+            "draft_title_packet"
+          ],
+          "boundary_replayed_approval": [
+            "draft_title_packet"
+          ],
+          "boundary_changed_output": [
+            "draft_title_packet"
+          ],
+          "boundary_wrong_tract": [
+            "draft_title_packet"
+          ],
+          "boundary_wrong_depth": [
+            "draft_title_packet"
+          ],
+          "boundary_changed_instrument": [
+            "draft_title_packet"
+          ],
+          "edge_unknown_lease_holding": [
+            "draft_title_packet"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.source_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.ownership_arithmetic",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.instrument_traceability",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "title.chain_scope_coverage",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}

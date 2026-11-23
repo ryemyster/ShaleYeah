@@ -1,99 +1,41 @@
-# Title Analyst ADK Agent
+# Title Analyst
 
-**Titulus Verificatus** — the ShaleYeah fleet's title diligence analyst.
+Titulus Verificatus prepares an instrument-cited ownership and exception packet for a human title/land reviewer. It reads supplied instruments, keeps interest kinds and depth intervals separate, requests exact calculations, and proposes observations through the independent [Title MCP backend](../../servers/title/README.md).
 
-Tier 2 ADK/Python intelligence layer over the [`servers/title`](../../servers/title) Tier 1 MCP server. It examines ownership, lease terms, encumbrances, and chain of title, while deferring final legal-opinion language to human review.
+The selected mode is **Stand-alone Agent with Progressive Disclosure (Skills)**. One specialist loads source detail on demand and keeps its own scoped working context. A separately enrolled human reviews the exact packet and qualification evidence before it can be recorded privately.
 
-## What It Does
+## Inputs and output
 
-Title Analyst turns title diligence requests into the right Title MCP tool call, sends structured tract, lease, burden, or conveyance-chain inputs to the backend, and explains ownership, lease, encumbrance, or curative results.
+The backend accepts three exact JSON exports: examination scope, an instrument corpus, and a declared calculation/coverage policy. Opening holdings, normalized terms, record order and source validity are operator-attested assumptions. See the [input contract](../../servers/title/docs/INPUTS.md).
 
-It exists so acquisition and development workflows can surface title risk early while keeping clean-title opinions and legal approvals with human reviewers.
+The employee returns exactly `{"work": ..., "title": ...}` from its latest successful draft, or `{"deferred":"..."}`. The packet preserves rational holdings/NRI, original-text citations, missing records, questions and conflicts. Citation identity does not establish that a proposed interpretation follows from the text.
 
-## Project Boundary
+## Run and check
 
-This package is the Title Analyst ADK project inside the monorepo. ADK files live here (`agents-cli-manifest.yaml`, `.agents-cli-spec.md`, `pyproject.toml`, `app/agent.py`) and must not be added at repo root.
+From this directory:
 
-At runtime:
-
-- ADK owns the agent shape, instructions, eval path, and backend-selection contract.
-- Architecture mode is **Stand-alone Agent with Progressive Disclosure (Skills)**.
-- The agent calls the Title MCP backend through package-local Python wrappers.
-- `servers/title` is the independently runnable MCP backend.
-
-## Run A Title Task
-
-```bash
-cd agents/title-analyst
-agents-cli install
-TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Examine ownership for Section 12, T2N, R4E in Reeves County, Texas"
+```sh
+uv sync --locked
+uv run --locked ruff check app tests
+uv run --locked pytest -q --cov=app --cov-fail-under=90
+agents-cli info
+uv run --locked python tests/eval/run_fixture_evals.py --output artifacts/evals/title.json --code-revision FULL_TESTED_COMMIT_SHA
 ```
 
-Start the Title MCP server separately when you want live backend execution:
+Use the actual tested commit for the revision placeholder. Fixtures require no provider key. Full HTTP tests need a host that permits a loopback listener. A technical pass keeps professional acceptance and promotion false. See [evaluation](docs/EVALUATIONS.md).
 
-```bash
-cd servers/title
-PORT=3010 pnpm start
+For a model run, set `TITLE_ANALYST_MODEL_CONFIG_FILE` to an owner-only [model profile](../../docs/model-providers.md) with explicit Gemini or Anthropic model IDs and private credential references. Set `TITLE_MCP_URL` and `TITLE_MCP_ACCESS_TOKEN_FILE` separately for the authorized backend. The default backend address is `http://127.0.0.1:3010/mcp`; the role configuration helper permits HTTP on loopback. Remote endpoints use HTTPS. `TITLE_ANALYST_EVENT_CONFIG_FILE` selects private event configuration.
+
+```sh
+agents-cli run "Read task.title revision r1, inspect the supplied instruments and draft an ownership/exception packet for title review"
 ```
 
-The backend uses the selected MCP 2026-07-28 profile. Replace `/path/to/private/mcp-token` with an operator-issued credential file owned by your account and readable/writable only by you. Credentials are resolved when a tool runs and stay outside prompts. Use HTTPS for a remote endpoint; local HTTP is limited to loopback. Missing or denied credentials stop the call. An HTTP server needs explicit identity/scope and audit configuration; setting `PORT` alone does not supply that setup. The role-specific operator workflow and source qualification remain pending in the linked employee adoption issue.
+This requires matching authorized task/source revisions and a configured model, and can contact the selected paid provider. No source-less ownership estimate is available.
 
-## Tools
+## Review and retained context
 
-| Tool | What it does | Type | Legal signoff? |
-|------|--------------|------|----------------|
-| `examine_title_ownership` | Calls `examine_ownership` for WI/NRI ownership diligence | query | No |
-| `analyze_title_lease` | Calls `analyze_lease` for primary term and expiry diligence | query | No |
-| `check_title_burdens` | Calls `check_burdens` for ORRI, liens, and encumbrances | query | No |
-| `trace_title_chain_of_title` | Calls `trace_chain_of_title` for conveyance-chain and curative diligence | query | No |
+`TitleAnalystRuntime.open` embeds the installed employee runtime with an operator-owned context catalog and current source-authority callbacks. Durable restart and revision invalidation require that retained runtime; the simple CLI app uses its host's session lifecycle. Verified backend work can enter private review context. Raw model output cannot promote itself to shared knowledge.
 
-## HITL Boundary
+Human inspection, change requests, rejection and approval use the separate [review API/CLI](../../servers/title/docs/INTEGRATION.md). Installed qualification precedes approval and recording. Private recording grants no title clearance, marketability certification, legal opinion, curative execution, instrument filing, external transfer, lease acceptance or capital authority. Reviewer enrollment is operator-attested, not automated license verification.
 
-The agent must not present final clean-title or legal approval without human review.
-
-## Environment Variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `TITLE_MCP_URL` | No | `http://localhost:3010/mcp` | Title Tier 1 server URL |
-| `TITLE_MCP_ACCESS_TOKEN_FILE` | Yes for tool calls | None | Private file containing the operator-issued credential for this backend |
-| `TITLE_MCP_TIMEOUT_SECONDS` | No | `30` | Total connection/call budget, greater than zero and at most 120 seconds |
-| `TITLE_MCP_REQUEST_TIMEOUT_SECONDS` | No | `10` | Per-request budget, greater than zero and at most 120 seconds |
-| `TITLE_ANALYST_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id for local runs |
-
-## Build, Test, And Use
-
-Run these from `agents/title-analyst`.
-
-| Task | Command |
-|------|---------|
-| Install dependencies | `uv sync --extra eval` |
-| Test package behavior | `uv run pytest` |
-| Build/syntax check | `uv run python -m py_compile app/agent.py app/title_mcp.py` |
-| Inspect ADK project | `agents-cli info` |
-| Run a local task | `TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run "Examine ownership for a tract"` |
-| Run evals | `agents-cli eval run` |
-
-## Key Files
-
-| Path | Purpose |
-|------|---------|
-| [`app/agent.py`](app/agent.py) | Package-local ADK entrypoint and Title backend-selection tools |
-| [`app/title_mcp.py`](app/title_mcp.py) | Python MCP client and ADK-side execution tools |
-| [`agents-cli-manifest.yaml`](agents-cli-manifest.yaml) | agents-cli project marker for this package only |
-| [`.agents-cli-spec.md`](.agents-cli-spec.md) | ADK reference-pair spec and boundaries |
-| [`tests/test_adk_project_shape.py`](tests/test_adk_project_shape.py) | Regression tests for package-local ADK shape |
-| [`tests/test_adk_mcp_execution_shape.py`](tests/test_adk_mcp_execution_shape.py) | Regression tests for ADK-owned Title MCP execution |
-| [`tests/test_adk_eval_harness_shape.py`](tests/test_adk_eval_harness_shape.py) | Regression tests for eval dataset/config coverage |
-
-## Documentation
-
-| Doc | Who it's for |
-|-----|-------------|
-| [HOW_IT_WORKS.md](docs/HOW_IT_WORKS.md) | Plain-language flow and legal-review boundary |
-| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Package topology and execution path |
-| [INTEGRATION.md](docs/INTEGRATION.md) | Calling the ADK agent and backend contract |
-| [DEPLOYMENT.md](docs/DEPLOYMENT.md) | Runtime pairing and environment variables |
-| [LOCAL_TESTING.md](docs/LOCAL_TESTING.md) | Local smoke checks and evals |
-| [DEVELOPMENT.md](docs/DEVELOPMENT.md) | TDD workflow and adding tools |
+See [architecture](docs/ARCHITECTURE.md), [integration](docs/INTEGRATION.md), [local testing](docs/LOCAL_TESTING.md) and [deployment](docs/DEPLOYMENT.md).

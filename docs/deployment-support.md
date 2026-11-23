@@ -252,6 +252,15 @@ human review. Docker is required for the container receipt; a host without it
 cannot claim local image qualification. Citation identity, declared applicability,
 technical fixture success and professional legal acceptance remain separate.
 
+Title Analyst #685 supplies its own exact-instrument source and independent
+employee/backend wheel/archive checks. Required CI exercises generic and external
+clients, both native offline provider adapters, installed exact-output
+qualification, human private review, restart/replay and revocation. A local host
+that denies loopback binding cannot supply those HTTP journey
+receipts. Support claims require passing reports for the actual tested revision;
+record authenticity, complete county coverage, professional correctness and
+hosted deployment remain unverified.
+
 - **VM:** use a supervised service, least-privilege runtime identity, private
   ingress/TLS, persistent disk and tested restore. Apply the same employee/tool
   contract as containers; no VM-specific logic belongs in agent reasoning.

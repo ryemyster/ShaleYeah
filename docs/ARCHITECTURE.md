@@ -41,8 +41,10 @@ remain owned by #671/#674 and their role peers.
 [ADR 0004](../contracts/docs/0004-composition-conformance.md), delivered by #572,
 specifies our/third-party employee and MCP combinations, standalone use and optional
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
-previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA, Economist, Reservoir Engineer and Risk Analyst
-use ADK 2.4.0, with Python MCP 2.3.0 through the installed client. The eight
+previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA,
+Economist, Reservoir Engineer, Risk Analyst, Legal Analyst, Market Analyst and
+Title Analyst use ADK 2.4.0, with Python MCP 2.3.0 through the installed client.
+The five
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
 uses server/client 2.3.1 and Node adapter 2.1.1 with explicit modern options.
@@ -100,6 +102,15 @@ produce finite forecasts and actual training/holdout diagnostics. An independent
 Python verifier checks the returned work against known-parameter synthetic
 references. Private save requires installed packet-bound qualification and an
 exact human engineering decision; it cannot classify reserves or approve capital.
+
+The [Title Analyst](../agents/title-analyst/README.md) uses three exact supplied
+examination/instrument/policy exports, retains its own scoped context and proposes
+instrument-cited observations. The backend owns exact rational ownership/NRI
+arithmetic, original-text citations and explicit coverage/conflict blockers.
+Installed qualification and an enrolled human decision bind private recording to
+the exact current packet. This does not confer title clearance, legal authority
+or professional acceptance. Source, wheel and archive checks prove independent
+installation and protocol use.
 
 ## Packages and dependency boundaries
 

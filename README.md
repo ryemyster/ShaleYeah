@@ -96,9 +96,9 @@ dispositions for an authenticated human owner. An exception retains the original
 
 ## Project Status
 
-Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst, Legal Analyst and Market Analyst have implemented employee workflows with
+Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst, Legal Analyst, Market Analyst and Title Analyst have implemented employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. All fourteen roles now have ADK definitions. Six roles still
+package checks. All fourteen roles now have ADK definitions. Five roles still
 need their full employee workflows and qualification.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
@@ -129,6 +129,13 @@ unreviewed and cannot supply company metrics or commercial approval. The
 and commercial assumptions to private context, independent evaluation and separate
 human review before recording. Initial fixtures establish no commercial accuracy
 or licensed-feed entitlement; qualification evidence belongs to #684.
+
+The [Title Analyst](agents/title-analyst/README.md) reads exact examination,
+instrument and policy exports, preserves distinct record/operating/depth claims,
+and proposes a cited ownership/exception packet. Exact supplied arithmetic and
+byte citations do not verify complete public records, legal validity or
+professional title truth. Installed qualification and separate exact human
+review are required before private recording; no title clearance follows.
 
 The project is in an active architecture refactor. Existing TypeScript workspace tooling remains in place while the ADK-first, independently deployable agent/MCP model is rebuilt in small spec-driven blocks.
 

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "0.1.0",
+  "fixtureId": "title.initial-label-freeze",
+  "revision": "r1",
+  "frozenAt": "2026-11-18",
+  "labelAuthor": "Codex under standing maintainer authorization",
+  "status": "provisional",
+  "professionalAcceptance": false,
+  "promotionAllowed": false,
+  "cases": 28,
+  "arithmeticOracle": "Python fractions.Fraction; no Title backend or grader imported",
+  "timing": "Frozen before Title backend, grader and prompt implementation; public API regression already failed against unchanged production code",
+  "sha256": {
+    "fixtures/source-oracles.json": "fbc677e1ab5404db5d0ad769eb90c46cc56bb798cbff4f2cf88db43a9e7af453",
+    "datasets/title-performance.json": "799b6f8f57efa672f5c52a752a041f7e2c5e4baa5ca486bec09020a998b08a01"
+  }
+}

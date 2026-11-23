@@ -1,34 +1,15 @@
-# Local Testing — @shaleyeah/server-title
+# Test Title MCP
 
-## Quick start
+From this package:
 
-```bash
-cd servers/title
+```sh
 pnpm build
-npx tsx tests/server.test.ts
+pnpm type-check
+pnpm lint
+pnpm test
+pnpm test:extraction
 ```
 
-## HTTP mode testing
+Tests use real temporary private source files and review stores, exact frozen synthetic inputs and offline model responses. The generic MCP test uses the compiled stdio entry and separate human CLI. Installed qualification checks actual packet/source/output evidence. Full native HTTP and compatible external-service checks require loopback binding.
 
-```bash
-# Terminal 1
-PORT=3010 ANTHROPIC_API_KEY=sk-... pnpm start
-
-# Terminal 2
-cd agents/title-analyst
-TITLE_MCP_URL=http://localhost:3010 npx tsx tests/mcp-client.test.ts
-```
-
-## Anti-stub test
-
-```bash
-ANTHROPIC_API_KEY=sk-fake npx tsx tests/server-anti-stub.test.ts
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3010` | Server not started in HTTP mode | `PORT=3010 pnpm start` |
-| `riskLevel` validation fails | LLM returned unexpected value | Check Zod schema in `src/index.ts` |
-| Tests fail to import | Build needed | `pnpm build` first |
+The package test command requires 90% source line coverage. Extraction checks isolated source compilation, archive contents, wheel/production installation, generic and external clients, native review/restart/revocation and actual output grading. After `npm ci --omit=dev`, the production check confirms `tsx` is absent and uses a plain JavaScript MCP client to read three synthetic sources and draft the unreviewed packet from the installed archive. The source build must delete a retired generated-tool sentinel. Failed or unexecuted checks do not establish a technical or professional pass.

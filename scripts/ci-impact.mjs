@@ -6,8 +6,8 @@ import { parseArgs } from 'node:util';
 
 export const CALLER_ROLES = Object.freeze(['development-planner', 'drilling-engineer',
   'infrastructure-planner', 'investment-chair',
-  'research-analyst', 'title-analyst']);
-export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market']);
+  'research-analyst']);
+export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title']);
 export const PLAN_KIND = 'shaleyeah.ci-impact/v1';
 export const isRevision = (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value);
 
@@ -18,6 +18,7 @@ const agentOwners = {
   'risk-analyst': ['risk'],
   'legal-analyst': ['legal'],
   'market-analyst': ['market'],
+  'title-analyst': ['title'],
 };
 const serverOwners = {
   geowiz: ['geologist', 'reporter'], reporter: ['reporter'], econobot: ['economist'],
@@ -25,12 +26,12 @@ const serverOwners = {
   'risk-analysis': ['risk'],
   legal: ['legal'],
   market: ['market'],
+  title: ['title'],
 };
 const serverCallers = {
   development: 'development-planner', drilling: 'drilling-engineer',
   infrastructure: 'infrastructure-planner', decision: 'investment-chair',
   research: 'research-analyst',
-  title: 'title-analyst',
 };
 const documentationPaths = new Set(['README.md', 'ARCHITECTURE.md', 'CONTRIBUTING.md', 'CHANGELOG.md',
   'docs/ci.md', 'docs/sdlc.md', 'docs/mvp-release-plan.md', 'docs/legacy-migration-ledger.md']);
