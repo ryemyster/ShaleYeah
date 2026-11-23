@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-- #686: register mandatory Drilling unit/design, independent Fraction cost/schedule, hazard/offset, original-byte citation, actual-output and authority metrics. Bind exact strict work/drilling responses into installed qualification, preserve configuration/trust floors and add independent provisional controls without backend imports.
+- #686: register mandatory Drilling unit/design, independent Fraction cost/schedule, hazard/offset, original-byte citation, actual-output and authority metrics. Bind exact strict work/drilling responses into installed qualification, preserve configuration/trust floors and add independent provisional controls without backend imports. Include the owned Drilling fixtures in the independent installed-wheel test harness.
 
 - #683: add seven installed Legal source-fidelity, UTF-8 citation, declared jurisdiction/date,
   question/source/conflict coverage and architecture/tool/authority floors. Accept strict
