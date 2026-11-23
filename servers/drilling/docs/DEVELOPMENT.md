@@ -1,42 +1,5 @@
-# Development — @shaleyeah/server-drilling
+# Develop Drilling MCP
 
-## Setup
+Use the package-local commands in the [README](../README.md). Start with source/authority counterexamples and frozen independent labels. Preserve quoted scope, unit/datums, missing-evidence behavior and exact human review. Do not replace absent engineering data with industry benchmarks. Update the affected input/tool/evaluation documentation with changes.
 
-```bash
-cd servers/drilling
-pnpm install && pnpm build
-```
-
-## Test commands
-
-```bash
-npx tsx tests/server.test.ts
-pnpm turbo test --filter=@shaleyeah/server-drilling
-```
-
-## TDD workflow
-
-1. Write a failing test in `tests/server.test.ts` using MCP tool call
-2. Add/modify tool in `src/index.ts` `tools:` array
-3. Implement handler + `synthesize*WithLLM()` + fallback
-4. Confirm anti-stub test catches auth error
-
-## LLM wiring checklist
-
-- [ ] `synthesizeDrillingAnalysisWithLLM()` calls `callLLM()` from `@shaleyeah/sdk`
-- [ ] `deriveDefaultDrillingInterpretation()` is deterministic (no `Math.random()`)
-- [ ] Handler wraps with try/catch, falls back on any error
-- [ ] Server tests cover deterministic fallbacks without live credentials.
-
-## Key constraints
-
-- Cost estimates use deterministic formulas — depth × rate factor — never random
-- No `@anthropic-ai/sdk` import — only `callLLM()` from `@shaleyeah/sdk`
-- `deriveDefaultDrillingInterpretation()` and `synthesizeDrillingAnalysisWithLLM()` are exported (tests use them directly)
-- Governance (HITL, audit) lives in the `drilling-engineer` agent, not here
-
-## Linting
-
-```bash
-cd servers/drilling && npx biome check src/
-```
+The complete verification includes native output, independent grading, protected review/restart/revocation, generic and external-compatible clients, and source/wheel/archive isolation. A syntax/build pass alone does not establish those behaviors. Fixture qualification remains separate from professional acceptance.

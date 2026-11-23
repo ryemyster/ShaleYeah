@@ -1,6 +1,8 @@
 # Changelog — Drilling Engineer ADK Agent
 
 ## [Unreleased]
+
+- #686: implement the standalone native employee with typed current source/task tools, installed configured models/events/private retained context and exact engineer review supervision. Add 33 frozen provisional research-backed controls, independent job/actual-output grading and source/wheel/native/external-client qualification. Delete generic wrappers/default model and obsolete inline/shape-only eval assets. Private recording grants no operational, well-control, safety or capital authority.
 - #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
 
 

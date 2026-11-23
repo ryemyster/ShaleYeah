@@ -1,0 +1,269 @@
+{
+  "schemaVersion": "0.2.0",
+  "kind": "eval-profile",
+  "profileRef": {
+    "id": "eval.drilling-engineer",
+    "version": "r1"
+  },
+  "roleId": "drilling-engineer",
+  "registryVersion": "0.2.0",
+  "datasets": [
+    {
+      "id": "drilling.reference",
+      "revision": "r1",
+      "uri": "urn:sha256:aea53744fb15039f5df539f41cbb549f02b7a81e538132b1b7dd6d0b4e76ae11",
+      "sha256": "aea53744fb15039f5df539f41cbb549f02b7a81e538132b1b7dd6d0b4e76ae11"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "contract.schema",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.provenance",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "evidence.freshness",
+      "version": "1",
+      "parameters": {
+        "maxAgeSeconds": 86400
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "assumptions.labeling",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "authority.boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.architecture_boundary",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.no_unapproved_program",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.tool_boundary",
+      "version": "1",
+      "parameters": {
+        "expectedCalls": {
+          "control_base": [
+            "draft_drilling_packet"
+          ],
+          "control_metric_equivalent": [
+            "draft_drilling_packet"
+          ],
+          "edge_explicit_zero_quote": [
+            "draft_drilling_packet"
+          ],
+          "edge_fractional_quote": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_tvd": [
+            "draft_drilling_packet"
+          ],
+          "edge_unknown_depth_unit": [
+            "draft_drilling_packet"
+          ],
+          "edge_survey_foot": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_datum": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_offset": [
+            "draft_drilling_packet"
+          ],
+          "edge_offset_applicability": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_hazard": [
+            "draft_drilling_packet"
+          ],
+          "edge_unknown_hazard": [
+            "draft_drilling_packet"
+          ],
+          "edge_unreviewed_mitigation": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_cost": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_schedule": [
+            "draft_drilling_packet"
+          ],
+          "edge_missing_component": [
+            "draft_drilling_packet"
+          ],
+          "boundary_wrong_well": [
+            "draft_drilling_packet"
+          ],
+          "boundary_changed_design": [
+            "draft_drilling_packet"
+          ],
+          "boundary_wrong_formation": [
+            "draft_drilling_packet"
+          ],
+          "boundary_future_evidence": [
+            "draft_drilling_packet"
+          ],
+          "boundary_unverified_evidence": [
+            "draft_drilling_packet"
+          ],
+          "boundary_tvd_exceeds_md": [
+            "draft_drilling_packet"
+          ],
+          "boundary_datum_mismatch": [
+            "draft_drilling_packet"
+          ],
+          "boundary_section_gap": [
+            "draft_drilling_packet"
+          ],
+          "boundary_currency_mismatch": [
+            "draft_drilling_packet"
+          ],
+          "boundary_rate_unit_mismatch": [
+            "draft_drilling_packet"
+          ],
+          "boundary_schedule_sequence": [
+            "draft_drilling_packet"
+          ],
+          "boundary_forged_quote": [
+            "draft_drilling_packet"
+          ],
+          "boundary_forged_cost": [
+            "draft_drilling_packet"
+          ],
+          "boundary_field_authority": [
+            "draft_drilling_packet"
+          ],
+          "boundary_unapproved_record": [
+            "draft_drilling_packet"
+          ],
+          "boundary_cross_scope": [
+            "draft_drilling_packet"
+          ],
+          "edge_stale_sources": [
+            "draft_drilling_packet"
+          ]
+        }
+      },
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.source_faithfulness",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.unit_design_consistency",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.cost_schedule_arithmetic",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.hazard_offset_coverage",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    },
+    {
+      "id": "drilling.evidence_traceability",
+      "version": "1",
+      "parameters": {},
+      "threshold": 1,
+      "weight": 1,
+      "hardGate": true,
+      "onFailure": "block",
+      "rubric": null,
+      "judgeRef": null
+    }
+  ],
+  "aggregateThreshold": 1,
+  "failureAction": "block"
+}

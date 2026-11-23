@@ -1,68 +1,7 @@
-# Deployment — @shaleyeah/server-drilling
+# Host Drilling
 
-## Transport modes
+The employee is a Python package; the backend is a compiled Node MCP package. Install each unit with declared dependencies. Choose local process, VM, a managed runtime or another host that satisfies its contracts. This package does not require a particular hosting target.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3003` | Agent fleet, Docker, Kong |
+Keep source exports, model/backend credentials, context, reviewer enrollment, audit and qualification evidence in separate private owner-controlled storage. Supply current source/usage grants and a real authority provider for hosted requests. Remote MCP uses HTTPS; the optional local HTTP example binds only to loopback with explicit access/event configuration. A listening endpoint is not an authorization boundary by itself.
 
-```bash
-# stdio mode
-pnpm build && pnpm start
-
-# HTTP mode
-PORT=3003 pnpm start
-```
-
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Perforator Maximus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3003`) |
-| `DATA_PATH` | No | `./data` | Path to drilling data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
-
-## Build and run
-
-```bash
-cd servers/drilling
-pnpm install && pnpm build
-PORT=3003 ANTHROPIC_API_KEY=sk-... pnpm start
-```
-
-## Docker Compose (agent pair)
-
-```yaml
-services:
-  drilling:
-    image: shaleyeah/drilling:latest
-    environment:
-      PORT: "3003"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3003:3003"
-  drilling-engineer:
-    image: shaleyeah/drilling-engineer-adk:latest
-    environment:
-      DRILLING_MCP_URL: http://drilling:3003
-      DRILLING_ENGINEER_ADK_MODEL: gemini-flash-latest
-    depends_on: [drilling]
-```
-
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=drilling
-curl -X POST http://kong:8001/upstreams/drilling/targets -d target=drilling:3003
-curl -X POST http://kong:8001/services -d name=drilling -d host=drilling
-curl -X POST http://kong:8001/services/drilling/routes -d paths[]=/mcp/drilling
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3003` set
-- [ ] Registered with Kong at `/mcp/drilling`
-- [ ] Paired with the ADK/Python `agents/drilling-engineer` package through `DRILLING_MCP_URL`
+Use the package-local source/wheel/archive qualifier and retain exact tested/artifact/lock hashes before claiming support for a host. Fixture results do not certify a production deployment, paid provider, engineering design or live well operation. No production deployment is part of this adoption.

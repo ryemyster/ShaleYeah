@@ -18,19 +18,19 @@ test('Market agent and backend changes select full employee qualification instea
   }
 });
 
-test('full push/manual and shared inputs require Market independently of the five remaining callers', () => {
+test('full push/manual and shared inputs require Market independently of the four remaining callers', () => {
   for (const plan of [planFor('CHANGELOG.md', 'push'), planFor('CHANGELOG.md', 'workflow_dispatch'), planFor('evaluations/shaleyeah_evaluations/market.py')]) {
     assert.equal(plan.full, true);
     assert.equal(plan.units.market, true);
-    assert.equal(plan.callers.length, 5);
+    assert.equal(plan.callers.length, 4);
     assert.ok(!plan.callers.includes('market-analyst'));
   }
 });
 
 test('other passing roles, missing Market results or false reusable flags cannot waive selected qualification', () => {
   const plan = planFor('servers/market/src/index.ts');
-  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'success', title: 'skipped', 'protocol-callers': 'skipped' };
-  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: true, title: false, callers: '[]' };
+  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'success', title: 'skipped', drilling: 'skipped', 'protocol-callers': 'skipped' };
+  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: true, title: false, drilling: false, callers: '[]' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan, results, codeRevision, inputs }));
   for (const result of ['failure', 'cancelled', 'skipped', undefined])
     assert.throws(() => assertGate({ scope: 'reference', plan, results: { ...results, market: result }, codeRevision, inputs }), /market/);
@@ -49,7 +49,7 @@ test('hosted Market job keeps native HTTP, external, installed, artifact and tra
   assert.match(job, /run: pnpm --dir servers\/market test/);
   for (const step of ['grade_local_google.py', 'verify_cli_grade.py', 'check-extraction.mjs', 'check-containers.py']) assert.ok(job.includes(step));
   assert.doesNotMatch(job, /continue-on-error|--deselect|--ignore|test-name-pattern/);
-  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, market, title, protocol-callers, reference, reporter\]/);
+  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, market, title, drilling, protocol-callers, reference, reporter\]/);
 });
 
 test('the reusable workflow preserves one root job section and each existing job exactly once', () => {
@@ -57,5 +57,5 @@ test('the reusable workflow preserves one root job section and each existing job
   assert.equal([...workflow.matchAll(/^jobs:$/gm)].length, 1);
   const jobs = [...workflow.slice(workflow.indexOf('\njobs:\n')).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]);
   assert.equal(new Set(jobs).size, jobs.length);
-  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'market', 'title', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
+  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'market', 'title', 'drilling', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
 });

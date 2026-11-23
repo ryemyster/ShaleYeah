@@ -4,10 +4,10 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
 
-export const CALLER_ROLES = Object.freeze(['development-planner', 'drilling-engineer',
+export const CALLER_ROLES = Object.freeze(['development-planner',
   'infrastructure-planner', 'investment-chair',
   'research-analyst']);
-export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title']);
+export const UNIT_NAMES = Object.freeze(['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title', 'drilling']);
 export const PLAN_KIND = 'shaleyeah.ci-impact/v1';
 export const isRevision = (value) => typeof value === 'string' && /^[a-f0-9]{40}$/.test(value);
 
@@ -19,6 +19,7 @@ const agentOwners = {
   'legal-analyst': ['legal'],
   'market-analyst': ['market'],
   'title-analyst': ['title'],
+  'drilling-engineer': ['drilling'],
 };
 const serverOwners = {
   geowiz: ['geologist', 'reporter'], reporter: ['reporter'], econobot: ['economist'],
@@ -27,9 +28,10 @@ const serverOwners = {
   legal: ['legal'],
   market: ['market'],
   title: ['title'],
+  drilling: ['drilling'],
 };
 const serverCallers = {
-  development: 'development-planner', drilling: 'drilling-engineer',
+  development: 'development-planner',
   infrastructure: 'infrastructure-planner', decision: 'investment-chair',
   research: 'research-analyst',
 };

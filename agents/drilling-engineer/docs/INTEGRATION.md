@@ -1,33 +1,9 @@
-# Integration — Drilling Engineer ADK Agent
+# Integrate Drilling Engineer
 
-Integrate with Drilling Engineer through the ADK project in `agents/drilling-engineer`.
+Install this package and its declared contract, evaluation, MCP-client and employee-runtime dependencies. Select the backend with `DRILLING_MCP_URL` and its separate credential through `DRILLING_MCP_ACCESS_TOKEN_FILE`. The default URL is loopback port 3003; use HTTPS remotely. The backend needs current task/source/actor configuration.
 
-## Local ADK Invocation
+`create_drilling_engineer_agent` accepts explicit model/backend configuration, credential resolution, events and context hooks. Tools accept exact task/source/evidence IDs and revisions. Completed output is exactly `work` plus `drilling`; unavailable authority produces a JSON deferral.
 
-```bash
-cd agents/drilling-engineer
-DRILLING_MCP_URL=http://localhost:3003/mcp DRILLING_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Assess drilling risks for a deep horizontal shale well at 13500 ft"
-```
+For durable execution, open the installed ContextCatalog with customer/asset/task/employee scope, authenticated principal, private directory, retention/budget policy and current grant/source-authority callbacks. Seed the exact task and authorized source-artifact metadata, then call `await DrillingEngineerRuntime.open(catalog, models, backend_config=backend, ...)`. Execute `await runtime.run(prompt)` and close when finished. A stored source identity supplies no current access by itself.
 
-## Backend Contract
-
-The agent calls the Drilling-compatible MCP backend configured by `DRILLING_MCP_URL`.
-
-| Backend tool | Agent wrapper |
-|--------------|---------------|
-| `design_drilling_program` | `design_drilling_program` |
-| `estimate_well_costs` | `estimate_well_costs` |
-| `assess_drilling_risks` | `assess_drilling_risks` |
-
-## Orchestrator Boundary
-
-Future orchestration should call the ADK agent as a standalone unit. Keep task routing, fleet learning loops, runtime eval nodes, and deployment control plane work outside this package unless an issue explicitly scopes it here.
-
-## Server Integration
-
-Claude Desktop and other MCP clients can connect directly to `servers/drilling` for Tier 1 tool access. The Tier 2 Drilling Engineer behavior remains in ADK and uses the same backend URL.
-
-## Connection profile
-
-This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.
+The role verifies current canonical work before retaining review context. Human grants stay outside agent knowledge. The shared ReviewSupervisor resumes the exact approved private-record transition without another model decision. A compatible external MCP may replace the backend if it preserves argument, source, receipt, error and authority contracts; a transport fixture alone does not certify that implementation's engineering correctness. See the [backend contract](../../../servers/drilling/docs/INTEGRATION.md).

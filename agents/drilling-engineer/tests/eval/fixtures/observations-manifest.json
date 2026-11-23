@@ -1,0 +1,8 @@
+{
+  "version": "0.1.0",
+  "sha256": {
+    "observed-packet.json": "c52a052f4d8a541f662591965b873d39cacfc527af65ac79eee0059522de692f",
+    "observed-variants.json": "b6b6927ad41efc0ef321ad28c0a39d1ff4f547ecfd3eb4199dba39e4f3b639e2",
+    "provider-proposal.json": "98ea2a2b2363951fd005d6c02d53f0b862018a2302303ff21b9da3b66a4715f0"
+  }
+}

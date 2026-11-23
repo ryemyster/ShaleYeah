@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #686: replace unsupported fixed program/cost/risk guesses and global LLM fallback exports with exact operator-file design/evidence/constraint inputs, unit/datums, quoted-cost/schedule arithmetic and hazard/offset coverage. Add original UTF-8 citations, current source rights, enrolled exact engineer review and installed qualification before idempotent private recording. Build a clean compiled entry and independent source/production archive controls; no operational authority.
+
 ## [0.2.0] — 2026-06-10
 
 ### Added

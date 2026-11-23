@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- #686: remove Drilling Engineer from the retired generic-wrapper test inventory; its native employee package owns typed task/source mapping and compatible external-service controls. Shared client transport and the four remaining wrappers are unchanged.
+
 - #685: remove Title Analyst from the retired callable-wrapper inventory. Its
   native package owns instrument-bound tools, compatible external MCP and
   credential-denial controls; the shared client tests the five remaining

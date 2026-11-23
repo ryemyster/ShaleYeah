@@ -6,6 +6,8 @@ requests and [previous full changelog](https://github.com/ryemyster/ShaleYeah/bl
 
 ## [Unreleased]
 
+- **Drilling Engineer employee (#686):** supplied design/options, exact MD/TVD/datum and quoted-cost/sequential-schedule checks, hazard/offset evidence and cited proposed observations. Installed native model/context/review helpers and independent provisional qualification bind enrolled engineer private recording. Delete fixed engineering/rate/risk defaults, global LLM fallback exports, old wrappers and inline shape fixtures. Require exact Drilling CI/source/wheel/archive/client journeys; no operational authority or Docker additions.
+
 Changes after the latest `main` merge. The remaining employee migrations and
 MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md).
 

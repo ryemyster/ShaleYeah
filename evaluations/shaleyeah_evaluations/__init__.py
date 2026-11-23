@@ -168,6 +168,11 @@ class TrustedEvalPolicy:
                 "title.source_faithfulness", "title.ownership_arithmetic", "title.instrument_traceability", "title.chain_scope_coverage",
             }
             if self.role_id == "title-analyst"
+            else {
+                "drilling.architecture_boundary", "drilling.no_unapproved_program", "drilling.tool_boundary",
+                "drilling.source_faithfulness", "drilling.unit_design_consistency", "drilling.cost_schedule_arithmetic", "drilling.hazard_offset_coverage", "drilling.evidence_traceability",
+            }
+            if self.role_id == "drilling-engineer"
             else set()
         )
 
@@ -269,6 +274,8 @@ def load_profile(text, *, datasets, policy):
         if metric["id"].startswith("legal.") and policy.role_id != "legal-analyst":
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("market.") and policy.role_id != "market-analyst":
+            raise EvaluationError("policy_denied")
+        if metric["id"].startswith("drilling.") and policy.role_id != "drilling-engineer":
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("title.") and policy.role_id != "title-analyst":
             raise EvaluationError("policy_denied")

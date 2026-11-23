@@ -1,0 +1,606 @@
+[
+  {
+    "id": "control_base",
+    "family": "control",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": null,
+    "expectedStatus": "passed"
+  },
+  {
+    "id": "control_metric_equivalent",
+    "family": "control",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetMd"
+        ],
+        "value": {
+          "value": "3048",
+          "unit": "m",
+          "datumId": "datum.rotary-table"
+        }
+      },
+      {
+        "path": [
+          "design",
+          "targetTvd"
+        ],
+        "value": {
+          "value": "2438.4",
+          "unit": "m",
+          "datumId": "datum.rotary-table"
+        }
+      }
+    ],
+    "exceptionCodes": [],
+    "metric": null,
+    "expectedStatus": "passed"
+  },
+  {
+    "id": "edge_explicit_zero_quote",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "costs",
+          1,
+          "rate"
+        ],
+        "value": "0"
+      }
+    ],
+    "exceptionCodes": [],
+    "metric": null,
+    "expectedStatus": "passed"
+  },
+  {
+    "id": "edge_fractional_quote",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "costs",
+          1,
+          "quantity"
+        ],
+        "value": "0.1"
+      },
+      {
+        "path": [
+          "corpus",
+          "costs",
+          1,
+          "rate"
+        ],
+        "value": "0.05"
+      }
+    ],
+    "exceptionCodes": [],
+    "metric": null,
+    "expectedStatus": "passed"
+  },
+  {
+    "id": "edge_missing_tvd",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetTvd"
+        ],
+        "value": null
+      }
+    ],
+    "exceptionCodes": [
+      "missing_tvd"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_unknown_depth_unit",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetMd",
+          "unit"
+        ],
+        "value": null
+      }
+    ],
+    "exceptionCodes": [
+      "unknown_depth_unit"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_survey_foot",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetMd",
+          "unit"
+        ],
+        "value": "ft-us"
+      }
+    ],
+    "exceptionCodes": [
+      "unsupported_depth_unit"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_datum",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetMd",
+          "datumId"
+        ],
+        "value": null
+      }
+    ],
+    "exceptionCodes": [
+      "unknown_datum"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_offset",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "offsets"
+        ],
+        "value": []
+      }
+    ],
+    "exceptionCodes": [
+      "missing_offset"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_offset_applicability",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "offsets",
+          0,
+          "applicability"
+        ],
+        "value": "unknown"
+      }
+    ],
+    "exceptionCodes": [
+      "unknown_offset_applicability"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_hazard",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "hazards"
+        ],
+        "value": []
+      }
+    ],
+    "exceptionCodes": [
+      "missing_hazard"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_unknown_hazard",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "hazards",
+          0,
+          "status"
+        ],
+        "value": "unknown"
+      },
+      {
+        "path": [
+          "corpus",
+          "hazards",
+          0,
+          "severity"
+        ],
+        "value": "unknown"
+      }
+    ],
+    "exceptionCodes": [
+      "unknown_hazard"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_unreviewed_mitigation",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "hazards",
+          0,
+          "reviewStatus"
+        ],
+        "value": "unreviewed"
+      }
+    ],
+    "exceptionCodes": [
+      "unreviewed_hazard"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_cost",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "costs"
+        ],
+        "value": []
+      }
+    ],
+    "exceptionCodes": [
+      "missing_cost"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_schedule",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "schedules"
+        ],
+        "value": []
+      }
+    ],
+    "exceptionCodes": [
+      "missing_schedule"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_missing_component",
+    "family": "edge",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "options",
+          0,
+          "mudDesignRef"
+        ],
+        "value": null
+      }
+    ],
+    "exceptionCodes": [
+      "missing_program_basis"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_wrong_well",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "documents",
+          0,
+          "wellRef"
+        ],
+        "value": {
+          "id": "well.other",
+          "revision": "r1"
+        }
+      }
+    ],
+    "exceptionCodes": [
+      "wrong_well"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_changed_design",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "documents",
+          0,
+          "designRef"
+        ],
+        "value": {
+          "id": "design.example",
+          "revision": "r2"
+        }
+      }
+    ],
+    "exceptionCodes": [
+      "wrong_design"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_wrong_formation",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "documents",
+          1,
+          "formationRef"
+        ],
+        "value": {
+          "id": "formation.other",
+          "revision": "r1"
+        }
+      }
+    ],
+    "exceptionCodes": [
+      "wrong_formation"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_future_evidence",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "documents",
+          1,
+          "asOfDate"
+        ],
+        "value": "2030-01-01"
+      }
+    ],
+    "exceptionCodes": [
+      "future_evidence"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_unverified_evidence",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "documents",
+          1,
+          "sourceStatus"
+        ],
+        "value": "unverified"
+      }
+    ],
+    "exceptionCodes": [
+      "unverified_evidence"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_tvd_exceeds_md",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetTvd"
+        ],
+        "value": {
+          "value": "11000",
+          "unit": "ft",
+          "datumId": "datum.rotary-table"
+        }
+      }
+    ],
+    "exceptionCodes": [
+      "tvd_exceeds_md"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_datum_mismatch",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "targetTvd",
+          "datumId"
+        ],
+        "value": "datum.sea-level"
+      }
+    ],
+    "exceptionCodes": [
+      "datum_mismatch"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_section_gap",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "design",
+          "options",
+          0,
+          "sections",
+          0,
+          "topMd"
+        ],
+        "value": {
+          "value": "100",
+          "unit": "ft",
+          "datumId": "datum.rotary-table"
+        }
+      }
+    ],
+    "exceptionCodes": [
+      "section_coverage"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_currency_mismatch",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "costs",
+          0,
+          "currency"
+        ],
+        "value": "CAD"
+      }
+    ],
+    "exceptionCodes": [
+      "currency_mismatch"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_rate_unit_mismatch",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "costs",
+          0,
+          "perUnit"
+        ],
+        "value": "ft"
+      }
+    ],
+    "exceptionCodes": [
+      "rate_unit_mismatch"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_schedule_sequence",
+    "family": "capability_boundary",
+    "changes": [
+      {
+        "path": [
+          "corpus",
+          "schedules",
+          1,
+          "sequence"
+        ],
+        "value": 0
+      }
+    ],
+    "exceptionCodes": [
+      "schedule_sequence"
+    ],
+    "metric": null,
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_forged_quote",
+    "family": "capability_boundary",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "drilling.evidence_traceability",
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_forged_cost",
+    "family": "capability_boundary",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "drilling.cost_schedule_arithmetic",
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_field_authority",
+    "family": "capability_boundary",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "drilling.no_unapproved_program",
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_unapproved_record",
+    "family": "capability_boundary",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "drilling.no_unapproved_program",
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "boundary_cross_scope",
+    "family": "capability_boundary",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "evidence.provenance",
+    "expectedStatus": "failed"
+  },
+  {
+    "id": "edge_stale_sources",
+    "family": "edge",
+    "changes": [],
+    "exceptionCodes": [],
+    "metric": "evidence.freshness",
+    "expectedStatus": "failed"
+  }
+]

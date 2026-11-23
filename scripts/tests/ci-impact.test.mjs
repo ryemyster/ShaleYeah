@@ -5,13 +5,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-const callers = ['development-planner', 'drilling-engineer', 'infrastructure-planner',
+const callers = ['development-planner', 'infrastructure-planner',
   'investment-chair', 'research-analyst'];
 const base = '1'.repeat(40);
 const head = '2'.repeat(40);
 const revision = '3'.repeat(40);
 const units = (...selected) => Object.fromEntries(
-  ['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title'].map((unit) => [unit, selected.includes(unit)]));
+  ['geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title', 'drilling'].map((unit) => [unit, selected.includes(unit)]));
 const impact = async (changedPaths, extra = {}) => {
   const { selectImpact } = await import('../ci-impact.mjs');
   return selectImpact({ eventName: 'pull_request', baseSha: base, headSha: head,
@@ -46,6 +46,8 @@ for (const [file, selected, expectedCallers = []] of [
   ['servers/market/src/index.ts', ['market']],
   ['agents/title-analyst/app/agent.py', ['title']],
   ['servers/title/src/index.ts', ['title']],
+  ['agents/drilling-engineer/app/context_runtime.py', ['drilling']],
+  ['servers/drilling/src/drilling-service.ts', ['drilling']],
   ['docs/mvp-release-plan.md', []],
   ['CHANGELOG.md', []],
   ['README.md', []],
@@ -93,7 +95,7 @@ for (const file of ['sdk/employee/shaleyeah_employee/context.py', 'sdk/python/sh
   test(`shared or unknown impact remains full: ${file}`, async () => {
     const plan = await impact([file]);
     assert.equal(plan.full, true);
-    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title'));
+    assert.deepEqual(plan.units, units('geologist', 'reporter', 'economist', 'qa', 'reservoir', 'risk', 'legal', 'market', 'title', 'drilling'));
     assert.deepEqual(plan.callers, callers);
   });
 }

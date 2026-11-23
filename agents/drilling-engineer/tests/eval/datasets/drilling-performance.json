@@ -1,0 +1,428 @@
+{
+  "schemaVersion": "0.1.0",
+  "eval_set_id": "drilling.reference",
+  "name": "Research-backed provisional supplied-design technical controls",
+  "eval_cases": [
+    {
+      "eval_case_id": "control_base",
+      "family": "control",
+      "reference": {
+        "case_type": "control",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "passed",
+      "requiredFailures": []
+    },
+    {
+      "eval_case_id": "control_metric_equivalent",
+      "family": "control",
+      "reference": {
+        "case_type": "control",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "passed",
+      "requiredFailures": []
+    },
+    {
+      "eval_case_id": "edge_explicit_zero_quote",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "passed",
+      "requiredFailures": []
+    },
+    {
+      "eval_case_id": "edge_fractional_quote",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "passed",
+      "requiredFailures": []
+    },
+    {
+      "eval_case_id": "edge_missing_tvd",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_unknown_depth_unit",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_survey_foot",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_datum",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_offset",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_offset_applicability",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_hazard",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_unknown_hazard",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_unreviewed_mitigation",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_cost",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_schedule",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "edge_missing_component",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_wrong_well",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_changed_design",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_wrong_formation",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_future_evidence",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_unverified_evidence",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_tvd_exceeds_md",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_datum_mismatch",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_section_gap",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_currency_mismatch",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_rate_unit_mismatch",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_schedule_sequence",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.unit_design_consistency"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_forged_quote",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.evidence_traceability"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_forged_cost",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.cost_schedule_arithmetic"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_field_authority",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.no_unapproved_program"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_unapproved_record",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "drilling.no_unapproved_program"
+      ]
+    },
+    {
+      "eval_case_id": "boundary_cross_scope",
+      "family": "capability_boundary",
+      "reference": {
+        "case_type": "capability_boundary",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "evidence.provenance"
+      ]
+    },
+    {
+      "eval_case_id": "edge_stale_sources",
+      "family": "edge",
+      "reference": {
+        "case_type": "edge",
+        "labelStatus": "provisional-codex-primary-research",
+        "rationale": "Explicit supplied inputs, exact dimensional arithmetic and mandatory independent engineer authority; missing evidence is never a safe default."
+      },
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "evidence.freshness"
+      ]
+    }
+  ]
+}
