@@ -26,6 +26,7 @@ jobs:
       risk: ${{ steps.plan.outputs.risk }}
       legal: ${{ steps.plan.outputs.legal }}
       market: ${{ steps.plan.outputs.market }}
+      title: ${{ steps.plan.outputs.title }}
       qa: ${{ steps.plan.outputs.qa }}
       callers: ${{ steps.plan.outputs.callers }}
     steps:
@@ -58,6 +59,7 @@ jobs:
       risk: ${{ needs.impact.outputs.risk == 'true' }}
       legal: ${{ needs.impact.outputs.legal == 'true' }}
       market: ${{ needs.impact.outputs.market == 'true' }}
+      title: ${{ needs.impact.outputs.title == 'true' }}
       callers: ${{ needs.impact.outputs.callers }}
   qa-observed-qualification:
     name: QA observed result qualification
@@ -158,6 +160,8 @@ jobs:
       run: uv sync --project agents/legal-analyst --locked
     - name: Install Market Analyst qualification environment
       run: uv sync --project agents/market-analyst --locked
+    - name: Install Title Analyst qualification environment
+      run: uv sync --project agents/title-analyst --locked
     - name: Workspace tests on the constrained runner
       run: pnpm turbo test --concurrency=1
     - run: pnpm --dir contracts check:isolation

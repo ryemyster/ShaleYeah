@@ -1,60 +1,9 @@
-# Deployment — @shaleyeah/server-title
+# Deploy Title MCP
 
-## Transport modes
+Install the declared TypeScript packages or their archives and run `pnpm build`. The package owns its compiler configuration and clears its generated `dist` before building. `node dist/index.js` is the compiled stdio entry. Set `TITLE_CONFIG_FILE` to an owner-only binding described in [inputs](INPUTS.md); with no binding, no work tools are advertised.
 
-| Mode | When | Use case |
-|------|------|----------|
-| **stdio** | `PORT` not set | Claude Desktop, MCP CLI |
-| **HTTP** | `PORT=3010` | Agent fleet, Docker, Kong |
+For the supplied protected HTTP example, set `PORT` and `TITLE_HTTP_CONFIG_FILE`, then run `node examples/local-http.mjs`. The latter private JSON names `titleConfigFile`, `accessTokenFile`, `eventConfigFile` and `dataPath`. Include the access-token file in the source binding's secret scan. Enroll host identity/scopes, exact host/origin policy and required redacted events. The example binds `127.0.0.1`; remote ingress/TLS and identity verification require an appropriate qualified host adapter.
 
-```bash
-# stdio mode
-pnpm build && pnpm start
+Mount sources, sensitive files, private review/audit state and installed qualifier evidence explicitly. Preserve their UID ownership, retention and exact revisions across restart. An HTTP access token is separate from source permission and enrolled human authority. The backend needs no LLM key.
 
-# HTTP mode
-PORT=3010 pnpm start
-```
-
-## Environment variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `ANTHROPIC_API_KEY` | Yes | — | LLM synthesis (Titulus Verificatus) |
-| `PORT` | No | stdio | Set to enable HTTP transport (e.g. `3010`) |
-| `DATA_PATH` | No | `./data` | Path to title data directory |
-| `LOG_LEVEL` | No | `info` | `debug` \| `info` \| `warn` \| `error` |
-
-## Docker Compose (agent pair)
-
-```yaml
-services:
-  title:
-    image: shaleyeah/title:latest
-    environment:
-      PORT: "3010"
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    ports:
-      - "3010:3010"
-  title-analyst:
-    image: shaleyeah/title-analyst:latest
-    environment:
-      TITLE_MCP_URL: http://title:3010
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-    depends_on: [title]
-```
-
-## Kong gateway
-
-```bash
-curl -X POST http://kong:8001/upstreams -d name=title
-curl -X POST http://kong:8001/upstreams/title/targets -d target=title:3010
-curl -X POST http://kong:8001/services -d name=title -d host=title
-curl -X POST http://kong:8001/services/title/routes -d paths[]=/mcp/title
-```
-
-## Production checklist
-
-- [ ] `ANTHROPIC_API_KEY` set and valid
-- [ ] `PORT=3010` set
-- [ ] Registered with Kong at `/mcp/title`
-- [ ] Paired with `title-analyst` agent at port 4010
+The [independent package check](../../../agents/title-analyst/docs/DEPLOYMENT.md) builds source exports, npm archives and Python wheels, installs their declared dependencies and records artifact/lock hashes. The backend's qualifier uses contract/evaluation wheels without the employee implementation. Require passing reports for the tested revision before making a support claim. No cloud deployment is included.

@@ -1,0 +1,138 @@
+{
+  "version": "0.1.0",
+  "title": "Supplied tract ownership and exceptions for review",
+  "observations": [
+    {
+      "observationRef": {
+        "id": "observation.ownership",
+        "revision": "r1"
+      },
+      "questionId": "ownership",
+      "kind": "observation",
+      "statement": "The supplied shallow operating transfer preserves separate record title and deep operating rights.",
+      "citations": [
+        {
+          "instrumentRef": {
+            "id": "instrument.opening",
+            "revision": "r1"
+          },
+          "sectionId": "opening",
+          "startByte": 0,
+          "endByte": 219,
+          "quote": "Fictional supplied opening schedule: \u00c9lodie \ud83d\udee2 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion.",
+          "sha256": "37fd91a546d1fc42bab634837e704720454f409fe75a2559ab0dc33eaed6615c"
+        },
+        {
+          "instrumentRef": {
+            "id": "instrument.transfer",
+            "revision": "r1"
+          },
+          "sectionId": "transfer",
+          "startByte": 0,
+          "endByte": 221,
+          "quote": "Fictional supplied transfer: \u00c9lodie \ud83d\udee2 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed.",
+          "sha256": "f3a9be7024dbfa3cd7a31d6e2eb92bc06e7a3ff37d13111491f6c0cafccade32"
+        }
+      ]
+    },
+    {
+      "observationRef": {
+        "id": "observation.chain",
+        "revision": "r1"
+      },
+      "questionId": "chain",
+      "kind": "question",
+      "statement": "Review the supplied starting claim and recording links; public-record coverage is unverified.",
+      "citations": [
+        {
+          "instrumentRef": {
+            "id": "instrument.opening",
+            "revision": "r1"
+          },
+          "sectionId": "opening",
+          "startByte": 0,
+          "endByte": 219,
+          "quote": "Fictional supplied opening schedule: \u00c9lodie \ud83d\udee2 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion.",
+          "sha256": "37fd91a546d1fc42bab634837e704720454f409fe75a2559ab0dc33eaed6615c"
+        },
+        {
+          "instrumentRef": {
+            "id": "instrument.transfer",
+            "revision": "r1"
+          },
+          "sectionId": "transfer",
+          "startByte": 0,
+          "endByte": 221,
+          "quote": "Fictional supplied transfer: \u00c9lodie \ud83d\udee2 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed.",
+          "sha256": "f3a9be7024dbfa3cd7a31d6e2eb92bc06e7a3ff37d13111491f6c0cafccade32"
+        },
+        {
+          "instrumentRef": {
+            "id": "instrument.burdens",
+            "revision": "r1"
+          },
+          "sectionId": "royalty",
+          "startByte": 0,
+          "endByte": 141,
+          "quote": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional.",
+          "sha256": "26b74db297dbc066049c64ecb56a12b5f4bb4a63fee7212f5d729e0312a1f1c0"
+        }
+      ]
+    },
+    {
+      "observationRef": {
+        "id": "observation.burdens",
+        "revision": "r1"
+      },
+      "questionId": "burdens",
+      "kind": "observation",
+      "statement": "The supplied royalty and ORRI have different explicit share bases.",
+      "citations": [
+        {
+          "instrumentRef": {
+            "id": "instrument.burdens",
+            "revision": "r1"
+          },
+          "sectionId": "royalty",
+          "startByte": 0,
+          "endByte": 141,
+          "quote": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional.",
+          "sha256": "26b74db297dbc066049c64ecb56a12b5f4bb4a63fee7212f5d729e0312a1f1c0"
+        },
+        {
+          "instrumentRef": {
+            "id": "instrument.burdens",
+            "revision": "r1"
+          },
+          "sectionId": "orri",
+          "startByte": 0,
+          "endByte": 180,
+          "quote": "Fictional supplied burden schedule: Cobalt Example LLC also bears an ORRI of 1/16 of the whole in that shallow band. This is the supplied contractual basis, not a regional default.",
+          "sha256": "d9b7e50115a173a3a01b9277a9b510f9e083e1ea018f2b855bf782a2f51571e2"
+        }
+      ]
+    },
+    {
+      "observationRef": {
+        "id": "observation.lease",
+        "revision": "r1"
+      },
+      "questionId": "lease",
+      "kind": "question",
+      "statement": "Review the supplied term date; no lease validity or extension authority is claimed.",
+      "citations": [
+        {
+          "instrumentRef": {
+            "id": "instrument.opening",
+            "revision": "r1"
+          },
+          "sectionId": "lease",
+          "startByte": 0,
+          "endByte": 144,
+          "quote": "Fictional supplied Lease L has a primary term ending 2027-01-01. No conclusion about legal validity, production, extension or title is supplied.",
+          "sha256": "539516385d372d63d5513c6f4781d1f1d3cdce135d10df5d3496e3137ce19684"
+        }
+      ]
+    }
+  ]
+}

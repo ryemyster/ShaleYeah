@@ -28,9 +28,11 @@ Thumbs.db
 logs/
 
 # Coverage
+.coverage
 coverage/
 
 # Test artifacts
+artifacts/
 tests/temp/
 
 # Cache

@@ -6,10 +6,26 @@ employee with a defined job and a human owner. The human checks inputs, reviews
 outputs and approves the decisions that require professional judgment.
 
 This is the committed delivery ledger for the minimum viable product (MVP).
-It covers all 14 existing specialists and a bounded Chief of Staff pilot. Every
-row owns one output and one pull request (PR). Completing the plan document in
+It covers all 14 existing specialists and separately staged MVP follow-up work.
+Every row owns one output and one pull request (PR). Completing the plan document in
 [#664](https://github.com/ryemyster/ShaleYeah/issues/664) establishes the ledger;
 the remaining rows establish working behavior and release evidence.
+
+## Approved delivery boundary
+
+The maintainer approved this phase split on 2026-11-23. The current technical
+refactor finishes when all 14 standalone employees use the shared architecture,
+the displaced runtime is removed, and the required role and integrated checks
+cover the merged result. The remaining issues in that phase are #685–#690,
+#709, #691, #692 and #693. Role PRs reuse accepted helpers and implement only
+their remaining role-specific gaps.
+
+The optional Chief of Staff pilot (#676), human MVP acceptance (#694) and
+promotion to main (#695) remain open as later work. They do not block technical
+refactor completion. This preserves the distinction between technical fixture
+qualification and professional acceptance. Docker installation and new image
+packaging are outside the current refactor scope; independent source, wheel and
+archive checks remain required.
 
 ## Baseline and scope
 
@@ -40,8 +56,9 @@ and bindings; #572 specifies required protocol/composition profiles. Roman names
 remain display identities alongside explicit role and capability IDs.
 
 The plan includes role-specific data hooks, configurable evaluations, persistent
-working context, human review and restart-safe continuation. The Chief of Staff
-pilot coordinates Geologist and Research Analyst in one diligence workflow;
+working context, human review and restart-safe continuation. The later optional
+Chief of Staff pilot coordinates Geologist and Research Analyst in one diligence
+workflow;
 every specialist also works independently. The [#675 charter](chief-of-staff-role.md)
 specifies decision rights and keeps Investment Chair distinct for advisory
 investment synthesis; trusted implementation and human acceptance remain pending.
@@ -213,7 +230,7 @@ Independent defects discovered during adoption receive their own repair issue.
 | 32a | [#708](https://github.com/ryemyster/ShaleYeah/issues/708) | Remove fabricated market fallback metrics and false freshness | #576 | develop | Exact EIA/host values, periods and units vs separate reviewed assumptions/unavailability; key-scoped cache and changed-source cases; model narratives cannot populate facts; private exports; no name-derived metrics |
 | 33 | [#684](https://github.com/ryemyster/ShaleYeah/issues/684) | Adopt employee contracts for Market Analyst | #674, #665, #679, #708 | develop | Exact mandate/series/assumption sources; independent period/unit/region checks on actual output; retained private context, installed qualification, separate enrolled human review/restart and independent source/archive/wheel/container checks; provisional fictional labels grant no commercial authority |
 | 33a | [#788](https://github.com/ryemyster/ShaleYeah/issues/788) | Make native Legal qualification reliable on constrained runners | #684, #754 | develop | Allocation follows actual private content with growth/ownership/snapshot guards intact; safe phase and actual-request telemetry; unchanged native/human bounds and source/review assertions; exact cold PR and merge qualification |
-| 34 | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Adopt employee contracts for Title Analyst | #674, #665, #679, #788 | develop | Ownership evidence, conflicts and professional review; common employee checks |
+| 34 | [#685](https://github.com/ryemyster/ShaleYeah/issues/685) | Adopt employee contracts for Title Analyst | #674, #665, #679, #788 | develop | Exact supplied instrument arithmetic/citations, scope conflicts and qualified private human review; professional acceptance remains separate |
 | 35 | [#686](https://github.com/ryemyster/ShaleYeah/issues/686) | Adopt employee contracts for Drilling Engineer | #674, #665, #679 | develop | Engineering constraints, evidence and human review; common employee checks |
 | 36 | [#687](https://github.com/ryemyster/ShaleYeah/issues/687) | Adopt employee contracts for Development Planner | #674, #665, #679 | develop | Development alternatives, assumptions and human review; common employee checks |
 | 36a | [#709](https://github.com/ryemyster/ShaleYeah/issues/709) | Defer research findings when source evidence is missing | #576 | develop | Cited control findings, outage/coverage/contradiction cases; unsupported defaults cannot become evidence |
@@ -221,16 +238,24 @@ Independent defects discovered during adoption receive their own repair issue.
 | 38 | [#689](https://github.com/ryemyster/ShaleYeah/issues/689) | Adopt employee contracts for Infrastructure Planner | #674, #665, #679 | develop | Infrastructure constraints, source limitations and review; common employee checks |
 | 39 | [#690](https://github.com/ryemyster/ShaleYeah/issues/690) | Adopt employee contracts for Investment Chair | #674, #665, #679 | develop | Evidence-linked investment synthesis and human decision boundary; common employee checks |
 
-### Coordination, qualification and release
+### Technical refactor completion
 
 | Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
 | --- | --- | --- | --- | --- | --- |
-| 40 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Coordinate one Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
-| 41 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Require configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755, #757, #754, #788 | develop | All role checks and no-npm project-shape guards discovered and required; failed role/contract/trust cases block; no live key required for fixtures |
-| 42 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
-| 43 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the integrated develop candidate for operator testing | All rows 1–42 including lettered repairs, #676, #691 and #692 | develop | Exact candidate revision, clean setup, full role/reference/coordination checks, supported modes and known limitations recorded |
-| 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
-| 45 | [#695](https://github.com/ryemyster/ShaleYeah/issues/695) | Promote accepted develop to main | All rows 1–44 including lettered repairs, #693 and #694 | main (head develop) | Candidate/release relationship verified; human sign-off, checks, release notes and rollback/runbook evidence; post-merge checks pass |
+| 40 | [#691](https://github.com/ryemyster/ShaleYeah/issues/691) | Complete configured qualification across all 14 employees | #577, #541, #542, #680–#690, #671, #672, #673, #674, #708–#712, #716, #755, #757, #754, #788 | develop | Audit existing role jobs and fill registration/selection/result gaps; failed role/contract/trust cases block; no new evaluator design or live key required for fixtures |
+| 41 | [#692](https://github.com/ryemyster/ShaleYeah/issues/692) | Delete obsolete shared runtime after its last consumer migrates | #576, #541, #542, #680–#690 as required by the actual import graph | develop | Import/export and command audit has no retained caller; obsolete runtime/tests/docs removed; replacement regression checks pass |
+| 42 | [#693](https://github.com/ryemyster/ShaleYeah/issues/693) | Qualify the completed standalone refactor on develop | Required technical implementation rows and repairs, #691 and #692 | develop | Exact candidate revision, clean installed-package setup, all 14 role/reference and substitution checks, supported modes and known limitations recorded |
+
+### Later MVP work
+
+These issues remain tracked after the technical refactor. Selecting the optional
+coordinator pilot requires its own implementation and acceptance evidence.
+
+| Order | Owning issue | Single output | Direct prerequisites | PR base | Acceptance evidence |
+| --- | --- | --- | --- | --- | --- |
+| 43 | [#676](https://github.com/ryemyster/ShaleYeah/issues/676) | Optional Geologist/Research Analyst diligence workflow | #675, #674, #568, #571, #572, #573, #574, #577, #688, #679 | develop | Bounded delegation and evidence handoffs; private context stays private; failed/unreviewed outputs cannot authorize action |
+| 44 | [#694](https://github.com/ryemyster/ShaleYeah/issues/694) | Record human MVP acceptance on the qualified candidate | #693 and selected later workflows; #676 before any coordinator acceptance claim | develop | Named authorized reviewers, reviewed revisions, job-quality judgments and observed manual effort; blockers repaired and retested |
+| 45 | [#695](https://github.com/ryemyster/ShaleYeah/issues/695) | Promote accepted develop to main | Selected MVP scope, #693 and #694 | main (head develop) | Candidate/release relationship verified; human sign-off, checks, release notes and rollback/runbook evidence; post-merge checks pass |
 
 ## Complete employee coverage
 
@@ -255,7 +280,7 @@ and fills gaps before adoption; historical closure does not waive current tests.
 | Infrastructure Planner | `agents/infrastructure-planner` | `servers/infrastructure` | #689 | [#544](https://github.com/ryemyster/ShaleYeah/issues/544) |
 | Investment Chair | `agents/investment-chair` | `servers/decision` | #690 | [#545](https://github.com/ryemyster/ShaleYeah/issues/545) |
 
-The optional-at-deployment Chief of Staff has [charter #675](chief-of-staff-role.md)
+The later optional Chief of Staff has [charter #675](chief-of-staff-role.md)
 and pilot #676 in `orchestrator/`, with ADK/Python as the preferred authoring
 adapter. Its runtime remains unimplemented. It consumes permitted
 work products and handoffs rather than all employees' private memory.
@@ -297,16 +322,16 @@ baseline, support is unqualified unless evidence from the owning issue proves
 the stated mode. #578's [deployment support guide](deployment-support.md) records
 bounded local workspace/import/health evidence, planned isolated/container
 acceptance and untested optional hosts. #674 supplies reference portability
-evidence. Role PRs record their own limits; #693 reconciles release support.
+evidence. Role PRs record their own limits; #693 reconciles technical support.
 
 | Mode | MVP requirement | Current qualification | Evidence owner |
 | --- | --- | --- | --- |
 | Local package execution | Agent and MCP server install/run independently with fixture checks; orchestration optional | Requires clean isolated verification | #498, #674, role outputs, #693 |
-| Container execution | Reference agent/server install and run with externalized config, review and restart behavior | Requires verified container journey; fleet claims limited to role evidence | #578, #674, #693 |
+| Container execution | Optional hosting evidence retained from earlier role work | Claims remain limited to recorded role evidence; no new Docker deliverable or local setup is required for this refactor | #578, #674, recorded role evidence |
 | BYO model/key | At least two configured provider paths pass with fixture clients across the reference path; exact providers/versions selected in #669 | Fixture conformance pending; paid smoke runs are opt-in and any live-provider claim needs recorded evidence | #669, #674, #693 |
 | BYO-agent/runtime | Required composition cases selected in #572 pass with compatible fixtures; external employee replacement is explicitly classified | Conformance pending; no named alternative runtime is certified by selecting ADK | #572, #674, #693 |
 | BYO-data | Operator-supplied file adapter works; each role documents public/internal/licensed hooks and source requirements | File/reference verification and role-specific sources pending | #665, #670, #671, role outputs |
-| BYO-coordinator | Employees work standalone; bounded Chief of Staff pilot uses granted authority and work-product handoffs | Pilot pending; external coordinators require declared conformance | #572, #675, #676, #693 |
+| BYO-coordinator | Employees work standalone; a later selected Chief of Staff pilot uses granted authority and work-product handoffs | Deferred from technical refactor completion; external coordinators require declared conformance | #572, #675, #676 |
 | VM, Fly.io, Cloud Run, GKE, Agent Runtime or other hosted platforms | Configuration and packaging preserve portability | Platform-specific certification deferred unless added with its own issue and evidence | #578 |
 | Commercial connectors, Snowflake, hosted vector services | Keep replaceable interfaces and explicit access requirements | No mandatory service; paid connectors and deployment certification outside initial scope | #665, #670, #578 |
 
@@ -367,17 +392,18 @@ contracts, trust and composition decisions have acceptance evidence. A missing
 role, missing required behavior or issue containing unrelated outputs blocks
 that work until the gap has an owning issue or the scope is split.
 
-### Entry to human MVP testing: #693
+### Technical refactor completion: #693
 
-All required rows 1–42 have merged acceptance evidence. The integrated develop
-candidate passes clean setup, isolated package/container checks, all 14 role
-scorecards, the human-review reference journey, provider/conformance checks and
-the bounded coordinator workflow. The support matrix is accurate for that
+All required technical implementation rows have merged acceptance evidence. The
+integrated develop candidate passes clean setup, isolated package checks, all 14
+role scorecards, the human-review reference journey and provider/conformance
+checks. The optional coordinator is separately staged. The support matrix is
+accurate for that
 revision. Security/trust findings and required missing behavior have a recorded
 resolution. Capture the exact tested SHA, commands, environment/config/profile
 versions, reports, source rights and limitations in the qualification report.
 
-### Exit from human MVP testing: #694
+### Later human MVP acceptance: #694
 
 Authorized human/domain reviewers exercise real job scenarios on the qualified
 revision. They inspect inputs, sources, assumptions and work products; request
@@ -417,7 +443,7 @@ readiness.
 | Context storage/retrieval, budgets, retention and reviewed knowledge promotion | #571, #672 | Policy and restart/isolation/staleness evidence |
 | Identity, scopes, reviewer enrollment and revision-bound approval | #573, #678, #673 | Trusted enforcement and negative/replay tests |
 | Supported provider pairs, runtimes and deploy modes | #669, #572, #578, #674 | Exact versions, commands and qualification limits |
-| Chief of Staff authority and separation from Investment Chair | #675, #676, #690 | Charter/ADR specify distinct roles and human owner; implement and qualify their boundaries before acceptance |
+| Chief of Staff authority and separation from Investment Chair | #675, #676, #690 | Investment Chair remains standalone; qualify the distinct coordinator authority in the later pilot before claiming that workflow works |
 | Configured scoring thresholds and trusted judge/metric registry | #666, #667, #577, #691 | Versioned profiles and gates; ordinary tuning does not require source edits |
 | Required GitHub merge protection | #577, #691 | Required checks and current-base enforcement verified; local hooks alone are insufficient |
 

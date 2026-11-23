@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- #685: remove Title Analyst from the retired callable-wrapper inventory. Its
+  native package owns instrument-bound tools, compatible external MCP and
+  credential-denial controls; the shared client tests the five remaining
+  wrappers. No transport or authentication behavior changes.
+
 - #683: move Legal Analyst out of the remaining callable-wrapper inventory. Its native
   package owns exact memo/source tools, external MCP and protected review controls;
   the shared client continues to exercise the seven remaining wrappers. No wire API changes.

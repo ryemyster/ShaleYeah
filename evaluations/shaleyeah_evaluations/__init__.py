@@ -163,6 +163,11 @@ class TrustedEvalPolicy:
                 "market.tool_boundary",
             }
             if self.role_id == "market-analyst"
+            else {
+                "title.architecture_boundary", "title.no_unapproved_title", "title.tool_boundary",
+                "title.source_faithfulness", "title.ownership_arithmetic", "title.instrument_traceability", "title.chain_scope_coverage",
+            }
+            if self.role_id == "title-analyst"
             else set()
         )
 
@@ -264,6 +269,8 @@ def load_profile(text, *, datasets, policy):
         if metric["id"].startswith("legal.") and policy.role_id != "legal-analyst":
             raise EvaluationError("policy_denied")
         if metric["id"].startswith("market.") and policy.role_id != "market-analyst":
+            raise EvaluationError("policy_denied")
+        if metric["id"].startswith("title.") and policy.role_id != "title-analyst":
             raise EvaluationError("policy_denied")
         if (
             policy.role_id != "reporter"

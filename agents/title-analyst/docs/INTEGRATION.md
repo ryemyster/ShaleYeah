@@ -1,34 +1,11 @@
-# Integration — Title Analyst ADK Agent
+# Integrate Title Analyst
 
-Integrate with Title Analyst through the ADK project in `agents/title-analyst`.
+Install this Python package and its declared contract, evaluation, MCP-client and employee-runtime dependencies. Select the backend with `TITLE_MCP_URL`, and resolve its separate credential through `TITLE_MCP_ACCESS_TOKEN_FILE`. The default URL is loopback port 3010. Use HTTPS remotely; the role configuration helper permits HTTP on loopback. The backend must have current source/task/actor configuration.
 
-## Local ADK Invocation
+`create_title_analyst_agent` accepts explicit backend/model configuration, credential resolution, events and context hooks. Tools accept task/instrument/source IDs and revisions rather than county-based estimates or file paths. Completed output is exactly `work` plus `title`; unavailable authority produces a JSON deferral.
 
-```bash
-cd agents/title-analyst
-TITLE_MCP_URL=http://localhost:3010/mcp TITLE_MCP_ACCESS_TOKEN_FILE=/path/to/private/mcp-token agents-cli run \
-  "Trace chain of title for Section 3 in Weld County, Colorado over 40 years"
-```
+For retained execution, open the installed `ContextCatalog` with customer/asset/task/employee scope, the authenticated principal, private directory, retention/budget policy, and current grant/source-authority callbacks. Seed the exact task and authorized source-artifact metadata, then call `await TitleAnalystRuntime.open(catalog, models, backend_config=backend, ...)`. Use `await runtime.run(prompt)` and close the runtime when finished. Callbacks must revalidate current read/export rights; a stored source identity alone supplies no access.
 
-## Backend Contract
+Successful role calls retain permitted metadata through catalog guards. Before preparing review, the adapter redrafts and compares canonical work/title, obtains host-owned context and retains only the pending review reference. Human grants are not stored as agent knowledge. The shared review supervisor resumes the exact approved private-record transition without another model decision.
 
-The agent calls the Title-compatible MCP backend configured by `TITLE_MCP_URL`.
-
-| Backend tool | Agent wrapper |
-|--------------|---------------|
-| `examine_ownership` | `examine_title_ownership` |
-| `analyze_lease` | `analyze_title_lease` |
-| `check_burdens` | `check_title_burdens` |
-| `trace_chain_of_title` | `trace_title_chain_of_title` |
-
-## Orchestrator Boundary
-
-Future orchestration should call the ADK agent as a standalone unit. Keep task routing, fleet learning loops, and deployment control plane work outside this package unless an issue explicitly scopes it here.
-
-## Server Integration
-
-Claude Desktop and other MCP clients can connect directly to `servers/title` for Tier 1 tool access. The Tier 2 Title Analyst behavior remains in ADK and uses the same backend URL.
-
-## Connection profile
-
-This caller uses MCP 2026-07-28 with self-contained requests, fresh tool discovery and validated results. Set the private credential-file reference shown above; model keys and MCP credentials serve different purposes. The backend must configure permitted identities/scopes and required audit before opening HTTP. Old initialized servers are outside this selected profile. Keep caller credentials separate from any model or third-party source credentials.
+A compatible external MCP service can replace the backend if it preserves the same source, argument, receipt, error and authority contract. The external fixture checks transport/tool substitution; it does not certify that service's title correctness or review implementation. See the backend [tool/review contract](../../../servers/title/docs/INTEGRATION.md).

@@ -22,6 +22,24 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
 
 ### Changed
 
+- **Refactor delivery boundary:** finish the 14 standalone role workflows,
+  displaced-runtime deletion and integrated technical qualification. Keep the
+  optional coordinator, human MVP acceptance and main release in later phases;
+  remove new Docker packaging from the current refactor requirements. Reconcile
+  issue scopes, stale reference labels and architecture rollout counts.
+
+- **Title Analyst employee:** exact examination, instrument and policy exports;
+  separate record/operating/depth holdings and rational WI/whole burden bases;
+  original UTF-8 citations, explicit inventory/coverage blockers and proposed
+  observations. Native configured providers, private retained context, actual
+  output grading and installed qualification precede enrolled human private
+  recording. Source-less guesses/shim exports, old wrappers and inline shape
+  evals are removed; Title has its own required qualification job and five
+  caller-only roles remain. The shared client's compatibility inventory now
+  follows the same five remaining wrappers; native Title owns its source and
+  external-MCP checks. Provisional fixtures establish no record authenticity,
+  complete county coverage, professional acceptance or title clearance. (#685)
+
 - **Market Analyst employee:** exact mandate/series/assumption exports, independent
   time-series and unit checks, native configured providers, private retained context,
   actual-output grading and installed qualification before separate human review.

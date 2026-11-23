@@ -17,7 +17,6 @@ CALLERS = [
     ("infrastructure-planner", "infrastructure_mcp", "INFRASTRUCTURE", "infrastructure"),
     ("investment-chair", "decision_mcp", "DECISION", "decision"),
     ("research-analyst", "research_mcp", "RESEARCH", "research"),
-    ("title-analyst", "title_mcp", "TITLE", "title"),
 ]
 
 

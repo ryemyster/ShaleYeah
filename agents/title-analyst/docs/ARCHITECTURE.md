@@ -1,81 +1,9 @@
-# Architecture — Title Analyst ADK Agent
+# Title Analyst architecture
 
-`agents/title-analyst` is the package-local ADK/Python project for the Title Analyst role. The monorepo root remains workspace coordination only.
+Selected mode: **Stand-alone Agent with Progressive Disclosure (Skills)**. One native ADK employee loads current source detail and proposes cited observations. `ConfiguredModel` owns the explicit Gemini/Anthropic adapter and request budget. The installed employee runtime owns native execution, context selection and current-authority checks. No child specialists or custom reasoning loop are added.
 
-## Package Boundary
+`app/title_mcp.py` maps typed role arguments through the installed stateless MCP client. `app/context_runtime.py` binds all three permitted source identities, verified canonical work and pending review references into this employee's private catalog. `app/evaluation.py` parses the actual final response and calls the installed evaluation runner. `app/review_supervision.py` maps fixed review/status/record operations through the shared supervisor.
 
-| Path | Purpose |
-|------|---------|
-| `agents-cli-manifest.yaml` | agents-cli project marker for this package |
-| `.agents-cli-spec.md` | reference-pair spec and package boundary |
-| `pyproject.toml` | Python ADK dependencies |
-| `app/agent.py` | ADK `root_agent`, instructions, model choice, and tool registration |
-| `app/title_mcp.py` | Python MCP client and Title execution wrappers |
-| `tests/` | pytest shape tests plus ADK eval dataset/config |
-| `servers/title` | independent TypeScript MCP backend |
+The independent Title backend owns exact arithmetic, original-text citations and durable consequential state. An enrolled qualified human inspects the exact packet and installed qualification before private recording. Model confirmation does not approve work. Changed/revoked sources invalidate continuation; retained context cannot grant title clearance, filing, transfer, lease acceptance or capital authority.
 
-## Architecture Mode
-
-Primary mode: **Stand-alone Agent with Progressive Disclosure (Skills)**.
-
-Title Analyst is a stand-alone specialist that equips package-local instructions, eval criteria, and Title MCP tools when title diligence is requested. It is not a hierarchical orchestrator, graph workflow, ambient event-driven agent, or capability-first arbitrator in #528.
-
-Graph-based workflow is reserved for a later issue if title review needs deterministic nodes, conditional routes, stateful sessions, or explicit HITL gates as workflow nodes.
-
-## Execution Path
-
-```
-ADK runner / agents-cli
-  |
-  v
-app/agent.py
-  |
-  |-- title_backend_status()
-  |-- plan_title_tool_call()
-  |-- examine_title_ownership()
-  |-- analyze_title_lease()
-  |-- check_title_burdens()
-  `-- trace_title_chain_of_title()
-       |
-       v
-app/title_mcp.py
-       |
-       v
-TITLE_MCP_URL, default http://localhost:3010/mcp
-       |
-       v
-servers/title
-```
-
-## Tool Parity
-
-| Title MCP tool | ADK Python wrapper |
-|----------------|--------------------|
-| `examine_ownership` | `examine_title_ownership` |
-| `analyze_lease` | `analyze_title_lease` |
-| `check_burdens` | `check_title_burdens` |
-| `trace_chain_of_title` | `trace_title_chain_of_title` |
-
-## Eval Harness
-
-Behavior evals live under `tests/eval/`.
-
-| File | Purpose |
-|------|---------|
-| `tests/eval/datasets/title-analyst-adk-reference.json` | Control, edge, and capability-boundary cases for ADK tool selection |
-| `tests/eval/eval_config.yaml` | Deterministic hard-boundary checks plus LLM-judged response quality |
-
-Run from `agents/title-analyst`:
-
-```bash
-agents-cli eval run
-```
-
-## Runtime Configuration
-
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `TITLE_MCP_URL` | `http://localhost:3010/mcp` | Title-compatible MCP backend URL |
-| `TITLE_ANALYST_ADK_MODEL` | `gemini-flash-latest` | ADK model id for local runs |
-
-The agent does not depend on the orchestrator or any other agent. It can run standalone as long as a compatible Title MCP backend is reachable when execution tools are invoked.
+The simple ADK CLI app follows its host's session lifecycle. Durable guarantees require `TitleAnalystRuntime.open` with an operator-owned catalog and current source callbacks. No warehouse, orchestrator, cloud host or vector service is required. See [integration](INTEGRATION.md) and [deployment](DEPLOYMENT.md).

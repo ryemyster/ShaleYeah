@@ -1,40 +1,9 @@
-# Architecture — @shaleyeah/server-title
+# Title backend architecture
 
-## Role
+Title is the deterministic source/review backend for a **Stand-alone Agent with Progressive Disclosure (Skills)**. It runs independently of the Python employee with a generic MCP client. Shared SDK serving handles the protocol, identity, audit and execution boundary.
 
-Tier 1 MCP tool server. Verifies mineral rights ownership, identifies title defects, and assesses encumbrances. Paired with the `title-analyst` agent (port 4010).
+`title-packet.ts` parses bounded supplied instruments, reconciles rational holdings/burdens and validates original UTF-8 citations. `title-service.ts` binds current task, bytes, source grants, scope, freshness, export permission and content scanning. `configuration.ts` loads private operator files; `source-hooks.ts` supplies the normalized download/API seam.
 
-## Tool inventory
+`employee-tools.ts` exposes 13 bounded source/calculation/draft/review tools. The public entry advertises no work without configuration. `review-workflow.ts` adapts the installed shared review workflow to exact Title sources/work/context and the private `record_title_packet` transition. It does not introduce another approval state machine.
 
-| Tool | Handler | LLM? | Purpose |
-|------|---------|------|---------|
-| `examine_title` | LLM + Zod schema | ✅ `callLLM` | Ownership percentage, risk level, encumbrances, title notes |
-
-## LLM + fallback pattern
-
-Passes legal description, county, and chain of title age to `callLLM()`. Response is validated against a Zod schema enforcing `ownershipPercentage`, `riskLevel` (`low | medium | high`), `encumbrances`, and `notes`. Falls back to `deriveDefaultTitleFindings()` if the API is unavailable.
-
-## Key exports
-
-`deriveDefaultTitleFindings(description, county, chainAge)` — deterministic fallback. Complex multi-parcel descriptions produce lower ownership percentages than simple single-parcel descriptions.
-
-## Transport modes
-
-- **stdio** (default): used by Claude Desktop and MCP CLI
-- **HTTP** (when `PORT=3010`): `StreamableHTTPServerTransport` — used by the agent fleet
-
-## Data flow
-
-```
-MCP tool call: examine_title { description, county, chainAge }
-  → callLLM(title examination prompt)
-  → Zod schema validation → { ownershipPercentage, riskLevel, encumbrances, notes }
-  ↘ fallback: deriveDefaultTitleFindings(description, county, chainAge)
-```
-
-## Dependencies
-
-```
-@shaleyeah/server-title
-  └── @shaleyeah/sdk   (MCPServer, callLLM)
-```
+A separately enrolled qualified human must inspect and approve the exact currently qualified packet. Model tools cannot approve work. Current sources, authority, evaluation and revision are checked again before private recording. This grants no legal title opinion, clearance, filing, curative, transfer, lease or capital authority.

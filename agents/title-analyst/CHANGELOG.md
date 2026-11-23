@@ -1,6 +1,15 @@
 # Changelog — Title Analyst ADK Agent
 
 ## [Unreleased]
+
+- #685: Bind exact examination/instrument/policy sources to cited ownership and
+  exception packets. Reuse installed native models, private context, review
+  supervision and qualification; freeze provisional Fraction/citation/scope and
+  authority controls. Add generic/external/source/archive/wheel CI checks.
+  Delete source-less guessing/shim exports, global wrappers/default models and
+  obsolete shape-only eval paths. Private recording grants no title clearance
+  or professional acceptance.
+
 - #722: Use the installed modern MCP client with a private credential-file reference, bounded calls and validated structured results; remove copied session initialization/serialization and correct the `/mcp` endpoint. Role reasoning and later employee qualification remain separately owned.
 
 

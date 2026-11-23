@@ -8,7 +8,7 @@ from . import EvaluationError
 def parse_employee_response(response, payload_key):
     """Read the actual final output; a caller cannot substitute backend work for it."""
     try:
-        if payload_key not in ("scenario", "forecast", "risk", "legal", "market"):
+        if payload_key not in ("scenario", "forecast", "risk", "legal", "market", "title"):
             raise ValueError
         parts = response["parts"]
         if type(parts) is not list or not parts:
