@@ -35,7 +35,9 @@ MVP acceptance work are tracked in the [delivery plan](docs/mvp-release-plan.md)
   output grading and installed qualification precede enrolled human private
   recording. Source-less guesses/shim exports, old wrappers and inline shape
   evals are removed; Title has its own required qualification job and five
-  caller-only roles remain. Provisional fixtures establish no record authenticity,
+  caller-only roles remain. The shared client's compatibility inventory now
+  follows the same five remaining wrappers; native Title owns its source and
+  external-MCP checks. Provisional fixtures establish no record authenticity,
   complete county coverage, professional acceptance or title clearance. (#685)
 
 - **Market Analyst employee:** exact mandate/series/assumption exports, independent
