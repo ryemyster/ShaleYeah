@@ -43,8 +43,8 @@ specifies our/third-party employee and MCP combinations, standalone use and opti
 coordination. #722 selects MCP 2026-07-28 for stdio and Streamable HTTP;
 previous 2025-11-25 receipts remain historical evidence. Geologist, Reporter, QA,
 Economist, Reservoir Engineer, Risk Analyst, Legal Analyst, Market Analyst and
-Title Analyst use ADK 2.4.0, with Python MCP 2.3.0 through the installed client.
-The five
+Title Analyst and Drilling Engineer use ADK 2.4.0, with Python MCP 2.3.0 through the installed client.
+The four
 remaining ADK callers retain their existing ADK 2.5.0 locks and now use that
 same installed MCP client. Their employee workflow qualification remains pending. TypeScript
 uses server/client 2.3.1 and Node adapter 2.1.1 with explicit modern options.
@@ -136,9 +136,17 @@ capital authority. Independent package/container results retain their own receip
 
 All fourteen agents have ADK manifests: Geologist, Economist, Reservoir Engineer, Reporter, Quality Assurance, Risk Analyst, Legal Analyst, Market
 Analyst, Title Analyst, Drilling Engineer, Development Planner, Research Analyst,
-Infrastructure Planner and Investment Chair. Nine still need their full employee
-workflow qualification.
+Infrastructure Planner and Investment Chair. Development Planner, Research Analyst,
+Infrastructure Planner and Investment Chair still need their full employee workflows.
+Fleet qualification and final integrated technical acceptance remain #691/#693.
 See the [complete role/server map](mvp-release-plan.md#complete-employee-coverage).
+
+[Drilling Engineer](../agents/drilling-engineer/README.md) uses exact supplied
+well/design/evidence/constraint exports, explicit depth/datums, quoted cost and
+sequential schedule arithmetic, hazards and offset applicability. Native context,
+original-byte citations, independent installed qualification and separate engineer
+review bind private recording. Engineering claims remain operator-attested; no
+field, well-control, safety or capital authority follows.
 
 The four copied TypeScript employee loops have been replaced. Shared SDK
 compatibility exports remain for the caller and public API audit in #692.

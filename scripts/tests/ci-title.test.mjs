@@ -18,19 +18,19 @@ test('Title agent and backend changes select full employee qualification instead
   }
 });
 
-test('full push/manual and shared inputs require Title independently of the five remaining callers', () => {
+test('full push/manual and shared inputs require Title independently of the four remaining callers', () => {
   for (const plan of [planFor('CHANGELOG.md', 'push'), planFor('CHANGELOG.md', 'workflow_dispatch'), planFor('evaluations/shaleyeah_evaluations/title.py')]) {
     assert.equal(plan.full, true);
     assert.equal(plan.units.title, true);
-    assert.equal(plan.callers.length, 5);
+    assert.equal(plan.callers.length, 4);
     assert.ok(!plan.callers.includes('title-analyst'));
   }
 });
 
 test('other passing roles, missing Title results or false reusable flags cannot waive selected qualification', () => {
   const plan = planFor('servers/title/src/index.ts');
-  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'success', 'protocol-callers': 'skipped' };
-  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: false, title: true, callers: '[]' };
+  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'success', drilling: 'skipped', 'protocol-callers': 'skipped' };
+  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: false, title: true, drilling: false, callers: '[]' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan, results, codeRevision, inputs }));
   for (const result of ['failure', 'cancelled', 'skipped', undefined])
     assert.throws(() => assertGate({ scope: 'reference', plan, results: { ...results, title: result }, codeRevision, inputs }), /title/);
@@ -41,7 +41,7 @@ test('hosted Title job keeps native HTTP, external, installed, artifact and trac
   const workflow = readFileSync(new URL('../../.github/workflows/reference-qualification.yml', import.meta.url), 'utf8');
   const start = workflow.indexOf('\n  title:\n');
   assert.ok(start >= 0);
-  const end = workflow.indexOf('\n  protocol-callers:\n', start);
+  const end = workflow.indexOf('\n  drilling:\n', start);
   assert.ok(end > start);
   const job = workflow.slice(start, end);
   assert.match(job, /if: inputs\.title/);
@@ -50,7 +50,7 @@ test('hosted Title job keeps native HTTP, external, installed, artifact and trac
   for (const step of ['grade_local_google.py', 'verify_cli_grade.py', 'check-extraction.mjs']) assert.ok(job.includes(step));
   assert.doesNotMatch(job, /check-containers|container-report|Docker|docker|title-containers/);
   assert.doesNotMatch(job, /continue-on-error|--deselect|--ignore|test-name-pattern/);
-  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, market, title, protocol-callers, reference, reporter\]/);
+  assert.match(workflow, /needs: \[economist, reservoir, risk, legal, market, title, drilling, protocol-callers, reference, reporter\]/);
 });
 
 test('Title qualification has no Docker prerequisites or displaced image tooling', () => {
@@ -69,5 +69,5 @@ test('the reusable workflow preserves one root job section and each existing job
   assert.equal([...workflow.matchAll(/^jobs:$/gm)].length, 1);
   const jobs = [...workflow.slice(workflow.indexOf('\njobs:\n')).matchAll(/^  ([a-z][a-z-]*):$/gm)].map((match) => match[1]);
   assert.equal(new Set(jobs).size, jobs.length);
-  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'market', 'title', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
+  assert.deepEqual([...jobs].sort(), ['economist', 'reservoir', 'risk', 'legal', 'market', 'title', 'drilling', 'protocol-callers', 'reference', 'reporter', 'qualification-gate'].sort());
 });

@@ -1,39 +1,5 @@
-# Local Testing — @shaleyeah/server-drilling
+# Test Drilling locally
 
-## Quick start
+Run the README's locked package tests. Fixtures contain synthetic operator data and need no provider keys. Full native/external/protected HTTP tests require a host that permits loopback listeners. If the host forbids a listener, retain the failure as an environment limit and obtain required hosted evidence before merge; do not mark an unexecuted journey passed.
 
-```bash
-cd servers/drilling
-pnpm build
-npx tsx tests/server.test.ts
-```
-
-## HTTP mode testing
-
-```bash
-# Terminal 1
-PORT=3003 ANTHROPIC_API_KEY=sk-... pnpm start
-
-# Terminal 2
-cd agents/drilling-engineer
-DRILLING_MCP_URL=http://localhost:3003 agents-cli run \
-  "Design a drilling program for a horizontal Wolfcamp well at 10000 ft"
-```
-
-## Test the fallback path
-
-Run without an API key to confirm deterministic fallback works:
-
-```bash
-# No ANTHROPIC_API_KEY set
-npx tsx tests/server.test.ts
-# Should pass — deriveDefaultDrillingInterpretation() provides the interpretation
-```
-
-## Common issues
-
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| `ECONNREFUSED :3003` | Server not started in HTTP mode | `PORT=3003 pnpm start` |
-| `Invalid well type` | Bad enum value | Use `"vertical"`, `"horizontal"`, or `"directional"` |
-| Tests fail to import | Build needed | `pnpm build` first |
+The backend's `scripts/check-extraction.mjs` builds independent source, production npm archives and Python wheels, installs declared dependencies, and repeats current source/review/native/client controls outside the authoring workspace. It records artifact and dependency-lock hashes. Its destination must be an empty directory owned by the operator.

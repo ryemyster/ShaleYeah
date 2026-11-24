@@ -1,1 +1,1 @@
-"""Drilling Engineer ADK app package."""
+"""Drilling Engineer ADK package."""

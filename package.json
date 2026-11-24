@@ -1,7 +1,7 @@
 {
   "name": "shaleyeah",
   "version": "2.0.0",
-  "description": "Agent OS for oil & gas investment due diligence — 14 specialist AI agents replacing a full deal team",
+  "description": "Agent OS for oil & gas investment due diligence \u2014 14 specialist AI agents replacing a full deal team",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.5.1",
@@ -13,7 +13,7 @@
     "check:issue-template": "node scripts/check-issue-spec-template.mjs",
     "sdlc": "node scripts/sdlc.mjs",
     "test:sdlc": "node --test scripts/tests/sdlc.test.mjs",
-    "test:ci": "node --test --experimental-test-coverage --test-coverage-include='scripts/ci-*.mjs' --test-coverage-lines=90 scripts/tests/ci-impact.test.mjs scripts/tests/ci-gates.test.mjs scripts/tests/ci-risk.test.mjs scripts/tests/ci-legal.test.mjs scripts/tests/ci-market.test.mjs scripts/tests/ci-title.test.mjs",
+    "test:ci": "node --test --experimental-test-coverage --test-coverage-include='scripts/ci-*.mjs' --test-coverage-lines=90 scripts/tests/ci-impact.test.mjs scripts/tests/ci-gates.test.mjs scripts/tests/ci-risk.test.mjs scripts/tests/ci-legal.test.mjs scripts/tests/ci-market.test.mjs scripts/tests/ci-title.test.mjs scripts/tests/ci-drilling.test.mjs",
     "clean": "pnpm turbo build --force && rm -rf sdk/dist agents/*/dist servers/*/dist orchestrator/dist"
   },
   "devDependencies": {

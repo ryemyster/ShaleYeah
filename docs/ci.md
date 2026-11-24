@@ -31,8 +31,9 @@ cannot silently turn the final gate into an accepted skip.
 | Legal Analyst employee or Legal MCP | Legal Analyst |
 | Market Analyst employee or Market MCP | Market Analyst |
 | Title Analyst employee or Title MCP | Title Analyst |
+| Drilling Engineer employee or Drilling MCP | Drilling Engineer |
 | QA employee or QA server | QA |
-| One of the five remaining Python caller packages or its backend | That caller's locked package checks |
+| One of the four remaining Python caller packages or its backend | That caller's locked package checks |
 | Root README, architecture, contributing or changelog; reviewed CI/SDLC and MVP/legacy ledger docs | Workspace checks |
 | Shared SDK, contracts, connectors, evaluations, workflow/CI scripts, root configuration/data or unknown paths | Full qualification |
 
@@ -71,7 +72,7 @@ the driver. The job does not combine employee apps, context or approval state.
 The currently adopted employees keep their frozen evaluations, native provider
 journeys, source/review/restart controls, coverage floors and archive/wheel checks.
 Earlier role jobs also include their separate non-root container journeys;
-Title qualification uses independent packages. Other callers' shape/connection tests
+Title and Drilling qualification use independent packages. Other callers' shape/connection tests
 do not establish full employee or professional qualification.
 
 ## Test and extend the policy

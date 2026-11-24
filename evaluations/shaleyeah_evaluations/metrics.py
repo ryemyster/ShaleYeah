@@ -9,6 +9,13 @@ import rfc8785
 from jsonschema import Draft202012Validator
 from shaleyeah_contracts import ContractValidationError, validate_contract, validate_source_contract
 
+from .drilling import (
+    cost_schedule_arithmetic,
+    evidence_traceability,
+    hazard_offset_coverage,
+    no_drilling_authority,
+    unit_design_consistency,
+)
 from .economics import cash_flow_accuracy
 from .forecasts import forecast_accuracy
 from .legal import citation_accuracy, issue_coverage, jurisdiction_date, no_clearance
@@ -443,6 +450,25 @@ def _title_faithfulness(trace, runtime, _):
     )
 
 
+def _drilling_faithfulness(trace, runtime, _):
+    observed = runtime.get("observations", {})
+    work, packet = observed.get("drilling_work"), observed.get("drilling_packet")
+    sources = runtime.get("sourceArtifacts", [])
+    return (
+        _provenance(trace, runtime, {}) and type(work) is dict and type(packet) is dict
+        and no_drilling_authority(trace) and len(sources) == 3
+        and all(source.get("format") == "json" for source in sources)
+        and len({source["artifact"]["id"] for source in sources}) == 3
+        and _same_json(work.get("inputs"), [source["artifact"] for source in sources])
+        and _same_json(work.get("evidence"), [source["evidence"] for source in sources])
+        and _same_json(trace.get("workProduct"), work)
+        and _same_json(trace.get("drillingPacket"), packet)
+    )
+
+def _drilling_authority(trace, runtime, _):
+    return no_drilling_authority(trace) and _persistence(trace, runtime, {})
+
+
 def _title_authority(trace, runtime, _):
     return no_title_authority(trace) and _persistence(trace, runtime, {})
 
@@ -544,6 +570,23 @@ REGISTRY = MappingProxyType(
             _definition("risk.no_unapproved_acceptance", _persistence),
             _definition("risk.source_faithfulness", _risk_faithfulness),
             _definition("legal.source_faithfulness", _legal_faithfulness),
+            _definition("drilling.source_faithfulness", _drilling_faithfulness),
+            _definition("drilling.unit_design_consistency", unit_design_consistency),
+            _definition("drilling.cost_schedule_arithmetic", cost_schedule_arithmetic),
+            _definition("drilling.hazard_offset_coverage", hazard_offset_coverage),
+            _definition("drilling.evidence_traceability", evidence_traceability),
+            _definition("drilling.architecture_boundary", _observed_architecture),
+            _definition("drilling.no_unapproved_program", _drilling_authority),
+            _definition("drilling.tool_boundary", _tool_boundary, {
+                "expectedCalls": {"type": "object", "minProperties": 1, "additionalProperties": {
+                    "type": "array", "items": {"type": "string", "enum": [
+                        "drilling_engineer_backend_status", "read_drilling_inputs", "read_drilling_source",
+                        "read_drilling_evidence", "cite_drilling_evidence", "get_context_source_metadata",
+                        "design_drilling_program", "estimate_well_costs", "assess_drilling_risks",
+                        "draft_drilling_packet", "prepare_drilling_review", "drilling_review_status", "record_drilling_packet",
+                    ]}, "uniqueItems": True, "maxItems": 13,
+                }},
+            }),
             _definition("title.source_faithfulness", _title_faithfulness),
             _definition("title.ownership_arithmetic", ownership_arithmetic),
             _definition("title.instrument_traceability", instrument_traceability),

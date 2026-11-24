@@ -1,30 +1,7 @@
-# Deployment — Drilling Engineer ADK Agent
+# Host Drilling
 
-The Drilling Engineer agent is a package-local ADK/Python project. It should remain deployable independently from the Drilling MCP backend and from the optional orchestrator.
+The employee is a Python package; the backend is a compiled Node MCP package. Install each unit with declared dependencies. Choose local process, VM, a managed runtime or another host that satisfies its contracts. This package does not require a particular hosting target.
 
-## Environment Variables
+Keep source exports, model/backend credentials, context, reviewer enrollment, audit and qualification evidence in separate private owner-controlled storage. Supply current source/usage grants and a real authority provider for hosted requests. Remote MCP uses HTTPS; the optional local HTTP example binds only to loopback with explicit access/event configuration. A listening endpoint is not an authorization boundary by itself.
 
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `DRILLING_MCP_URL` | No | `http://localhost:3003/mcp` | Drilling-compatible MCP backend URL |
-| `DRILLING_ENGINEER_ADK_MODEL` | No | `gemini-flash-latest` | ADK model id |
-
-## Deployment Boundary
-
-- Agent package: `agents/drilling-engineer`
-- Backend MCP server: `servers/drilling`
-- Shared contracts: `sdk`
-- Optional control plane: `orchestrator`
-
-Do not hardcode a single deployment target into this package. The ADK app should remain portable across local execution, containerized runs, Cloud Run, GKE, Agent Runtime, or another compatible runtime.
-
-## Pre-Deployment Checks
-
-```bash
-cd agents/drilling-engineer
-uv run pytest
-uv run python -m py_compile app/agent.py app/drilling_mcp.py
-agents-cli info
-```
-
-Run `agents-cli eval run` when provider credentials and eval runtime are configured.
+Use the package-local source/wheel/archive qualifier and retain exact tested/artifact/lock hashes before claiming support for a host. Fixture results do not certify a production deployment, paid provider, engineering design or live well operation. No production deployment is part of this adoption.

@@ -11,14 +11,14 @@ const planFor = async (files, eventName = 'pull_request', revision = codeRevisio
   return selectImpact({ eventName, codeRevision: revision, baseSha: 'b'.repeat(40), headSha: 'c'.repeat(40), changedPaths: files });
 };
 const checkedOutRevision = () => execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-const referenceResults = { reference: 'skipped', reporter: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', economist: 'success', 'protocol-callers': 'skipped' };
+const referenceResults = { reference: 'skipped', reporter: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', drilling: 'skipped', economist: 'success', 'protocol-callers': 'skipped' };
 const finalResults = { impact: 'success', workspace: 'success', 'reference-qualification': 'success', 'qa-observed-qualification': 'skipped' };
 
 test('Reservoir qualification is mandatory when selected and cannot hide behind other passing roles', async () => {
   const { selectImpact } = await import('../ci-impact.mjs');
   const { assertGate } = await import('../ci-gates.mjs');
   const selected = selectImpact({ eventName: 'pull_request', baseSha: '1'.repeat(40), headSha: '2'.repeat(40), codeRevision, changedPaths: ['agents/reservoir-engineer/app/agent.py'] });
-  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'success', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', 'protocol-callers': 'skipped' };
+  const results = { reference: 'skipped', reporter: 'skipped', economist: 'skipped', reservoir: 'success', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', drilling: 'skipped', 'protocol-callers': 'skipped' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan: selected, codeRevision, results }));
   for (const result of ['failure', 'cancelled', 'skipped', undefined]) {
     assert.throws(() => assertGate({ scope: 'reference', plan: selected, codeRevision, results: { ...results, reservoir: result } }), /reservoir/);
@@ -85,8 +85,8 @@ test('malformed plans and revision/scope mismatches never become success', async
 test('effective reusable inputs must match the recorded plan, including caller list', async () => {
   const { assertGate } = await import('../ci-gates.mjs');
   const plan = await planFor(['agents/research-analyst/app/agent.py']);
-  const results = { reference: 'skipped', reporter: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', economist: 'skipped', 'protocol-callers': 'success' };
-  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: false, title: false, callers: '["research-analyst"]' };
+  const results = { reference: 'skipped', reporter: 'skipped', reservoir: 'skipped', risk: 'skipped', legal: 'skipped', market: 'skipped', title: 'skipped', drilling: 'skipped', economist: 'skipped', 'protocol-callers': 'success' };
+  const inputs = { geologist: false, reporter: false, economist: false, reservoir: false, risk: false, legal: false, market: false, title: false, drilling: false, callers: '["research-analyst"]' };
   assert.doesNotThrow(() => assertGate({ scope: 'reference', plan, codeRevision, results, inputs }));
   assert.throws(() => assertGate({ scope: 'reference', plan, codeRevision, results,
     inputs: { ...inputs, callers: '[]' } }), /input/);
@@ -101,7 +101,7 @@ test('Actions gate checks real needs-result objects and requires effective refer
   const needs = Object.fromEntries(Object.entries(referenceResults).map(([key, result]) => [key, { result, outputs: {} }]));
   const env = { CI_GATE_SCOPE: 'reference', GITHUB_SHA: actual, CI_PLAN_JSON: JSON.stringify(plan),
     CI_NEEDS_JSON: JSON.stringify(needs),
-    CI_INPUTS_JSON: JSON.stringify({ geologist: false, reporter: false, economist: true, reservoir: false, risk: false, legal: false, market: false, title: false, callers: '[]' }) };
+    CI_INPUTS_JSON: JSON.stringify({ geologist: false, reporter: false, economist: true, reservoir: false, risk: false, legal: false, market: false, title: false, drilling: false, callers: '[]' }) };
   assert.doesNotThrow(() => runGate(env, () => {}));
   assert.throws(() => runGate({ ...env, CI_INPUTS_JSON: '' }, () => {}), /input/);
   assert.throws(() => runGate({ ...env, CI_NEEDS_JSON: '{}' }, () => {}));
@@ -112,7 +112,7 @@ test('default reusable qualification is full and cannot be reduced through its i
   const { runGate } = await import('../ci-gates.mjs');
   const full = await planFor(['CHANGELOG.md'], 'workflow_dispatch');
   const needs = Object.fromEntries(Object.keys(referenceResults).map((key) => [key, { result: 'success' }]));
-  const inputs = { geologist: true, reporter: true, economist: true, reservoir: true, risk: true, legal: true, market: true, title: true, callers: JSON.stringify(full.callers) };
+  const inputs = { geologist: true, reporter: true, economist: true, reservoir: true, risk: true, legal: true, market: true, title: true, drilling: true, callers: JSON.stringify(full.callers) };
   const env = { CI_GATE_SCOPE: 'reference', GITHUB_SHA: checkedOutRevision(), CI_NEEDS_JSON: JSON.stringify(needs),
     CI_INPUTS_JSON: JSON.stringify(inputs) };
   assert.doesNotThrow(() => runGate(env, () => {}));
@@ -127,7 +127,7 @@ test('a gate cannot accept a matching envelope and environment for a different c
   const needs = Object.fromEntries(Object.keys(referenceResults).map((key) => [key, { result: 'success' }]));
   const env = { CI_GATE_SCOPE: 'reference', GITHUB_SHA: wrong, CI_PLAN_JSON: JSON.stringify(plan),
     CI_NEEDS_JSON: JSON.stringify(needs),
-    CI_INPUTS_JSON: JSON.stringify({ geologist: false, reporter: false, economist: true, reservoir: false, risk: false, legal: false, market: false, title: false, callers: '[]' }) };
+    CI_INPUTS_JSON: JSON.stringify({ geologist: false, reporter: false, economist: true, reservoir: false, risk: false, legal: false, market: false, title: false, drilling: false, callers: '[]' }) };
   assert.throws(() => runGate(env, () => {}), /revision/);
 });
 
@@ -144,7 +144,7 @@ function callerFixture(t) {
     'fs.appendFileSync(process.env.CI_TEST_LOG,JSON.stringify({role,args:process.argv.slice(2)})+"\\n");\n' +
     'if(role===process.env.CI_TEST_FAIL_ROLE) process.exitCode=7;\n');
   chmodSync(uv, 0o755);
-  const roles = ['development-planner', 'drilling-engineer', 'infrastructure-planner'];
+  const roles = ['development-planner', 'infrastructure-planner', 'investment-chair'];
   for (const role of roles) mkdirSync(path.join(root, 'agents', role), { recursive: true });
   return { root, roles, log, env: { ...process.env, PATH: `${bin}${path.delimiter}${process.env.PATH}`, CI_TEST_LOG: log } };
 }
@@ -164,9 +164,9 @@ test('caller failure stops subsequent work and invalid/duplicate roles cannot ex
   const fixture = callerFixture(t);
   const { runCallers } = await import('../ci-python-callers.mjs');
   assert.throws(() => runCallers(fixture.roles, { repoRoot: fixture.root,
-    env: { ...fixture.env, CI_TEST_FAIL_ROLE: 'drilling-engineer' } }), /drilling-engineer|failed/);
+    env: { ...fixture.env, CI_TEST_FAIL_ROLE: 'infrastructure-planner' } }), /infrastructure-planner|failed/);
   const calls = readFileSync(fixture.log, 'utf8').trim().split('\n').map(JSON.parse);
-  assert.deepEqual(calls.map((call) => call.role), [...Array(4).fill('development-planner'), 'drilling-engineer']);
+  assert.deepEqual(calls.map((call) => call.role), [...Array(4).fill('development-planner'), 'infrastructure-planner']);
   for (const roles of [['../outside'], ['new-role'], ['development-planner', 'development-planner'], null]) {
     assert.throws(() => runCallers(roles, { repoRoot: fixture.root, env: fixture.env }), /role/);
   }

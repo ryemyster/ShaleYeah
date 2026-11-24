@@ -1,0 +1,105 @@
+{
+  "version": "0.1.0",
+  "summary": "Supplied drilling options for engineer review",
+  "observations": [
+    {
+      "observationRef": {
+        "id": "observation.program",
+        "revision": "r1"
+      },
+      "questionId": "program",
+      "kind": "question",
+      "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+      "citations": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "sectionId": "basis",
+          "startByte": 0,
+          "endByte": 189,
+          "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+          "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule",
+          "startByte": 0,
+          "endByte": 125,
+          "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+          "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+        }
+      ]
+    },
+    {
+      "observationRef": {
+        "id": "observation.costs",
+        "revision": "r1"
+      },
+      "questionId": "costs",
+      "kind": "question",
+      "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+      "citations": [
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote",
+          "startByte": 0,
+          "endByte": 142,
+          "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at USD 20 per ft. Quoted scope excludes other costs and contingencies.",
+          "sha256": "4df9935f13844f28109bdb989850c0ffd90879d2b15f56da04435ead1c07b925"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule",
+          "startByte": 0,
+          "endByte": 125,
+          "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+          "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+        }
+      ]
+    },
+    {
+      "observationRef": {
+        "id": "observation.risks",
+        "revision": "r1"
+      },
+      "questionId": "risks",
+      "kind": "question",
+      "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+      "citations": [
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset",
+          "startByte": 0,
+          "endByte": 161,
+          "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+          "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard",
+          "startByte": 0,
+          "endByte": 167,
+          "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+          "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+        }
+      ]
+    }
+  ]
+}

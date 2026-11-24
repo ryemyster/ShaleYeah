@@ -1,0 +1,3530 @@
+{
+  "control_metric_equivalent": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.drilling",
+        "employeeId": "employee.drilling-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:drilling:973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.design",
+          "revision": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075",
+          "uri": "urn:sha256:631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075"
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669",
+          "uri": "urn:sha256:ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.design",
+          "revision": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.drilling.d8bc3274a070e40e27fedf9e6b59ff825c055b84550d8dab0443745420a0233c",
+          "basis": "assumed",
+          "value": "450000/1",
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied required quoted line amounts; not total well cost or an AFE"
+        },
+        {
+          "id": "finding.drilling.9b56739bbe2ac78bb84d215aae500bb6103280b149db3543947f3f80a98b91fb",
+          "basis": "assumed",
+          "value": "35/2",
+          "unit": "day",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied sequential phases; not an execution schedule or drilling-speed prediction"
+        },
+        {
+          "id": "finding.drilling.74a27900197bfc1121c12431a00364745ba305d2dc03f207b8d91f44876b7d26",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.50c530dea9ab13154b459ee34943e163817ced067a62803d4c40331ae3a98dd0",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.10532562dffe25886f7bd78a3dd2cff7d2d49c738fd9a8bb02e3133b262d215d",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+          "statement": "Supplied design/component references, offsets, quoted scope, sequential phases, hazards and mitigation reviews are operator-attested. Exact arithmetic and byte citations do not verify engineering sufficiency, safe operations or complete well costs.",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ]
+        }
+      ],
+      "uncertainty": "Private supplied drilling options and evidence packet. No spud, AFE, capital commitment, field operations, well-control, safety certification or professional engineering acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "drilling": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "basis": "operator-attested-normalized-design-evidence",
+      "targetMdMetres": "3048/1",
+      "targetTvdMetres": "12192/5",
+      "datumId": "datum.rotary-table",
+      "programs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              },
+              "topMdMetres": "0/1",
+              "bottomMdMetres": "3048/1",
+              "bottomTvdMetres": "12192/5"
+            }
+          ],
+          "engineeringValidation": "not-performed"
+        }
+      ],
+      "costs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "currency": "USD",
+          "scope": "supplied-required-quoted-lines-only",
+          "rounding": "half-up-cents",
+          "lines": [
+            {
+              "costId": "cost.rig",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "12.5",
+              "unit": "day",
+              "rate": "20000",
+              "perUnit": "day",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "250000/1",
+              "amountCents": "25000000"
+            },
+            {
+              "costId": "cost.casing",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "10000",
+              "unit": "ft",
+              "rate": "20",
+              "perUnit": "ft",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "200000/1",
+              "amountCents": "20000000"
+            }
+          ],
+          "totalExact": "450000/1",
+          "totalCents": "45000000"
+        }
+      ],
+      "schedules": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "basis": "supplied-sequential-phases",
+          "phases": [
+            {
+              "scheduleId": "schedule.mobilize",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "2",
+              "sequence": 0,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.drill",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "12.5",
+              "sequence": 1,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.complete",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "3",
+              "sequence": 2,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            }
+          ],
+          "totalDays": "35/2"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ],
+      "sourceWitnesses": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "sectionId": "basis",
+          "startByte": 0,
+          "endByte": 189,
+          "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+          "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset",
+          "startByte": 0,
+          "endByte": 161,
+          "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+          "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote",
+          "startByte": 0,
+          "endByte": 142,
+          "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at USD 20 per ft. Quoted scope excludes other costs and contingencies.",
+          "sha256": "4df9935f13844f28109bdb989850c0ffd90879d2b15f56da04435ead1c07b925"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard",
+          "startByte": 0,
+          "endByte": 167,
+          "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+          "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule",
+          "startByte": 0,
+          "endByte": 125,
+          "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+          "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+        }
+      ],
+      "coverage": {
+        "requiredEvidenceRefs": [
+          {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          }
+        ],
+        "missingEvidenceRefs": [],
+        "requiredOffsetRefs": [
+          {
+            "id": "offset.example",
+            "revision": "r1"
+          }
+        ],
+        "missingOffsetRefs": [],
+        "requiredHazardIds": [
+          "hazard.losses"
+        ],
+        "missingHazardIds": [],
+        "requiredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "coveredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "missingQuestionIds": [],
+        "missingCitedEvidenceRefs": []
+      },
+      "exceptions": [],
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "operationalApproval": false,
+      "professionalAcceptance": false,
+      "summary": "Supplied drilling options for engineer review",
+      "observations": [
+        {
+          "observationRef": {
+            "id": "observation.program",
+            "revision": "r1"
+          },
+          "questionId": "program",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.design",
+                "revision": "r1"
+              },
+              "sectionId": "basis",
+              "startByte": 0,
+              "endByte": 189,
+              "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+              "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.costs",
+            "revision": "r1"
+          },
+          "questionId": "costs",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "startByte": 0,
+              "endByte": 142,
+              "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at USD 20 per ft. Quoted scope excludes other costs and contingencies.",
+              "sha256": "4df9935f13844f28109bdb989850c0ffd90879d2b15f56da04435ead1c07b925"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.risks",
+            "revision": "r1"
+          },
+          "questionId": "risks",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.offset",
+                "revision": "r1"
+              },
+              "sectionId": "offset",
+              "startByte": 0,
+              "endByte": 161,
+              "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+              "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.hazard",
+                "revision": "r1"
+              },
+              "sectionId": "hazard",
+              "startByte": 0,
+              "endByte": 167,
+              "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+              "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+            }
+          ]
+        }
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.design",
+          "revision": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075",
+          "uri": "urn:sha256:631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075"
+        },
+        "evidence": {
+          "id": "evidence.design",
+          "revision": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "631113c7039240915970cd847f1baebfcba2c89b469701e4edc52b2395722075"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 1532,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.corpus",
+          "revision": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669",
+          "uri": "urn:sha256:ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669"
+        },
+        "evidence": {
+          "id": "evidence.corpus",
+          "revision": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ed06e96e74309a631ba452486783990d1d5d5a5c15a6cf5b3bc2f894ffcc0669"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 4140,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 543,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "design": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "targetMd": {
+        "value": "3048",
+        "unit": "m",
+        "datumId": "datum.rotary-table"
+      },
+      "targetTvd": {
+        "value": "2438.4",
+        "unit": "m",
+        "datumId": "datum.rotary-table"
+      },
+      "basis": {
+        "evidenceRef": {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        "sectionId": "basis"
+      },
+      "requiredEvidenceRefs": [
+        {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.offset",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.cost",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.hazard",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.schedule",
+          "revision": "r1"
+        }
+      ],
+      "options": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              }
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "program",
+          "prompt": "Check supplied design, units, datum and component basis."
+        },
+        {
+          "id": "costs",
+          "prompt": "Reconcile supplied quoted scope and quantities without inventing total well costs."
+        },
+        {
+          "id": "risks",
+          "prompt": "Identify supplied hazards, missing evidence and reviewed offset applicability."
+        }
+      ]
+    },
+    "corpus": {
+      "version": "0.1.0",
+      "corpusRef": {
+        "id": "corpus.example",
+        "revision": "r1"
+      },
+      "documents": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "design",
+          "sections": [
+            {
+              "sectionId": "basis",
+              "text": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "offset",
+          "sections": [
+            {
+              "sectionId": "offset",
+              "text": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "quote",
+          "sections": [
+            {
+              "sectionId": "quote",
+              "text": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at USD 20 per ft. Quoted scope excludes other costs and contingencies."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "hazard",
+          "sections": [
+            {
+              "sectionId": "hazard",
+              "text": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "schedule",
+          "sections": [
+            {
+              "sectionId": "schedule",
+              "text": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption."
+            }
+          ]
+        }
+      ],
+      "costs": [
+        {
+          "costId": "cost.rig",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "12.5",
+          "unit": "day",
+          "rate": "20000",
+          "perUnit": "day",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        },
+        {
+          "costId": "cost.casing",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "10000",
+          "unit": "ft",
+          "rate": "20",
+          "perUnit": "ft",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        }
+      ],
+      "schedules": [
+        {
+          "scheduleId": "schedule.mobilize",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "2",
+          "sequence": 0,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.drill",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "12.5",
+          "sequence": 1,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.complete",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "3",
+          "sequence": 2,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "policyRef": {
+        "id": "policy.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "currency": "USD",
+      "costRounding": "half-up-cents",
+      "requiredOffsetRefs": [
+        {
+          "id": "offset.example",
+          "revision": "r1"
+        }
+      ],
+      "requiredHazardIds": [
+        "hazard.losses"
+      ],
+      "requirements": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "requiredCostIds": [
+            "cost.rig",
+            "cost.casing"
+          ],
+          "requiredScheduleIds": [
+            "schedule.mobilize",
+            "schedule.drill",
+            "schedule.complete"
+          ]
+        }
+      ],
+      "declaredConflicts": []
+    },
+    "evaluatedAt": "2026-11-23T12:00:00Z"
+  },
+  "edge_explicit_zero_quote": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.drilling",
+        "employeeId": "employee.drilling-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:drilling:973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:sha256:82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca",
+          "uri": "urn:sha256:ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.drilling.d8bc3274a070e40e27fedf9e6b59ff825c055b84550d8dab0443745420a0233c",
+          "basis": "assumed",
+          "value": "250000/1",
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied required quoted line amounts; not total well cost or an AFE"
+        },
+        {
+          "id": "finding.drilling.9b56739bbe2ac78bb84d215aae500bb6103280b149db3543947f3f80a98b91fb",
+          "basis": "assumed",
+          "value": "35/2",
+          "unit": "day",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied sequential phases; not an execution schedule or drilling-speed prediction"
+        },
+        {
+          "id": "finding.drilling.74a27900197bfc1121c12431a00364745ba305d2dc03f207b8d91f44876b7d26",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.50c530dea9ab13154b459ee34943e163817ced067a62803d4c40331ae3a98dd0",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.10532562dffe25886f7bd78a3dd2cff7d2d49c738fd9a8bb02e3133b262d215d",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+          "statement": "Supplied design/component references, offsets, quoted scope, sequential phases, hazards and mitigation reviews are operator-attested. Exact arithmetic and byte citations do not verify engineering sufficiency, safe operations or complete well costs.",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ]
+        }
+      ],
+      "uncertainty": "Private supplied drilling options and evidence packet. No spud, AFE, capital commitment, field operations, well-control, safety certification or professional engineering acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "drilling": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "basis": "operator-attested-normalized-design-evidence",
+      "targetMdMetres": "3048/1",
+      "targetTvdMetres": "12192/5",
+      "datumId": "datum.rotary-table",
+      "programs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              },
+              "topMdMetres": "0/1",
+              "bottomMdMetres": "3048/1",
+              "bottomTvdMetres": "12192/5"
+            }
+          ],
+          "engineeringValidation": "not-performed"
+        }
+      ],
+      "costs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "currency": "USD",
+          "scope": "supplied-required-quoted-lines-only",
+          "rounding": "half-up-cents",
+          "lines": [
+            {
+              "costId": "cost.rig",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "12.5",
+              "unit": "day",
+              "rate": "20000",
+              "perUnit": "day",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "250000/1",
+              "amountCents": "25000000"
+            },
+            {
+              "costId": "cost.casing",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "10000",
+              "unit": "ft",
+              "rate": "0",
+              "perUnit": "ft",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "0/1",
+              "amountCents": "0"
+            }
+          ],
+          "totalExact": "250000/1",
+          "totalCents": "25000000"
+        }
+      ],
+      "schedules": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "basis": "supplied-sequential-phases",
+          "phases": [
+            {
+              "scheduleId": "schedule.mobilize",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "2",
+              "sequence": 0,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.drill",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "12.5",
+              "sequence": 1,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.complete",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "3",
+              "sequence": 2,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            }
+          ],
+          "totalDays": "35/2"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ],
+      "sourceWitnesses": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "sectionId": "basis",
+          "startByte": 0,
+          "endByte": 189,
+          "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+          "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset",
+          "startByte": 0,
+          "endByte": 161,
+          "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+          "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote",
+          "startByte": 0,
+          "endByte": 152,
+          "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at explicitly USD 0 per ft. Quoted scope excludes other costs and contingencies.",
+          "sha256": "de8f74d366c31dcffab74efdf3647a890561b370354cdd6c9761133fca46e157"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard",
+          "startByte": 0,
+          "endByte": 167,
+          "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+          "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule",
+          "startByte": 0,
+          "endByte": 125,
+          "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+          "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+        }
+      ],
+      "coverage": {
+        "requiredEvidenceRefs": [
+          {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          }
+        ],
+        "missingEvidenceRefs": [],
+        "requiredOffsetRefs": [
+          {
+            "id": "offset.example",
+            "revision": "r1"
+          }
+        ],
+        "missingOffsetRefs": [],
+        "requiredHazardIds": [
+          "hazard.losses"
+        ],
+        "missingHazardIds": [],
+        "requiredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "coveredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "missingQuestionIds": [],
+        "missingCitedEvidenceRefs": []
+      },
+      "exceptions": [],
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "operationalApproval": false,
+      "professionalAcceptance": false,
+      "summary": "Supplied drilling options for engineer review",
+      "observations": [
+        {
+          "observationRef": {
+            "id": "observation.program",
+            "revision": "r1"
+          },
+          "questionId": "program",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.design",
+                "revision": "r1"
+              },
+              "sectionId": "basis",
+              "startByte": 0,
+              "endByte": 189,
+              "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+              "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.costs",
+            "revision": "r1"
+          },
+          "questionId": "costs",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "startByte": 0,
+              "endByte": 152,
+              "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at explicitly USD 0 per ft. Quoted scope excludes other costs and contingencies.",
+              "sha256": "de8f74d366c31dcffab74efdf3647a890561b370354cdd6c9761133fca46e157"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.risks",
+            "revision": "r1"
+          },
+          "questionId": "risks",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.offset",
+                "revision": "r1"
+              },
+              "sectionId": "offset",
+              "startByte": 0,
+              "endByte": 161,
+              "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+              "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.hazard",
+                "revision": "r1"
+              },
+              "sectionId": "hazard",
+              "startByte": 0,
+              "endByte": 167,
+              "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+              "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+            }
+          ]
+        }
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:sha256:82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+        },
+        "evidence": {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 1533,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.corpus",
+          "revision": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca",
+          "uri": "urn:sha256:ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca"
+        },
+        "evidence": {
+          "id": "evidence.corpus",
+          "revision": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ff3b110bd31f1b4cb5d5f3e4295932d33c566bfd2ad10512f4ed4577460ec8ca"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 4149,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 543,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "design": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "targetMd": {
+        "value": "10000",
+        "unit": "ft",
+        "datumId": "datum.rotary-table"
+      },
+      "targetTvd": {
+        "value": "8000",
+        "unit": "ft",
+        "datumId": "datum.rotary-table"
+      },
+      "basis": {
+        "evidenceRef": {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        "sectionId": "basis"
+      },
+      "requiredEvidenceRefs": [
+        {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.offset",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.cost",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.hazard",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.schedule",
+          "revision": "r1"
+        }
+      ],
+      "options": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              }
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "program",
+          "prompt": "Check supplied design, units, datum and component basis."
+        },
+        {
+          "id": "costs",
+          "prompt": "Reconcile supplied quoted scope and quantities without inventing total well costs."
+        },
+        {
+          "id": "risks",
+          "prompt": "Identify supplied hazards, missing evidence and reviewed offset applicability."
+        }
+      ]
+    },
+    "corpus": {
+      "version": "0.1.0",
+      "corpusRef": {
+        "id": "corpus.example",
+        "revision": "r1"
+      },
+      "documents": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "design",
+          "sections": [
+            {
+              "sectionId": "basis",
+              "text": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "offset",
+          "sections": [
+            {
+              "sectionId": "offset",
+              "text": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "quote",
+          "sections": [
+            {
+              "sectionId": "quote",
+              "text": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 10000 ft at explicitly USD 0 per ft. Quoted scope excludes other costs and contingencies."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "hazard",
+          "sections": [
+            {
+              "sectionId": "hazard",
+              "text": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "schedule",
+          "sections": [
+            {
+              "sectionId": "schedule",
+              "text": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption."
+            }
+          ]
+        }
+      ],
+      "costs": [
+        {
+          "costId": "cost.rig",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "12.5",
+          "unit": "day",
+          "rate": "20000",
+          "perUnit": "day",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        },
+        {
+          "costId": "cost.casing",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "10000",
+          "unit": "ft",
+          "rate": "0",
+          "perUnit": "ft",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        }
+      ],
+      "schedules": [
+        {
+          "scheduleId": "schedule.mobilize",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "2",
+          "sequence": 0,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.drill",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "12.5",
+          "sequence": 1,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.complete",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "3",
+          "sequence": 2,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "policyRef": {
+        "id": "policy.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "currency": "USD",
+      "costRounding": "half-up-cents",
+      "requiredOffsetRefs": [
+        {
+          "id": "offset.example",
+          "revision": "r1"
+        }
+      ],
+      "requiredHazardIds": [
+        "hazard.losses"
+      ],
+      "requirements": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "requiredCostIds": [
+            "cost.rig",
+            "cost.casing"
+          ],
+          "requiredScheduleIds": [
+            "schedule.mobilize",
+            "schedule.drill",
+            "schedule.complete"
+          ]
+        }
+      ],
+      "declaredConflicts": []
+    },
+    "evaluatedAt": "2026-11-23T12:00:00Z"
+  },
+  "edge_fractional_quote": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.drilling",
+        "employeeId": "employee.drilling-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:drilling:973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:sha256:82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e",
+          "uri": "urn:sha256:cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e"
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.corpus",
+          "revision": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "finding.drilling.d8bc3274a070e40e27fedf9e6b59ff825c055b84550d8dab0443745420a0233c",
+          "basis": "assumed",
+          "value": "50000001/200",
+          "unit": "USD",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied required quoted line amounts; not total well cost or an AFE"
+        },
+        {
+          "id": "finding.drilling.9b56739bbe2ac78bb84d215aae500bb6103280b149db3543947f3f80a98b91fb",
+          "basis": "assumed",
+          "value": "35/2",
+          "unit": "day",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "Exact sum of supplied sequential phases; not an execution schedule or drilling-speed prediction"
+        },
+        {
+          "id": "finding.drilling.74a27900197bfc1121c12431a00364745ba305d2dc03f207b8d91f44876b7d26",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.50c530dea9ab13154b459ee34943e163817ced067a62803d4c40331ae3a98dd0",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        },
+        {
+          "id": "finding.drilling.10532562dffe25886f7bd78a3dd2cff7d2d49c738fd9a8bb02e3133b262d215d",
+          "basis": "assumed",
+          "value": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "unit": "proposed-drilling-observation",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ],
+          "assumptionIds": [
+            "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c"
+          ],
+          "reason": "question: unreviewed proposed analysis with exact evidence citations"
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "assumption.drilling.973bd6f12673d089018f04b0781a2319fd4819634396a318e075317ebc7ab45c",
+          "statement": "Supplied design/component references, offsets, quoted scope, sequential phases, hazards and mitigation reviews are operator-attested. Exact arithmetic and byte citations do not verify engineering sufficiency, safe operations or complete well costs.",
+          "evidenceIds": [
+            "evidence.design",
+            "evidence.corpus",
+            "evidence.policy"
+          ]
+        }
+      ],
+      "uncertainty": "Private supplied drilling options and evidence packet. No spud, AFE, capital commitment, field operations, well-control, safety certification or professional engineering acceptance.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "drilling": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "basis": "operator-attested-normalized-design-evidence",
+      "targetMdMetres": "3048/1",
+      "targetTvdMetres": "12192/5",
+      "datumId": "datum.rotary-table",
+      "programs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              },
+              "topMdMetres": "0/1",
+              "bottomMdMetres": "3048/1",
+              "bottomTvdMetres": "12192/5"
+            }
+          ],
+          "engineeringValidation": "not-performed"
+        }
+      ],
+      "costs": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "currency": "USD",
+          "scope": "supplied-required-quoted-lines-only",
+          "rounding": "half-up-cents",
+          "lines": [
+            {
+              "costId": "cost.rig",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "12.5",
+              "unit": "day",
+              "rate": "20000",
+              "perUnit": "day",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "250000/1",
+              "amountCents": "25000000"
+            },
+            {
+              "costId": "cost.casing",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "quantity": "0.1",
+              "unit": "ft",
+              "rate": "0.05",
+              "perUnit": "ft",
+              "currency": "USD",
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "amountExact": "1/200",
+              "amountCents": "1"
+            }
+          ],
+          "totalExact": "50000001/200",
+          "totalCents": "25000001"
+        }
+      ],
+      "schedules": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "basis": "supplied-sequential-phases",
+          "phases": [
+            {
+              "scheduleId": "schedule.mobilize",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "2",
+              "sequence": 0,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.drill",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "12.5",
+              "sequence": 1,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            },
+            {
+              "scheduleId": "schedule.complete",
+              "optionRef": {
+                "id": "option.supplied-a",
+                "revision": "r1"
+              },
+              "durationDays": "3",
+              "sequence": 2,
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule"
+            }
+          ],
+          "totalDays": "35/2"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ],
+      "sourceWitnesses": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "sectionId": "basis",
+          "startByte": 0,
+          "endByte": 189,
+          "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+          "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset",
+          "startByte": 0,
+          "endByte": 161,
+          "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+          "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote",
+          "startByte": 0,
+          "endByte": 195,
+          "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 0.1 ft at USD 0.05 per ft. Operator-selected half-up cents applies to the exact scope total; excludes other costs and contingencies.",
+          "sha256": "f772f18a39ad81842d75475f0cdb5b0a8590e9c9f8b85fa47e1f0de0ad5e9f4a"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard",
+          "startByte": 0,
+          "endByte": 167,
+          "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+          "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule",
+          "startByte": 0,
+          "endByte": 125,
+          "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+          "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+        }
+      ],
+      "coverage": {
+        "requiredEvidenceRefs": [
+          {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          }
+        ],
+        "missingEvidenceRefs": [],
+        "requiredOffsetRefs": [
+          {
+            "id": "offset.example",
+            "revision": "r1"
+          }
+        ],
+        "missingOffsetRefs": [],
+        "requiredHazardIds": [
+          "hazard.losses"
+        ],
+        "missingHazardIds": [],
+        "requiredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "coveredQuestionIds": [
+          "costs",
+          "program",
+          "risks"
+        ],
+        "missingQuestionIds": [],
+        "missingCitedEvidenceRefs": []
+      },
+      "exceptions": [],
+      "status": "ready-for-review",
+      "reviewStatus": "unreviewed",
+      "operationalApproval": false,
+      "professionalAcceptance": false,
+      "summary": "Supplied drilling options for engineer review",
+      "observations": [
+        {
+          "observationRef": {
+            "id": "observation.program",
+            "revision": "r1"
+          },
+          "questionId": "program",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.design",
+                "revision": "r1"
+              },
+              "sectionId": "basis",
+              "startByte": 0,
+              "endByte": 189,
+              "quote": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review.",
+              "sha256": "101cf71baf5b62046ac7b4bfd9c908920e6a4104eba3012dd1b0654410227fa8"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.costs",
+            "revision": "r1"
+          },
+          "questionId": "costs",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.cost",
+                "revision": "r1"
+              },
+              "sectionId": "quote",
+              "startByte": 0,
+              "endByte": 195,
+              "quote": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 0.1 ft at USD 0.05 per ft. Operator-selected half-up cents applies to the exact scope total; excludes other costs and contingencies.",
+              "sha256": "f772f18a39ad81842d75475f0cdb5b0a8590e9c9f8b85fa47e1f0de0ad5e9f4a"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.schedule",
+                "revision": "r1"
+              },
+              "sectionId": "schedule",
+              "startByte": 0,
+              "endByte": 125,
+              "quote": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption.",
+              "sha256": "5d7ac1d51b4620b47c47a52fe85d4751ea166f61a15f9912e4e340e0d6327ef8"
+            }
+          ]
+        },
+        {
+          "observationRef": {
+            "id": "observation.risks",
+            "revision": "r1"
+          },
+          "questionId": "risks",
+          "kind": "question",
+          "statement": "Review the supplied design, quoted scope, hazards and offset applicability; no field authority.",
+          "citations": [
+            {
+              "evidenceRef": {
+                "id": "evidence.offset",
+                "revision": "r1"
+              },
+              "sectionId": "offset",
+              "startByte": 0,
+              "endByte": 161,
+              "quote": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction.",
+              "sha256": "6bd1281ea06cfac3aa5e96a85bac06976f57156a0b0207d6c3fe598df7b06e1d"
+            },
+            {
+              "evidenceRef": {
+                "id": "evidence.hazard",
+                "revision": "r1"
+              },
+              "sectionId": "hazard",
+              "startByte": 0,
+              "endByte": 167,
+              "quote": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization.",
+              "sha256": "820e9cb6e46ab34403f050b4eda6db7b114731a5cbe806774a17051118526069"
+            }
+          ]
+        }
+      ]
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:sha256:82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+        },
+        "evidence": {
+          "id": "evidence.design",
+          "revision": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae",
+          "uri": "urn:operator:design",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "82fe5fe7f582cbbd3cec38fffe3aa241f3664f3c200e8be820a77d981b42fdae"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 1533,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.corpus",
+          "revision": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e",
+          "uri": "urn:sha256:cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e"
+        },
+        "evidence": {
+          "id": "evidence.corpus",
+          "revision": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e",
+          "uri": "urn:operator:corpus",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "cf6dfa5b2b83d27373032bef39b446e5a773c15f1a8beccb5acf09d0e778ee4e"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 4193,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.drilling",
+          "employeeId": "employee.drilling-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:sha256:780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+        },
+        "evidence": {
+          "id": "evidence.policy",
+          "revision": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856",
+          "uri": "urn:operator:policy",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "780ec5be4ac702f5497de4391c0850ce2890e9c63053371c2a7535af547bd856"
+          },
+          "asOf": "2026-11-23T12:00:00.000Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-11-23T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "fixture-only",
+        "units": [],
+        "byteLength": 543,
+        "accessNotes": "Operator and enrolled drilling reviewer only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "design": {
+      "version": "0.1.0",
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "formationRef": {
+        "id": "formation.example",
+        "revision": "r1"
+      },
+      "asOfDate": "2026-11-23",
+      "targetMd": {
+        "value": "10000",
+        "unit": "ft",
+        "datumId": "datum.rotary-table"
+      },
+      "targetTvd": {
+        "value": "8000",
+        "unit": "ft",
+        "datumId": "datum.rotary-table"
+      },
+      "basis": {
+        "evidenceRef": {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        "sectionId": "basis"
+      },
+      "requiredEvidenceRefs": [
+        {
+          "id": "evidence.design",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.offset",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.cost",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.hazard",
+          "revision": "r1"
+        },
+        {
+          "id": "evidence.schedule",
+          "revision": "r1"
+        }
+      ],
+      "options": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "label": "Supplied option A",
+          "casingDesignRef": {
+            "id": "casing.example",
+            "revision": "r1"
+          },
+          "mudDesignRef": {
+            "id": "mud.example",
+            "revision": "r1"
+          },
+          "completionDesignRef": {
+            "id": "completion.example",
+            "revision": "r1"
+          },
+          "sections": [
+            {
+              "sectionId": "hole.main",
+              "topMd": {
+                "value": "0",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomMd": {
+                "value": "10000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "bottomTvd": {
+                "value": "8000",
+                "unit": "ft",
+                "datumId": "datum.rotary-table"
+              },
+              "diameter": {
+                "value": "8.5",
+                "unit": "in"
+              }
+            }
+          ]
+        }
+      ],
+      "questions": [
+        {
+          "id": "program",
+          "prompt": "Check supplied design, units, datum and component basis."
+        },
+        {
+          "id": "costs",
+          "prompt": "Reconcile supplied quoted scope and quantities without inventing total well costs."
+        },
+        {
+          "id": "risks",
+          "prompt": "Identify supplied hazards, missing evidence and reviewed offset applicability."
+        }
+      ]
+    },
+    "corpus": {
+      "version": "0.1.0",
+      "corpusRef": {
+        "id": "corpus.example",
+        "revision": "r1"
+      },
+      "documents": [
+        {
+          "evidenceRef": {
+            "id": "evidence.design",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "design",
+          "sections": [
+            {
+              "sectionId": "basis",
+              "text": "Synthetic operator design for Élodie 🛢: MD 10000 international ft, TVD 8000 international ft, rotary-table datum. Supplied casing, mud and completion references require engineer review."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "offset",
+          "sections": [
+            {
+              "sectionId": "offset",
+              "text": "Synthetic offset.example-r1 reports losses. An operator reviewed its applicability to this design; this is evidence for review, not a safe operating instruction."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "quote",
+          "sections": [
+            {
+              "sectionId": "quote",
+              "text": "Synthetic quotation: rig 12.5 day at USD 20000 per day; casing 0.1 ft at USD 0.05 per ft. Operator-selected half-up cents applies to the exact scope total; excludes other costs and contingencies."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "hazard",
+          "sections": [
+            {
+              "sectionId": "hazard",
+              "text": "Synthetic losses hazard: operator-high severity, supplied mitigation design mitigation.losses-r1. Engineer-reviewed evidence for packet review; no field authorization."
+            }
+          ]
+        },
+        {
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "wellRef": {
+            "id": "well.example",
+            "revision": "r1"
+          },
+          "designRef": {
+            "id": "design.example",
+            "revision": "r1"
+          },
+          "formationRef": {
+            "id": "formation.example",
+            "revision": "r1"
+          },
+          "asOfDate": "2026-11-20",
+          "sourceStatus": "operator-attested",
+          "kind": "schedule",
+          "sections": [
+            {
+              "sectionId": "schedule",
+              "text": "Synthetic sequential schedule: mobilize 2 day, drilling 12.5 day, complete 3 day. No critical-path or concurrency assumption."
+            }
+          ]
+        }
+      ],
+      "costs": [
+        {
+          "costId": "cost.rig",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "12.5",
+          "unit": "day",
+          "rate": "20000",
+          "perUnit": "day",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        },
+        {
+          "costId": "cost.casing",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "quantity": "0.1",
+          "unit": "ft",
+          "rate": "0.05",
+          "perUnit": "ft",
+          "currency": "USD",
+          "evidenceRef": {
+            "id": "evidence.cost",
+            "revision": "r1"
+          },
+          "sectionId": "quote"
+        }
+      ],
+      "schedules": [
+        {
+          "scheduleId": "schedule.mobilize",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "2",
+          "sequence": 0,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.drill",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "12.5",
+          "sequence": 1,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        },
+        {
+          "scheduleId": "schedule.complete",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "durationDays": "3",
+          "sequence": 2,
+          "evidenceRef": {
+            "id": "evidence.schedule",
+            "revision": "r1"
+          },
+          "sectionId": "schedule"
+        }
+      ],
+      "offsets": [
+        {
+          "offsetWellRef": {
+            "id": "offset.example",
+            "revision": "r1"
+          },
+          "applicability": "operator-reviewed",
+          "evidenceRef": {
+            "id": "evidence.offset",
+            "revision": "r1"
+          },
+          "sectionId": "offset"
+        }
+      ],
+      "hazards": [
+        {
+          "hazardId": "hazard.losses",
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "status": "identified",
+          "severity": "operator-high",
+          "mitigationDesignRef": {
+            "id": "mitigation.losses",
+            "revision": "r1"
+          },
+          "reviewStatus": "engineer-reviewed",
+          "evidenceRef": {
+            "id": "evidence.hazard",
+            "revision": "r1"
+          },
+          "sectionId": "hazard"
+        }
+      ]
+    },
+    "policy": {
+      "version": "0.1.0",
+      "policyRef": {
+        "id": "policy.example",
+        "revision": "r1"
+      },
+      "wellRef": {
+        "id": "well.example",
+        "revision": "r1"
+      },
+      "designRef": {
+        "id": "design.example",
+        "revision": "r1"
+      },
+      "currency": "USD",
+      "costRounding": "half-up-cents",
+      "requiredOffsetRefs": [
+        {
+          "id": "offset.example",
+          "revision": "r1"
+        }
+      ],
+      "requiredHazardIds": [
+        "hazard.losses"
+      ],
+      "requirements": [
+        {
+          "optionRef": {
+            "id": "option.supplied-a",
+            "revision": "r1"
+          },
+          "requiredCostIds": [
+            "cost.rig",
+            "cost.casing"
+          ],
+          "requiredScheduleIds": [
+            "schedule.mobilize",
+            "schedule.drill",
+            "schedule.complete"
+          ]
+        }
+      ],
+      "declaredConflicts": []
+    },
+    "evaluatedAt": "2026-11-23T12:00:00Z"
+  }
+}

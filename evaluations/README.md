@@ -258,3 +258,18 @@ imports neither an employee app nor a backend calculator. Its
 [21 frozen cases](fixtures/market/README.md) use fictional inputs and provisional
 research-backed labels; a technical pass supplies no commercial authority or
 professional acceptance.
+
+## Drilling Engineer qualification
+
+Drilling registers independent unit/design, quoted-cost/sequential-schedule,
+hazard/offset coverage and original UTF-8 evidence/citation metrics, plus actual
+output fidelity and architecture/tool/authority floors. Profiles and installed
+qualification cannot remove these controls. The shared strict response parser
+accepts exactly `work` and `drilling`, or an explicit JSON deferral. The installed
+verifier rechecks actual output and inspected source bindings.
+
+The 33 primary-source-backed provisional synthetic labels and independent expected
+arithmetic predate replacement implementation. Observed backend outputs and
+native provider traces remain separate from truth labels. See the [role evaluation
+guide](../agents/drilling-engineer/docs/EVALUATIONS.md) for sources, hashes and
+technical/professional limits. No field or well-control approval follows.

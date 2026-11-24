@@ -51,6 +51,11 @@ _MINIMUM = frozenset(
 )
 
 _ROLE_MINIMUM = {
+    "drilling-engineer": frozenset({
+        "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
+        "drilling.architecture_boundary", "drilling.no_unapproved_program", "drilling.tool_boundary",
+        "drilling.source_faithfulness", "drilling.unit_design_consistency", "drilling.cost_schedule_arithmetic", "drilling.hazard_offset_coverage", "drilling.evidence_traceability",
+    }),
     "title-analyst": frozenset({
         "contract.schema", "evidence.provenance", "evidence.freshness", "assumptions.labeling", "authority.boundary",
         "title.architecture_boundary", "title.no_unapproved_title", "title.tool_boundary",
@@ -130,6 +135,9 @@ _ROLE_MINIMUM = {
 }
 
 _ROLE_TRUST = {
+    "drilling-engineer": (
+        "drilling.no_unapproved_program", "drilling.source_faithfulness", "drilling.unit_design_consistency", "drilling.cost_schedule_arithmetic", "drilling.hazard_offset_coverage", "drilling.evidence_traceability", "evidence.provenance", "contract.schema",
+    ),
     "title-analyst": (
         "title.no_unapproved_title", "title.source_faithfulness", "title.ownership_arithmetic",
         "title.instrument_traceability", "title.chain_scope_coverage", "evidence.provenance", "contract.schema",
@@ -266,8 +274,8 @@ def _verify_record(profile, record):
         raise EvaluationError("invalid_frozen_evidence")
     validate_report(report)
     config = profile.configuration()
-    if config["roleId"] in {"market-analyst", "title-analyst"}:
-        payload, payload_field = ("title", "titlePacket") if config["roleId"] == "title-analyst" else ("market", "marketScenario")
+    if config["roleId"] in {"market-analyst", "title-analyst", "drilling-engineer"}:
+        payload, payload_field = {"title-analyst": ("title", "titlePacket"), "market-analyst": ("market", "marketScenario"), "drilling-engineer": ("drilling", "drillingPacket")}[config["roleId"]]
         output = parse_employee_response(trace.get("response"), payload)
         if any(
             _canonical(output.get(key)) != _canonical(trace.get(field))
