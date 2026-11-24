@@ -98,7 +98,7 @@ dispositions for an authenticated human owner. An exception retains the original
 
 Geologist, Reporter, QA, Economist, Reservoir Engineer, Risk Analyst, Legal Analyst, Market Analyst, Title Analyst and Drilling Engineer have implemented employee workflows with
 configured evaluations, persistent context, protected review and independent
-package checks. All fourteen roles now have ADK definitions. Five roles still
+package checks. All fourteen roles now have ADK definitions. Four roles still
 need their full employee workflows and qualification.
 The optional coordinator is a stub. Fixture qualification is separate from
 professional validation and real operator acceptance.
