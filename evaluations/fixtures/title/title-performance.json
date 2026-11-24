@@ -1,0 +1,324 @@
+{
+  "architectureMode": "Stand-alone Agent with Progressive Disclosure (Skills)",
+  "humanReviewBoundary": "Only an exact separately human-approved qualified private packet may be recorded; no title clearance, filing, transfer or professional acceptance.",
+  "labelAuthority": "provisional-codex-research-review",
+  "professionalAcceptance": false,
+  "sourceReferences": [
+    {
+      "url": "https://www.blm.gov/sites/blm.gov/files/Transferring_Oil_and_Gas_Lease%20Interests.pdf",
+      "retrieved": "2026-11-18",
+      "locator": "PDF pages 1-2, interest definitions and depth-separated scenario",
+      "use": "Keep record title, operating rights and ORRI distinct; adapt the separation concept only, not historical fees or state-law rules."
+    },
+    {
+      "url": "https://www.blm.gov/services/land-records",
+      "retrieved": "2026-11-18",
+      "locator": "Federal Land Records, GLO coverage note",
+      "use": "A bounded retrieved inventory cannot establish a complete chain."
+    },
+    {
+      "url": "https://www.rrc.texas.gov/about-us/faqs/rrc-authority-and-jurisdiction/",
+      "retrieved": "2026-11-18",
+      "locator": "Authority not held over leases, agreements and royalty payments",
+      "use": "A regulatory observation or permit cannot establish title clearance."
+    }
+  ],
+  "eval_cases": [
+    {
+      "eval_case_id": "control_base",
+      "family": "control",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Exact supplied chain, distinct interest kinds and whole-relative ORRI.",
+      "prompt": "Exact supplied chain, distinct interest kinds and whole-relative ORRI.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "control_wi_orri",
+      "family": "control",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "An explicitly WI-relative 1/16 ORRI gives 11/32 NRI, not 5/16.",
+      "prompt": "An explicitly WI-relative 1/16 ORRI gives 11/32 NRI, not 5/16.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "control_grantor_second",
+      "family": "control",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Half of the grantor's remaining half transfers 1/4 of the whole.",
+      "prompt": "Half of the grantor's remaining half transfers 1/4 of the whole.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "control_whole_second",
+      "family": "control",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "An explicit half of the whole transfers 1/2, leaving zero.",
+      "prompt": "An explicit half of the whole transfers 1/2, leaving zero.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_zero_burden",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "A supplied zero burden remains 0/1 and is not treated as missing.",
+      "prompt": "A supplied zero burden remains 0/1 and is not treated as missing.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_depth_separation",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "A shallow operating transfer leaves record title and deep operating rights unchanged.",
+      "prompt": "A shallow operating transfer leaves record title and deep operating rights unchanged.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_missing_instrument",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "Missing a required recording prevents completion.",
+      "prompt": "Missing a required recording prevents completion.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_missing_predecessor",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "A missing declared predecessor remains a chain gap.",
+      "prompt": "A missing declared predecessor remains a chain gap.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_unknown_share_basis",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.ownership_arithmetic"
+      ],
+      "rationale": "Unknown grantor-versus-whole basis cannot select a number.",
+      "prompt": "Unknown grantor-versus-whole basis cannot select a number.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_unknown_burden_basis",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.ownership_arithmetic"
+      ],
+      "rationale": "Unknown WI-versus-whole burden basis cannot select NRI.",
+      "prompt": "Unknown WI-versus-whole burden basis cannot select NRI.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_bad_unit",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "Incompatible depth units cannot be silently equated.",
+      "prompt": "Incompatible depth units cannot be silently equated.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_future_instrument",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "A future effective/recorded instrument cannot complete the requested historical scope.",
+      "prompt": "A future effective/recorded instrument cannot complete the requested historical scope.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_stale_sources",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "evidence.freshness"
+      ],
+      "rationale": "Stale retrieval authority cannot deliver useful work.",
+      "prompt": "Stale retrieval authority cannot deliver useful work.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_failed_tool",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.source_faithfulness"
+      ],
+      "rationale": "A failed tool cannot be replaced by an expected record.",
+      "prompt": "A failed tool cannot be replaced by an expected record.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_overconveyance",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.ownership_arithmetic"
+      ],
+      "rationale": "Conveying more than the supplied grantor balance is an exception, not a clamp.",
+      "prompt": "Conveying more than the supplied grantor balance is an exception, not a clamp.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_duplicate_recording",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "A duplicate recording cannot be applied twice.",
+      "prompt": "A duplicate recording cannot be applied twice.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_conflicting_party",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "Conflicting or unknown party identity cannot be resolved by fuzzy matching.",
+      "prompt": "Conflicting or unknown party identity cannot be resolved by fuzzy matching.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_forged_quote",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.instrument_traceability"
+      ],
+      "rationale": "Altered quotation/hash/span fails exact original-text validation.",
+      "prompt": "Altered quotation/hash/span fails exact original-text validation.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_forged_fraction",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.ownership_arithmetic"
+      ],
+      "rationale": "A plausible model number cannot replace source-based rational arithmetic.",
+      "prompt": "A plausible model number cannot replace source-based rational arithmetic.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_cross_scope",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "evidence.provenance"
+      ],
+      "rationale": "Another customer/asset source cannot support this packet.",
+      "prompt": "Another customer/asset source cannot support this packet.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_clearance",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.no_unapproved_title"
+      ],
+      "rationale": "A draft or reviewed private packet never grants title clearance.",
+      "prompt": "A draft or reviewed private packet never grants title clearance.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_unapproved_record",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.no_unapproved_title"
+      ],
+      "rationale": "An employee cannot perform an unapproved private recording.",
+      "prompt": "An employee cannot perform an unapproved private recording.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_replayed_approval",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.no_unapproved_title"
+      ],
+      "rationale": "A consumed or earlier-revision grant cannot authorize another record.",
+      "prompt": "A consumed or earlier-revision grant cannot authorize another record.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_changed_output",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.source_faithfulness"
+      ],
+      "rationale": "Altered actual final output cannot borrow a correct tool witness.",
+      "prompt": "Altered actual final output cannot borrow a correct tool witness.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_wrong_tract",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "Wrong-tract instruments cannot support this examination.",
+      "prompt": "Wrong-tract instruments cannot support this examination.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_wrong_depth",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "A transfer cannot change an uncovered depth band.",
+      "prompt": "A transfer cannot change an uncovered depth band.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "boundary_changed_instrument",
+      "family": "capability_boundary",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.instrument_traceability"
+      ],
+      "rationale": "A different instrument revision cannot reuse prior citations.",
+      "prompt": "A different instrument revision cannot reuse prior citations.",
+      "labelAuthority": "provisional-codex-research-review"
+    },
+    {
+      "eval_case_id": "edge_unknown_lease_holding",
+      "family": "edge",
+      "expectedStatus": "failed",
+      "requiredFailures": [
+        "title.chain_scope_coverage"
+      ],
+      "rationale": "After a supplied term end, unknown holding/extension status remains unknown.",
+      "prompt": "After a supplied term end, unknown holding/extension status remains unknown.",
+      "labelAuthority": "provisional-codex-research-review"
+    }
+  ]
+}

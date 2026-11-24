@@ -1,0 +1,12 @@
+{
+  "version": "0.1.0",
+  "frozenAt": "2026-11-23T22:12:03.442735+00:00",
+  "labelStatus": "provisional-codex-primary-research",
+  "implementationExistedAtFreeze": false,
+  "sha256": {
+    "fixtures/source-oracles.json": "3f68b355b2b37d9ac3b689aa2391da6be66b7b8b117f731e5145e0afa4d00d96",
+    "fixtures/case-labels.json": "a6ffba6c44aedc1d8e5d3c8ed438fb2a25e336cd3fb27804db45fc3891e2281f",
+    "datasets/drilling-performance.json": "aea53744fb15039f5df539f41cbb549f02b7a81e538132b1b7dd6d0b4e76ae11",
+    "performance_profile.json": "2d246ba6870deb355d0ab0ec0bf70e1b842c25f566381d865a42c80c8b413312"
+  }
+}

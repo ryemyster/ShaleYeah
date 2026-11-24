@@ -1,0 +1,19 @@
+{
+  "format": "SEGY",
+  "fileName": "sample.segy",
+  "traces": 100,
+  "samples": 2000,
+  "headers": {
+    "binaryHeader": {
+      "sampleInterval": 2000
+    }
+  },
+  "qualityMetrics": {
+    "confidence": 0.85
+  },
+  "oilGasAnalysis": {
+    "amplitudeAnalysis": {
+      "averageAmplitude": 0.5
+    }
+  }
+}

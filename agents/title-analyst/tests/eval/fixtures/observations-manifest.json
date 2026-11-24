@@ -1,0 +1,10 @@
+{
+  "schemaVersion": "0.1.0",
+  "kind": "captured-title-observations",
+  "note": "Actual synthetic Title backend results; independent expected arithmetic and labels remain in frozen source-oracles.json and title-performance.json.",
+  "professionalAcceptance": false,
+  "sha256": {
+    "observed-packet.json": "6538dd3cfcb1a1f8535e89672280833edcd44aed3180c1a47144c92d44a36f2d",
+    "observed-variants.json": "c5ac3758b6c5a4c338ca3481f2d52425e27e86151ec1f4670daef21de90b0588"
+  }
+}

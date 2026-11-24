@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:shaleyeah:data-connectors:0.2.0",
+  "title": "JSON source artifact profile 0.2.0",
+  "$ref": "#/$defs/JsonSourceArtifact",
+  "$defs": {
+    "JsonSourceArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "contractVersion",
+        "scope",
+        "taskRevision",
+        "connectorRef",
+        "adapterRef",
+        "sourceKind",
+        "evidence",
+        "artifact",
+        "retrievedAt",
+        "format",
+        "parserRef",
+        "jurisdiction",
+        "units",
+        "byteLength",
+        "accessNotes",
+        "licenseNotes",
+        "revisionOrigin"
+      ],
+      "properties": {
+        "kind": {
+          "const": "source-artifact"
+        },
+        "contractVersion": {
+          "const": "0.2.0"
+        },
+        "scope": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Scope"
+        },
+        "taskRevision": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Revision"
+        },
+        "connectorRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/RecordRef"
+        },
+        "adapterRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "sourceKind": {
+          "$ref": "urn:shaleyeah:data-connectors:0.1.0#/$defs/SourceKind"
+        },
+        "evidence": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/SourceEvidence"
+        },
+        "artifact": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/ArtifactRef"
+        },
+        "retrievedAt": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Timestamp"
+        },
+        "format": {
+          "const": "json"
+        },
+        "parserRef": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/VersionedRef"
+        },
+        "jurisdiction": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "$ref": "urn:shaleyeah:data-connectors:0.1.0#/$defs/SourceUnit"
+          },
+          "minItems": 0,
+          "maxItems": 128,
+          "uniqueItems": true
+        },
+        "byteLength": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16777216
+        },
+        "accessNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "licenseNotes": {
+          "$ref": "urn:shaleyeah:employee-contracts:0.1.0#/$defs/Text"
+        },
+        "revisionOrigin": {
+          "type": "string",
+          "enum": [
+            "operator-declared",
+            "source-reported"
+          ]
+        }
+      }
+    }
+  }
+}

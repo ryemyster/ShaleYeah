@@ -1,0 +1,4009 @@
+{
+  "harmonic": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:sha256:ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 147994.76445948004,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 2, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 147994.76445948004
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 100.00000000000004,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 90.90909090909096,
+                "cumulativeProduction": 34788.21562857859
+              },
+              {
+                "time": 3,
+                "rate": 76.92307692307693,
+                "cumulativeProduction": 95762.95653063426
+              },
+              {
+                "time": 5,
+                "rate": 66.66666666666669,
+                "cumulativeProduction": 147994.76445948004
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 100.00000000000004,
+                  "nominalDecline": 0.10000000000000013,
+                  "bFactor": 1,
+                  "observationCount": 3,
+                  "rmseRate": 2.026980648162706e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 147994.76445948004
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 5,
+                  "reason": "horizon"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 5
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 52231.80792884578
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 2.026980648162706e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 1.4210854715202004e-16
+              },
+              "status": "passed"
+            }
+          ],
+          "quality": {
+            "status": "passed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:sha256:ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 266,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "exponential": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89",
+          "uri": "urn:sha256:11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603",
+          "uri": "urn:sha256:1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 143616.30920488885,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=0, fit until 2, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 0,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 0,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 143616.30920488885
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 100.00000000000004,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 90.48374180359603,
+                "cumulativeProduction": 34734.34241687477
+              },
+              {
+                "time": 3,
+                "rate": 74.08182206817176,
+                "cumulativeProduction": 94601.349451173
+              },
+              {
+                "time": 5,
+                "rate": 60.653065971263366,
+                "cumulativeProduction": 143616.30920488885
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 100.00000000000004,
+                  "nominalDecline": 0.10000000000000009,
+                  "bFactor": 0,
+                  "observationCount": 3,
+                  "rmseRate": 1.2819751242557093e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 143616.30920488885
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 5,
+                  "reason": "horizon"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 5
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 49014.959753715855
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 1.2819751242557092e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 1.4210854715202004e-16
+              },
+              "status": "passed"
+            }
+          ],
+          "quality": {
+            "status": "passed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89",
+          "uri": "urn:sha256:11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "11421325b9ef1b4e3096f5caf1fc958e59c9a77bb7d6a2b29541e72d4c4e0f89"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 795,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603",
+          "uri": "urn:sha256:1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1443096c5f4970eb08dbe2b243e4a9f2427d486beebc66d2324266bcf1564603"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 266,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "hyperbolic": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61",
+          "uri": "urn:sha256:03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4",
+          "uri": "urn:sha256:9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 146000.00000000003,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=0.5, fit until 2, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 0.5,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 0.5,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 146000.00000000003
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 119.99999999999997,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 99.17355371900827,
+                "cumulativeProduction": 39818.181818181816
+              },
+              {
+                "time": 3,
+                "rate": 71.00591715976333,
+                "cumulativeProduction": 101076.92307692309
+              },
+              {
+                "time": 5,
+                "rate": 53.33333333333337,
+                "cumulativeProduction": 146000.00000000003
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 119.99999999999997,
+                  "nominalDecline": 0.1999999999999998,
+                  "bFactor": 0.5,
+                  "observationCount": 3,
+                  "rmseRate": 1.7199501139797033e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 146000.00000000003
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 5,
+                  "reason": "horizon"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 5
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 44923.07692307694
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 1.4332917616497527e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 2.3684757858670006e-16
+              },
+              "status": "passed"
+            }
+          ],
+          "quality": {
+            "status": "passed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61",
+          "uri": "urn:sha256:03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "03c3c722bed1dbc9f4e377f8225371f1d363e74519466529bed90cafa7b3ae61"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4",
+          "uri": "urn:sha256:9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "9ce8a2dd9a49a9ab99e81c27d1c39171b374efc446a8b438a0eb0da7773b68e4"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 268,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "monthly-gas": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "ready_for_review",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c",
+          "uri": "urn:sha256:f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e",
+          "uri": "urn:sha256:56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:sha256:ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 7298.371945946958,
+          "unit": "Mcf",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 2, horizon 5 ({\"daysPerUnit\":30,\"unit\":\"month\"}), daily-rate unit Mcf/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "gas",
+            "rateUnit": "Mcf/day",
+            "timeBasis": {
+              "unit": "month",
+              "daysPerUnit": 30
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "Mcf",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 7298.371945946958
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 59.999999999999986,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 54.54545454545453,
+                "cumulativeProduction": 1715.583236477847
+              },
+              {
+                "time": 3,
+                "rate": 46.15384615384615,
+                "cumulativeProduction": 4722.556760414839
+              },
+              {
+                "time": 5,
+                "rate": 40,
+                "cumulativeProduction": 7298.371945946958
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 59.999999999999986,
+                  "nominalDecline": 0.0999999999999999,
+                  "bFactor": 1,
+                  "observationCount": 3,
+                  "rmseRate": 8.599750569898516e-15,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 7298.371945946958
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 5,
+                  "reason": "horizon"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 5
+              },
+              "volumeUnit": "Mcf",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 2575.8151855321184
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 1.4332917616497527e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 0
+              },
+              "status": "passed"
+            }
+          ],
+          "quality": {
+            "status": "passed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "gas",
+        "rateUnit": "Mcf/day",
+        "timeBasis": {
+          "unit": "month",
+          "daysPerUnit": 30
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c",
+          "uri": "urn:sha256:f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "f7c74d8ca7f0fc9d47c249a81c1923fc7d5b87303ca66e436e18d2126979730c"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "Mcf/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 779,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e",
+          "uri": "urn:sha256:56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "56b26e91e2b3b0ba30fa58683e7ba072dd44bb5e6da4c5700937c343ae5b905e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:sha256:ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "ea696ebfc931bc90d53c428e29fd29423a5f7f7a1c22eabf2911324d1813c76d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 266,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "insufficient": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9",
+          "uri": "urn:sha256:b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "unknown",
+          "value": null,
+          "reason": "unusable_analog_cohort",
+          "unit": "bbl",
+          "evidenceIds": [],
+          "assumptionIds": []
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 1, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "Forecast base failed configured history/validation requirements",
+          "references": [
+            {
+              "id": "base",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 1,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "unavailable",
+            "cumulativeProduction": {
+              "status": "unavailable",
+              "value": null,
+              "reason": "unusable_analog_cohort"
+            },
+            "forecast": [],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "unavailable",
+                "reason": "insufficient_history",
+                "cumulativeProduction": {
+                  "status": "unavailable",
+                  "value": null,
+                  "reason": "insufficient_history"
+                },
+                "interval": null
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": null,
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "insufficient_history"
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 2,
+              "holdoutCount": 2,
+              "fitRelativeRmse": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "insufficient_history"
+              },
+              "relativeRmse": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "fit_unavailable"
+              },
+              "status": "failed"
+            }
+          ],
+          "quality": {
+            "status": "failed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9",
+          "uri": "urn:sha256:b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "b3e37f7569af1c9780bbc319bc3c306c8c0d30dd989fd46366491a43daad35a9"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 266,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "cutoff": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363",
+          "uri": "urn:sha256:92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 81447.39622968664,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 2, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 80. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "Forecast base failed configured history/validation requirements",
+          "references": [
+            {
+              "id": "base",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 80,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 80,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 81447.39622968664
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 100.00000000000004,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 90.90909090909096,
+                "cumulativeProduction": 34788.21562857859
+              },
+              {
+                "time": 3,
+                "rate": 0,
+                "cumulativeProduction": 81447.39622968664
+              },
+              {
+                "time": 5,
+                "rate": 0,
+                "cumulativeProduction": 81447.39622968664
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 100.00000000000004,
+                  "nominalDecline": 0.10000000000000013,
+                  "bFactor": 1,
+                  "observationCount": 3,
+                  "rmseRate": 2.026980648162706e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 81447.39622968664
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 2.500000000000002,
+                  "reason": "economic_limit"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 3
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 0
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 2.026980648162706e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 0.7692307692307692
+              },
+              "status": "failed"
+            }
+          ],
+          "quality": {
+            "status": "failed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363",
+          "uri": "urn:sha256:92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "92a12995aa6f97c54f3f7ab8e1bd37458ece66b7609e020d6df65173cc7c5363"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 267,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "initial-cutoff": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87",
+          "uri": "urn:sha256:e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 0,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 2, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 110. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "Forecast base failed configured history/validation requirements",
+          "references": [
+            {
+              "id": "base",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 110,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 2,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 110,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 0
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 0,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 0,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 3,
+                "rate": 0,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 5,
+                "rate": 0,
+                "cumulativeProduction": 0
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 100.00000000000004,
+                  "nominalDecline": 0.10000000000000013,
+                  "bFactor": 1,
+                  "observationCount": 3,
+                  "rmseRate": 2.026980648162706e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 0
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 0,
+                  "reason": "initial_rate_at_or_below_limit"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 3
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 0
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 3,
+              "holdoutCount": 1,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 2.026980648162706e-16
+              },
+              "relativeRmse": {
+                "status": "available",
+                "value": 0.7692307692307692
+              },
+              "status": "failed"
+            }
+          ],
+          "quality": {
+            "status": "failed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87",
+          "uri": "urn:sha256:e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "e5916a5e9eec8550c06e6f1f0d5bcaff4f42fd736a2da7778597c802999bce87"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 268,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  },
+  "no-holdout": {
+    "work": {
+      "contractVersion": "0.1.0",
+      "kind": "work-product",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.reservoir",
+        "employeeId": "employee.reservoir-engineer"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "work.reservoir.523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311",
+        "revision": "r1",
+        "uri": "urn:shaleyeah:reservoir:523ef901ab1b9c9a8e1c851a3e4c551f583d1db1ad235844ecda69761728f311:r1"
+      },
+      "status": "blocked",
+      "inputs": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d",
+          "uri": "urn:sha256:1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d"
+        }
+      ],
+      "evidence": [
+        {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        {
+          "id": "evidence.assumptions",
+          "revision": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        }
+      ],
+      "findings": [
+        {
+          "id": "base.modeled-volume",
+          "basis": "assumed",
+          "value": 147994.76445948007,
+          "unit": "bbl",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ],
+          "assumptionIds": [
+            "base.basis"
+          ]
+        }
+      ],
+      "assumptions": [
+        {
+          "id": "base.basis",
+          "statement": "Declared fixed-b Arps assumption b=1, fit until 4, horizon 5 ({\"daysPerUnit\":365,\"unit\":\"year\"}), daily-rate unit bbl/day, cutoff 0. Operating basis: Operator-declared constant completion/operating regime over this synthetic window. Full forecast grid, validation thresholds and limitations remain in the source-linked forecast packet. This is not reserves certification.",
+          "evidenceIds": [
+            "evidence.history",
+            "evidence.basis",
+            "evidence.assumptions"
+          ]
+        }
+      ],
+      "uncertainty": "Finite modeled volumes are not observed cumulative production or certified reserves. No calibrated uncertainty model or field/capital authority.",
+      "blockers": [
+        {
+          "code": "missing_input",
+          "message": "Forecast base failed configured history/validation requirements",
+          "references": [
+            {
+              "id": "base",
+              "revision": "r1"
+            }
+          ]
+        }
+      ],
+      "review": {
+        "status": "unreviewed",
+        "decisionRefs": []
+      }
+    },
+    "forecast": {
+      "version": "0.1.0",
+      "taskRef": {
+        "id": "task.reservoir",
+        "revision": "r1"
+      },
+      "forecastIds": [
+        "base"
+      ],
+      "forecasts": [
+        {
+          "reference": {
+            "id": "base",
+            "revision": "r1"
+          },
+          "definition": {
+            "id": "base",
+            "revision": "r1",
+            "bFactor": 1,
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "fitUntil": 4,
+            "minimumTrainingObservations": 3,
+            "minimumHoldoutObservations": 1,
+            "maxFitRelativeRmse": 0.01,
+            "maxHoldoutRelativeRmse": 0.1
+          },
+          "modeled": {
+            "contractVersion": "0.1.0",
+            "product": "oil",
+            "rateUnit": "bbl/day",
+            "timeBasis": {
+              "unit": "year",
+              "daysPerUnit": 365
+            },
+            "horizon": 5,
+            "economicLimitRate": 0,
+            "forecastTimes": [
+              0,
+              1,
+              3,
+              5
+            ],
+            "inputRef": {
+              "id": "evidence.history",
+              "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+            },
+            "assumptionRefs": [
+              {
+                "id": "evidence.basis",
+                "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+              },
+              {
+                "id": "evidence.assumptions",
+                "revision": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d"
+              }
+            ],
+            "formation": "Synthetic formation",
+            "basis": "analog-history",
+            "volumeUnit": "bbl",
+            "volumeBasis": "modeled-from-declared-time-zero",
+            "method": {
+              "id": "equal-well-mean-fixed-b-transformed-regression-v1",
+              "bFactor": 1,
+              "fitLoss": "unweighted-transformed-rate-least-squares",
+              "cohortWeight": "equal-well",
+              "bSource": "declared-assumption"
+            },
+            "uncertainty": {
+              "status": "unavailable",
+              "reason": "no_uncertainty_model"
+            },
+            "reviewStatus": "unreviewed",
+            "professionalAcceptance": false,
+            "authorizesReserves": false,
+            "evidenceKind": "contains_synthetic",
+            "status": "available",
+            "cumulativeProduction": {
+              "status": "available",
+              "value": 147994.76445948007
+            },
+            "forecast": [
+              {
+                "time": 0,
+                "rate": 100.00000000000004,
+                "cumulativeProduction": 0
+              },
+              {
+                "time": 1,
+                "rate": 90.90909090909096,
+                "cumulativeProduction": 34788.21562857859
+              },
+              {
+                "time": 3,
+                "rate": 76.92307692307693,
+                "cumulativeProduction": 95762.95653063427
+              },
+              {
+                "time": 5,
+                "rate": 66.66666666666669,
+                "cumulativeProduction": 147994.76445948007
+              }
+            ],
+            "wells": [
+              {
+                "wellRef": {
+                  "id": "well.fixture-1",
+                  "revision": "completion-r1"
+                },
+                "evidenceKind": "synthetic",
+                "status": "available",
+                "fit": {
+                  "initialRate": 100.00000000000004,
+                  "nominalDecline": 0.09999999999999996,
+                  "bFactor": 1,
+                  "observationCount": 4,
+                  "rmseRate": 1.3597399555105182e-14,
+                  "rSquared": {
+                    "status": "available",
+                    "value": 1
+                  }
+                },
+                "cumulativeProduction": {
+                  "status": "available",
+                  "value": 147994.76445948007
+                },
+                "interval": {
+                  "start": 0,
+                  "end": 5,
+                  "reason": "horizon"
+                }
+              }
+            ]
+          },
+          "remaining": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "interval": {
+                "start": 3,
+                "end": 5
+              },
+              "volumeUnit": "bbl",
+              "volumeBasis": "future-only-after-last-observation",
+              "cumulativeProduction": {
+                "status": "available",
+                "value": 52231.807928845796
+              }
+            }
+          ],
+          "validation": [
+            {
+              "wellRef": {
+                "id": "well.fixture-1",
+                "revision": "completion-r1"
+              },
+              "trainingCount": 4,
+              "holdoutCount": 0,
+              "fitRelativeRmse": {
+                "status": "available",
+                "value": 1.3597399555105182e-16
+              },
+              "relativeRmse": {
+                "status": "unavailable",
+                "value": null,
+                "reason": "no_holdout_history"
+              },
+              "status": "failed"
+            }
+          ],
+          "quality": {
+            "status": "failed",
+            "thresholds": {
+              "minimumTrainingObservations": 3,
+              "minimumHoldoutObservations": 1,
+              "maxFitRelativeRmse": 0.01,
+              "maxHoldoutRelativeRmse": 0.1
+            }
+          },
+          "uncertainty": {
+            "status": "unavailable",
+            "reason": "no_uncertainty_model"
+          },
+          "reviewStatus": "unreviewed",
+          "authorizesReserves": false
+        }
+      ],
+      "basis": {
+        "version": "0.1.0",
+        "formation": "Synthetic formation",
+        "product": "oil",
+        "rateUnit": "bbl/day",
+        "timeBasis": {
+          "unit": "year",
+          "daysPerUnit": 365
+        },
+        "timeConvention": "calendar-elapsed",
+        "sourceGrain": "well",
+        "wells": [
+          {
+            "id": "well.fixture-1",
+            "revision": "completion-r1"
+          }
+        ],
+        "operatingBasis": "Operator-declared constant completion/operating regime over this synthetic window",
+        "limitations": [
+          "Synthetic control; no reserves or professional certification"
+        ]
+      },
+      "reviewStatus": "unreviewed",
+      "authorizesReserves": false
+    },
+    "sourceArtifacts": [
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:sha256:4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+        },
+        "evidence": {
+          "id": "evidence.history",
+          "revision": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e",
+          "uri": "urn:operator:history",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "4f178e4297664f252d99a6691ca6634b75408d8f9d314bf606d36122657aa63e"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [
+          {
+            "field": "rate",
+            "unit": "bbl/day",
+            "origin": "operator-declared"
+          }
+        ],
+        "byteLength": 794,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:sha256:74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+        },
+        "evidence": {
+          "id": "evidence.basis",
+          "revision": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1",
+          "uri": "urn:operator:basis",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "74a69a1e4de4dbfc151e9a0147e89f674a5b19f349000b51d8d389cc323b6ea1"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 434,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      },
+      {
+        "contractVersion": "0.2.0",
+        "kind": "source-artifact",
+        "scope": {
+          "customerId": "operator-fixture",
+          "assetId": "asset-fixture",
+          "taskId": "task.reservoir",
+          "employeeId": "employee.reservoir-engineer"
+        },
+        "taskRevision": "r1",
+        "artifact": {
+          "id": "evidence.assumptions",
+          "revision": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d",
+          "uri": "urn:sha256:1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d"
+        },
+        "evidence": {
+          "id": "evidence.assumptions",
+          "revision": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d",
+          "uri": "urn:operator:assumptions",
+          "hash": {
+            "algorithm": "sha256",
+            "value": "1f9afae3cb791bc48596ca3ae033076014cb7a9bc6430a8e43a1ce78c998970d"
+          },
+          "asOf": "2026-01-02T00:00:00Z",
+          "accessClassification": "restricted",
+          "usagePolicy": {
+            "id": "policy.operator-data",
+            "version": "r1"
+          }
+        },
+        "connectorRef": {
+          "id": "connector.operator",
+          "revision": "r1"
+        },
+        "adapterRef": {
+          "id": "operator-file",
+          "version": "0.1.0"
+        },
+        "sourceKind": "operator-file",
+        "retrievedAt": "2026-01-02T12:00:00.000Z",
+        "format": "json",
+        "parserRef": {
+          "id": "json",
+          "version": "1"
+        },
+        "jurisdiction": "US-TX",
+        "units": [],
+        "byteLength": 266,
+        "accessNotes": "Operator-only",
+        "licenseNotes": "Synthetic fixture",
+        "revisionOrigin": "operator-declared"
+      }
+    ],
+    "evaluatedAt": "2026-01-02T12:00:00Z"
+  }
+}

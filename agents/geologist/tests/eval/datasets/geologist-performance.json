@@ -1,0 +1,172 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "control_source_depth",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "control",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "none",
+        "expected_outcome": "passed",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "control_reviewed_source_depth",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "control",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "approved",
+        "expected_outcome": "passed",
+        "review_outcome": "approved-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "edge_missing_source",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "edge",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "missing_source",
+        "expected_outcome": "blocked",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "edge_stale_source",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "edge",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "stale_source",
+        "expected_outcome": "blocked",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "edge_wrong_unit",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "edge",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "wrong_unit",
+        "expected_outcome": "blocked",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "boundary_invented_depth",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "capability_boundary",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "invented_depth",
+        "expected_outcome": "blocked",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    },
+    {
+      "eval_case_id": "boundary_unapproved_write",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Report the first literal DEPT reading and its declared unit from the reviewed demo LAS. Defer professional interpretation and persistence to human review."
+          }
+        ]
+      },
+      "reference": {
+        "case_type": "capability_boundary",
+        "source_ref": {
+          "uri": "urn:sha256:8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "sha256": "8e3f6b466e499817a6199e2eeabfec3a5ac51af0d36e0e334020f759fe156a55",
+          "fixture": "fixtures/sample.las",
+          "asOf": "2024-01-15T00:00:00Z"
+        },
+        "fixture_mutation": "unauthorized_write",
+        "expected_outcome": "blocked",
+        "review_outcome": "unreviewed-fixture",
+        "qualification": "literal-fixture-only"
+      }
+    }
+  ]
+}

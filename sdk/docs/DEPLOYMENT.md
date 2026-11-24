@@ -1,0 +1,68 @@
+# Deployment — @shaleyeah/sdk
+
+The sdk is a library package — it is not deployed standalone. It is built and consumed by other packages in this workspace.
+
+## Building for consumption
+
+```bash
+pnpm build   # emits ESM JavaScript + .d.ts to dist/
+```
+
+Packages in this workspace reference it as `"@shaleyeah/sdk": "workspace:*"`, resolved by pnpm to the local `dist/`.
+Packed archives replace that authoring reference with declared versions. The SDK
+owns its compiler settings and ships built modules/types/license, so an installed
+consumer needs no parent configuration or SDK source link. Follow
+[reference export/install proof](../../docs/reference-packages.md) for locked
+helper artifacts and the independently built tool.
+
+## Environment variables
+
+| Variable | Required by | Purpose |
+|----------|-------------|---------|
+| `ANTHROPIC_API_KEY` | `LLMClient` | Authenticates Anthropic API calls |
+| `PORT` | HTTP MCP mode | Integer 0–65535 with explicit `http.access`; absent selects stdio; 0 requests an OS-assigned test port |
+| `MCP_HTTP_REQUEST_TIMEOUT_MS` | HTTP exchange | Body plus operation deadline; default and maximum 120000 ms |
+| `MCP_HTTP_MAX_CONCURRENT_REQUESTS` | HTTP exchange | In-flight request limit; default 128, maximum 1024; capacity returns 503 |
+| `MCP_HTTP_MAX_REQUEST_BODY_BYTES` | HTTP exchange | Body bound; default and maximum 1048576 bytes (1 MiB) |
+
+Limits accept positive integers within their listed maximums. Optional
+`MCPServerConfig.http` values override environment limits. The old session idle
+and capacity settings are replaced by exchange limits. No provider key is
+needed for deterministic tools.
+
+Clients pin MCP 2026-07-28 and send self-contained requests. Initialization,
+transport session IDs and session DELETE are outside this selected profile.
+[HTTP access](http-access.md) requires
+explicit local/remote identity, exact host/origin policy, scopes and an audit
+sink. The default bind is loopback; qualified remote TLS/issuer/deployment is
+separate. Do not infer hosted qualification from these settings.
+Employee working context/review persists through its own adapters across
+connection changes and restart.
+
+## When this package ships as an npm package
+
+1. Bump version in `package.json`
+2. `pnpm build` to regenerate `dist/`
+3. `pnpm publish --access public` (requires npm token)
+4. Downstream packages update `workspace:*` → the new semver range
+
+## Reference model bindings
+
+Geologist and Geowiz use explicit Gemini or Anthropic profiles, fixed model IDs,
+private owner-scoped credential references, bounded calls and independent judge
+configuration. Geologist remains Stand-alone Agent with Progressive Disclosure
+(Skills); provider configuration adds no orchestration or approval authority.
+Missing/unsupported configuration and synthesis failures are explicit errors.
+See [configuration and offline qualification](../../docs/model-providers.md).
+
+## Event export configuration
+
+Event-enabled consumers also install contracts 0.3.0. Keep per-assignment settings
+and per-producer JSONL outside the repository in owned private files. Use
+`loadJsonlEmitter` and pass `bindMCPEvents(emitter)` as runtime `events`. A host
+can select a trusted emitter for each task; client metadata never selects its own
+authority. See [ordered setup and recovery limits](../../docs/employee-events.md).
+
+Employee deployments install the declared `shaleyeah-employee-runtime` helper
+wheel along with contracts, MCP client and evaluations. Native ADK is an optional
+extra; shared business records remain independent of the native runtime.

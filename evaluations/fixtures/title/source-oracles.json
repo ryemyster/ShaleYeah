@@ -1,0 +1,375 @@
+{
+  "schemaVersion": "0.1.0",
+  "fixtureId": "title.source-oracles",
+  "revision": "r1",
+  "labelAuthor": "Codex under standing maintainer authorization",
+  "authoredAt": "2026-11-18",
+  "status": "provisional",
+  "professionalAcceptance": false,
+  "basis": "Authored before Title backend, grader and prompt changes. Fictional operator-attested normalized instruments; independent exact rational expectations. No complete county search, OCR verification, legal validity, marketability or professional acceptance.",
+  "primaryReferences": [
+    {
+      "url": "https://www.blm.gov/sites/blm.gov/files/Transferring_Oil_and_Gas_Lease%20Interests.pdf",
+      "retrieved": "2026-11-18",
+      "locator": "PDF pages 1-2, interest definitions and depth-separated scenario",
+      "use": "Keep record title, operating rights and ORRI distinct; adapt the separation concept only, not historical fees or state-law rules."
+    },
+    {
+      "url": "https://www.blm.gov/services/land-records",
+      "retrieved": "2026-11-18",
+      "locator": "Federal Land Records, GLO coverage note",
+      "use": "A bounded retrieved inventory cannot establish a complete chain."
+    },
+    {
+      "url": "https://www.rrc.texas.gov/about-us/faqs/rrc-authority-and-jurisdiction/",
+      "retrieved": "2026-11-18",
+      "locator": "Authority not held over leases, agreements and royalty payments",
+      "use": "A regulatory observation or permit cannot establish title clearance."
+    }
+  ],
+  "examination": {
+    "version": "0.1.0",
+    "examinationRef": {
+      "id": "examination.title",
+      "revision": "r1"
+    },
+    "tractRef": {
+      "id": "tract.fictional",
+      "revision": "r1"
+    },
+    "jurisdictionId": "jurisdiction.fixture",
+    "asOfDate": "2026-01-15",
+    "parties": [
+      {
+        "id": "party.a",
+        "name": "Élodie 🛢 LLC"
+      },
+      {
+        "id": "party.b",
+        "name": "Cobalt Example LLC"
+      },
+      {
+        "id": "party.c",
+        "name": "Cedar Example LLC"
+      }
+    ],
+    "depthBands": [
+      {
+        "id": "shallow",
+        "top": 0,
+        "bottom": 9000,
+        "unit": "ft"
+      },
+      {
+        "id": "deep",
+        "top": 9000,
+        "bottom": 18000,
+        "unit": "ft"
+      }
+    ],
+    "requiredInstrumentRefs": [
+      {
+        "id": "instrument.opening",
+        "revision": "r1"
+      },
+      {
+        "id": "instrument.transfer",
+        "revision": "r1"
+      },
+      {
+        "id": "instrument.burdens",
+        "revision": "r1"
+      }
+    ],
+    "questions": [
+      {
+        "id": "ownership",
+        "prompt": "Reconcile supplied holdings and explicit share bases."
+      },
+      {
+        "id": "chain",
+        "prompt": "Retain required recordings, predecessor evidence and exceptions."
+      },
+      {
+        "id": "burdens",
+        "prompt": "Reconcile supplied WI-relative and whole-relative burdens."
+      },
+      {
+        "id": "lease",
+        "prompt": "Read supplied term dates without declaring lease validity."
+      }
+    ]
+  },
+  "corpus": {
+    "version": "0.1.0",
+    "corpusRef": {
+      "id": "corpus.title",
+      "revision": "r1"
+    },
+    "documents": [
+      {
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-000",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 0,
+        "predecessorRefs": [],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "opening",
+            "text": "Fictional supplied opening schedule: Élodie 🛢 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion."
+          },
+          {
+            "sectionId": "lease",
+            "text": "Fictional supplied Lease L has a primary term ending 2027-01-01. No conclusion about legal validity, production, extension or title is supplied."
+          }
+        ],
+        "openingPositions": [
+          {
+            "positionId": "opening.record-title",
+            "partyId": "party.a",
+            "interestKind": "record-title",
+            "share": "1/1",
+            "depth": {
+              "top": 0,
+              "bottom": 18000,
+              "unit": "ft"
+            },
+            "sectionId": "opening"
+          },
+          {
+            "positionId": "opening.operating",
+            "partyId": "party.a",
+            "interestKind": "operating-rights",
+            "share": "1/1",
+            "depth": {
+              "top": 0,
+              "bottom": 18000,
+              "unit": "ft"
+            },
+            "sectionId": "opening"
+          }
+        ],
+        "transfers": [],
+        "burdens": [],
+        "leaseTerms": [
+          {
+            "leaseRef": {
+              "id": "lease.L",
+              "revision": "r1"
+            },
+            "primaryTermEnd": "2027-01-01",
+            "holdingStatus": "unknown",
+            "sectionId": "lease"
+          }
+        ]
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.transfer",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-001",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 1,
+        "predecessorRefs": [
+          {
+            "id": "instrument.opening",
+            "revision": "r1"
+          }
+        ],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "transfer",
+            "text": "Fictional supplied transfer: Élodie 🛢 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed."
+          }
+        ],
+        "openingPositions": [],
+        "transfers": [
+          {
+            "transferId": "transfer.ab",
+            "grantorId": "party.a",
+            "granteeId": "party.b",
+            "interestKind": "operating-rights",
+            "share": "1/2",
+            "basis": "fraction-of-grantor",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "transfer"
+          }
+        ],
+        "burdens": [],
+        "leaseTerms": []
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-002",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 2,
+        "predecessorRefs": [
+          {
+            "id": "instrument.transfer",
+            "revision": "r1"
+          }
+        ],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "royalty",
+            "text": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional."
+          },
+          {
+            "sectionId": "orri",
+            "text": "Fictional supplied burden schedule: Cobalt Example LLC also bears an ORRI of 1/16 of the whole in that shallow band. This is the supplied contractual basis, not a regional default."
+          }
+        ],
+        "openingPositions": [],
+        "transfers": [],
+        "burdens": [
+          {
+            "burdenRef": {
+              "id": "burden.royalty",
+              "revision": "r1"
+            },
+            "partyId": "party.b",
+            "kind": "royalty",
+            "share": "1/4",
+            "basis": "working-interest",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "royalty"
+          },
+          {
+            "burdenRef": {
+              "id": "burden.orri",
+              "revision": "r1"
+            },
+            "partyId": "party.b",
+            "kind": "overriding-royalty",
+            "share": "1/16",
+            "basis": "whole",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "orri"
+          }
+        ],
+        "leaseTerms": []
+      }
+    ]
+  },
+  "policy": {
+    "version": "0.1.0",
+    "policyRef": {
+      "id": "policy.title",
+      "revision": "r1"
+    },
+    "nriRequests": [
+      {
+        "partyId": "party.b",
+        "bandId": "shallow",
+        "requiredBurdenRefs": [
+          {
+            "id": "burden.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "burden.orri",
+            "revision": "r1"
+          }
+        ],
+        "coverage": "operator-attested-supplied-schedule"
+      }
+    ],
+    "requiredLeaseRefs": [
+      {
+        "id": "lease.L",
+        "revision": "r1"
+      }
+    ],
+    "declaredConflicts": []
+  },
+  "expected": {
+    "basis": "Python fractions.Fraction, independently evaluated before implementation",
+    "control": {
+      "recordTitle": {
+        "shallow": {
+          "party.a": "1/1"
+        },
+        "deep": {
+          "party.a": "1/1"
+        }
+      },
+      "operatingRights": {
+        "shallow": {
+          "party.a": "1/2",
+          "party.b": "1/2"
+        },
+        "deep": {
+          "party.a": "1/1"
+        }
+      },
+      "nri": {
+        "partyId": "party.b",
+        "bandId": "shallow",
+        "workingInterest": "1/2",
+        "royaltyBurden": "1/8",
+        "overridingBurden": "1/16",
+        "netRevenueInterest": "5/16"
+      },
+      "titleClearance": false,
+      "professionalAcceptance": false
+    },
+    "variants": {
+      "wi-relative-orri": {
+        "overridingBurden": "1/32",
+        "netRevenueInterest": "11/32"
+      },
+      "second-grantor-transfer": {
+        "grantorRemaining": "1/4",
+        "granteeInterest": "1/4"
+      },
+      "second-whole-transfer": {
+        "grantorRemaining": "0/1",
+        "granteeInterest": "1/2"
+      },
+      "zero-orri": {
+        "overridingBurden": "0/1",
+        "netRevenueInterest": "3/8"
+      }
+    }
+  }
+}

@@ -1,0 +1,2 @@
+# Preserve exact-byte public LAS samples, including their original whitespace.
+servers/geowiz/tests/reference/lasio-0.32/*.las -text -whitespace

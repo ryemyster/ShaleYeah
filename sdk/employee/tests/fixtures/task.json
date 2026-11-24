@@ -1,0 +1,29 @@
+{
+  "contractVersion": "0.1.0",
+  "kind": "task-assignment",
+  "id": "task-geology-1",
+  "revision": "r1",
+  "scope": {
+    "customerId": "operator-demo",
+    "assetId": "well-demo-1",
+    "taskId": "task-geology-1",
+    "employeeId": "employee.geologist"
+  },
+  "outcome": "Interpret the supplied log and identify missing evidence",
+  "requiredCapabilities": [
+    "geology.interpret"
+  ],
+  "inputs": [
+    {
+      "id": "artifact.log-1",
+      "revision": "r1",
+      "uri": "urn:example:well-log:1"
+    }
+  ],
+  "constraints": [
+    "Use permitted evidence only"
+  ],
+  "status": "assigned",
+  "workProductRefs": [],
+  "reviewDecisionRefs": []
+}

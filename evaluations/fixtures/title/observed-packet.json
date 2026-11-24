@@ -1,0 +1,1051 @@
+{
+  "work": {
+    "contractVersion": "0.1.0",
+    "kind": "work-product",
+    "scope": {
+      "customerId": "operator-fixture",
+      "assetId": "asset-fixture",
+      "taskId": "task.title",
+      "employeeId": "employee.title-analyst"
+    },
+    "taskRevision": "r1",
+    "artifact": {
+      "id": "work.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6",
+      "revision": "r1",
+      "uri": "urn:shaleyeah:title:51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6:r1"
+    },
+    "status": "ready_for_review",
+    "inputs": [
+      {
+        "id": "evidence.examination",
+        "revision": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2",
+        "uri": "urn:sha256:cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2"
+      },
+      {
+        "id": "evidence.corpus",
+        "revision": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3",
+        "uri": "urn:sha256:8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3"
+      },
+      {
+        "id": "evidence.policy",
+        "revision": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb",
+        "uri": "urn:sha256:51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "evidence.examination",
+        "revision": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2",
+        "uri": "urn:operator:examination",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      {
+        "id": "evidence.corpus",
+        "revision": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3",
+        "uri": "urn:operator:corpus",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      {
+        "id": "evidence.policy",
+        "revision": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb",
+        "uri": "urn:operator:policy",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      }
+    ],
+    "findings": [
+      {
+        "id": "finding.title.52d2de5ff20d046fbe09080c92f4cc5a61c6971c7b427ff49c64e1519042835f",
+        "basis": "assumed",
+        "value": "1/1",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied opening/transfer claims; not verified legal ownership"
+      },
+      {
+        "id": "finding.title.ec104c5988282befcfc241b2bd750c3341562bbc2bdd73e165eb649a992d5d6b",
+        "basis": "assumed",
+        "value": "1/2",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied opening/transfer claims; not verified legal ownership"
+      },
+      {
+        "id": "finding.title.7d5ae4111bf3381d5187eed77b8b6431038bd0ebdb10cc5cd6f34f66c53b3519",
+        "basis": "assumed",
+        "value": "1/2",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied opening/transfer claims; not verified legal ownership"
+      },
+      {
+        "id": "finding.title.938ed22eeb3b89ff4c725eb6515e46cbc59e00eb424e3bddbfccb89dfd038512",
+        "basis": "assumed",
+        "value": "1/1",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied opening/transfer claims; not verified legal ownership"
+      },
+      {
+        "id": "finding.title.d0f0b0f1015738021242089d76aa70f402e0695ede5ed536920992a9aed41be8",
+        "basis": "assumed",
+        "value": "1/1",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied opening/transfer claims; not verified legal ownership"
+      },
+      {
+        "id": "finding.title.aea608cef99f7ba2f9cbb47abf2e6d13b482a0b01a1b934eb82377021ba07d23",
+        "basis": "assumed",
+        "value": "5/16",
+        "unit": "supplied-whole-interest-fraction",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "Exact arithmetic under supplied WI/whole burden bases; no regional default"
+      },
+      {
+        "id": "finding.title.c4db4e25384813b6da2f6cbeea0ec7d81eaffb96a3ee6997b500d45a0ae21559",
+        "basis": "assumed",
+        "value": "The supplied shallow operating transfer preserves separate record title and deep operating rights.",
+        "unit": "proposed-title-observation",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "observation: unreviewed proposed analysis with exact instrument citations"
+      },
+      {
+        "id": "finding.title.818d339d205c8eee0a3a47c619463d9645d7222f176da3826a871a72dd22c824",
+        "basis": "assumed",
+        "value": "Review the supplied starting claim and recording links; public-record coverage is unverified.",
+        "unit": "proposed-title-observation",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "question: unreviewed proposed analysis with exact instrument citations"
+      },
+      {
+        "id": "finding.title.6b271e41ef24ddd1763e7a65a42d73629a35968a0b00463f6302a162c76ea536",
+        "basis": "assumed",
+        "value": "The supplied royalty and ORRI have different explicit share bases.",
+        "unit": "proposed-title-observation",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "observation: unreviewed proposed analysis with exact instrument citations"
+      },
+      {
+        "id": "finding.title.549c1f47bda8fc44266481b81dcf0e285b0c41324f91515455c4493dd1310ed0",
+        "basis": "assumed",
+        "value": "Review the supplied term date; no lease validity or extension authority is claimed.",
+        "unit": "proposed-title-observation",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ],
+        "assumptionIds": [
+          "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6"
+        ],
+        "reason": "question: unreviewed proposed analysis with exact instrument citations"
+      }
+    ],
+    "assumptions": [
+      {
+        "id": "assumption.title.51f1c5382085ead23bdc136784a3f9eed466e2fc4dc58d2ff848d0ce7dab93d6",
+        "statement": "Normalized instruments, opening holdings, order, scope and burden bases are operator-attested. Arithmetic and byte citations do not verify legal validity, complete record coverage or marketable title.",
+        "evidenceIds": [
+          "evidence.examination",
+          "evidence.corpus",
+          "evidence.policy"
+        ]
+      }
+    ],
+    "uncertainty": "A private supplied-instrument ownership/exception packet. No title clearance, legal opinion, curative execution, filing, transfer, lease acceptance or capital authority.",
+    "blockers": [],
+    "review": {
+      "status": "unreviewed",
+      "decisionRefs": []
+    }
+  },
+  "title": {
+    "version": "0.1.0",
+    "examinationRef": {
+      "id": "examination.title",
+      "revision": "r1"
+    },
+    "tractRef": {
+      "id": "tract.fictional",
+      "revision": "r1"
+    },
+    "jurisdictionId": "jurisdiction.fixture",
+    "asOfDate": "2026-01-15",
+    "basis": "operator-attested-normalized-instruments",
+    "holdings": [
+      {
+        "interestKind": "operating-rights",
+        "bandId": "deep",
+        "partyId": "party.a",
+        "share": "1/1"
+      },
+      {
+        "interestKind": "operating-rights",
+        "bandId": "shallow",
+        "partyId": "party.a",
+        "share": "1/2"
+      },
+      {
+        "interestKind": "operating-rights",
+        "bandId": "shallow",
+        "partyId": "party.b",
+        "share": "1/2"
+      },
+      {
+        "interestKind": "record-title",
+        "bandId": "deep",
+        "partyId": "party.a",
+        "share": "1/1"
+      },
+      {
+        "interestKind": "record-title",
+        "bandId": "shallow",
+        "partyId": "party.a",
+        "share": "1/1"
+      }
+    ],
+    "netRevenue": [
+      {
+        "partyId": "party.b",
+        "bandId": "shallow",
+        "workingInterest": "1/2",
+        "royaltyBurden": "1/8",
+        "overridingBurden": "1/16",
+        "netRevenueInterest": "5/16"
+      }
+    ],
+    "chain": [
+      {
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-000",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "declaredSequence": 0,
+        "predecessorRefs": []
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.transfer",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-001",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "declaredSequence": 1,
+        "predecessorRefs": [
+          {
+            "id": "instrument.opening",
+            "revision": "r1"
+          }
+        ]
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-002",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "declaredSequence": 2,
+        "predecessorRefs": [
+          {
+            "id": "instrument.transfer",
+            "revision": "r1"
+          }
+        ]
+      }
+    ],
+    "leaseTerms": [
+      {
+        "leaseRef": {
+          "id": "lease.L",
+          "revision": "r1"
+        },
+        "primaryTermEnd": "2027-01-01",
+        "holdingStatus": "unknown",
+        "sectionId": "lease",
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "termStatus": "primary-term-not-ended"
+      }
+    ],
+    "sourceWitnesses": [
+      {
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "sectionId": "opening",
+        "startByte": 0,
+        "endByte": 219,
+        "quote": "Fictional supplied opening schedule: Élodie 🛢 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion.",
+        "sha256": "37fd91a546d1fc42bab634837e704720454f409fe75a2559ab0dc33eaed6615c"
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "sectionId": "lease",
+        "startByte": 0,
+        "endByte": 144,
+        "quote": "Fictional supplied Lease L has a primary term ending 2027-01-01. No conclusion about legal validity, production, extension or title is supplied.",
+        "sha256": "539516385d372d63d5513c6f4781d1f1d3cdce135d10df5d3496e3137ce19684"
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.transfer",
+          "revision": "r1"
+        },
+        "sectionId": "transfer",
+        "startByte": 0,
+        "endByte": 221,
+        "quote": "Fictional supplied transfer: Élodie 🛢 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed.",
+        "sha256": "f3a9be7024dbfa3cd7a31d6e2eb92bc06e7a3ff37d13111491f6c0cafccade32"
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        },
+        "sectionId": "royalty",
+        "startByte": 0,
+        "endByte": 141,
+        "quote": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional.",
+        "sha256": "26b74db297dbc066049c64ecb56a12b5f4bb4a63fee7212f5d729e0312a1f1c0"
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        },
+        "sectionId": "orri",
+        "startByte": 0,
+        "endByte": 180,
+        "quote": "Fictional supplied burden schedule: Cobalt Example LLC also bears an ORRI of 1/16 of the whole in that shallow band. This is the supplied contractual basis, not a regional default.",
+        "sha256": "d9b7e50115a173a3a01b9277a9b510f9e083e1ea018f2b855bf782a2f51571e2"
+      }
+    ],
+    "coverage": {
+      "requiredInstrumentRefs": [
+        {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        {
+          "id": "instrument.transfer",
+          "revision": "r1"
+        },
+        {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        }
+      ],
+      "missingInstrumentRefs": [],
+      "requiredQuestionIds": [
+        "burdens",
+        "chain",
+        "lease",
+        "ownership"
+      ],
+      "coveredQuestionIds": [
+        "burdens",
+        "chain",
+        "lease",
+        "ownership"
+      ],
+      "missingQuestionIds": [],
+      "missingCitedInstrumentRefs": []
+    },
+    "exceptions": [],
+    "status": "ready-for-review",
+    "reviewStatus": "unreviewed",
+    "titleClearance": false,
+    "professionalAcceptance": false,
+    "title": "Supplied tract ownership and exceptions for review",
+    "observations": [
+      {
+        "observationRef": {
+          "id": "observation.ownership",
+          "revision": "r1"
+        },
+        "questionId": "ownership",
+        "kind": "observation",
+        "statement": "The supplied shallow operating transfer preserves separate record title and deep operating rights.",
+        "citations": [
+          {
+            "instrumentRef": {
+              "id": "instrument.opening",
+              "revision": "r1"
+            },
+            "sectionId": "opening",
+            "startByte": 0,
+            "endByte": 219,
+            "quote": "Fictional supplied opening schedule: Élodie 🛢 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion.",
+            "sha256": "37fd91a546d1fc42bab634837e704720454f409fe75a2559ab0dc33eaed6615c"
+          },
+          {
+            "instrumentRef": {
+              "id": "instrument.transfer",
+              "revision": "r1"
+            },
+            "sectionId": "transfer",
+            "startByte": 0,
+            "endByte": 221,
+            "quote": "Fictional supplied transfer: Élodie 🛢 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed.",
+            "sha256": "f3a9be7024dbfa3cd7a31d6e2eb92bc06e7a3ff37d13111491f6c0cafccade32"
+          }
+        ]
+      },
+      {
+        "observationRef": {
+          "id": "observation.chain",
+          "revision": "r1"
+        },
+        "questionId": "chain",
+        "kind": "question",
+        "statement": "Review the supplied starting claim and recording links; public-record coverage is unverified.",
+        "citations": [
+          {
+            "instrumentRef": {
+              "id": "instrument.opening",
+              "revision": "r1"
+            },
+            "sectionId": "opening",
+            "startByte": 0,
+            "endByte": 219,
+            "quote": "Fictional supplied opening schedule: Élodie 🛢 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion.",
+            "sha256": "37fd91a546d1fc42bab634837e704720454f409fe75a2559ab0dc33eaed6615c"
+          },
+          {
+            "instrumentRef": {
+              "id": "instrument.transfer",
+              "revision": "r1"
+            },
+            "sectionId": "transfer",
+            "startByte": 0,
+            "endByte": 221,
+            "quote": "Fictional supplied transfer: Élodie 🛢 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed.",
+            "sha256": "f3a9be7024dbfa3cd7a31d6e2eb92bc06e7a3ff37d13111491f6c0cafccade32"
+          },
+          {
+            "instrumentRef": {
+              "id": "instrument.burdens",
+              "revision": "r1"
+            },
+            "sectionId": "royalty",
+            "startByte": 0,
+            "endByte": 141,
+            "quote": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional.",
+            "sha256": "26b74db297dbc066049c64ecb56a12b5f4bb4a63fee7212f5d729e0312a1f1c0"
+          }
+        ]
+      },
+      {
+        "observationRef": {
+          "id": "observation.burdens",
+          "revision": "r1"
+        },
+        "questionId": "burdens",
+        "kind": "observation",
+        "statement": "The supplied royalty and ORRI have different explicit share bases.",
+        "citations": [
+          {
+            "instrumentRef": {
+              "id": "instrument.burdens",
+              "revision": "r1"
+            },
+            "sectionId": "royalty",
+            "startByte": 0,
+            "endByte": 141,
+            "quote": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional.",
+            "sha256": "26b74db297dbc066049c64ecb56a12b5f4bb4a63fee7212f5d729e0312a1f1c0"
+          },
+          {
+            "instrumentRef": {
+              "id": "instrument.burdens",
+              "revision": "r1"
+            },
+            "sectionId": "orri",
+            "startByte": 0,
+            "endByte": 180,
+            "quote": "Fictional supplied burden schedule: Cobalt Example LLC also bears an ORRI of 1/16 of the whole in that shallow band. This is the supplied contractual basis, not a regional default.",
+            "sha256": "d9b7e50115a173a3a01b9277a9b510f9e083e1ea018f2b855bf782a2f51571e2"
+          }
+        ]
+      },
+      {
+        "observationRef": {
+          "id": "observation.lease",
+          "revision": "r1"
+        },
+        "questionId": "lease",
+        "kind": "question",
+        "statement": "Review the supplied term date; no lease validity or extension authority is claimed.",
+        "citations": [
+          {
+            "instrumentRef": {
+              "id": "instrument.opening",
+              "revision": "r1"
+            },
+            "sectionId": "lease",
+            "startByte": 0,
+            "endByte": 144,
+            "quote": "Fictional supplied Lease L has a primary term ending 2027-01-01. No conclusion about legal validity, production, extension or title is supplied.",
+            "sha256": "539516385d372d63d5513c6f4781d1f1d3cdce135d10df5d3496e3137ce19684"
+          }
+        ]
+      }
+    ]
+  },
+  "sourceArtifacts": [
+    {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.title",
+        "employeeId": "employee.title-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.examination",
+        "revision": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2",
+        "uri": "urn:sha256:cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2"
+      },
+      "evidence": {
+        "id": "evidence.examination",
+        "revision": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2",
+        "uri": "urn:operator:examination",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "cbefb70131e059e5edc1fb4babcc41578b336dca494ff78df7c900eb8ced48e2"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-11-18T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "fixture-only",
+      "units": [],
+      "byteLength": 978,
+      "accessNotes": "Operator and enrolled title reviewer only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.title",
+        "employeeId": "employee.title-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.corpus",
+        "revision": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3",
+        "uri": "urn:sha256:8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3"
+      },
+      "evidence": {
+        "id": "evidence.corpus",
+        "revision": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3",
+        "uri": "urn:operator:corpus",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "8082aa307ee091491a250499f527dd8804981e5f292525e19a2704c19e17cfa3"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-11-18T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "fixture-only",
+      "units": [],
+      "byteLength": 3469,
+      "accessNotes": "Operator and enrolled title reviewer only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    },
+    {
+      "contractVersion": "0.2.0",
+      "kind": "source-artifact",
+      "scope": {
+        "customerId": "operator-fixture",
+        "assetId": "asset-fixture",
+        "taskId": "task.title",
+        "employeeId": "employee.title-analyst"
+      },
+      "taskRevision": "r1",
+      "artifact": {
+        "id": "evidence.policy",
+        "revision": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb",
+        "uri": "urn:sha256:51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb"
+      },
+      "evidence": {
+        "id": "evidence.policy",
+        "revision": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb",
+        "uri": "urn:operator:policy",
+        "hash": {
+          "algorithm": "sha256",
+          "value": "51e1533d686155978b9d675c7f2b219f9bc59f91c67363a79de9d1ea8007cdbb"
+        },
+        "asOf": "2026-11-18T12:00:00.000Z",
+        "accessClassification": "restricted",
+        "usagePolicy": {
+          "id": "policy.operator-data",
+          "version": "r1"
+        }
+      },
+      "connectorRef": {
+        "id": "connector.operator",
+        "revision": "r1"
+      },
+      "adapterRef": {
+        "id": "operator-file",
+        "version": "0.1.0"
+      },
+      "sourceKind": "operator-file",
+      "retrievedAt": "2026-11-18T12:00:00.000Z",
+      "format": "json",
+      "parserRef": {
+        "id": "json",
+        "version": "1"
+      },
+      "jurisdiction": "fixture-only",
+      "units": [],
+      "byteLength": 353,
+      "accessNotes": "Operator and enrolled title reviewer only",
+      "licenseNotes": "Synthetic fixture",
+      "revisionOrigin": "operator-declared"
+    }
+  ],
+  "examination": {
+    "version": "0.1.0",
+    "examinationRef": {
+      "id": "examination.title",
+      "revision": "r1"
+    },
+    "tractRef": {
+      "id": "tract.fictional",
+      "revision": "r1"
+    },
+    "jurisdictionId": "jurisdiction.fixture",
+    "asOfDate": "2026-01-15",
+    "parties": [
+      {
+        "id": "party.a",
+        "name": "Élodie 🛢 LLC"
+      },
+      {
+        "id": "party.b",
+        "name": "Cobalt Example LLC"
+      },
+      {
+        "id": "party.c",
+        "name": "Cedar Example LLC"
+      }
+    ],
+    "depthBands": [
+      {
+        "id": "shallow",
+        "top": 0,
+        "bottom": 9000,
+        "unit": "ft"
+      },
+      {
+        "id": "deep",
+        "top": 9000,
+        "bottom": 18000,
+        "unit": "ft"
+      }
+    ],
+    "requiredInstrumentRefs": [
+      {
+        "id": "instrument.opening",
+        "revision": "r1"
+      },
+      {
+        "id": "instrument.transfer",
+        "revision": "r1"
+      },
+      {
+        "id": "instrument.burdens",
+        "revision": "r1"
+      }
+    ],
+    "questions": [
+      {
+        "id": "ownership",
+        "prompt": "Reconcile supplied holdings and explicit share bases."
+      },
+      {
+        "id": "chain",
+        "prompt": "Retain required recordings, predecessor evidence and exceptions."
+      },
+      {
+        "id": "burdens",
+        "prompt": "Reconcile supplied WI-relative and whole-relative burdens."
+      },
+      {
+        "id": "lease",
+        "prompt": "Read supplied term dates without declaring lease validity."
+      }
+    ]
+  },
+  "corpus": {
+    "version": "0.1.0",
+    "corpusRef": {
+      "id": "corpus.title",
+      "revision": "r1"
+    },
+    "documents": [
+      {
+        "instrumentRef": {
+          "id": "instrument.opening",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-000",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 0,
+        "predecessorRefs": [],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "opening",
+            "text": "Fictional supplied opening schedule: Élodie 🛢 LLC holds 1/1 record title and 1/1 operating rights in tract.fictional from 0 ft to 18000 ft. This is an operator-attested starting claim, not an examined title opinion."
+          },
+          {
+            "sectionId": "lease",
+            "text": "Fictional supplied Lease L has a primary term ending 2027-01-01. No conclusion about legal validity, production, extension or title is supplied."
+          }
+        ],
+        "openingPositions": [
+          {
+            "positionId": "opening.record-title",
+            "partyId": "party.a",
+            "interestKind": "record-title",
+            "share": "1/1",
+            "depth": {
+              "top": 0,
+              "bottom": 18000,
+              "unit": "ft"
+            },
+            "sectionId": "opening"
+          },
+          {
+            "positionId": "opening.operating",
+            "partyId": "party.a",
+            "interestKind": "operating-rights",
+            "share": "1/1",
+            "depth": {
+              "top": 0,
+              "bottom": 18000,
+              "unit": "ft"
+            },
+            "sectionId": "opening"
+          }
+        ],
+        "transfers": [],
+        "burdens": [],
+        "leaseTerms": [
+          {
+            "leaseRef": {
+              "id": "lease.L",
+              "revision": "r1"
+            },
+            "primaryTermEnd": "2027-01-01",
+            "holdingStatus": "unknown",
+            "sectionId": "lease"
+          }
+        ]
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.transfer",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-001",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 1,
+        "predecessorRefs": [
+          {
+            "id": "instrument.opening",
+            "revision": "r1"
+          }
+        ],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "transfer",
+            "text": "Fictional supplied transfer: Élodie 🛢 LLC conveys 1/2 of its operating rights to Cobalt Example LLC in tract.fictional from 0 ft to 9000 ft. Record title and operating rights from 9000 ft to 18000 ft are not conveyed."
+          }
+        ],
+        "openingPositions": [],
+        "transfers": [
+          {
+            "transferId": "transfer.ab",
+            "grantorId": "party.a",
+            "granteeId": "party.b",
+            "interestKind": "operating-rights",
+            "share": "1/2",
+            "basis": "fraction-of-grantor",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "transfer"
+          }
+        ],
+        "burdens": [],
+        "leaseTerms": []
+      },
+      {
+        "instrumentRef": {
+          "id": "instrument.burdens",
+          "revision": "r1"
+        },
+        "recordingId": "FICTION-002",
+        "tractRef": {
+          "id": "tract.fictional",
+          "revision": "r1"
+        },
+        "jurisdictionId": "jurisdiction.fixture",
+        "effectiveDate": "2025-01-01",
+        "recordedDate": "2025-01-02",
+        "sequence": 2,
+        "predecessorRefs": [
+          {
+            "id": "instrument.transfer",
+            "revision": "r1"
+          }
+        ],
+        "sourceStatus": "operator-attested",
+        "sections": [
+          {
+            "sectionId": "royalty",
+            "text": "Fictional supplied burden schedule: Cobalt Example LLC bears a royalty of 1/4 of its working interest in the shallow band of tract.fictional."
+          },
+          {
+            "sectionId": "orri",
+            "text": "Fictional supplied burden schedule: Cobalt Example LLC also bears an ORRI of 1/16 of the whole in that shallow band. This is the supplied contractual basis, not a regional default."
+          }
+        ],
+        "openingPositions": [],
+        "transfers": [],
+        "burdens": [
+          {
+            "burdenRef": {
+              "id": "burden.royalty",
+              "revision": "r1"
+            },
+            "partyId": "party.b",
+            "kind": "royalty",
+            "share": "1/4",
+            "basis": "working-interest",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "royalty"
+          },
+          {
+            "burdenRef": {
+              "id": "burden.orri",
+              "revision": "r1"
+            },
+            "partyId": "party.b",
+            "kind": "overriding-royalty",
+            "share": "1/16",
+            "basis": "whole",
+            "depth": {
+              "top": 0,
+              "bottom": 9000,
+              "unit": "ft"
+            },
+            "sectionId": "orri"
+          }
+        ],
+        "leaseTerms": []
+      }
+    ]
+  },
+  "policy": {
+    "version": "0.1.0",
+    "policyRef": {
+      "id": "policy.title",
+      "revision": "r1"
+    },
+    "nriRequests": [
+      {
+        "partyId": "party.b",
+        "bandId": "shallow",
+        "requiredBurdenRefs": [
+          {
+            "id": "burden.royalty",
+            "revision": "r1"
+          },
+          {
+            "id": "burden.orri",
+            "revision": "r1"
+          }
+        ],
+        "coverage": "operator-attested-supplied-schedule"
+      }
+    ],
+    "requiredLeaseRefs": [
+      {
+        "id": "lease.L",
+        "revision": "r1"
+      }
+    ],
+    "declaredConflicts": []
+  },
+  "evaluatedAt": "2026-11-18T12:00:00Z"
+}

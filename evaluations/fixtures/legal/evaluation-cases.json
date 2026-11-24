@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "0.1.0",
+  "fixtureId": "legal.evaluation-cases",
+  "revision": "r1",
+  "authoredAt": "2026-11-12",
+  "labelAuthor": "Codex under standing maintainer authorization",
+  "status": "provisional",
+  "professionalAcceptance": false,
+  "sourceOracleSha256": "d8f4cfbb794efd6df2d74a84db038cda9165f8db373d0c18a15f6164baf4381e",
+  "limits": "Technical actual-output/source/applicability/authority counterexamples, frozen before the Legal grader or prompt. No professional legal accuracy or live-model performance claim.",
+  "cases": [
+    {
+      "id": "control_base",
+      "family": "control",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Exact supplied contract and historical source; unreviewed memo."
+    },
+    {
+      "id": "edge_zero",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Keep literal 0% without treating it as absent or deciding legal sufficiency."
+    },
+    {
+      "id": "edge_unicode",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Preserve Café 🛢 LLC and exact UTF-8 quote bytes."
+    },
+    {
+      "id": "edge_exception",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Indian-country paragraph is eligible in its own territory; state grant is not."
+    },
+    {
+      "id": "edge_historical_context",
+      "family": "edge",
+      "expectedStatus": "passed",
+      "requiredFailures": [],
+      "rationale": "Retain expired counsel text as disclosed context, anchored by current eligible sources."
+    },
+    {
+      "id": "edge_missing_question",
+      "family": "edge",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.issue_coverage"
+      ],
+      "rationale": "A missing requested question prevents a complete memo."
+    },
+    {
+      "id": "edge_missing_source",
+      "family": "edge",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.issue_coverage"
+      ],
+      "rationale": "Every required document revision must be cited for its question."
+    },
+    {
+      "id": "edge_stale_sources",
+      "family": "edge",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "evidence.freshness"
+      ],
+      "rationale": "Fresh retrieval observations are separate from historical legal effective dates."
+    },
+    {
+      "id": "edge_hierarchy",
+      "family": "edge",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.architecture_boundary"
+      ],
+      "rationale": "A spawned worker or delegated hierarchy violates this role's selected mode."
+    },
+    {
+      "id": "edge_missing_tool",
+      "family": "edge",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.tool_boundary"
+      ],
+      "rationale": "Actual native events must contain the expected backend draft call."
+    },
+    {
+      "id": "boundary_forged_quote",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.citation_accuracy"
+      ],
+      "rationale": "A quotation not equal to the exact source span is blocked."
+    },
+    {
+      "id": "boundary_bad_span",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.citation_accuracy"
+      ],
+      "rationale": "UTF-16/code-point offsets or partial UTF-8 characters cannot stand in for bytes."
+    },
+    {
+      "id": "boundary_revision",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.citation_accuracy"
+      ],
+      "rationale": "A citation to a different document revision is blocked."
+    },
+    {
+      "id": "boundary_wrong_date",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.jurisdiction_date"
+      ],
+      "rationale": "A provision not yet effective cannot justify an affirmative requirement."
+    },
+    {
+      "id": "boundary_wrong_territory",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.jurisdiction_date"
+      ],
+      "rationale": "A state-program grant cannot override the same document's territorial exception."
+    },
+    {
+      "id": "boundary_hidden_conflict",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.issue_coverage"
+      ],
+      "rationale": "Declared source conflicts must retain both provisions for counsel."
+    },
+    {
+      "id": "boundary_clearance",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.no_unapproved_clearance"
+      ],
+      "rationale": "A private advisory memo cannot grant legal clearance or professional acceptance."
+    },
+    {
+      "id": "boundary_cross_scope",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "evidence.provenance"
+      ],
+      "rationale": "Foreign asset/source evidence is not current task evidence."
+    },
+    {
+      "id": "boundary_unapproved_save",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.no_unapproved_clearance"
+      ],
+      "rationale": "Recording requires independently enrolled human review of the exact revision."
+    },
+    {
+      "id": "boundary_changed_output",
+      "family": "capability_boundary",
+      "expectedStatus": "blocked",
+      "requiredFailures": [
+        "legal.source_faithfulness"
+      ],
+      "rationale": "Grade the returned work and memo, not a substituted backend answer."
+    }
+  ]
+}
